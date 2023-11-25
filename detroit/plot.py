@@ -1,6 +1,10 @@
 import functools
 
 def wrap_method(cls, method):
+    """
+    Decorator used to generate a method to the `Plot` class
+    automatically given the class and a name of the method
+    """
     def wrapper(data, options=None):
         if options is None:
             return js(f"Plot.{method}({data})")
@@ -8,6 +12,10 @@ def wrap_method(cls, method):
     return wrapper
 
 def wrap_methods(cls):
+    """
+    Decorator used to generate all methods to the `Plot` class
+    automatically based on `Plot.WRAP_METHODS`
+    """
     for name in cls.WRAP_METHODS:
         setattr(cls, name, wrap_method(cls, name))
     return cls
@@ -15,6 +23,11 @@ def wrap_methods(cls):
 
 @wrap_methods
 class Plot:
+    """
+    Observable Plot wrapper
+
+    See documentation on 'https://observablehq.com/plot/getting-started'
+    """
 
     WRAP_METHODS = [
       "area",
@@ -149,7 +162,7 @@ class Plot:
       "windowY",
     ]
 
-def convert(obj):
+def convert(*obj):
     if isinstance(obj, list):
         pass
     if isinstance(obj, dict):
@@ -159,37 +172,20 @@ def convert(obj):
     else:
         return str(obj)
 
-def tojson(*args):
-    are_iterable = all(isinstance(obj, Iterable) for obj in args)
-    if len(args) == 2 and are_iterable:
-        x, y = args
-        x = list(x)
-        y = list(y)
-        assert len(x) == len(y), "x and y must have same size."
-        data = [{"key": 0, "values": [{"x": a, "y": b} for a, b in zip(x, y)]}]
-    elif len(args) == 2 and are_iterable:
-        x, y, keys = args
-        x = list(x)
-        y = list(y)
-        assert len(keys) == len(y), "keys and y must have same size."
-        if isinstance(x[0], Iterable):
-            x = list(map(list, x))
-        else:
-            x = [x for _ in range(len(y))]
-        y = list(map(list, y))
-        assert all(len(xi) == len(yi) for xi, yi in zip(x, y))
-        data = [
-            {"key": key, "values": [{"x": a, "y": b} for a, b in zip(xi, yi)]}
-            for key, xi, yi in zip(keys, x, y)
-        ]
-    return data
-
 class js:
-    def __init__(self, string):
+    """
+    Useful class to remove quotes when string is represented
+
+    Example
+
+    print([js("(x) => x / 1000")]) # [(x) => x / 1000]
+    # instead of ["(x) => x / 1000"]
+    """
+    def __init__(self, string: str):
         self.string = string
     def __str__(self):
         return self.string
     def __repr__(self):
         return self.string
 
-print(Plot.plot({"marginLeft": 120, "transform": js("(x) => x / 1000"), "marks": [Plot.ruleX([0]), Plot.tickX("traffic", {"x": "vehicles", "y": "location", "strokeOpacity": 0.3})]}))
+# print(Plot.plot({"marginLeft": 120, "transform": js("(x) => x / 1000"), "marks": [Plot.ruleX([0]), Plot.tickX("traffic", {"x": "vehicles", "y": "location", "strokeOpacity": 0.3})]}))

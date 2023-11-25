@@ -2,8 +2,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_digits
 import polars as pl
-from ui import render
-from detroit import Plot, js
+from detroit import Plot, js, render
 
 mnsit = load_digits()
 scaler = StandardScaler()
