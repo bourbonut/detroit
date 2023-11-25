@@ -16,7 +16,7 @@ data = df.to_dicts()
 plot = Plot.plot({
     "symbol": {"legend": js("true")},
     "marks": [
-        Plot.dot(data, {
+        Plot.dot(js("data"), {
             "x": "Component 1",
             "y": "Component 2",
             "stroke": "digit",

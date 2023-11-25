@@ -26,8 +26,10 @@ def render(data, javascript_code):
 
     @app.route("/svg", methods=["POST"])
     def get_svg():
-        figure = request.data.decode()
-        return figure
+        svg = request.data.decode()
+        with open("figure.svg", "w") as file:
+            file.write(svg)
+        return svg
 
     @app.route("/")
     def main():
