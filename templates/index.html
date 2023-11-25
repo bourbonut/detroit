@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <body>
+    <div id="myplot"></div>
+    <script>
+    var data;
+    fetch("/data").then(response => response.json()).then(d => {data = d;})
+
+    </script>
+    <script type="module">
+    import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+    const div = document.querySelector("#myplot");
+{{ javascript_code }}
+    </script>
+    <script>
+      function waitForElm(selector) {
+        return new Promise(resolve => {
+            if (document.getElementById(selector).childNodes[0]) {
+                return resolve(document.getElementById(selector).childNodes[0]);
+            }
+
+            const observer = new MutationObserver(mutations => {
+                if (document.getElementById(selector).childNodes[0]) {
+                    observer.disconnect();
+                    resolve(document.getElementById(selector).childNodes[0]);
+                }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+      }
+      waitForElm("myplot").then(figure => {
+        fetch("/svg", {
+          method: "POST",
+          body: figure.outerHTML,
+          headers: {"Content-Type": "application/json", "Accept": "application/json"}
+        }) 
+      });
+    </script>
+  </body>
+</html>
