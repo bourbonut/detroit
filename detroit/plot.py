@@ -1,5 +1,6 @@
 import functools
 
+
 def wrap_method(cls, method):
     """
     Decorator used to generate a method to the `Plot` class

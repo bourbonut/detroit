@@ -1,11 +1,12 @@
+import asyncio
+
+import polars as pl
+from jinja2 import Environment, PackageLoader, select_autoescape
+from sklearn.datasets import load_digits
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import load_digits
-import polars as pl
-from detroit import Plot, js, render
-from detroit.ui import save
-import asyncio
-from jinja2 import Environment, PackageLoader, select_autoescape
+
+from detroit import Plot, js, render, save
 
 mnsit = load_digits()
 scaler = StandardScaler()
@@ -26,7 +27,6 @@ plot = Plot.plot({
         })
     ]
 })
-javascript_code = str(plot)
 
-# render(data, javascript_code)
-save(data, plot, "figure.pdf")
+render(data, plot)
+# save(data, plot, "figure.pdf")

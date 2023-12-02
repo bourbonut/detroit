@@ -1,2 +1,2 @@
 from .plot import Plot, js
-from .ui import render
+from .ui import render, save
