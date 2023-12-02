@@ -1,0 +1,18 @@
+[project]
+name = "detroit"
+description = "detroit is wrapper for Python of d3js especially focus on Observable Plot in the current version."
+version = "0.1.0"
+readme = "README.md"
+authors = [
+  { name = "Benjamin BOURBON", email = "ben.bourbon06@gmail.com"},
+]
+requires-python = ">=3.9"
+dependencies = [
+  "jinja2",
+  "markupsafe",
+  "playwright",
+  "quart",
+]
+
+[tool.setuptools.packages.find]
+include = ["detroit*"]
