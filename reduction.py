@@ -3,6 +3,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_digits
 import polars as pl
 from detroit import Plot, js, render
+from detroit.ui import save
+import asyncio
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 mnsit = load_digits()
 scaler = StandardScaler()
@@ -23,8 +26,7 @@ plot = Plot.plot({
         })
     ]
 })
-javascript_code = f"""    console.log(data);
-    const plot = {plot}
-    // const plot = Plot.lineY(["please", "don’t", "do", "this"]).plot()
-    div.append(plot);"""
-render(data, javascript_code)
+javascript_code = str(plot)
+
+# render(data, javascript_code)
+save(data, plot, "figure.pdf")

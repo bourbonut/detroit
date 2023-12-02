@@ -2,68 +2,13 @@
 <html>
   <body>
     <div id="myplot"></div>
-    <script>
-    var data;
-    fetch("/data").then(response => response.json()).then(d => {data = d;})
-
-    </script>
+    <script>{{ get_data }}</script>
     <script type="module">
     import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
     const div = document.querySelector("#myplot");
-{{ javascript_code }}
+    const plot = {{ javascript_code }}
+    div.append(plot);
     </script>
-    <script>
-      function waitForElm(selector) {
-        return new Promise(resolve => {
-            if (document.getElementById(selector).childNodes[0]) {
-                return resolve(document.getElementById(selector).childNodes[0]);
-            }
-
-            const observer = new MutationObserver(mutations => {
-                if (document.getElementById(selector).childNodes[0]) {
-                    observer.disconnect();
-                    resolve(document.getElementById(selector).childNodes[0]);
-                }
-            });
-
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        });
-      }
-      function getSVG(figure) {
-        if (figure.tagName === "svg"){
-          return figure;
-        } else {
-          return Array.from(figure.childNodes).filter(e => e.tagName === "svg")[0];
-        }
-      }
-      const xmlns = "http://www.w3.org/2000/xmlns/";
-      const xlinkns = "http://www.w3.org/1999/xlink";
-      const svgns = "http://www.w3.org/2000/svg";
-      function serialize(svg) {
-        const fragment = window.location.href + "#";
-        const walker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-        while (walker.nextNode()) {
-          for (const attr of walker.currentNode.attributes) {
-            if (attr.value.includes(fragment)) {
-              attr.value = attr.value.replace(fragment, "#");
-            }
-          }
-        }
-        svg.setAttributeNS(xmlns, "xmlns", svgns);
-        svg.setAttributeNS(xmlns, "xmlns:xlink", xlinkns);
-        const serializer = new window.XMLSerializer;
-        const string = serializer.serializeToString(svg);
-        return new Blob([string], {type: "image/svg+xml"});
-      };
-      waitForElm("myplot").then(figure => {
-        fetch("/svg", {
-          method: "POST",
-          body: serialize(getSVG(figure))
-        }) 
-      });
-    </script>
+    {{ get_svg }}
   </body>
 </html>
