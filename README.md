@@ -7,6 +7,10 @@ detroit is wrapper for Python of [d3js](https://d3js.org/) especially focus on [
 ```shell
 pip install pip install git+https://github.com/bourbonut/detroit.git
 ```
+Then you will need to install a browser through the Python package `playwright`. For the moment, only `chromium` is supported.
+```shell
+playwright install chromium
+```
 
 # Usage
 
