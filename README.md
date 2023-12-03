@@ -2,7 +2,7 @@
 
 detroit is wrapper for Python of [d3js](https://d3js.org/) especially focus on [Observable Plot](https://observablehq.com/plot/) in the current version.
 
-# Installation
+## Installation
 
 ```shell
 pip install pip install git+https://github.com/bourbonut/detroit.git
@@ -12,13 +12,25 @@ Then you will need to install a browser through the Python package `playwright`.
 playwright install chromium
 ```
 
-# Usage
+## Features
+
+- Render in your browser a plot
+- Save your plot to `.png`, `.svg` or `.pdf`
+- Support `pandas` and `polars` dataframes
+- Support `jupyter` notebook
+
+**Note :** `.svg` does not support the legend. However, `.png` and `.pdf` support it !
+
+## Usage
+
+- Render a plot in `jupyter` notebook
+
+![jupyter example](docs/jupyter.png)
 
 - Render a plot in your browser
 
 ```py
 import polars as pl
-from jinja2 import Environment, PackageLoader, select_autoescape
 from sklearn.datasets import load_digits
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -32,7 +44,6 @@ pca = PCA(n_components=2)
 components = pca.fit_transform(X_scaled)
 
 df = pl.DataFrame(components, schema=["Component 1", "Component 2"]).insert_column(2, pl.Series("digit", mnsit.target))
-data = df.to_dicts()
 plot = Plot.plot({
     "symbol": {"legend": js("true")},
     "marks": [
@@ -45,18 +56,20 @@ plot = Plot.plot({
     ]
 })
 
-render(data, plot)
+render(df, plot)
 ```
+
+Then type in your browser `localhost:5000` to view your plot
 
 - Save your figure as `.svg`, `.png` or `.pdf`
 
 ```py
 # Replace
-render(data, plot)
+render(df, plot)
 # By
-save(data, plot, "figure.pdf")
-save(data, plot, "figure.svg")
-save(data, plot, "figure.png", scale_factor=2, width=640, height=440)
+save(df, plot, "figure.pdf")
+save(df, plot, "figure.svg")
+save(df, plot, "figure.png", scale_factor=2, width=640, height=440)
 ```
 
 **Note :** `.svg` does not support the legend. However, `.png` and `.pdf` support it !

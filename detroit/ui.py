@@ -14,7 +14,7 @@ try:
 except:
     JUPYTER_INSTALLED = False
 
-from .svg import SVG_SCRIPT
+from .utils import SVG_SCRIPT, FETCH, arrange
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
@@ -47,7 +47,6 @@ async def _save(data, plot, output, scale_factor, width, height):
             await page.set_viewport_size({'width': width, 'height': height})
             await page.goto(f'file://{input.absolute()}')
             await page.screenshot(path=output, type='png')
-            await browser.close()
         elif output.suffix == ".pdf":
             page = await browser.new_page()
             await page.goto(f'file://{input.absolute()}')
@@ -65,10 +64,11 @@ async def _save(data, plot, output, scale_factor, width, height):
         input.unlink()
 
 def save(data, plot, output, scale_factor=1, width=640, height=440):
-    asyncio.run(_save(data, plot, output, scale_factor, width, height))
+    asyncio.run(_save(arrange(data), plot, output, scale_factor, width, height))
 
 
 def render(data, plot):
+    data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
         display(HTML(asyncio.run(html(data, plot, fetch=False))), metadata={"isolated": True})
     else:

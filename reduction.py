@@ -1,7 +1,6 @@
 # Example file
 
 import polars as pl
-from jinja2 import Environment, PackageLoader, select_autoescape
 from sklearn.datasets import load_digits
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -15,7 +14,6 @@ pca = PCA(n_components=2)
 components = pca.fit_transform(X_scaled)
 
 df = pl.DataFrame(components, schema=["Component 1", "Component 2"]).insert_column(2, pl.Series("digit", mnsit.target))
-data = df.to_dicts()
 plot = Plot.plot({
     "symbol": {"legend": js("true")},
     "marks": [
@@ -28,5 +26,5 @@ plot = Plot.plot({
     ]
 })
 
-render(data, plot)
-# save(data, plot, "figure.pdf")
+render(df, plot)
+# save(df, plot, "figure.pdf")
