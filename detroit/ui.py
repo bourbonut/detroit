@@ -5,10 +5,25 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from markupsafe import Markup
 from playwright.async_api import async_playwright
 from quart import Quart, request
+try:
+    import nest_asyncio
+    nest_asyncio.apply()
+    from IPython import get_ipython
+    from IPython.display import display, HTML
+    JUPYTER_INSTALLED = True
+except:
+    JUPYTER_INSTALLED = False
 
 from .svg import SVG_SCRIPT
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
+
+def jupyter_environment():
+    try:
+        shell = get_ipython().__class__.__name__
+        return shell == 'ZMQInteractiveShell'
+    except NameError:
+        return False
 
 async def html(data, plot, fetch=True, svg=False):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
@@ -52,15 +67,19 @@ async def _save(data, plot, output, scale_factor, width, height):
 def save(data, plot, output, scale_factor=1, width=640, height=440):
     asyncio.run(_save(data, plot, output, scale_factor, width, height))
 
+
 def render(data, plot):
-    app = Quart("detroit")
+    if JUPYTER_INSTALLED and jupyter_environment():
+        display(HTML(asyncio.run(html(data, plot, fetch=False))), metadata={"isolated": True})
+    else:
+        app = Quart("detroit")
 
-    @app.route("/data")
-    def get_data():
-        return data
+        @app.route("/data")
+        def get_data():
+            return data
 
-    @app.route("/")
-    async def main():
-        return await html(data, plot, fetch=True)
+        @app.route("/")
+        async def main():
+            return await html(data, plot, fetch=True)
 
-    app.run()
+        app.run()
