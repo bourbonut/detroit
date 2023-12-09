@@ -5,16 +5,17 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from markupsafe import Markup
 from playwright.async_api import async_playwright
 from quart import Quart, request
+
 try:
     import nest_asyncio
     nest_asyncio.apply()
     from IPython import get_ipython
-    from IPython.display import display, HTML
+    from IPython.display import HTML, display
     JUPYTER_INSTALLED = True
 except:
     JUPYTER_INSTALLED = False
 
-from .utils import SVG_SCRIPT, FETCH, arrange
+from .utils import FETCH, SVG_SCRIPT, arrange
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
@@ -25,20 +26,24 @@ def jupyter_environment():
     except NameError:
         return False
 
-async def html(data, plot, fetch=True, svg=False):
+async def html(data, plot, style=None, fetch=True, svg=False):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
     template = env.get_template("index.html")
+    style_path = Path(style)
+    if style_path.exists():
+        style = style_path.read_text()
     return await template.render_async(
         javascript_code=Markup(plot),
         get_data=FETCH if fetch else Markup(f"const data = {data};"),
-        get_svg=Markup(SVG_SCRIPT) if svg else ""
+        get_svg=Markup(SVG_SCRIPT) if svg else "",
+        set_style="" if style is None else style,
     )
 
-async def _save(data, plot, output, scale_factor, width, height):
+async def _save(data, plot, output, style, scale_factor, width, height):
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
-    input.write_text(await html(data, plot, fetch=False, svg=output.suffix == ".svg"))
+    input.write_text(await html(data, plot, style=style, fetch=False, svg=output.suffix == ".svg"))
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         if output.suffix == ".png":
@@ -63,14 +68,17 @@ async def _save(data, plot, output, scale_factor, width, height):
         await browser.close()
         input.unlink()
 
-def save(data, plot, output, scale_factor=1, width=640, height=440):
-    asyncio.run(_save(arrange(data), plot, output, scale_factor, width, height))
+def save(data, plot, output, style=None, scale_factor=1, width=640, height=440):
+    asyncio.run(_save(arrange(data), plot, output, style, scale_factor, width, height))
 
 
-def render(data, plot):
+def render(data, plot, style=None):
     data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
-        display(HTML(asyncio.run(html(data, plot, fetch=False))), metadata={"isolated": True})
+        display(
+            HTML(asyncio.run(html(data, plot, style=style, fetch=False))),
+            metadata={"isolated": True}
+        )
     else:
         app = Quart("detroit")
 
@@ -80,6 +88,6 @@ def render(data, plot):
 
         @app.route("/")
         async def main():
-            return await html(data, plot, fetch=True)
+            return await html(data, plot, style=style, fetch=True)
 
         app.run()

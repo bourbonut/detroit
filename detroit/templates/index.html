@@ -1,4 +1,11 @@
 <!doctype html>
+{% if set_style != "" %}
+  <head>
+    <style>
+      {{ set_style }}
+    </style>
+  </head>
+{% endif %}
 <html>
   <body>
     <div id="myplot"></div>

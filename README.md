@@ -35,7 +35,7 @@ from sklearn.datasets import load_digits
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from detroit import Plot, js, render, save
+from detroit import Plot, js, render, save, style, Theme
 
 mnsit = load_digits()
 scaler = StandardScaler()
@@ -43,8 +43,12 @@ X_scaled = scaler.fit_transform(mnsit.data)
 pca = PCA(n_components=2)
 components = pca.fit_transform(X_scaled)
 
+# You can choose a theme or keep default colors
+theme = style(Theme.DARK) # or Theme.JUPYTER_DARK, Theme.JUPYTER_DARK_CENTER
+
 df = pl.DataFrame(components, schema=["Component 1", "Component 2"]).insert_column(2, pl.Series("digit", mnsit.target))
 plot = Plot.plot({
+    "style": theme.plot,              # change colors of plot div precisely
     "symbol": {"legend": js("true")},
     "marks": [
         Plot.dot(js("data"), {
@@ -56,10 +60,38 @@ plot = Plot.plot({
     ]
 })
 
-render(df, plot)
+render(df, plot, style=theme.body) # change background color and text color
 ```
 
 Then type in your browser `localhost:5000` to view your plot
+
+**Note :** You can also write your own style if you want :
+```py
+plot = Plot.plot({
+    "style": {"backgroundColor": "#111111", "color": "white"}, # check plot documentation
+    "symbol": {"legend": js("true")},
+    "marks": [
+        Plot.dot(js("data"), {
+            "x": "Component 1",
+            "y": "Component 2",
+            "stroke": "digit",
+            "symbol": "digit"
+        })
+    ]
+})
+
+style = """
+body {
+    background: #111111;
+    color: white;
+    display: flex;
+    justify-content: center;
+}
+"""
+render(df, plot, style=style)
+# Or save it in a file and load it
+render(df, plot, style="style.css")
+```
 
 - Save your figure as `.svg`, `.png` or `.pdf`
 
