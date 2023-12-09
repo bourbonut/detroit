@@ -13,6 +13,7 @@ dependencies = [
   "playwright",
   "quart",
 ]
+license = {file = "LICENSE"}
 
 [tool.setuptools.packages.find]
 include = ["detroit*"]
