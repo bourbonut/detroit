@@ -29,9 +29,10 @@ def jupyter_environment():
 async def html(data, plot, style=None, fetch=True, svg=False):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
     template = env.get_template("index.html")
-    style_path = Path(style)
-    if style_path.exists():
-        style = style_path.read_text()
+    if style is not None:
+        style_path = Path(style)
+        if style_path.exists():
+            style = style_path.read_text()
     return await template.render_async(
         javascript_code=Markup(plot),
         get_data=FETCH if fetch else Markup(f"const data = {data};"),
