@@ -57,12 +57,6 @@ SVG_SCRIPT = """<script>
     };
 
     waitForFigure("myplot").then(figure => {mysvg = serialize(getSVG(figure))})
-    // waitForFigure("myplot").then(figure => {
-    //   fetch("/svg", {
-    //     method: "POST",
-    //     body: serialize(getSVG(figure))
-    //   }) 
-    // });
     </script>"""
 
 def arrange(obj):
