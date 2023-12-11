@@ -1,63 +1,19 @@
 from markupsafe import Markup
+import random
+import string
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
-SVG_SCRIPT = """<script>
-    const xmlns = "http://www.w2.org/2000/xmlns/";
-    const xlinkns = "http://www.w3.org/1999/xlink";
-    const svgns = "http://www.w3.org/2000/svg";
-    var mysvg;
+def random_id(k=8):
+    alphabet = string.ascii_lowercase + string.digits
+    return ''.join(random.choices(alphabet, k=8))
 
-    function waitForFigure(selector) {
-      return new Promise(resolve => {
-          if (document.getElementById(selector).childNodes[0]) {
-              return resolve(document.getElementById(selector).childNodes[0]);
-          }
-    
-          const observer = new MutationObserver(mutations => {
-              if (document.getElementById(selector).childNodes[0]) {
-                  observer.disconnect();
-                  resolve(document.getElementById(selector).childNodes[0]);
-              }
-          });
-    
-          observer.observe(document.body, {
-              childList: true,
-              subtree: true
-          });
-      });
-    }
-
-    // Depending of the generated figure, sometimes the SVG content
-    // is not at the root but on the first level of childs.
-    function getSVG(figure) {
-      if (figure.tagName === "svg"){
-        return figure;
-      } else {
-        return Array.from(figure.childNodes).filter(e => e.tagName === "svg")[0];
-      }
-    }
-
-    function serialize(svg) {
-      const fragment = window.location.href + "#";
-      const walker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-      while (walker.nextNode()) {
-        for (const attr of walker.currentNode.attributes) {
-          if (attr.value.includes(fragment)) {
-            attr.value = attr.value.replace(fragment, "#");
-          }
-        }
-      }
-      // svg.setAttributeNS(xmlns, "xmlns", svgns);
-      // svg.setAttributeNS(xmlns, "xmlns:xlink", xlinkns);
-      const serializer = new window.XMLSerializer;
-      const string = serializer.serializeToString(svg);
-      // return new Blob([string], {type: "image/svg+xml"});
-      return string;
-    };
-
-    waitForFigure("myplot").then(figure => {mysvg = serialize(getSVG(figure))})
-    </script>"""
+async def wait_function(env, id):
+    template = env.get_template("svg.html")
+    end = ".then(figure => {mysvg = serialize(getSVG(figure))})"
+    return await template.render_async(
+        wait_function=Markup(f"waitForFigure(\"{id}\"){end}")
+    )
 
 def arrange(obj):
     try:

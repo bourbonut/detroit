@@ -15,9 +15,7 @@ try:
 except:
     JUPYTER_INSTALLED = False
 
-from .utils import FETCH, SVG_SCRIPT, arrange
-
-FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
+from .utils import FETCH, random_id, wait_function, arrange
 
 def jupyter_environment():
     try:
@@ -26,17 +24,26 @@ def jupyter_environment():
     except NameError:
         return False
 
-async def html(data, plot, style=None, fetch=True, svg=False):
+async def html(data, plot, style=None, fetch=True, svg=None):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
-    template = env.get_template("index.html")
     if style is not None:
         style_path = Path(style)
         if style_path.exists():
             style = style_path.read_text()
+    if isinstance(plot, dict):
+        template = env.get_template("grid.html")
+        plot = {random_id(): {"title": title, "code": Markup(code)} for title, code in plot.items()}
+        return await template.render_async(
+            plot=plot,
+            get_data=FETCH if fetch else Markup(f"const data = {data};"),
+            get_svg=Markup(await wait_function(env, svg)) if svg else "",
+            set_style="" if style is None else style,
+        )
+    template = env.get_template("simple.html")
     return await template.render_async(
         javascript_code=Markup(plot),
         get_data=FETCH if fetch else Markup(f"const data = {data};"),
-        get_svg=Markup(SVG_SCRIPT) if svg else "",
+        get_svg=Markup(await wait_function(env, "myplot")) if svg else "",
         set_style="" if style is None else style,
     )
 
@@ -71,7 +78,6 @@ async def _save(data, plot, output, style, scale_factor, width, height):
 
 def save(data, plot, output, style=None, scale_factor=1, width=640, height=440):
     asyncio.run(_save(arrange(data), plot, output, style, scale_factor, width, height))
-
 
 def render(data, plot, style=None):
     data = arrange(data)

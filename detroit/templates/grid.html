@@ -1,0 +1,28 @@
+<!doctype html>
+{% if set_style != "" %}
+<head>
+  <style>
+    {{ set_style }}
+  </style>
+</head>
+{% endif %}
+<body>
+  <div class="container">
+  {% for id, plot in plot.items() %}
+    <div>
+      <h2>{{ plot["title"] }}</h1>
+      <div class="plot" id="plot-{{ id }}"></div>
+    </div>
+  {% endfor %}
+  </div>
+  <script>{{ get_data }}</script>
+  <script type="module">
+  import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+  {% for id, plot in plot.items() %}
+  const div_{{ id }} = document.querySelector("#plot-{{ id }}");
+  const plot_{{ id }} = {{ plot["code"] }}
+  div_{{ id }}.append(plot_{{ id }});
+  {% endfor %}
+  </script>
+  {{ get_svg }}
+</body>
