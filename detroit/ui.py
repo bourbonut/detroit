@@ -16,6 +16,7 @@ except:
     JUPYTER_INSTALLED = False
 
 from .utils import FETCH, random_id, wait_function, arrange
+from .style import CSS, GRID
 
 def jupyter_environment():
     try:
@@ -24,34 +25,39 @@ def jupyter_environment():
     except NameError:
         return False
 
-async def html(data, plot, style=None, fetch=True, svg=None):
+async def html(data, plot, style=None, fetch=True, svg=None, grid=None):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
-    if style is not None:
-        style_path = Path(style)
-        if style_path.exists():
-            style = style_path.read_text()
+    style = CSS(style)
     if isinstance(plot, dict):
         template = env.get_template("grid.html")
         plot = {random_id(): {"title": title, "code": Markup(code)} for title, code in plot.items()}
+        plot_id = None
+        if svg is not None:
+            for id in plot:
+                if plot[id]["title"] == svg:
+                    plot_id = f"plot-{id}"
+                    break
+        if grid is not None:
+            style.update(GRID(grid))
         return await template.render_async(
             plot=plot,
             get_data=FETCH if fetch else Markup(f"const data = {data};"),
-            get_svg=Markup(await wait_function(env, svg)) if svg else "",
-            set_style="" if style is None else style,
+            get_svg=Markup(await wait_function(env, plot_id)) if plot_id else "",
+            set_style=str(style),
         )
     template = env.get_template("simple.html")
     return await template.render_async(
         javascript_code=Markup(plot),
         get_data=FETCH if fetch else Markup(f"const data = {data};"),
         get_svg=Markup(await wait_function(env, "myplot")) if svg else "",
-        set_style="" if style is None else style,
+        set_style=str(style),
     )
 
-async def _save(data, plot, output, style, scale_factor, width, height):
+async def _save(data, plot, output, style, grid, scale_factor, width, height, svg):
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
-    input.write_text(await html(data, plot, style=style, fetch=False, svg=output.suffix == ".svg"))
+    input.write_text(await html(data, plot, style=style, grid=grid, fetch=False, svg=svg or output.suffix == ".svg"))
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         if output.suffix == ".png":
@@ -76,14 +82,14 @@ async def _save(data, plot, output, style, scale_factor, width, height):
         await browser.close()
         input.unlink()
 
-def save(data, plot, output, style=None, scale_factor=1, width=640, height=440):
-    asyncio.run(_save(arrange(data), plot, output, style, scale_factor, width, height))
+def save(data, plot, output, style=None, grid=None, scale_factor=1, width=640, height=440, svg=None):
+    asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor, width, height, svg))
 
-def render(data, plot, style=None):
+def render(data, plot, style=None, grid=None):
     data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
         display(
-            HTML(asyncio.run(html(data, plot, style=style, fetch=False))),
+            HTML(asyncio.run(html(data, plot, style=style, fetch=False, grid=grid))),
             metadata={"isolated": True}
         )
     else:
@@ -95,6 +101,6 @@ def render(data, plot, style=None):
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True)
+            return await html(data, plot, style=style, fetch=True, grid=grid)
 
         app.run()
