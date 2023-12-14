@@ -101,6 +101,6 @@ def render(data, plot, style=None, grid=None):
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True, grid=grid)
+            return await html(data, plot, style=style, fetch=True, grid=grid, svg=True)
 
         app.run()
