@@ -56,15 +56,19 @@
         return parseInt(string, 10);
       }
 
+      function divmod(x, y){
+        return Math.floor(y, x), y % x;
+      }
+
       function getAttributeNames(svg){
         return svg.getAttributeNames()
-                  .filter(name => !(["viewBox", "class", "width", "height"].includes(name)));
+                  .filter(name => !(["viewBox", "class", "width", "height", "stroke", "fill"].includes(name)));
       }
       
       function gFromSVG(svg, lastHeight){
         const boundingRect = svg.getBoundingClientRect();
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        for (name of getAttributeNames(svg)){g.setAttribute(name, svg.getAttribute(name));}
+        for (const name of getAttributeNames(svg)){g.setAttribute(name, svg.getAttribute(name));}
         g.setAttribute("transform", `translate(0, ${lastHeight})`)
         g.append(...svg.childNodes);
         return g;
@@ -75,16 +79,21 @@
         const dx = int(style.marginLeft) - int(style.marginRight);
         const dy = int(style.marginTop) - int(style.marginBottom);
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        for (name of getAttributeNames(svg)){g.setAttribute(name, svg.getAttribute(name));}
+        for (const name of getAttributeNames(svg)){g.setAttribute(name, svg.getAttribute(name));}
         g.setAttribute("transform", `translate(${dx}, ${dy})`)
         g.append(...svg.childNodes);
         return g
       }
 
-      function textFromSpan(string, x){
+      function textFromSpan(string, x, isTitle = false){
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.setAttribute("transform", `translate(${x}, 0)`)
-        text.setAttribute("y", "0.32em");
+        if (isTitle){
+          text.setAttribute("dominant-baseline", "middle")
+          text.setAttribute("text-anchor", "middle")
+          text.setAttribute("x", "25%");
+          text.setAttribute("y", "2%");
+        }
         text.append(string);
         return text;
       }
@@ -108,39 +117,76 @@
         return g;
       }
 
-      function gFromObj(obj){
-        const boundingRect = obj.getBoundingClientRect();
+      function gFromObj(obj, lastHeight = 0, layer = 0){
         var childNodes = [];
         var spanCount = 0;
-        for (child of obj.childNodes){
-          var tmpHeight = child.getBoundingClientRect().height;
+        for (const child of obj.childNodes){
           switch(child.tagName){
             case "SPAN":
+              // console.log("SPAN", layer);
+              var tmpHeight = child.getBoundingClientRect().height;
               childNodes.push(gFromSpan(child, spanCount));
               spanCount += 1;
               break;
             case "svg":
+              // console.log("SVG", layer, lastHeight);
+              var tmpHeight = child.getBoundingClientRect().height;
               childNodes.push(gFromSVG(child, lastHeight));
               break;
             case "STYLE":
+              // console.log("STYLE", layer);
+              break;
+            case "DIV":
+              // console.log("DIV", layer);
+              var tmpHeight = child.getBoundingClientRect().height;
+              childNodes.push(...gFromObj(child, lastHeight, layer + 1));
+              break;
+            case "H2":
+              var tmpHeight = child.getBoundingClientRect().height;
+              // console.log("H2", layer, tmpHeight);
+              childNodes.push(textFromSpan(child.textContent, 0, true));
               break;
             default:
-              childNodes.push(...gFromObj(child));
+              // console.log("DEFAULT");
+              break;
           }
           var lastHeight = tmpHeight;
         }
         return childNodes;
       }
 
-      waitForFigure("myplot").then(figure => {
-        const div = document.getElementById("myplot");
+      function gFromGrid(obj, grid){
+        var childNodes = [];
+        var x = 0;
+        var y = 0;
+        var maxHeight = 0;
+        var index = 0;
+        for (const child of obj.childNodes) {
+          if (child.tagName === "DIV"){
+            var height = child.getBoundingClientRect().height;
+            var width = child.childNodes[3].childNodes[0].width.baseVal.value;
+            var maxHeight = (index % grid === 0 && index !== 0) ? height: Math.max(maxHeight, height);
+            var x = (index % grid === 0) ? 0 : x + width;
+            var y = (index % grid === 0 && index !== 0) ? y + maxHeight : y;
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.setAttribute("transform", `translate(${x}, ${y})`)
+            g.append(...gFromObj(child));
+            childNodes.push(g);
+            index += 1;
+          }
+        }
+        return [childNodes, x + width, y + height];
+      }
+
+      waitForFigure("{{ plot_id }}").then(figure => {
+        div = document.getElementById("myplot");
         const svg = figure.childNodes[1];
-        const width = svg.getBoundingClientRect().width;
-        const height = figure.getBoundingClientRect().height;
+        // const width = div.getBoundingClientRect().width;
+        // const height = div.getBoundingClientRect().height;
         
-        const g = gFromObj(div);
+        const [g, width, height] = gFromGrid(div, 2);
         const new_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        for (name of getAttributeNames(svg)){new_svg.setAttribute(name, svg.getAttribute(name));}
+        for (const name of getAttributeNames(svg)){new_svg.setAttribute(name, svg.getAttribute(name));}
         new_svg.setAttribute("width", `${width}`);
         new_svg.setAttribute("height", `${height}`);
         new_svg.setAttribute("viewBox", `0 0 ${width} ${height}`);

@@ -15,7 +15,7 @@ try:
 except:
     JUPYTER_INSTALLED = False
 
-from .utils import FETCH, random_id, wait_function, arrange
+from .utils import FETCH, wait_function, arrange
 from .style import CSS, GRID
 
 def jupyter_environment():
@@ -25,18 +25,24 @@ def jupyter_environment():
     except NameError:
         return False
 
+def get_plot_id(svg, plot):
+    plot_id = None
+    if isinstance(svg, str):
+        for id in plot:
+            if plot[id]["title"] == svg:
+                plot_id = f"plot-{id}"
+                break
+    elif isinstance(svg, int):
+        plot_id = f"plot-{svg}"
+    return plot_id
+
 async def html(data, plot, style=None, fetch=True, svg=None, grid=None):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
     style = CSS(style)
     if isinstance(plot, dict):
         template = env.get_template("grid.html")
-        plot = {random_id(): {"title": title, "code": Markup(code)} for title, code in plot.items()}
-        plot_id = None
-        if svg is not None:
-            for id in plot:
-                if plot[id]["title"] == svg:
-                    plot_id = f"plot-{id}"
-                    break
+        plot = {id: {"title": title, "code": Markup(code)} for id, (title, code) in enumerate(plot.items())}
+        plot_id = get_plot_id(svg, plot)
         if grid is not None:
             style.update(GRID(grid))
         return await template.render_async(
@@ -101,6 +107,6 @@ def render(data, plot, style=None, grid=None):
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True, grid=grid, svg=True)
+            return await html(data, plot, style=style, fetch=True, grid=grid, svg=0)
 
         app.run()
