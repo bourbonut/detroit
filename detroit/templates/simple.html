@@ -17,4 +17,35 @@
   div.append(plot);
   </script>
   {{ get_svg }}
+  <script>
+    var width;
+    var height;
+    function waitForFigure(selector) {
+      return new Promise(resolve => {
+          if (document.getElementById(selector).childNodes[0]) {
+              return resolve(document.getElementById(selector).childNodes[0]);
+          }
+
+          const observer = new MutationObserver(mutations => {
+              if (document.getElementById(selector).childNodes[0]) {
+                  observer.disconnect();
+                  resolve(document.getElementById(selector).childNodes[0]);
+              }
+          });
+
+          observer.observe(document.body, {
+              childList: true,
+              subtree: true
+          });
+      });
+    }
+    waitForFigure("{{ id }}").then(figure => {
+      const div = document.getElementById("myplot");
+      const svg = figure.childNodes[1];
+      const boundingRect = div.getBoundingClientRect();
+      width = {{ width_line }};
+      height = boundingRect.height;
+      {{ code_line }}
+    })
+  </script>
 </body>

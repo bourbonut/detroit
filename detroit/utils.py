@@ -2,14 +2,9 @@ from markupsafe import Markup
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
-async def wait_function(env, id, grid):
+async def load_svg_functions(env):
     template = env.get_template("svg.html")
-    code_line = (
-        "mysvg = makeSVGfromSimple(div, svg);"
-        if grid is None
-        else f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));"
-    )
-    return await template.render_async(code_line=Markup(code_line), id=id)
+    return await template.render_async()
 
 
 def arrange(obj):

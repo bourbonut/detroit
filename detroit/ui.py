@@ -15,7 +15,7 @@ try:
 except:
     JUPYTER_INSTALLED = False
 
-from .utils import FETCH, wait_function, arrange
+from .utils import FETCH, load_svg_functions, arrange
 from .style import CSS, GRID
 
 def jupyter_environment():
@@ -37,18 +37,24 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
         return await template.render_async(
             plot=plot,
             get_data=FETCH if fetch else Markup(f"const data = {data};"),
-            get_svg=Markup(await wait_function(env, id, grid)) if svg else "",
+            get_svg=Markup(await load_svg_functions(env)) if svg else "",
             set_style=str(style),
+            code_line = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else "",
+            width_line = "boundingRect.width",
+            id=id,
         )
     template = env.get_template("simple.html")
     return await template.render_async(
         javascript_code=Markup(plot),
         get_data=FETCH if fetch else Markup(f"const data = {data};"),
-        get_svg=Markup(await wait_function(env, "myplot", grid)) if svg else "",
+        get_svg=Markup(await load_svg_functions(env)) if svg else "",
         set_style=str(style),
+        code_line="mysvg = makeSVGfromSimple(div, svg);" if svg else "",
+        width_line="svg.getBoundingClientRect().width",
+        id="myplot",
     )
 
-async def _save(data, plot, output, style, grid, scale_factor, width, height, svg):
+async def _save(data, plot, output, style, grid, scale_factor, svg):
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
@@ -58,7 +64,10 @@ async def _save(data, plot, output, style, grid, scale_factor, width, height, sv
         if output.suffix == ".png":
             context = await browser.new_context(device_scale_factor=scale_factor)
             page = await context.new_page()
-            await page.set_viewport_size({'width': width, 'height': height})
+            await page.goto(f'file://{input.absolute()}')
+            width = await page.evaluate_handle("width");
+            height = await page.evaluate_handle("height");
+            await page.set_viewport_size({'width': int(float(str(width))), 'height': int(float(str(height)))})
             await page.goto(f'file://{input.absolute()}')
             await page.screenshot(path=output, type='png')
         elif output.suffix == ".pdf":
@@ -78,8 +87,9 @@ async def _save(data, plot, output, style, grid, scale_factor, width, height, sv
         await browser.close()
         input.unlink()
 
-def save(data, plot, output, style=None, grid=None, scale_factor=1, width=640, height=440, svg=None):
-    asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor, width, height, svg))
+def save(data, plot, output, style=None, grid=None, scale_factor=1, svg=None):
+    asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor, svg))
+    return f"{output} saved."
 
 def render(data, plot, style=None, grid=None):
     data = arrange(data)
