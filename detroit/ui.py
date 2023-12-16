@@ -25,37 +25,26 @@ def jupyter_environment():
     except NameError:
         return False
 
-def get_plot_id(svg, plot):
-    plot_id = None
-    if isinstance(svg, str):
-        for id in plot:
-            if plot[id]["title"] == svg:
-                plot_id = f"plot-{id}"
-                break
-    elif isinstance(svg, int):
-        plot_id = f"plot-{svg}"
-    return plot_id
-
-async def html(data, plot, style=None, fetch=True, svg=None, grid=None):
+async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
     style = CSS(style)
     if isinstance(plot, dict):
         template = env.get_template("grid.html")
         plot = {id: {"title": title, "code": Markup(code)} for id, (title, code) in enumerate(plot.items())}
-        plot_id = get_plot_id(svg, plot)
+        id = f"plot-{len(plot) - 1}"
         if grid is not None:
             style.update(GRID(grid))
         return await template.render_async(
             plot=plot,
             get_data=FETCH if fetch else Markup(f"const data = {data};"),
-            get_svg=Markup(await wait_function(env, plot_id)) if plot_id else "",
+            get_svg=Markup(await wait_function(env, id, grid)) if svg else "",
             set_style=str(style),
         )
     template = env.get_template("simple.html")
     return await template.render_async(
         javascript_code=Markup(plot),
         get_data=FETCH if fetch else Markup(f"const data = {data};"),
-        get_svg=Markup(await wait_function(env, "myplot")) if svg else "",
+        get_svg=Markup(await wait_function(env, "myplot", grid)) if svg else "",
         set_style=str(style),
     )
 
@@ -63,7 +52,7 @@ async def _save(data, plot, output, style, grid, scale_factor, width, height, sv
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
-    input.write_text(await html(data, plot, style=style, grid=grid, fetch=False, svg=svg or output.suffix == ".svg"))
+    input.write_text(await html(data, plot, style=style, grid=grid, fetch=False, svg=output.suffix == ".svg"))
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         if output.suffix == ".png":
@@ -78,6 +67,7 @@ async def _save(data, plot, output, style, grid, scale_factor, width, height, sv
             await page.pdf(path=output)
         elif output.suffix == ".svg":
             page = await browser.new_page()
+            await page.set_viewport_size({'width': 2560, 'height': 1440})
             await page.goto(f'file://{input.absolute()}')
             jshandle = await page.evaluate_handle("mysvg")
             output.write_text(str(jshandle))
@@ -107,6 +97,6 @@ def render(data, plot, style=None, grid=None):
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True, grid=grid, svg=0)
+            return await html(data, plot, style=style, fetch=True, grid=grid)
 
         app.run()
