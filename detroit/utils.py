@@ -1,19 +1,11 @@
 from markupsafe import Markup
-import random
-import string
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
-def random_id(k=8):
-    alphabet = string.ascii_lowercase + string.digits
-    return ''.join(random.choices(alphabet, k=8))
-
-async def wait_function(env, id):
+async def load_svg_functions(env):
     template = env.get_template("svg.html")
-    end = ".then(figure => {mysvg = serialize(getSVG(figure))})"
-    return await template.render_async(
-        wait_function=Markup(f"waitForFigure(\"{id}\"){end}")
-    )
+    return await template.render_async()
+
 
 def arrange(obj):
     try:

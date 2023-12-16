@@ -10,10 +10,42 @@
   <div id="myplot"></div>
   <script>{{ get_data }}</script>
   <script type="module">
+  import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
   import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
   const div = document.querySelector("#myplot");
   const plot = {{ javascript_code }}
   div.append(plot);
   </script>
   {{ get_svg }}
+  <script>
+    var width;
+    var height;
+    function waitForFigure(selector) {
+      return new Promise(resolve => {
+          if (document.getElementById(selector).childNodes[0]) {
+              return resolve(document.getElementById(selector).childNodes[0]);
+          }
+
+          const observer = new MutationObserver(mutations => {
+              if (document.getElementById(selector).childNodes[0]) {
+                  observer.disconnect();
+                  resolve(document.getElementById(selector).childNodes[0]);
+              }
+          });
+
+          observer.observe(document.body, {
+              childList: true,
+              subtree: true
+          });
+      });
+    }
+    waitForFigure("{{ id }}").then(figure => {
+      const div = document.getElementById("myplot");
+      const svg = figure.childNodes[1];
+      const boundingRect = div.getBoundingClientRect();
+      width = {{ width_line }};
+      height = boundingRect.height;
+      {{ code_line }}
+    })
+  </script>
 </body>
