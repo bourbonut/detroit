@@ -2,6 +2,24 @@ from markupsafe import Markup
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
+class js:
+    """
+    Useful class to remove quotes when string is represented
+
+    Example
+
+    print([js("(x) => x / 1000")]) # [(x) => x / 1000]
+    # instead of ["(x) => x / 1000"]
+    """
+    def __init__(self, string: str):
+        self.string = string
+
+    def __str__(self):
+        return self.string
+
+    def __repr__(self):
+        return self.string
+
 async def load_svg_functions(env):
     template = env.get_template("svg.html")
     return await template.render_async()

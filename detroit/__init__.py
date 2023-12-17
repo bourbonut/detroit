@@ -1,3 +1,4 @@
-from .plot import Plot, js
+from .plot import Plot
 from .style import Theme, style
 from .ui import render, save
+from .utils import arrange, js

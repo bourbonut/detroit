@@ -174,19 +174,3 @@ class Plot:
 
     def __str__(self):
         return self.content
-
-class js:
-    """
-    Useful class to remove quotes when string is represented
-
-    Example
-
-    print([js("(x) => x / 1000")]) # [(x) => x / 1000]
-    # instead of ["(x) => x / 1000"]
-    """
-    def __init__(self, string: str):
-        self.string = string
-    def __str__(self):
-        return self.string
-    def __repr__(self):
-        return self.string
