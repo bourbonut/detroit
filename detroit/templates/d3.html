@@ -1,0 +1,70 @@
+<!doctype html>
+<head>
+  {% if set_style != "" %}
+  <style>
+    {{ set_style }}
+  </style>
+  {% endif %}
+  <!-- <script src="https://d3js.org/d3.v4.js"></script> -->
+</head>
+<body>
+  <div id="myplot"></div>
+  <script>{{ get_data }}</script>
+  {{ get_svg }}
+  <script type="module">
+  import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+  {{ d3_code }}
+  </script>
+  {% if get_svg != "" %}
+  <script>
+    const xmlns = "http://www.w2.org/2000/xmlns/";
+    const xlinkns = "http://www.w3.org/1999/xlink";
+    const svgns = "http://www.w3.org/2000/svg";
+    var width;
+    var height;
+    var mysvg;
+
+    function serialize(svg) {
+      const fragment = window.location.href + "#";
+      const walker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
+      while (walker.nextNode()) {
+        for (const attr of walker.currentNode.attributes) {
+          if (attr.value.includes(fragment)) {
+            attr.value = attr.value.replace(fragment, "#");
+          }
+        }
+      }
+      const serializer = new window.XMLSerializer;
+      const string = serializer.serializeToString(svg);
+      return string;
+    };
+
+    function waitForFigure(selector) {
+      return new Promise(resolve => {
+          if (document.getElementById(selector).childNodes[0]) {
+              return resolve(document.getElementById(selector).childNodes[0]);
+          }
+
+          const observer = new MutationObserver(mutations => {
+              if (document.getElementById(selector).childNodes[0]) {
+                  observer.disconnect();
+                  resolve(document.getElementById(selector).childNodes[0]);
+              }
+          });
+
+          observer.observe(document.body, {
+              childList: true,
+              subtree: true
+          });
+      });
+    }
+    waitForFigure("myplot").then(svg => {
+      const boundingRect = svg.getBoundingClientRect();
+      width = boundingRect.width;
+      height = boundingRect.height;
+      mysvg = serialize(svg);
+    })
+  {% endif %}
+  </script>
+</body>
+

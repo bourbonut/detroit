@@ -17,6 +17,7 @@ except:
 
 from .utils import FETCH, load_svg_functions, arrange
 from .style import CSS, GRID
+from .d3 import Script
 
 def jupyter_environment():
     try:
@@ -28,7 +29,15 @@ def jupyter_environment():
 async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
     env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
     style = CSS(style)
-    if isinstance(plot, dict):
+    if isinstance(plot, Script):
+        d3_code = "\n".join(map(str, plot.GLOBAL_VARIABLES))
+        template = env.get_template("d3.html")
+        return await template.render_async(
+            set_style = str(style),
+            get_data = Markup(f"const data = {data};"),
+            d3_code = Markup(d3_code),
+        )
+    elif isinstance(plot, dict):
         template = env.get_template("grid.html")
         plot = {id: {"title": title, "code": Markup(code)} for id, (title, code) in enumerate(plot.items())}
         id = f"plot-{len(plot) - 1}"
@@ -43,16 +52,17 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
             width_line = "boundingRect.width",
             id=id,
         )
-    template = env.get_template("simple.html")
-    return await template.render_async(
-        javascript_code=Markup(plot),
-        get_data=FETCH if fetch else Markup(f"const data = {data};"),
-        get_svg=Markup(await load_svg_functions(env)) if svg else "",
-        set_style=str(style),
-        code_line="mysvg = makeSVGfromSimple(div, svg);" if svg else "",
-        width_line="svg.getBoundingClientRect().width",
-        id="myplot",
-    )
+    else:
+        template = env.get_template("simple.html")
+        return await template.render_async(
+            javascript_code=Markup(plot),
+            get_data=FETCH if fetch else Markup(f"const data = {data};"),
+            get_svg=Markup(await load_svg_functions(env)) if svg else "",
+            set_style=str(style),
+            code_line="mysvg = makeSVGfromSimple(div, svg);" if svg else "",
+            width_line="svg.getBoundingClientRect().width",
+            id="myplot",
+        )
 
 async def _save(data, plot, output, style, grid, scale_factor, svg):
     if isinstance(output, str):

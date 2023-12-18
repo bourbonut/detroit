@@ -691,32 +691,31 @@ class svg:
     def __str__(self):
         return self.content
 
-GLOBAL_VARIABLES = []
+class Script:
+
+    GLOBAL_VARIABLES = []
+
+    def __call__(self, *args):
+        if len(args) > 2:
+            raise ValueError("Too many arguments (len(args) > 2)")
+        elif len(args) == 2:
+            self.GLOBAL_VARIABLES.append(str(js(f"var {args[0]} = {args[1]}")))
+            return var(args[0])
+        elif len(args) == 1:
+            self.GLOBAL_VARIABLES.append(str(js(f"{args[0]}")))
+        else:
+            raise ValueError("No argument supplied")
 
 class var:
 
-    def __init__(self, name, value):
+    def __init__(self, name):
         self.name = name
-        self.value = value
-        GLOBAL_VARIABLES.append(self)
-
-    def __str__(self):
-        return str(js(f"var {self.name} = {self.value}"))
 
     def __neg__(self):
         return js(f"-{self.name}")
 
-    def __repr__(self):
-        return str(js(f"{self.name}"))
-
-class line:
-
-    def __init__(self, value):
-        self.value = value
-        GLOBAL_VARIABLES.append(self)
-
     def __str__(self):
-        return str(js(f"{self.value}"))
+        return str(js(f"{self.name}"))
 
     def __repr__(self):
         return str(js(f"{self.name}"))
