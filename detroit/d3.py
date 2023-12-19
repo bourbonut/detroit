@@ -693,7 +693,8 @@ class svg:
 
 class Script:
 
-    GLOBAL_VARIABLES = []
+    def __init__(self):
+        self.GLOBAL_VARIABLES = []
 
     def __call__(self, *args):
         if len(args) > 2:

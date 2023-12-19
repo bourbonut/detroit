@@ -18,6 +18,7 @@ except:
 from .utils import FETCH, load_svg_functions, arrange
 from .style import CSS, GRID
 from .d3 import Script
+from .plot import Plot
 
 def jupyter_environment():
     try:
@@ -37,7 +38,7 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
             get_data = Markup(f"const data = {data};"),
             d3_code = Markup(d3_code),
         )
-    elif isinstance(plot, dict):
+    elif isinstance(plot, dict) and isinstance(plot[list(plot)[0]], Plot):
         template = env.get_template("grid.html")
         plot = {id: {"title": title, "code": Markup(code)} for id, (title, code) in enumerate(plot.items())}
         id = f"plot-{len(plot) - 1}"
@@ -46,6 +47,24 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
         return await template.render_async(
             plot=plot,
             get_data=FETCH if fetch else Markup(f"const data = {data};"),
+            get_svg=Markup(await load_svg_functions(env)) if svg else "",
+            set_style=str(style),
+            code_line = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else "",
+            width_line = "boundingRect.width",
+            id=id,
+        )
+    elif isinstance(plot, dict) and isinstance(plot[list(plot)[0]], Script):
+        template = env.get_template("d3-grid.html")
+        plot = {
+            id: {"title": title, "code": Markup("\n".join(map(str, code.GLOBAL_VARIABLES)))}
+            for id, (title, code) in enumerate(plot.items())
+        }
+        id = f"plot-{len(plot) - 1}"
+        if grid is not None:
+            style.update(GRID(grid))
+        return await template.render_async(
+            plot=plot,
+            get_data=Markup(f"const data = {data};"),
             get_svg=Markup(await load_svg_functions(env)) if svg else "",
             set_style=str(style),
             code_line = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else "",

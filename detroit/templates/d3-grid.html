@@ -1,43 +1,35 @@
 <!doctype html>
+{% if set_style != "" %}
 <head>
-  {% if set_style != "" %}
   <style>
     {{ set_style }}
   </style>
-  {% endif %}
 </head>
+{% endif %}
 <body>
-  <div id="myplot"></div>
+  <div id="myplot" class="container"> 
+  {% for id, plot in plot.items() %}
+    <div>
+      <h2>{{ plot["title"] }}</h1>
+      <div class="plot" id="plot-{{ id }}"></div>
+    </div>
+  {% endfor %}
+  </div>
   <script>{{ get_data }}</script>
-  {{ get_svg }}
   <script type="module">
   import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-  {{ d3_code }}
+  {% for id, obj in plot.items() %}
+  function plot_{{ id }}(){
+    {{ obj["code"] }}
+  }
+  plot_{{ id }}();
+  {% endfor %}
   </script>
-  {% if get_svg != "" %}
+  {{ get_svg }}
   <script>
-    const xmlns = "http://www.w2.org/2000/xmlns/";
-    const xlinkns = "http://www.w3.org/1999/xlink";
-    const svgns = "http://www.w3.org/2000/svg";
     var width;
     var height;
     var mysvg;
-
-    function serialize(svg) {
-      const fragment = window.location.href + "#";
-      const walker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-      while (walker.nextNode()) {
-        for (const attr of walker.currentNode.attributes) {
-          if (attr.value.includes(fragment)) {
-            attr.value = attr.value.replace(fragment, "#");
-          }
-        }
-      }
-      const serializer = new window.XMLSerializer;
-      const string = serializer.serializeToString(svg);
-      return string;
-    };
-
     function waitForFigure(selector) {
       return new Promise(resolve => {
           if (document.getElementById(selector).childNodes[0]) {
@@ -57,13 +49,12 @@
           });
       });
     }
-    waitForFigure("myplot").then(svg => {
-      const boundingRect = svg.getBoundingClientRect();
+    waitForFigure("{{ id }}").then(svg => {
+      const div = document.getElementById("myplot");
+      const boundingRect = div.getBoundingClientRect();
       width = boundingRect.width;
       height = boundingRect.height;
-      mysvg = serialize(svg);
+      {{ code_line }}
     })
   </script>
-  {% endif %}
 </body>
-
