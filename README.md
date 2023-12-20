@@ -1,4 +1,6 @@
-# detroit
+<p align="center">
+    <img style="border-radius:15px" src="docs/logo.png"></img>
+</p>
 
 detroit is wrapper for Python of [d3js](https://d3js.org/) especially focus on [Observable Plot](https://observablehq.com/plot/) in the current version.
 
