@@ -48,6 +48,11 @@ def identify(plot):
             return PlotType.MULTIPLE_PLOTS
         elif all(map(lambda obj: isinstance(obj, Script), objs)):
             return PlotType.MULTIPLE_D3
+    elif isinstance(plot, list):
+        if all(map(lambda obj: isinstance(obj, Plot), plot)):
+            return PlotType.MULTIPLE_PLOTS
+        elif all(map(lambda obj: isinstance(obj, Script), plot)):
+            return PlotType.MULTIPLE_D3
     return PlotType.UNIDENTIFIED
 
 async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
@@ -64,10 +69,16 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
             grid = 1
         else:
             style.update(GRID(grid))
-        code = {
-            id: {"title": title, "code": Markup(code)}
-            for id, (title, code) in enumerate(plot.items())
-        }
+        if isinstance(plot, dict):
+            code = {
+                id: {"title": title, "code": Markup(code)}
+                for id, (title, code) in enumerate(plot.items())
+            }
+        else:
+            code = {
+                id: {"title": "", "code": Markup(code)}
+                for id, code in enumerate(plot)
+            }
         id = f"plot-{len(plot) - 1}"
         width_code = "boundingRect.width"
         serialize_code = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else ""

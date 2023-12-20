@@ -13,7 +13,9 @@
     <div id="myplot" class="container">
     {% for id, plot in code.items() %}
       <div>
+        {% if plot["title"] %}
         <h2>{{ plot["title"] }}</h1>
+        {% endif %}
         <div class="plot" id="plot-{{ id }}"></div>
       </div>
     {% endfor %}
@@ -32,7 +34,7 @@
 {% block wait %}
   waitForFigure("{{ id }}").then(figure => {
     const div = document.getElementById("myplot");
-    const svg = figure.childNodes[1];
+    const svg = figure.childNodes[figure.childNodes.length - 1];
     const boundingRect = div.getBoundingClientRect();
     width = {{ width_code }};
     height = boundingRect.height;

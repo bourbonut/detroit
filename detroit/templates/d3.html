@@ -11,7 +11,9 @@
     <div id="myplot" class="container"> 
     {% for id, plot in code.items() %}
       <div>
+        {% if plot["title"] %}
         <h2>{{ plot["title"] }}</h1>
+        {% endif %}
         <div class="plot" id="plot-{{ id }}"></div>
       </div>
     {% endfor %}

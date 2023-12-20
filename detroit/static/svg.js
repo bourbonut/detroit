@@ -123,7 +123,7 @@ function gFromGrid(obj, grid){
   var index = 0;
   for (const child of obj.childNodes) {
     if (child.tagName === "DIV"){
-      var subchild = child.childNodes[3].childNodes[0];
+      var subchild = Array.from(child.childNodes).filter(c => c.tagName === "DIV")[0].childNodes[0];
       var width = (subchild.tagName === "FIGURE") ? subchild.clientWidth : subchild.width.baseVal.value;
       var height = child.getBoundingClientRect().height;
       var currentMaxHeight = (index % grid === 0 && index !== 0) ? height: Math.max(currentMaxHeight, height);
