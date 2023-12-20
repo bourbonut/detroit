@@ -1,5 +1,5 @@
+from .d3 import Script, d3, function, svg
 from .plot import Plot
 from .style import Theme, style
 from .ui import render, save
-from .utils import arrange, js, Data
-from .d3 import d3, svg, function, Script
+from .utils import Data, arrange, js

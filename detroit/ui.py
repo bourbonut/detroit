@@ -1,16 +1,16 @@
 import asyncio
-from pathlib import Path
 from enum import Enum, auto
+from pathlib import Path
 
-from jinja2 import Environment, ChoiceLoader, PackageLoader, select_autoescape
+from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
 from markupsafe import Markup
 from playwright.async_api import async_playwright
 from quart import Quart, request
 
-from .utils import arrange, Data
-from .style import CSS, GRID
 from .d3 import Script
 from .plot import Plot
+from .style import CSS, GRID
+from .utils import Data, arrange
 
 try:
     import nest_asyncio

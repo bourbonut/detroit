@@ -1,7 +1,7 @@
+import copy
 from collections import namedtuple
 from enum import Enum
 from pathlib import Path
-import copy
 
 CENTER = {"body": {"display": "flex", "justify-content": "center"}}
 GRID = lambda ncol: {

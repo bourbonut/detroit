@@ -1,5 +1,6 @@
 from .utils import js
 
+
 def wrap_method_d3(cls, method):
     """
     Decorator used to generate a method to the `d3` class
