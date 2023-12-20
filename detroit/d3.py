@@ -695,6 +695,7 @@ class Script:
 
     def __init__(self):
         self.code = []
+        self.id = "myplot"
 
     def __call__(self, *args):
         if len(args) > 2:
@@ -706,6 +707,17 @@ class Script:
             self.code.append(str(js(f"{args[0]}")))
         else:
             raise ValueError("No argument supplied")
+
+    @property
+    def plot_id(self):
+        return f"#{self.id}"
+
+    @staticmethod
+    def multiple(nb):
+        for i in range(nb):
+            script = Script()
+            script.id = f"plot-{i}"
+            yield script
 
     def __str__(self):
         return "\n".join(map(str, self.code))
@@ -723,50 +735,6 @@ class var:
 
     def __repr__(self):
         return str(js(f"{self.name}"))
-
-def wrap_method_data(self, method, datum, header):
-    """
-    Decorator used to generate a method to the `Data` class
-    automatically given the class and a name of the method
-    """
-    def wrapper():
-        return Data(datum, method, header)
-    return wrapper()
-
-class Data:
-
-    def __init__(self, data, method=None, header="data"):
-        self.method = method
-        self.header = header
-        self.data = data
-        if isinstance(data, dict):
-            for method, datum in data.items():
-                setattr(self, method, wrap_method_data(self, method, datum, header))
-
-    def __str__(self):
-        if self.method is None:
-            return str(js(f"{self.header}"))
-        return str(js(f"{self.header}.{self.method}"))
-
-    def __repr__(self):
-        return str(js(str(self)))
-
-    def __getitem__(self, item):
-        index = 0 if isinstance(item, str) else item
-        return Data(self.data[index], method=None, header=f"{self.header}.{self.method}[{item}]")
-
-    def __add__(self, item):
-        return f"{self} + {item}"
-
-    def __sub__(self, item):
-        return f"{self} - {item}"
-
-    def __mul__(self, item):
-        return f"{self} * {item}"
-
-    def __div__(self, item):
-        return f"{self} / {item}"
-
 
 class function:
     def __init__(self, *args):

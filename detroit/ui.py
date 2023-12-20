@@ -7,6 +7,11 @@ from markupsafe import Markup
 from playwright.async_api import async_playwright
 from quart import Quart, request
 
+from .utils import arrange, Data
+from .style import CSS, GRID
+from .d3 import Script
+from .plot import Plot
+
 try:
     import nest_asyncio
     nest_asyncio.apply()
@@ -16,10 +21,7 @@ try:
 except:
     JUPYTER_INSTALLED = False
 
-from .utils import FETCH, load_svg_functions, arrange
-from .style import CSS, GRID
-from .d3 import Script
-from .plot import Plot
+FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
 class PlotType:
     SINGLE_PLOT = auto()
