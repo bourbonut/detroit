@@ -55,7 +55,7 @@ def identify(plot):
             return PlotType.MULTIPLE_D3
     return PlotType.UNIDENTIFIED
 
-async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
+async def html(data, plot, style=None, fetch=True, svg=False, grid=1):
     loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
     plot_type = identify(plot)
@@ -65,10 +65,7 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
         raise TypeError("Unsupported type of argument \"plot\"")
     elif plot_type == PlotType.MULTIPLE_D3 or plot_type == PlotType.MULTIPLE_PLOTS:
         single = False
-        if grid is None:
-            grid = 1
-        else:
-            style.update(GRID(grid))
+        style.update(GRID(grid))
         if isinstance(plot, dict):
             code = {
                 id: {"title": title, "code": Markup(code)}
@@ -80,7 +77,7 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
                 for id, code in enumerate(plot)
             }
         id = f"plot-{len(plot) - 1}"
-        width_code = "boundingRect.width"
+        width_code = "boundingRect.width" if grid > 1 else "svg.getBoundingClientRect().width"
         serialize_code = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else ""
     else:
         single = True
@@ -110,7 +107,7 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
         id=id,
     )
 
-async def _save(data, plot, output, style, grid, scale_factor, svg):
+async def _save(data, plot, output, style, grid, scale_factor):
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
@@ -143,11 +140,11 @@ async def _save(data, plot, output, style, grid, scale_factor, svg):
         await browser.close()
         input.unlink()
 
-def save(data, plot, output, style=None, grid=None, scale_factor=1, svg=None):
-    asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor, svg))
+def save(data, plot, output, style=None, grid=1, scale_factor=1):
+    asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor))
     return f"{output} saved."
 
-def render(data, plot, style=None, grid=None):
+def render(data, plot, style=None, grid=1):
     data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
         display(
