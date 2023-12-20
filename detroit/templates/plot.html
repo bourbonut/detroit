@@ -4,11 +4,13 @@
     <div id="myplot"></div>
     <script>{{ data }}</script>
     <script type="module">
-    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-    {{ code }}
+    import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+    const div = document.querySelector("#myplot");
+    const plot = {{ code }}
+    div.append(plot);
     </script>
   {% else %}
-    <div id="myplot" class="container"> 
+    <div id="myplot" class="container">
     {% for id, plot in code.items() %}
       <div>
         <h2>{{ plot["title"] }}</h1>
@@ -18,19 +20,19 @@
     </div>
     <script>{{ data }}</script>
     <script type="module">
-    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+    import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
     {% for id, plot in code.items() %}
-    function plot_{{ id }}(){
-      {{ plot["code"] }}
-    }
-    plot_{{ id }}();
+    const div_{{ id }} = document.querySelector("#plot-{{ id }}");
+    const plot_{{ id }} = {{ plot["code"] }}
+    div_{{ id }}.append(plot_{{ id }});
     {% endfor %}
     </script>
   {% endif %}
 {% endblock %}
 {% block wait %}
-  waitForFigure("{{ id }}").then(svg => {
+  waitForFigure("{{ id }}").then(figure => {
     const div = document.getElementById("myplot");
+    const svg = figure.childNodes[1];
     const boundingRect = div.getBoundingClientRect();
     width = {{ width_code }};
     height = boundingRect.height;

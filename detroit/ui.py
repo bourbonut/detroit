@@ -1,7 +1,8 @@
 import asyncio
 from pathlib import Path
+from enum import Enum, auto
 
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, ChoiceLoader, PackageLoader, select_autoescape
 from markupsafe import Markup
 from playwright.async_api import async_playwright
 from quart import Quart, request
@@ -20,6 +21,13 @@ from .style import CSS, GRID
 from .d3 import Script
 from .plot import Plot
 
+class PlotType:
+    SINGLE_PLOT = auto()
+    MULTIPLE_PLOTS = auto()
+    SINGLE_D3 = auto()
+    MULTIPLE_D3 = auto()
+    UNIDENTIFIED = auto()
+
 def jupyter_environment():
     try:
         shell = get_ipython().__class__.__name__
@@ -27,61 +35,67 @@ def jupyter_environment():
     except NameError:
         return False
 
+def identify(plot):
+    if isinstance(plot, Plot):
+        return PlotType.SINGLE_PLOT
+    elif isinstance(plot, Script):
+        return PlotType.SINGLE_D3
+    elif isinstance(plot, dict):
+        objs = plot.values()
+        if all(map(lambda obj: isinstance(obj, Plot), objs)):
+            return PlotType.MULTIPLE_PLOTS
+        elif all(map(lambda obj: isinstance(obj, Script), objs)):
+            return PlotType.MULTIPLE_D3
+    return PlotType.UNIDENTIFIED
+
 async def html(data, plot, style=None, fetch=True, svg=False, grid=None):
-    env = Environment(loader=PackageLoader("detroit"), autoescape=select_autoescape(), enable_async=True)
+    loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
+    env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
+    plot_type = identify(plot)
     style = CSS(style)
-    if isinstance(plot, Script):
-        d3_code = "\n".join(map(str, plot.GLOBAL_VARIABLES))
-        template = env.get_template("d3.html")
-        return await template.render_async(
-            set_style = str(style),
-            get_data = Markup(f"const data = {data};"),
-            d3_code = Markup(d3_code),
-        )
-    elif isinstance(plot, dict) and isinstance(plot[list(plot)[0]], Plot):
-        template = env.get_template("grid.html")
-        plot = {id: {"title": title, "code": Markup(code)} for id, (title, code) in enumerate(plot.items())}
-        id = f"plot-{len(plot) - 1}"
-        if grid is not None:
+
+    if plot_type == PlotType.UNIDENTIFIED:
+        raise TypeError("Unsupported type of argument \"plot\"")
+    elif plot_type == PlotType.MULTIPLE_D3 or plot_type == PlotType.MULTIPLE_PLOTS:
+        single = False
+        if grid is None:
+            grid = 1
+        else:
             style.update(GRID(grid))
-        return await template.render_async(
-            plot=plot,
-            get_data=FETCH if fetch else Markup(f"const data = {data};"),
-            get_svg=Markup(await load_svg_functions(env)) if svg else "",
-            set_style=str(style),
-            code_line = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else "",
-            width_line = "boundingRect.width",
-            id=id,
-        )
-    elif isinstance(plot, dict) and isinstance(plot[list(plot)[0]], Script):
-        template = env.get_template("d3-grid.html")
-        plot = {
-            id: {"title": title, "code": Markup("\n".join(map(str, code.GLOBAL_VARIABLES)))}
+        code = {
+            id: {"title": title, "code": Markup(code)}
             for id, (title, code) in enumerate(plot.items())
         }
         id = f"plot-{len(plot) - 1}"
-        if grid is not None:
-            style.update(GRID(grid))
-        return await template.render_async(
-            plot=plot,
-            get_data=Markup(f"const data = {data};"),
-            get_svg=Markup(await load_svg_functions(env)) if svg else "",
-            set_style=str(style),
-            code_line = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else "",
-            width_line = "boundingRect.width",
-            id=id,
-        )
+        width_code = "boundingRect.width"
+        serialize_code = f"mysvg = serialize(makeSVGfromGrid(div, svg, {grid}));" if svg else ""
     else:
-        template = env.get_template("simple.html")
-        return await template.render_async(
-            javascript_code=Markup(plot),
-            get_data=FETCH if fetch else Markup(f"const data = {data};"),
-            get_svg=Markup(await load_svg_functions(env)) if svg else "",
-            set_style=str(style),
-            code_line="mysvg = makeSVGfromSimple(div, svg);" if svg else "",
-            width_line="svg.getBoundingClientRect().width",
-            id="myplot",
+        single = True
+        code = Markup(plot)
+        id = "myplot"
+        width_code = "svg.getBoundingClientRect().width"
+        serialize_code=(
+            "mysvg = serialize(svg);"
+            if plot_type == PlotType.SINGLE_D3
+            else "mysvg = serialize(makeSVGfromSimple(div, svg));"
         )
+
+    if plot_type == PlotType.SINGLE_D3 or plot_type == PlotType.MULTIPLE_D3:
+        template = env.get_template("d3.html")
+        data = Markup(f"const data = {data};")
+    else:
+        data = FETCH if fetch else Markup(f"const data = {data};")
+        template = env.get_template("plot.html")
+    return await template.render_async(
+        single = single,
+        code=code,
+        data=data,
+        style=str(style),
+        serialize=svg,
+        serialize_code=serialize_code,
+        width_code=width_code,
+        id=id,
+    )
 
 async def _save(data, plot, output, style, grid, scale_factor, svg):
     if isinstance(output, str):

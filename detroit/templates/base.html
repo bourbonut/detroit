@@ -1,0 +1,23 @@
+<!doctype html>
+{% if style %}
+<head>
+  <style>
+    {{ style }}
+  </style>
+</head>
+{% endif %}
+<body>
+  {% block code %}
+  {% endblock %}
+  <script>
+    var width;
+    var height;
+    {% include 'wait.js' %}
+    {% if serialize %}
+      {% include 'svg.js' %}
+      {% include 'serialize.js' %}
+    {% endif %}
+    {% block wait %}
+    {% endblock %}
+  </script>
+</body>

@@ -694,18 +694,21 @@ class svg:
 class Script:
 
     def __init__(self):
-        self.GLOBAL_VARIABLES = []
+        self.code = []
 
     def __call__(self, *args):
         if len(args) > 2:
             raise ValueError("Too many arguments (len(args) > 2)")
         elif len(args) == 2:
-            self.GLOBAL_VARIABLES.append(str(js(f"var {args[0]} = {args[1]}")))
+            self.code.append(str(js(f"var {args[0]} = {args[1]}")))
             return var(args[0])
         elif len(args) == 1:
-            self.GLOBAL_VARIABLES.append(str(js(f"{args[0]}")))
+            self.code.append(str(js(f"{args[0]}")))
         else:
             raise ValueError("No argument supplied")
+
+    def __str__(self):
+        return "\n".join(map(str, self.code))
 
 class var:
 
