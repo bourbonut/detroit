@@ -8,7 +8,7 @@ def wrap_method_d3(cls, method):
     """
     def wrapper(*args, no_arg=False):
         if no_arg:
-            return d3(f"d3.{method}")
+            return js(f"d3.{method}")
         if len(args) and isinstance(args[0], d3):
             arguments = ", ".join(map(repr, args[1:]))
             return d3(f"{args[0]}.{method}({arguments})")
@@ -365,6 +365,7 @@ class d3:
         "precisionFixed",
         "precisionPrefix",
         "precisionRound",
+        "projection",
         "property",
         "quadtree",
         "quantile",
@@ -401,6 +402,7 @@ class d3:
         "ribbonArrow",
         "rollup",
         "rollups",
+        "scale",
         "scaleBand",
         "scaleDiverging",
         "scaleDivergingLog",
@@ -435,6 +437,7 @@ class d3:
         "selectorAll",
         "shuffle",
         "shuffler",
+        "size",
         "some",
         "sort",
         "stack",
@@ -677,6 +680,7 @@ class svg:
         "data",
         "datum",
         "enter",
+        "join",
         "text",
         "select",
         "selectAll",
