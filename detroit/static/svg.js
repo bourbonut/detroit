@@ -40,10 +40,12 @@ function textFromSpan(string, x, grid, isTitle = false){
   const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
   text.setAttribute("transform", `translate(${x}, 0)`)
   if (isTitle){
+    const style = window.getComputedStyle(document.body);
     text.setAttribute("dominant-baseline", "middle")
     text.setAttribute("text-anchor", "middle")
     text.setAttribute("x", `${50 / grid}%`);
-    text.setAttribute("y", (grid > 1) ? "2%" : "1%");
+    text.setAttribute("y", "1%");
+    text.setAttribute("fill", style.color);
   } else {
     text.setAttribute("y", "0.32em");
   }
