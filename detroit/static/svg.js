@@ -35,6 +35,20 @@ function gSVGFromSpan(svg){
   return g
 }
 
+function gSVGFromRectSVG(svg) {
+  const boundingRect = svg.getBoundingClientRect();
+  const width = boundingRect.width;
+  const height = boundingRect.height;
+  const rect = svg.childNodes[0];
+  rect.setAttribute("width", width);
+  rect.setAttribute("height", height);
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  for (const name of getAttributeNames(svg)){g.setAttribute(name, svg.getAttribute(name));}
+  g.setAttribute("transform", `translate(${width / 2}, ${-height / 2})`)
+  g.append(rect);
+  return g
+}
+
 // Generate a text from a span
 function textFromSpan(string, x, grid, isTitle = false){
   const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -60,15 +74,18 @@ function gFromSpan(span, spanCount, lastHeight){
   const svgBoundingRect = svg.getBoundingClientRect();
   const textBoundingRect = span.getBoundingClientRect();
   const xText = textBoundingRect.width - svgBoundingRect.width;
+  const svgChildNodes = Array.from(svg.childNodes);
+  const onlyRect = svgChildNodes.length === 1 && svgChildNodes[0].tagName === "rect"
 
   var style = window.getComputedStyle(span);
   var dx = int(style.marginLeft) - int(style.marginRight);
 
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  const x = textBoundingRect.width + (textBoundingRect.width - dx) * spanCount;
+
+  const x = (onlyRect) ? (textBoundingRect.width - dx) * spanCount : textBoundingRect.width + (textBoundingRect.width - dx) * spanCount;
   const y = textBoundingRect.height + lastHeight;
   g.setAttribute("transform", `translate(${x}, ${y})`)
-  g.append(gSVGFromSpan(svg));
+  g.append((onlyRect) ? gSVGFromRectSVG(svg) : gSVGFromSpan(svg));
   g.append(textFromSpan(text, xText, 0, false))
   return g;
 }
