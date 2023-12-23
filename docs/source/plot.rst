@@ -144,13 +144,17 @@ For multiple visualizations, a list or a dictionary can be passed to :code:`rend
    for title, method in lle_methods:
        lle = manifold.LocallyLinearEmbedding(method=method, **params)
        points = lle.fit_transform(spoints)
-       # You can name columns as you want
-       df = pl.from_numpy(points, schema=["colx", "coly"]).insert_column(2, pl.Series("color", scolors))
+       df = (
+        # You can name columns as you want
+        pl.from_numpy(points, schema=["colx", "coly"])
+        .insert_column(2, pl.Series("color", scolors)
+       )
        data[method] = arrange(df)
-       plots[title] = Plot.plot({
-           # As long they correspond to "x": "my_column" and "y": "my_second_column"
-           "marks": [Plot.dot(js(f"data.{method}"), {"x": "colx", "y": "coly", "stroke": "color"})],
-       })
+       # As long they correspond to "x": "my_column" and "y": "my_second_column"
+       plots[title] = Plot.dot(
+        js(f"data.{method}"),
+        {"x": "colx", "y": "coly", "stroke": "color"}
+       ).plot()
 
    render(data, plots, grid=2) # grid = number of columns
 

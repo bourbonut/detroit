@@ -3,10 +3,14 @@ def wrap_method(cls, method):
     Decorator used to generate a method to the `Plot` class
     automatically given the class and a name of the method
     """
-    def wrapper(data="", options=None):
-        if options is None:
-            return Plot(f"Plot.{method}({data})")
-        return Plot(f"Plot.{method}({data}, {options})")
+    def wrapper(*args, no_arg=False):
+        if no_arg:
+            return js(f"Plot.{method}")
+        if len(args) and isinstance(args[0], Plot):
+            arguments = ", ".join(map(repr, args[1:]))
+            return Plot(f"{args[0]}.{method}({arguments})")
+        arguments = ", ".join(map(repr, args))
+        return Plot(f"Plot.{method}({arguments})")
     return wrapper
 
 def wrap_methods(cls):
@@ -18,7 +22,6 @@ def wrap_methods(cls):
         setattr(cls, name, wrap_method(cls, name))
     return cls
 
-
 @wrap_methods
 class Plot:
     """
@@ -29,8 +32,17 @@ class Plot:
     Examples
     --------
 
-    >>> print(Plot.plot({"marks": [Plot.frame()]}))
-    Plot.plot({"marks": [Plot.frame()]}
+    >>> from detroit import Plot, js
+    >>> Plot.dot(js("data"), {
+    ...     "x": "Component 1",
+    ...     "y": "Component 2",
+    ...     "stroke": "digit",
+    ...     "symbol": "digit",
+    ... }).plot({
+    ...     "symbol": {"legend": js("true")},
+    ...     "color": {"scheme": "rainbow"},
+    ... })
+    Plot.dot(data, {'x': 'Component 1', 'y': 'Component 2', 'stroke': 'digit', 'symbol': 'digit'}).plot({'symbol': {'legend': true}, 'color': {'scheme': 'rainbow'}})
     """
 
     WRAP_METHODS = [
@@ -115,6 +127,7 @@ class Plot:
         "normalize",
         "normalizeX",
         "normalizeY",
+        "plot",
         "pointer",
         "pointerX",
         "pointerY",
@@ -167,13 +180,6 @@ class Plot:
 
     def __init__(self, content="Plot"):
         self.content = content
-
-    def plot(self, options=None):
-        if isinstance(self, Plot) and options is None:
-            return Plot(f"{self}.plot()")
-        elif options is None:
-            return Plot(f"Plot.plot({self})")
-        return Plot(f"Plot.plot({self}, {options})")
 
     def __repr__(self):
         return self.content

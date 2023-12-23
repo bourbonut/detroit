@@ -151,7 +151,7 @@ async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:boo
 
 async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
     """
-    Save the plot into a `output` file given arguments
+    Save the plot into a `output` file given arguments.
     It supports :
 
     * :code:`.svg` files

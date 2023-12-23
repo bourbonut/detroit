@@ -34,10 +34,11 @@ class Theme(Enum):
     Examples
     --------
     
-    >>> print(Theme.JUPYTER_DARK_CENTER.plot)
-    {"backgroundColor": "#111111", "color": "white"}
-    >>> print(Theme.DARK.style)
-    {"body": {"background": "black", "color": "white"}}
+    >>> from detroit import Theme
+    >>> Theme.JUPYTER_DARK_CENTER.plot
+    {'backgroundColor': '#111111', 'color': 'white'}
+    >>> Theme.DARK.style
+    {'body': {'background': 'black', 'color': 'white'}}
     """
     JUPYTER_DARK = {
         "plot": {"backgroundColor": "#111111", "color": "white"},
@@ -89,6 +90,7 @@ class CSS:
 
     From dictionary:
 
+    >>> from detroit import CSS
     >>> style_dict = {"body": {"background": "black"}}
     >>> print(CSS(style_dict))
     body {
@@ -97,6 +99,7 @@ class CSS:
 
     From string :
 
+    >>> from detroit import CSS
     >>> style_str = \"\"\"body {
     ...     background: black;
     ... }
@@ -108,6 +111,7 @@ class CSS:
 
     From a file:
 
+    >>> from detroit import CSS
     >>> style = CSS("style.css")
     >>> print(style)
     body {
@@ -165,6 +169,7 @@ class CSS:
         Examples
         --------
 
+        >>> from detroit import CSS
         >>> style = CSS("style.css")
         >>> print(style)
         body {

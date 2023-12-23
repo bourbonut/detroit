@@ -29,4 +29,4 @@ PDF
 
 .. warning::
 
-   The page layout is not customizable or can not be changed.
+   The page layout of the PDF is not customizable or can not be changed.

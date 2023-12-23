@@ -1,8 +1,8 @@
 General informations
 ====================
 
-About detroit
--------------
+About :code:`detroit`
+---------------------
 
 :code:`detroit` aims to reproduce `d3js <https://d3js.org/>`_ code and `Observable Plot <https://observablehq.com/plot/>`_ code with Python. However, for some complex applications such as applications which need updates and animations written with :code:`d3`, a pure Javascript code is more appropriate to suit the development of the application.
 
@@ -21,6 +21,42 @@ Also, interactions with buttons or inputs are not yet possible. However it suppo
 .. warning::
 
    :code:`detroit` writes text with `jinja <https://pypi.org/project/Jinja2/>`_. If you have large amount of data, it could crash since the most of browsers can hold a maximum of 2 Gb per tabulation. You should try as much to minimize the data needed for your visualization.
+
+Specific variable names with :code:`detroit`
+--------------------------------------------
+
+There are some specific names that you must use with :code:`detroit`.
+
+Whatever the variable name of your values is (ex: :code:`df`, :code:`mydata`, :code:`results` ...), the name of the data variable for :code:`detroit` is always :code:`"data"`.
+
+.. code:: python
+
+   data = {"colx": [...], "coly": [...], "values": {"colx": [...], "coly": [...]}}
+
+   # OK
+   plot = Plot.dot(js("data"), {"x": "colx", "y": "coly", "stroke": "color"}).plot()
+   plot = Plot.dot(js("data.values"), {"x": "colx", "y": "coly", "stroke": "color"}).plot()
+
+   # Not OK
+   plot = Plot.dot(js("dataframe.values"), {"x": "colx", "y": "coly", "stroke": "color"}).plot()
+   plot = Plot.dot(js("mydata.values"), {"x": "colx", "y": "coly", "stroke": "color"}).plot()
+   plot = Plot.dot(js("volcano_results.values"), {"x": "colx", "y": "coly", "stroke": "color"}).plot()
+
+Also, when doing multiple plots with :code:`d3`, there are specific ids that are built by :code:`Script` and that cannot be changed :
+
+.. code:: python
+
+   script = Script()
+
+   # OK
+   d3.select(script.plot_id)
+
+   # Not OK
+   d3.select("#volcano_id")
+  
+.. note::
+
+   There is no needed ID for :code:`Plot`.
 
 Jupyter integration
 -------------------

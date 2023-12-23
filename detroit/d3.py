@@ -48,8 +48,9 @@ class d3:
     Examples
     --------
 
+    >>> from detroit import d3, js
     >>> d3.axisBottom(js("x")).tickFormat(d3.format(".0f"))
-    d3.axisBottom(x).tickFormat(d3.format(".0f"))
+    d3.axisBottom(x).tickFormat(d3.format('.0f'))
     """
     WRAP_METHODS = [
         "Adder",
@@ -691,8 +692,9 @@ class svg:
     Examples
     --------
 
+    >>> from detroit import svg, js, d3
     >>> svg.append("g").call(d3.axisLeft(js("y")).tickFormat(d3.format(".1f")))
-    svg.append("g").call(d3.axisLeft(y).tickFormat(d3.format(".1f")))
+    svg.append('g').call(d3.axisLeft(y).tickFormat(d3.format('.1f')))
 
     """
 
@@ -727,12 +729,14 @@ class Script:
     Examples
     --------
 
+    >>> from detroit import Script, svg, d3
     >>> script = Script()
     >>> script("svg", d3.select(script.plot_id))
+    svg
     >>> script(svg.append("g"))
     >>> print(script)
-    const svg = d3.select("#myplot")
-    svg.append("g")
+    var svg = d3.select('#myplot')
+    svg.append('g')
     """
 
     def __init__(self):
@@ -787,10 +791,11 @@ class var:
     Examples
     --------
 
+    >>> from detroit.d3 import var
     >>> true = var("true")
-    >>> print([true])
+    >>> [true]
     [true]
-    >>> print(["true"])
+    >>> ["true"]
     ["true"]
     """
 
@@ -813,7 +818,8 @@ class function:
     Examples
     --------
 
-    >>> print(function("d")("x(d.x)"))
+    >>> from detroit import function
+    >>> function("d")("x(d.x)")
     function(d){ return x(d.x); }
     """
     def __init__(self, *args):
