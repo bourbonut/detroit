@@ -4,7 +4,6 @@ from enum import Enum
 from typing import Union, Optional
 from pathlib import Path
 
-CENTER = {"body": {"display": "flex", "justify-content": "center"}}
 GRID = lambda ncol: {
     '.container': {'display': 'grid', 'grid-template-columns': ' '.join(['auto'] * ncol)},
     '.plot': {'display': 'flex', 'justify-content': 'center'},
@@ -12,9 +11,63 @@ GRID = lambda ncol: {
 }
 
 class Theme(Enum):
-    JUPYTER_DARK = "jupyter_dark"
-    JUPYTER_DARK_CENTER = "jupyter_dark_center"
-    DARK = "dark"
+    """
+    Enum class for available themes
+
+    Attributes
+    ----------
+    JUPYTER_DARK : dict
+        Dark Theme for Jupyter Notebook
+
+    JUPYTER_DARK_CENTER : dict
+        Dark Theme for Jupyter Notebook where visualization is centered
+
+    DARK : dict
+        Dark Theme (black and white)
+
+    DARK_CENTER : dict
+        Dark Theme (black and white) where visualization is centered
+
+    CENTER : dict
+        Visualization is centered
+
+    Examples
+    --------
+    
+    >>> print(Theme.JUPYTER_DARK_CENTER.plot)
+    {"backgroundColor": "#111111", "color": "white"}
+    >>> print(Theme.DARK.style)
+    {"body": {"background": "black", "color": "white"}}
+    """
+    JUPYTER_DARK = {
+        "plot": {"backgroundColor": "#111111", "color": "white"},
+        "style": {"body": {"background": "#111111", "color": "white"}},
+    }
+    JUPYTER_DARK_CENTER = {
+        "plot": {"backgroundColor": "#111111", "color": "white"},
+        "style": {"body": {"background": "#111111", "color": "white", "display": "flex", "justify-content": "center"}},
+    }
+    DARK = {
+        "plot": {"backgroundColor": "black", "color": "white"},
+        "style": {"body": {"background": "black", "color": "white"}},
+    }
+    DARK_CENTER = {
+        "plot": {"backgroundColor": "black", "color": "white"},
+        "style": {"body": {"background": "black", "color": "white", "display": "flex", "justify-content": "center"}},
+    }
+    CENTER = {
+        "plot": {},
+        "style": {"body": {"display": "flex", "justify-content": "center"}},
+    }
+
+    @property
+    def plot(self):
+        return self.value["plot"]
+
+    @property
+    def style(self):
+        return self.value["style"]
+
 
 class CSS:
     """
@@ -133,23 +186,3 @@ class CSS:
         copy_ = CSS(copy.copy(self.css))
         copy_.update(css)
         return copy_
-
-def style(theme):
-    """
-    Select a theme from Theme enum
-    """
-    Style = namedtuple("Style", ["plot", "body"])
-    if theme == Theme.JUPYTER_DARK:
-        plot_colors = {"backgroundColor": "#111111", "color": "white"}
-        body_colors = {"body": {"background": "#111111", "color": "white"}}
-        return Style(plot_colors, str(CSS(body_colors)))
-    elif theme == Theme.JUPYTER_DARK_CENTER:
-        plot_colors = {"backgroundColor": "#111111", "color": "white"}
-        body_colors = {"body": {"background": "#111111", "color": "white"}}
-        return Style(plot_colors, str(CSS(body_colors) | CENTER))
-    elif theme == Theme.DARK:
-        plot_colors = {"backgroundColor": "black", "color": "white"}
-        body_colors = {"body": {"background": "black", "color": "white"}}
-        return Style(plot_colors, str(CSS(body_colors)))
-    else:
-        raise ValueError(f"Theme {theme} not available.")

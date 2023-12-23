@@ -71,6 +71,38 @@ With :code:`d3`, it is more complicated, you need to change the colors depending
 
 For general style, your have several options :
 
+Themes
+------
+
+There are four availables themes:
+
+* :code:`JUPYTER_DARK`
+* :code:`JUPYTER_DARK_CENTER`
+* :code:`DARK`
+* :code:`DARK_CENTER`
+* :code:`CENTER`
+
+You can access them by importing :code:`Theme` and you can use the two properties :code:`style` and :code:`Plot`:
+
+.. code:: python
+
+   from detroit import Theme
+
+   theme = Theme.JUPYTER_DARK_CENTER
+
+   plot = Plot.plot({
+    "style": theme.plot,
+    "marks": [
+      ...
+    ]
+   })
+
+  render(data, plot, style=theme.style)
+
+.. note::
+
+   When there are multiple visualizations, they are by default centered vertically.
+
 Dictionary
 **********
 
@@ -137,3 +169,7 @@ Then you only need to indicate the argument :code:`grid` in :code:`render` or :c
 
    render(data, multiple_plots, grid=2)
    save(data, multiple_plots, grid=2)
+
+.. note::
+
+   When there are multiple visualizations, they are by default centered vertically.
