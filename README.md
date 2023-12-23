@@ -10,8 +10,8 @@ detroit is wrapper for Python of [d3js](https://d3js.org/) and [Observable Plot]
 pip install detroit
 ```
 
-Then you will need to install a browser through the Python package :code:`playwright`.
-For the moment, only :code:`chromium` is supported.
+Then you will need to install a browser through the Python package `playwright`.
+For the moment, only `chromium` is supported.
 
 ```sh
 playwright install chromium
@@ -19,10 +19,10 @@ playwright install chromium
 
 # Features
 
-- Write as close as possible :code:`d3` and :code:`Plot` code
+- Write as close as possible `d3` and `Plot` code
 - Render one or multiple plots in your browser or in your jupyter notebook
 - Customize style as you want
-- Save them into :code:`.svg`, :code:`.png` or :code:`.pdf`
+- Save them into `.svg`, `.png` or `.pdf`
 
 # Quick Example
 
