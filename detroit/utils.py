@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, NewType, Optional, Union, Tuple
 from markupsafe import Markup
 
@@ -72,7 +73,7 @@ class Data:
 
     Notes
     -----
-    Use the function `arrange` to convert input values into exploitable structure.
+    Use the function :code:`arrange` to convert input values into exploitable structure.
     """
     def __init__(self, data: dict, method:Optional[str]=None, header:str="data"):
         self.method = method
@@ -80,7 +81,7 @@ class Data:
         self.data = data
         if isinstance(data, dict):
             for method, datum in data.items():
-                setattr(self, method, wrap_method_data(self, method, datum, header))
+                setattr(self, method, Data(datum, method, header))
 
     def __str__(self):
         if self.method is None:
@@ -94,26 +95,31 @@ class Data:
         index = 0 if isinstance(item, str) else item
         return Data(self.data[index], method=None, header=f"{self.header}.{self.method}[{item}]")
 
-    def __add__(self, item):
-        return f"{self} + {item}"
+    def __len__(self):
+        return len(self.data)
 
-    def __sub__(self, item):
-        return f"{self} - {item}"
+    def __iter__(self):
+        return iter(self.data)
 
-    def __mul__(self, item):
-        return f"{self} * {item}"
+    def __contains__(self, item):
+        return item in self.data
 
-    def __div__(self, item):
-        return f"{self} / {item}"
+    @staticmethod
+    def arrange(obj: Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]) -> Data:
+        """
+        Return a :code:`Data` where input is transformed into an exploitable dictionary for the class :code:`Data`
 
-def wrap_method_data(self, method: str, datum: dict, header: str) -> Data:
-    """
-    Decorator used to generate a method to the `Data` class
-    automatically given the class and a name of the method
-    """
-    def wrapper():
-        return Data(datum, method, header)
-    return wrapper()
+        Parameters
+        ----------
+        obj : Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]
+            Input data 
+
+        Returns
+        -------
+        Data
+           :code:`Data` from :code:`obj`
+        """
+        return Data(arrange(obj))
 
 DataInput = Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]
 
