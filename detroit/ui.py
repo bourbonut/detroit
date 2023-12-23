@@ -153,9 +153,10 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     """
     Save the plot into a `output` file given arguments
     It supports :
-    * `.svg` files
-    * `.png` files
-    * `.pdf` files
+
+    * :code:`.svg` files
+    * :code:`.png` files
+    * :code:`.pdf` files
 
     Parameters
     ----------
@@ -170,7 +171,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     grid : int
         number of columns
     scale_factor : float
-        only for `.png` file; the more the number is higher, the more the quality of image will be
+        only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
     if isinstance(output, str):
         output = Path(output)
@@ -208,9 +209,10 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[st
     """
     Save the plot into a `output` file given arguments
     It supports :
-    * `.svg` files
-    * `.png` files
-    * `.pdf` files
+
+    * :code:`.svg` files
+    * :code:`.png` files
+    * :code:`.pdf` files
 
     Parameters
     ----------

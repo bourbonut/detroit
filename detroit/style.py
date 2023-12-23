@@ -1,7 +1,7 @@
 import copy
 from collections import namedtuple
 from enum import Enum
-from typing import Union
+from typing import Union, Optional
 from pathlib import Path
 
 CENTER = {"body": {"display": "flex", "justify-content": "center"}}
@@ -26,9 +26,9 @@ class CSS:
 
     It can merge style together.
 
-    Attributes
+    Parameters
     ----------
-    css : dict
+    css : Optional[Union[str, dict]]
         CSS style stored into dictionary
 
     Examples
@@ -52,22 +52,16 @@ class CSS:
     body {
         background: black;
     }
-    >>> style = CSS("style.css")
 
     From a file:
 
+    >>> style = CSS("style.css")
     >>> print(style)
     body {
         background: black;
     }
-    >>> style.update({"body": {"background": "white", "color": "blue"}})
-    >>> print(style)
-    body {
-      background: white;
-      color: blue;
-    }
     """
-    def __init__(self, css: Union[str, dict]=None):
+    def __init__(self, css: Optional[Union[str, dict]]=None):
         if css is None:
             self.css = {}
         elif isinstance(css, dict):
@@ -106,7 +100,30 @@ class CSS:
         classes = {class_: self.format_attr(attributs) for class_, attributs in self.css.items()}
         return "\n\n".join((f"{class_} {item}" for class_, item in classes.items()))
 
-    def update(self, css):
+    def update(self, css: dict):
+        """
+        Update its style css
+
+        Parameters
+        ----------
+        css : dict
+           style used for update 
+
+        Examples
+        --------
+
+        >>> style = CSS("style.css")
+        >>> print(style)
+        body {
+            background: black;
+        }
+        >>> style.update({"body": {"background": "white", "color": "blue"}})
+        >>> print(style)
+        body {
+          background: white;
+          color: blue;
+        }
+        """
         for common_key in self.css.keys() & css.keys():
             self.css[common_key].update(css[common_key])
         for new_key in css.keys() - self.css.keys():

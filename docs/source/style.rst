@@ -111,7 +111,8 @@ If you don't want to have a separate file, you can also write it into a string :
    style = """body {
     background: black;
     color: white;
-   }"""
+   }
+   """
 
    render(data, plot, style=style)
 

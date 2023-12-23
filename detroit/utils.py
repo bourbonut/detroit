@@ -18,7 +18,7 @@ class js:
     """
     Useful class to remove quotes when string is represented
 
-    Attributes
+    Parameters
     ----------
     string: str
         string to display
@@ -44,14 +44,14 @@ class Data:
     """
     Useful recursive class to simplify syntax when writing Javascript codelike
 
-    Attributes
+    Parameters
     ----------
     data: dict
         data values
     method: Optional[str]
         current method name
     header: str
-        prefix string used as memory string (see examples)
+        prefix string used as memory string (it should not be changed)
 
     Examples
     --------

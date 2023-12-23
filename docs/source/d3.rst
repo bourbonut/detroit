@@ -202,16 +202,17 @@ In order to get multiple visualizations, you must generate multiple :code:`Scrip
     return script
 
    interpolations = {
-   "Turbo color scheme": d3.interpolateTurbo(no_arg=True),
-   "Warm color scheme": d3.interpolateWarm(no_arg=True),
-   "Plasma color scheme": d3.interpolatePlasma(no_arg=True),
-   "Inferno color scheme": d3.interpolateInferno(no_arg=True),
+     "Turbo color scheme": d3.interpolateTurbo(no_arg=True),
+     "Warm color scheme": d3.interpolateWarm(no_arg=True),
+     "Plasma color scheme": d3.interpolatePlasma(no_arg=True),
+     "Inferno color scheme": d3.interpolateInferno(no_arg=True),
    }
 
    length = len(interpolations)
+   iterator = zip(interpolations.items(), Script.multiple(length))
    scripts = {
        title: make_contours(script, interpolation)
-       for (title, interpolation), script in zip(interpolations.items(), Script.multiple(length))
+       for (title, interpolation), script in iterator
    }
    # or without title
    # scripts = [
