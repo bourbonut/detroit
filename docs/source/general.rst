@@ -62,3 +62,6 @@ Jupyter integration
 -------------------
 
 You can use :code:`detroit` directly in your Jupyter notebook and render your visualization.
+
+.. image:: figures/jupyter.png
+   :align: center
