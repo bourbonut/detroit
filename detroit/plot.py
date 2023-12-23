@@ -3,7 +3,7 @@ def wrap_method(cls, method):
     Decorator used to generate a method to the `Plot` class
     automatically given the class and a name of the method
     """
-    def wrapper(data, options=None):
+    def wrapper(data="", options=None):
         if options is None:
             return Plot(f"Plot.{method}({data})")
         return Plot(f"Plot.{method}({data}, {options})")
@@ -22,9 +22,15 @@ def wrap_methods(cls):
 @wrap_methods
 class Plot:
     """
-    Observable Plot wrapper
+    Class which mimick :code:`Plot`
 
-    See documentation on 'https://observablehq.com/plot/getting-started'
+    See `documentation <https://observablehq.com/plot/getting-started>`_.
+
+    Examples
+    --------
+
+    >>> print(Plot.plot({"marks": [Plot.frame()]}))
+    Plot.plot({"marks": [Plot.frame()]}
     """
 
     WRAP_METHODS = [

@@ -1,3 +1,4 @@
+from typing import Any, NewType, Optional, Union, Tuple
 from markupsafe import Markup
 
 try:
@@ -11,14 +12,23 @@ try:
 except:
     PANDAS_INSTALLED = False
 
+DataFrameLike = NewType("DataFrameLike", Any)
+
 class js:
     """
     Useful class to remove quotes when string is represented
 
-    Example
+    Attributes
+    ----------
+    string: str
+        string to display
 
-    print([js("(x) => x / 1000")]) # [(x) => x / 1000]
-    # instead of ["(x) => x / 1000"]
+    Examples
+    --------
+    >>> print(["(x) => x / 1000"])
+    ["(x) => x / 1000"]
+    >>> print([js("(x) => x / 1000")])
+    [(x) => x / 1000]
     """
     def __init__(self, string: str):
         self.string = string
@@ -30,18 +40,41 @@ class js:
         return self.string
 
 
-def wrap_method_data(self, method, datum, header):
-    """
-    Decorator used to generate a method to the `Data` class
-    automatically given the class and a name of the method
-    """
-    def wrapper():
-        return Data(datum, method, header)
-    return wrapper()
-
 class Data:
+    """
+    Useful recursive class to simplify syntax when writing Javascript codelike
 
-    def __init__(self, data, method=None, header="data"):
+    Attributes
+    ----------
+    data: dict
+        data values
+    method: Optional[str]
+        current method name
+    header: str
+        prefix string used as memory string (see examples)
+
+    Examples
+    --------
+    >>> values = {
+    ...     "allzeta": [1],
+    ...     "alldata": [
+    ...         {
+    ...             "key": 1,
+    ...             "values": [{"x": 1, "y": 2}],
+    ...         }
+    ...     ]
+    ... }
+    >>> data = Data(values)
+    >>> print(data.alldata[0].key)
+    data.alldata[0].key
+    >>> print(data.alldata[0].values.data)
+    [{"x": 1, "y": 2}]
+
+    Notes
+    -----
+    Use the function `arrange` to convert input values into exploitable structure.
+    """
+    def __init__(self, data: dict, method:Optional[str]=None, header:str="data"):
         self.method = method
         self.header = header
         self.data = data
@@ -73,8 +106,69 @@ class Data:
     def __div__(self, item):
         return f"{self} / {item}"
 
+def wrap_method_data(self, method: str, datum: dict, header: str) -> Data:
+    """
+    Decorator used to generate a method to the `Data` class
+    automatically given the class and a name of the method
+    """
+    def wrapper():
+        return Data(datum, method, header)
+    return wrapper()
 
-def arrange(obj):
+DataInput = Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]
+
+def arrange(obj: DataInput) -> dict:
+    """
+    Convert input data into an exploitable data structure for future operations
+
+    Parameters
+    ----------
+    obj : DataInput
+       Input data 
+
+    Returns
+    -------
+    dict
+       dictionary containing input data 
+
+    Examples
+    --------
+
+    Using `polars`:
+
+    >>> import polars as pl
+    >>> df = pl.DataFrame(
+    ...     {
+    ...         "A": [1, 2, 3, 4, 5],
+    ...         "fruits": ["banana", "banana", "apple", "apple", "banana"],
+    ...         "B": [5, 4, 3, 2, 1],
+    ...         "cars": ["beetle", "audi", "beetle", "beetle", "beetle"],
+    ...     }
+    ... )
+    >>> arrange(df)
+    [{'A': 1, 'fruits': 'banana', 'B': 5, 'cars': 'beetle'}, {'A': 2, 'fruits': 'banana', 'B': 4, 'cars': 'audi'}, {'A': 3, 'fruits': 'apple', 'B': 3, 'cars': 'beetle'}, {'A': 4, 'fruits': 'apple', 'B': 2, 'cars': 'beetle'}, {'A': 5, 'fruits': 'banana', 'B': 1, 'cars': 'beetle'}]
+
+    Using `pandas`:
+
+    >>> import pandas as pd
+    >>> df = pd.DataFrame(
+    ...     {
+    ...         "A": [1, 2, 3, 4, 5],
+    ...         "fruits": ["banana", "banana", "apple", "apple", "banana"],
+    ...         "B": [5, 4, 3, 2, 1],
+    ...         "cars": ["beetle", "audi", "beetle", "beetle", "beetle"],
+    ...     }
+    ... )
+    >>> arrange(df)
+    [{'A': 1, 'fruits': 'banana', 'B': 5, 'cars': 'beetle'}, {'A': 2, 'fruits': 'banana', 'B': 4, 'cars': 'audi'}, {'A': 3, 'fruits': 'apple', 'B': 3, 'cars': 'beetle'}, {'A': 4, 'fruits': 'apple', 'B': 2, 'cars': 'beetle'}, {'A': 5, 'fruits': 'banana', 'B': 1, 'cars': 'beetle'}]
+
+    Other usages :
+
+    >>> arrange([[1, 2, 3], [4, 5, 6]])
+    [{"x": 1, "y": 4}, {"x": 2, "y": 5}, {"x": 3, "y": 6}]
+    >>> arrange([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    [{"x": 1, "y": 4, "z": 7}, {"x": 2, "y": 5, "z": 8}, {"x": 3, "y": 6, "z": 9}]
+    """
     if POLARS_INSTALLED and isinstance(obj, pl.DataFrame):
         return obj.to_dicts()
     elif PANDAS_INSTALLED and isinstance(obj, pd.DataFrame):

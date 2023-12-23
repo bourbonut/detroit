@@ -34,9 +34,14 @@
 {% block wait %}
   waitForFigure("{{ id }}").then(figure => {
     const div = document.getElementById("myplot");
-    const svg = figure.childNodes[figure.childNodes.length - 1];
+    const svg = (figure.tagName == "FIGURE") ? figure.childNodes[figure.childNodes.length - 1] : figure;
     const boundingRect = div.getBoundingClientRect();
+    console.log(boundingRect.width);
+    console.log(boundingRect.height);
+    console.log(svg.getBoundingClientRect().width);
+    console.log(svg.getBoundingClientRect().height);
     width = {{ width_code }};
+    console.log(width);
     height = boundingRect.height;
     {% if serialize %}
       {{ serialize_code }}

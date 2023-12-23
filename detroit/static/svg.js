@@ -161,9 +161,9 @@ function makeSVGfromGrid(div, svg, grid){
 
 // Generate a new svg from a div containing a svg object
 function makeSVGfromSimple(div, svg){
-  const g = gFromObj(div);
   const width = svg.getBoundingClientRect().width;
   const height = div.getBoundingClientRect().height;
+  const g = gFromObj(div);
   const style = window.getComputedStyle(document.body);
   const new_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   for (const name of getAttributeNames(svg, fullAvoidedAttributes)){new_svg.setAttribute(name, svg.getAttribute(name));}

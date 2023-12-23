@@ -1,6 +1,7 @@
 import asyncio
 from enum import Enum, auto
 from pathlib import Path
+from typing import Union, Dict, List
 
 from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
 from markupsafe import Markup
@@ -10,7 +11,7 @@ from quart import Quart, request
 from .d3 import Script
 from .plot import Plot
 from .style import CSS, GRID
-from .utils import Data, arrange
+from .utils import Data, DataInput, arrange
 
 try:
     import nest_asyncio
@@ -23,6 +24,9 @@ except:
 
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
+JSCode = Union[Plot, Script]
+JSInput = Union[Dict[str, JSCode], List[JSCode]]
+
 class PlotType:
     SINGLE_PLOT = auto()
     MULTIPLE_PLOTS = auto()
@@ -31,13 +35,29 @@ class PlotType:
     UNIDENTIFIED = auto()
 
 def jupyter_environment():
+    """
+    Check if the code is executed in a jupyter environment
+    """
     try:
         shell = get_ipython().__class__.__name__
         return shell == 'ZMQInteractiveShell'
     except NameError:
         return False
 
-def identify(plot):
+def identify(plot: JSInput) -> PlotType:
+    """
+    Identify the type of the plot argument
+
+    Parameters
+    ----------
+    plot : JSInput
+        plot javascript code
+
+    Returns
+    -------
+    PlotType
+        type of the plot
+    """
     if isinstance(plot, Plot):
         return PlotType.SINGLE_PLOT
     elif isinstance(plot, Script):
@@ -55,7 +75,30 @@ def identify(plot):
             return PlotType.MULTIPLE_D3
     return PlotType.UNIDENTIFIED
 
-async def html(data, plot, style=None, fetch=True, svg=False, grid=1):
+async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:bool=True, svg:bool=False, grid:int=1) -> str:
+    """
+    Return HTML content filled by arguments
+
+    Parameters
+    ----------
+    data : DataInput
+        data used for plots
+    plot : JSInput
+        plot javascript code
+    style : Union[str, dict]
+        a file or a dictionary defining a CSS file
+    fetch : bool
+        True if data is fetched by the javascript code else the data is directly written into javascript
+    svg : bool
+        True to get javascript functions to generate a svg object in javascript
+    grid : int
+        number of columns
+
+    Returns
+    -------
+    str
+        HTML content filled by arguments
+    """
     loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
     plot_type = identify(plot)
@@ -90,11 +133,10 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=1):
             else "mysvg = serialize(makeSVGfromSimple(div, svg));"
         )
 
+    data = Markup(f"const data = {data};")
     if plot_type == PlotType.SINGLE_D3 or plot_type == PlotType.MULTIPLE_D3:
         template = env.get_template("d3.html")
-        data = Markup(f"const data = {data};")
     else:
-        data = FETCH if fetch else Markup(f"const data = {data};")
         template = env.get_template("plot.html")
     return await template.render_async(
         single = single,
@@ -107,7 +149,29 @@ async def html(data, plot, style=None, fetch=True, svg=False, grid=1):
         id=id,
     )
 
-async def _save(data, plot, output, style, grid, scale_factor):
+async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
+    """
+    Save the plot into a `output` file given arguments
+    It supports :
+    * `.svg` files
+    * `.png` files
+    * `.pdf` files
+
+    Parameters
+    ----------
+    data : DataInput
+        data used for plots
+    plot : JSInput
+        plot javascript code
+    output : Union[Path, str]
+        output file name
+    style : Union[str, dict]
+        a file or a dictionary defining a CSS file
+    grid : int
+        number of columns
+    scale_factor : float
+        only for `.png` file; the more the number is higher, the more the quality of image will be
+    """
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
@@ -140,11 +204,89 @@ async def _save(data, plot, output, style, grid, scale_factor):
         await browser.close()
         input.unlink()
 
-def save(data, plot, output, style=None, grid=1, scale_factor=1):
+def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[str, dict]=None, grid:int=1, scale_factor:float=1) -> str:
+    """
+    Save the plot into a `output` file given arguments
+    It supports :
+    * `.svg` files
+    * `.png` files
+    * `.pdf` files
+
+    Parameters
+    ----------
+    data : DataInput
+        data used for plots
+    plot : JSInput
+        plot javascript code
+    output : Union[Path, str]
+        output file name
+    style : Union[str, dict]
+        a file or a dictionary defining a CSS file
+    grid : int
+        number of columns
+    scale_factor : float
+        only for :code:`.png` file; the more the number is higher, the more the quality of image will be
+
+    Returns
+    -------
+    str
+        Message which confirms the save of the file
+
+    Examples
+    --------
+
+    >>> df = pl.read_csv("barley.csv")
+    >>> data = Data(arrange(df))
+    >>> color = {"legend": js("true"), "label": "Elevation (m)"}
+    >>> contour = Plot.contour(
+    ...     data.values,
+    ...     {
+    ...         "width": data.width,
+    ...         "height": data.height,
+    ...         "fill": js("Plot.identity"),
+    ...         "stroke": "black"
+    ...     },
+    ... )
+    >>> plot = Plot.plot({"color": , "marks": [contour]})
+    >>> save(df, plot, "figure.png", scale_factor=2)
+    "figure.png" saved.
+    """
     asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor))
     return f"{output} saved."
 
-def render(data, plot, style=None, grid=1):
+def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int=1):
+    """
+    Launch a web application to render plot. In a jupyter environment, display directly the plot.
+
+    Parameters
+    ----------
+    data : DataInput
+        data used for plots
+    plot : JSInput
+        plot javascript code
+    style : Union[str, dict]
+        a file or a dictionary defining a CSS file
+    grid : int
+        number of columns
+
+    Examples
+    --------
+
+    >>> df = pl.read_csv("barley.csv")
+    >>> data = Data(arrange(df))
+    >>> color = {"legend": js("true"), "label": "Elevation (m)"}
+    >>> contour = Plot.contour(
+    ...     data.values,
+    ...     {
+    ...         "width": data.width,
+    ...         "height": data.height,
+    ...         "fill": js("Plot.identity"),
+    ...         "stroke": "black"
+    ...     },
+    ... )
+    >>> plot = Plot.plot({"color": , "marks": [contour]})
+    >>> render(df, plot)
+    """
     data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
         display(

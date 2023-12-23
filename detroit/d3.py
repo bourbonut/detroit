@@ -1,9 +1,10 @@
+from __future__ import annotations
 from .utils import js
-
+from typing import Iterator
 
 def wrap_method_d3(cls, method):
     """
-    Decorator used to generate a method to the `d3` class
+    Decorator used to generate a method to the :code:`d3` class
     automatically given the class and a name of the method
     """
     def wrapper(*args, no_arg=False):
@@ -18,7 +19,7 @@ def wrap_method_d3(cls, method):
 
 def wrap_constant_d3(cls, method):
     """
-    Decorator used to generate a  to the `d3` class
+    Decorator used to generate a  to the :code:`d3` class
     automatically given the class and a name of the method
     """
     def wrapper():
@@ -28,8 +29,8 @@ def wrap_constant_d3(cls, method):
 def wrap_methods_constants(cls):
     """
     Decorator used to generate all methods and constants
-    to the `d3` class automatically based on `d3.WRAP_METHODS`
-    and `d3.WRAP_CONSTANTS`
+    to the :code:`d3` class automatically based on :code:`d3.WRAP_METHODS`
+    and :code:`d3.WRAP_CONSTANTS`
     """
     for name in cls.WRAP_METHODS:
         setattr(cls, name, wrap_method_d3(cls, name))
@@ -39,6 +40,17 @@ def wrap_methods_constants(cls):
 
 @wrap_methods_constants
 class d3:
+    """
+    Class used to mimick javascript syntax for :code:`d3`
+
+    See `documentation <https://d3js.org/getting-started>`_.
+
+    Examples
+    --------
+
+    >>> d3.axisBottom(js("x")).tickFormat(d3.format(".0f"))
+    d3.axisBottom(x).tickFormat(d3.format(".0f"))
+    """
     WRAP_METHODS = [
         "Adder",
         "Delaunay",
@@ -648,7 +660,7 @@ class d3:
 
 def wrap_method_svg(cls, method):
     """
-    Decorator used to generate a method to the `svg` class
+    Decorator used to generate a method to the :code:`svg` class
     automatically given the class and a name of the method
     """
     def wrapper(*args, no_arg=False):
@@ -663,8 +675,8 @@ def wrap_method_svg(cls, method):
 
 def wrap_methods(cls):
     """
-    Decorator used to generate all methods to the `svg` class
-    automatically based on `svg.WRAP_METHODS`
+    Decorator used to generate all methods to the :code:`svg` class
+    automatically based on :code:`svg.WRAP_METHODS`
     """
     for name in cls.WRAP_METHODS:
         setattr(cls, name, wrap_method_svg(cls, name))
@@ -672,6 +684,17 @@ def wrap_methods(cls):
 
 @wrap_methods
 class svg:
+    """
+    Class used to mimick javascript syntax for :code:`svg`
+    that most of the time is presented in online examples
+
+    Examples
+    --------
+
+    >>> svg.append("g").call(d3.axisLeft(js("y")).tickFormat(d3.format(".1f")))
+    svg.append("g").call(d3.axisLeft(y).tickFormat(d3.format(".1f")))
+
+    """
 
     WRAP_METHODS = [
         "append",
@@ -697,6 +720,20 @@ class svg:
         return self.content
 
 class Script:
+    """
+    Class which stores javascript lines of code useful to render
+    or save a visualization with :code:`d3` syntax
+
+    Examples
+    --------
+
+    >>> script = Script()
+    >>> script("svg", d3.select(script.plot_id))
+    >>> script(svg.append("g"))
+    >>> print(script)
+    const svg = d3.select("#myplot")
+    svg.append("g")
+    """
 
     def __init__(self):
         self.code = []
@@ -715,10 +752,26 @@ class Script:
 
     @property
     def plot_id(self):
+        """
+        Return the id formatted for selection
+        """
         return f"#{self.id}"
 
     @staticmethod
-    def multiple(nb):
+    def multiple(nb: int) -> Iterator[Script]:
+        """
+        Generate multiple :code:`Script`
+
+        Parameters
+        ----------
+        nb : int
+            number of script
+
+        Returns
+        -------
+        Iterator[Script]
+            multiple :code:`Script`   
+        """
         for i in range(nb):
             script = Script()
             script.id = f"plot-{i}"
@@ -728,6 +781,18 @@ class Script:
         return "\n".join(map(str, self.code))
 
 class var:
+    """
+    Class only used to avoid writing :code:`js("var_name")`
+
+    Examples
+    --------
+
+    >>> true = var("true")
+    >>> print([true])
+    [true]
+    >>> print(["true"])
+    ["true"]
+    """
 
     def __init__(self, name):
         self.name = name
@@ -742,6 +807,15 @@ class var:
         return str(js(f"{self.name}"))
 
 class function:
+    """
+    Useful class to simplify inline functions
+
+    Examples
+    --------
+
+    >>> print(function("d")("x(d.x)"))
+    function(d){ return x(d.x); }
+    """
     def __init__(self, *args):
         self.args = args
 

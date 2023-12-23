@@ -1,6 +1,7 @@
 import copy
 from collections import namedtuple
 from enum import Enum
+from typing import Union
 from pathlib import Path
 
 CENTER = {"body": {"display": "flex", "justify-content": "center"}}
@@ -16,7 +17,57 @@ class Theme(Enum):
     DARK = "dark"
 
 class CSS:
-    def __init__(self, css=None):
+    """
+    Class which handles style from :
+
+    * file input
+    * string input
+    * dictionary
+
+    It can merge style together.
+
+    Attributes
+    ----------
+    css : dict
+        CSS style stored into dictionary
+
+    Examples
+    --------
+
+    From dictionary:
+
+    >>> style_dict = {"body": {"background": "black"}}
+    >>> print(CSS(style_dict))
+    body {
+      background: black;
+    }
+
+    From string :
+
+    >>> style_str = \"\"\"body {
+    ...     background: black;
+    ... }
+    ... \"\"\"
+    >>> print(CSS(style_str))
+    body {
+        background: black;
+    }
+    >>> style = CSS("style.css")
+
+    From a file:
+
+    >>> print(style)
+    body {
+        background: black;
+    }
+    >>> style.update({"body": {"background": "white", "color": "blue"}})
+    >>> print(style)
+    body {
+      background: white;
+      color: blue;
+    }
+    """
+    def __init__(self, css: Union[str, dict]=None):
         if css is None:
             self.css = {}
         elif isinstance(css, dict):
@@ -67,6 +118,9 @@ class CSS:
         return copy_
 
 def style(theme):
+    """
+    Select a theme from Theme enum
+    """
     Style = namedtuple("Style", ["plot", "body"])
     if theme == Theme.JUPYTER_DARK:
         plot_colors = {"backgroundColor": "#111111", "color": "white"}

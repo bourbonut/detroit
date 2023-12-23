@@ -1,0 +1,11 @@
+detroit.d3
+==========
+
+.. autoclass:: detroit.d3.d3
+.. autoclass:: detroit.d3.function
+.. autoclass:: detroit.d3.Script
+
+   .. automethod:: multiple
+
+.. autoclass:: detroit.d3.svg
+.. autoclass:: detroit.d3.var
