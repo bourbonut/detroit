@@ -1,8 +1,20 @@
 <p align="center">
-    <img style="border-radius:15px" src="docs/source/_static/logo.png"></img>
+    <img style="border-radius:15px" src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/_static/logo.png"></img>
+    <br />
+    <a href="https://pypi.org/project/detroit/">
+        <img src="https://img.shields.io/pypi/v/detroit.svg?style=flat&logo=pypi" alt="PyPI Latest Release">
+    </a>
+    <a href='https://detroit.readthedocs.io/en/latest/?badge=latest'>
+        <img src='https://readthedocs.org/projects/detroit/badge/?version=latest' alt='Documentation Status' />
+    </a>
+    <a href="https://img.shields.io/badge/license-MIT-red.svg?style=flat">
+        <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="BSD-3-Clause">
+    </a>
 </p>
 
 detroit is wrapper for Python of [d3js](https://d3js.org/) and [Observable Plot](https://observablehq.com/plot/).
+
+- [Documentation](https://detroit.readthedocs.io/en/latest/)
 
 # Installation
 
@@ -62,4 +74,6 @@ plot = Plot.plot({
 render(df, plot, style={"body": {"background": "#161b22", "color": "#e6edf3"}})
 ```
 
-![quick](docs/source/figures/quick.png)
+<p align="center">
+    <img src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/figures/quick.png"></img>
+</p>
