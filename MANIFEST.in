@@ -1,0 +1,3 @@
+include detroit/templates/*
+include detroit/static/*
+include detroit/*
