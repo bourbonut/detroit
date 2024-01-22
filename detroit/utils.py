@@ -2,17 +2,6 @@ from __future__ import annotations
 from typing import Any, NewType, Optional, Union, Tuple
 from markupsafe import Markup
 
-try:
-    import polars as pl
-    POLARS_INSTALLED = True
-except:
-    POLARS_INSTALLED = False
-try:
-    import pandas as pd
-    PANDAS_INSTALLED = True
-except:
-    PANDAS_INSTALLED = False
-
 DataFrameLike = NewType("DataFrameLike", Any)
 
 class js:
@@ -175,6 +164,16 @@ def arrange(obj: DataInput) -> dict:
     >>> arrange([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     [{"x": 1, "y": 4, "z": 7}, {"x": 2, "y": 5, "z": 8}, {"x": 3, "y": 6, "z": 9}]
     """
+    try:
+        import polars as pl
+        POLARS_INSTALLED = True
+    except:
+        POLARS_INSTALLED = False
+    try:
+        import pandas as pd
+        PANDAS_INSTALLED = True
+    except:
+        PANDAS_INSTALLED = False
     if POLARS_INSTALLED and isinstance(obj, pl.DataFrame):
         return obj.to_dicts()
     elif PANDAS_INSTALLED and isinstance(obj, pd.DataFrame):

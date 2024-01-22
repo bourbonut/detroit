@@ -3,31 +3,19 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Union, Dict, List
 
-from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
 from markupsafe import Markup
-from playwright.async_api import async_playwright
-from quart import Quart, request
 
 from .d3 import Script
 from .plot import Plot
 from .style import CSS, GRID
 from .utils import Data, DataInput, arrange
 
-try:
-    import nest_asyncio
-    nest_asyncio.apply()
-    from IPython import get_ipython
-    from IPython.display import HTML, display
-    JUPYTER_INSTALLED = True
-except:
-    JUPYTER_INSTALLED = False
-
 FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
 
 JSCode = Union[Plot, Script]
 JSInput = Union[Dict[str, JSCode], List[JSCode]]
 
-class PlotType:
+class PlotType(Enum):
     SINGLE_PLOT = auto()
     MULTIPLE_PLOTS = auto()
     SINGLE_D3 = auto()
@@ -99,6 +87,7 @@ async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:boo
     str
         HTML content filled by arguments
     """
+    from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
     loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
     plot_type = identify(plot)
@@ -173,6 +162,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
+    from playwright.async_api import async_playwright
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
@@ -289,6 +279,15 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
     >>> plot = Plot.plot({"color": , "marks": [contour]})
     >>> render(df, plot)
     """
+    from quart import Quart, request
+    try:
+        import nest_asyncio
+        nest_asyncio.apply()
+        from IPython import get_ipython
+        from IPython.display import HTML, display
+        JUPYTER_INSTALLED = True
+    except:
+        JUPYTER_INSTALLED = False
     data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
         display(
