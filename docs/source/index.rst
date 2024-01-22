@@ -10,6 +10,12 @@ Installation
 
    pip install detroit
 
+To have ..code::`jupyter`, you must add the following dependency :
+
+.. code:: shell
+
+   pip install detroit[jupyter]
+
 Then you will need to install a browser through the Python package :code:`playwright`.
 For the moment, only :code:`chromium` is supported.
 
