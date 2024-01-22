@@ -29,3 +29,6 @@ license = {file = "LICENSE"}
 Homepage="https://github.com/bourbonut/detroit"
 Repository="https://github.com/bourbonut/detroit"
 Documentation="https://detroit.readthedocs.io/en/latest/"
+
+[project.optional-dependencies]
+jupyter = ["notebook", "nest_asyncio"]
