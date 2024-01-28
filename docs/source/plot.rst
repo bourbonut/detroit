@@ -145,15 +145,15 @@ For multiple visualizations, a list or a dictionary can be passed to :code:`rend
        lle = manifold.LocallyLinearEmbedding(method=method, **params)
        points = lle.fit_transform(spoints)
        df = (
-        # You can name columns as you want
-        pl.from_numpy(points, schema=["colx", "coly"])
-        .insert_column(2, pl.Series("color", scolors)
+          # You can name columns as you want
+          pl.from_numpy(points, schema=["colx", "coly"])
+          .insert_column(2, pl.Series("color", scolors)
        )
        data[method] = arrange(df)
        # As long they correspond to "x": "my_column" and "y": "my_second_column"
        plots[title] = Plot.dot(
-        js(f"data.{method}"),
-        {"x": "colx", "y": "coly", "stroke": "color"}
+          js(f"data.{method}"),
+          {"x": "colx", "y": "coly", "stroke": "color"}
        ).plot()
 
    render(data, plots, grid=2) # grid = number of columns

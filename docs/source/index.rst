@@ -10,7 +10,7 @@ Installation
 
    pip install detroit
 
-To have ..code::`jupyter`, you must add the following dependency :
+To have :code:`jupyter`, you must add the following dependency :
 
 .. code:: shell
 
