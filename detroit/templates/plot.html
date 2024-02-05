@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
 {% block code %}
-  {% if single %}
+  {% if single %} {# --------------------------------------------------- Single Plot #}
     <div id="myplot"></div>
+    {% if fetch %} {# --------------------------------------------------- Fetch Data #}
+    <script type="module">
+      import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+      async function build(){
+        const response = await fetch("/data");
+        const data = await response.json();
+        const div = document.querySelector("#myplot");
+        const plot = {{ code }}
+        div.append(plot);
+      }
+      build();
+    </script>
+    {% else %} {# ----------------------------------------------- Data from Scratch #}
     <script>{{ data }}</script>
     <script type="module">
     import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
@@ -9,7 +22,8 @@
     const plot = {{ code }}
     div.append(plot);
     </script>
-  {% else %}
+    {% endif %}
+  {% else %} {# ----------------------------------------------------  Multiple Plot #}
     <div id="myplot" class="container">
     {% for id, plot in code.items() %}
       <div>
@@ -20,6 +34,21 @@
       </div>
     {% endfor %}
     </div>
+    {% if fetch %} {# --------------------------------------------------- Fetch Data #}
+    <script type="module">
+      import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+      async function build(){
+        const response = await fetch("/data");
+        const data = await response.json();
+        {% for id, plot in code.items() %}
+        const div_{{ id }} = document.querySelector("#plot-{{ id }}");
+        const plot_{{ id }} = {{ plot["code"] }}
+        div_{{ id }}.append(plot_{{ id }});
+        {% endfor %}
+      }
+      build();
+    </script>
+    {% else %} {# ----------------------------------------------- Data from Scratch #}
     <script>{{ data }}</script>
     <script type="module">
     import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
@@ -29,9 +58,10 @@
     div_{{ id }}.append(plot_{{ id }});
     {% endfor %}
     </script>
+    {% endif %}
   {% endif %}
 {% endblock %}
-{% block wait %}
+{% block wait %} {# ---------------------------------------------- Wait for figure #}
   waitForFigure("{{ id }}").then(figure => {
     const div = document.getElementById("myplot");
     const svg = (figure.tagName == "FIGURE") ? figure.childNodes[figure.childNodes.length - 1] : figure;

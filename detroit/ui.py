@@ -10,8 +10,6 @@ from .plot import Plot
 from .style import CSS, GRID
 from .utils import Data, DataInput, arrange
 
-FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
-
 JSCode = Union[Plot, Script]
 JSInput = Union[Dict[str, JSCode], List[JSCode]]
 
@@ -76,7 +74,7 @@ async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:boo
     style : Union[str, dict]
         a file or a dictionary defining a CSS file
     fetch : bool
-        True if data is fetched by the javascript code else the data is directly written into javascript
+        True if data is fetched by the javascript code through RESTful API else the data is directly written into javascript
     svg : bool
         True to get javascript functions to generate a svg object in javascript
     grid : int
@@ -122,25 +120,25 @@ async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:boo
             else "mysvg = serialize(makeSVGfromSimple(div, svg));"
         )
 
-    data = Markup(f"const data = {data};")
     if plot_type == PlotType.SINGLE_D3 or plot_type == PlotType.MULTIPLE_D3:
         template = env.get_template("d3.html")
     else:
         template = env.get_template("plot.html")
     return await template.render_async(
-        single = single,
+        single=single,
         code=code,
-        data=data,
+        data=Markup(f"const data = {data};"),
         style=str(style),
         serialize=svg,
         serialize_code=serialize_code,
         width_code=width_code,
         id=id,
+        fetch=fetch,
     )
 
-async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
+async def save_from_url(url: str, output: Path, scale_factor: float):
     """
-    Save the plot into a `output` file given arguments.
+    Save the plot into a `output` file given arguments given the url.
     It supports :
 
     * :code:`.svg` files
@@ -149,11 +147,52 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
 
     Parameters
     ----------
+    url : str
+        URL to browse
+    output : Path
+        output file name
+    scale_factor : float
+        only for :code:`.png` file; the more the number is higher, the more the quality of image will be
+    """
+    from playwright.async_api import async_playwright
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        if output.suffix == ".png":
+            context = await browser.new_context(device_scale_factor=scale_factor)
+            page = await context.new_page()
+            await page.goto(url)
+            width = await page.evaluate_handle("width");
+            height = await page.evaluate_handle("height");
+            await page.set_viewport_size({'width': int(float(str(width))), 'height': int(float(str(height)))})
+            await page.goto(url)
+            await page.screenshot(path=output, type='png')
+        elif output.suffix == ".pdf":
+            page = await browser.new_page()
+            await page.goto(url)
+            await page.pdf(path=output)
+        elif output.suffix == ".svg":
+            page = await browser.new_page()
+            await page.set_viewport_size({'width': 2560, 'height': 1440})
+            await page.goto(url)
+            jshandle = await page.evaluate_handle("mysvg")
+            output.write_text(str(jshandle))
+        else:
+            await browser.close()
+            raise ValueError(f"Unsupported \"{output.suffix}\" file")
+        await browser.close()
+
+async def save_from_file(data: dict, plot: JSInput, output: Path, style: Union[str, dict], grid: int, scale_factor: float):
+    """
+    Save the plot into a `output` file given arguments by primarly writing a temporary file
+    :code:`"~detroit-tmp.html"` which is loaded by the headless browser
+
+    Parameters
+    ----------
     data : DataInput
         data used for plots
     plot : JSInput
         plot javascript code
-    output : Union[Path, str]
+    output : Path
         output file name
     style : Union[str, dict]
         a file or a dictionary defining a CSS file
@@ -162,40 +201,12 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
-    from playwright.async_api import async_playwright
-    if isinstance(output, str):
-        output = Path(output)
     input = Path("~detroit-tmp.html")
     input.write_text(await html(data, plot, style=style, grid=grid, fetch=False, svg=output.suffix == ".svg"))
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        if output.suffix == ".png":
-            context = await browser.new_context(device_scale_factor=scale_factor)
-            page = await context.new_page()
-            await page.goto(f'file://{input.absolute()}')
-            width = await page.evaluate_handle("width");
-            height = await page.evaluate_handle("height");
-            await page.set_viewport_size({'width': int(float(str(width))), 'height': int(float(str(height)))})
-            await page.goto(f'file://{input.absolute()}')
-            await page.screenshot(path=output, type='png')
-        elif output.suffix == ".pdf":
-            page = await browser.new_page()
-            await page.goto(f'file://{input.absolute()}')
-            await page.pdf(path=output)
-        elif output.suffix == ".svg":
-            page = await browser.new_page()
-            await page.set_viewport_size({'width': 2560, 'height': 1440})
-            await page.goto(f'file://{input.absolute()}')
-            jshandle = await page.evaluate_handle("mysvg")
-            output.write_text(str(jshandle))
-        else:
-            await browser.close()
-            input.unlink()
-            raise ValueError(f"Unsupported \"{output.suffix}\" file")
-        await browser.close()
-        input.unlink()
+    await save_from_url(f'file://{input.absolute()}', output, scale_factor)
+    input.unlink()
 
-def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[str, dict]=None, grid:int=1, scale_factor:float=1) -> str:
+def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[str, dict]=None, grid:int=1, scale_factor:float=1, from_file:bool=False) -> str:
     """
     Save the plot into a `output` file given arguments
     It supports :
@@ -218,6 +229,9 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[st
         number of columns
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
+    from_file : bool
+        if :code:`True`, create a temporary file containing all data into an HTML file and save the plot from it;
+        else load data from a RESTful API
 
     Returns
     -------
@@ -243,8 +257,44 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[st
     >>> save(df, plot, "figure.png", scale_factor=2)
     "figure.png" saved.
     """
-    asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor))
-    return f"{output} saved."
+    data = arrange(data)
+    if isinstance(output, str):
+        output = Path(output)
+    if from_file:
+        asyncio.run(save_from_file(data, plot, output, style, grid, scale_factor))
+        return f"{output} saved."
+    else:
+        from quart import Quart
+        from hypercorn.asyncio import serve
+        from hypercorn import Config
+        import logging
+
+        logging.disable(logging.CRITICAL)
+
+        app = Quart("detroit")
+
+        @app.route("/data")
+        async def get_data():
+            return data
+
+        @app.route("/")
+        async def main():
+            return await html(data, plot, style=style, grid=grid, fetch=True, svg=output.suffix == ".svg")
+
+        shutdown_event = asyncio.Event()
+        async def local_save(url: str, output: Path, scale_factor: float):
+            await save_from_url(url, output, scale_factor)
+            shutdown_event.set()
+
+        config = Config()
+        config.bind = ["localhost:5000"]
+
+        loop = asyncio.get_event_loop()
+        loop.create_task(local_save("http://localhost:5000", output, scale_factor))
+        loop.run_until_complete(
+            serve(app, config, shutdown_trigger=shutdown_event.wait)
+        )
+        return f"{output} saved."
 
 def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int=1):
     """
@@ -298,11 +348,11 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
         app = Quart("detroit")
 
         @app.route("/data")
-        def get_data():
+        async def get_data():
             return data
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True, grid=grid)
+            return await html(data, plot, style=style, fetch=True, grid=grid, svg=True)
 
         app.run()
