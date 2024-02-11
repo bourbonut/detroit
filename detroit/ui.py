@@ -162,9 +162,14 @@ async def save_from_url(url: str, output: Path, scale_factor: float):
             page = await context.new_page()
             await page.goto(url)
             width = await page.evaluate_handle("width");
+            while str(width) == "undefined": # wait for loading
+                width = await page.evaluate_handle("width");
             height = await page.evaluate_handle("height");
             await page.set_viewport_size({'width': int(float(str(width))), 'height': int(float(str(height)))})
-            await page.goto(url)
+            await page.reload()
+            width = await page.evaluate_handle("width");
+            while str(width) == "undefined": # wait for loading
+                width = await page.evaluate_handle("width");
             await page.screenshot(path=output, type='png')
         elif output.suffix == ".pdf":
             page = await browser.new_page()
@@ -353,6 +358,6 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True, grid=grid, svg=True)
+            return await html(data, plot, style=style, fetch=True, grid=grid)
 
         app.run()

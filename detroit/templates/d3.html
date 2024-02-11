@@ -1,13 +1,25 @@
 {% extends 'base.html' %}
 {% block code %}
-  {% if single %}
+  {% if single %} {# --------------------------------------------------- Single Plot #}
     <div id="myplot"></div>
+    {% if fetch %} {# --------------------------------------------------- Fetch Data #}
+    <script type="module">
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+      async function build(){
+        const response = await fetch("/data");
+        const data = await response.json();
+        {{ code }}
+      }
+      build();
+    </script>
+    {% else %} {# ----------------------------------------------- Data from Scratch #}
     <script>{{ data }}</script>
     <script type="module">
-    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-    {{ code }}
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+      {{ code }}
     </script>
-  {% else %}
+    {% endif %}
+  {% else %} {# ----------------------------------------------------  Multiple Plot #}
     <div id="myplot" class="container"> 
     {% for id, plot in code.items() %}
       <div>
@@ -18,19 +30,36 @@
       </div>
     {% endfor %}
     </div>
+    {% if fetch %} {# --------------------------------------------------- Fetch Data #}
+    <script type="module">
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+      async function build(){
+        const response = await fetch("/data");
+        const data = await response.json();
+        {% for id, plot in code.items() %}
+        function plot_{{ id }}(){
+          {{ plot["code"] }}
+        }
+        plot_{{ id }}();
+        {% endfor %}
+      }
+      build();
+    </script>
+    {% else %} {# ----------------------------------------------- Data from Scratch #}
     <script>{{ data }}</script>
     <script type="module">
-    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-    {% for id, plot in code.items() %}
-    function plot_{{ id }}(){
-      {{ plot["code"] }}
-    }
-    plot_{{ id }}();
-    {% endfor %}
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+      {% for id, plot in code.items() %}
+      function plot_{{ id }}(){
+        {{ plot["code"] }}
+      }
+      plot_{{ id }}();
+      {% endfor %}
     </script>
+    {% endif %}
   {% endif %}
 {% endblock %}
-{% block wait %}
+{% block wait %} {# ---------------------------------------------- Wait for figure #}
   waitForFigure("{{ id }}").then(svg => {
     const div = document.getElementById("myplot");
     const boundingRect = div.getBoundingClientRect();
