@@ -33,6 +33,16 @@ PDF
    The page layout of the PDF is not customizable or can not be changed.
 
 
+From file
+---------
+
+When :code:`detroit` exports your plot into a file, you have two options to load data :
+
+- :code:`save(..., from_file=True)` indicates that a temporary file will be written (:code:`~detroit.html`) containing all data inside itself.
+  It allows better performance to load data for the headless browser. However for huge amount of data, the temporary file will have a huge size which might cause some loading issues.
+- :code:`save(..., from_file=False)` (default) uses a RESTful API to load the data into the headless browser.
+
+
 Integration with LaTeX
 ----------------------
 
