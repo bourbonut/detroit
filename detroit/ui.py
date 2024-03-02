@@ -174,6 +174,9 @@ async def save_from_url(url: str, output: Path, scale_factor: float):
         elif output.suffix == ".pdf":
             page = await browser.new_page()
             await page.goto(url)
+            width = await page.evaluate_handle("width");
+            while str(width) == "undefined": # wait for loading
+                width = await page.evaluate_handle("width");
             await page.pdf(path=output)
         elif output.suffix == ".svg":
             page = await browser.new_page()
