@@ -306,3 +306,28 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
             return await html(data, plot, style=style, fetch=True, grid=grid)
 
         app.run()
+
+def websocket_render(generator: callable, script: Script, event: str, data = None):
+    from quart import Quart, websocket
+    from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
+
+    app = Quart("detroit")
+
+    @app.websocket("/ws")
+    async def ws():
+        for data in generator():
+            await websocket.send_json(data)
+
+    @app.route("/")
+    async def main():
+        loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
+        env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
+        template = env.get_template("websocket.html")
+        code = Markup(script)
+        return await template.render_async(
+            code=code,
+            event=Markup(event),
+            data = Markup(f"const data = {data.data};") if data is not None else Markup(f"const data = [];")
+        )
+
+    app.run()

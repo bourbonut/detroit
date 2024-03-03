@@ -704,9 +704,13 @@ class svg:
         "call",
         "data",
         "datum",
+        "domain",
+        "duration",
+        "ease",
         "enter",
         "join",
         "text",
+        "transition",
         "select",
         "selectAll",
         "style",
@@ -822,9 +826,35 @@ class function:
     >>> function("d")("x(d.x)")
     function(d){ return x(d.x); }
     """
-    def __init__(self, *args):
+    def __init__(self, *args, name:str=None):
         self.args = args
+        self.name = name
+        self.code = []
+        self.set_signature()
 
-    def __call__(self, arg):
+    def set_signature(self):
         arguments = ", ".join(self.args)
-        return js(f"function({arguments})"+ "{ return " + arg + "; }")
+        if self.name is None:
+            self.signature = f"function({arguments})"
+        else:
+            self.signature = f"function {self.name}({arguments})"
+
+    def __call__(self, *args, return_:bool=False):
+        if len(args) > 2:
+            raise ValueError("Too many arguments (len(args) > 2)")
+        elif len(args) == 2:
+            self.code.append(str(js(f"var {args[0]} = {args[1]}")))
+            return var(args[0])
+        elif len(args) == 1:
+            if return_:
+                self.code.append("return " + str(js(f"{args[0]}")) + ";")
+            else:
+                self.code.append(str(js(f"{args[0]}")))
+        else:
+            raise ValueError("No argument supplied")
+
+    def inline(self, arg):
+        return js(self.signature + "{ return " + arg + "; }")
+
+    def __str__(self):
+        return self.signature + "{\n  " + "\n  ".join(map(str, self.code)) + "\n}"

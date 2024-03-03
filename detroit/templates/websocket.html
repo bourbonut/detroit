@@ -1,0 +1,21 @@
+<!doctype html>
+{% if style %}
+<head>
+  <style>
+    {{ style }}
+  </style>
+</head>
+{% endif %}
+<body>
+  <div id="myplot"></div>
+  <script>{{ data }}</script>
+  <script type="module">
+    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+    {{ code }}
+    let socket = new WebSocket("ws://localhost:5000/ws");
+    socket.onmessage = function(event) {
+      var received_data = JSON.parse(event.data);
+      {{ event }}
+    };
+  </script>
+</body>
