@@ -1,8 +1,8 @@
 import copy
 from collections import namedtuple
 from enum import Enum
-from typing import Union, Optional
 from pathlib import Path
+from typing import Optional, Union
 
 GRID = lambda ncol: {
     '.container': {'display': 'grid', 'grid-template-columns': ' '.join(['auto'] * ncol)},

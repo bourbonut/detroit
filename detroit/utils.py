@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Any, NewType, Optional, Union, Tuple
+
+from typing import Any, NewType, Optional, Tuple, Union
+
 from markupsafe import Markup
 
 DataFrameLike = NewType("DataFrameLike", Any)

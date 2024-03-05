@@ -1,6 +1,9 @@
 from __future__ import annotations
-from .utils import js
+
 from typing import Iterator
+
+from .utils import js
+
 
 def wrap_method_d3(cls, method):
     """

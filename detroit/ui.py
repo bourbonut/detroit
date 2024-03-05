@@ -1,7 +1,7 @@
 import asyncio
 from enum import Enum, auto
 from pathlib import Path
-from typing import Union, Dict, List
+from typing import Dict, Generator, List, Optional, Union
 
 from markupsafe import Markup
 
@@ -63,17 +63,17 @@ def identify(plot: JSInput) -> PlotType:
             return PlotType.MULTIPLE_D3
     return PlotType.UNIDENTIFIED
 
-async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:bool=True, svg:bool=False, grid:int=1) -> str:
+async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, fetch:bool=True, svg:bool=False, grid:int=1, event:Optional[str] = None) -> str:
     """
-    Return HTML content filled by arguments
+    Return HTML content filled by arguments from detroit templates
 
     Parameters
     ----------
-    data : DataInput
+    data : Union[dict, Generator[dict, None, None]]
         data used for plots
     plot : JSInput
         plot javascript code
-    style : Union[str, dict]
+    style : Union[Path, str, dict]
         a file or a dictionary defining a CSS file
     fetch : bool
         True if data is fetched by the javascript code else the data is directly written into javascript
@@ -81,17 +81,33 @@ async def html(data: dict, plot: JSInput, style:Union[str, dict]=None, fetch:boo
         True to get javascript functions to generate a svg object in javascript
     grid : int
         number of columns
+    event: Optional[str]
+        for dynamic update, this javascript code is inserted into the websocket updates
 
     Returns
     -------
     str
         HTML content filled by arguments
     """
-    from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
+    from jinja2 import (ChoiceLoader, Environment, PackageLoader,
+                        select_autoescape)
     loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
     plot_type = identify(plot)
     style = CSS(style)
+
+    if event: # dynamic updates
+        if plot_type != PlotType.SINGLE_D3:
+            raise TypeError("Unsupported plot for dynamic updates")
+        code = Markup(plot)
+        data = Markup(f"const data = {data};" if data else "const data = {};")
+        template = env.get_template("websocket.html")
+        return await template.render_async(
+            code = code,
+            data = data,
+            style = str(style),
+            event = Markup(event),
+        )
 
     if plot_type == PlotType.UNIDENTIFIED:
         raise TypeError("Unsupported type of argument \"plot\"")
@@ -155,7 +171,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
         plot javascript code
     output : Union[Path, str]
         output file name
-    style : Union[str, dict]
+    style : Union[Path, str, dict]
         a file or a dictionary defining a CSS file
     grid : int
         number of columns
@@ -195,7 +211,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
         await browser.close()
         input.unlink()
 
-def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[str, dict]=None, grid:int=1, scale_factor:float=1) -> str:
+def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[Path, str, dict]=None, grid:int=1, scale_factor:float=1) -> str:
     """
     Save the plot into a `output` file given arguments
     It supports :
@@ -212,7 +228,7 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[st
         plot javascript code
     output : Union[Path, str]
         output file name
-    style : Union[str, dict]
+    style : Union[Path, str, dict]
         a file or a dictionary defining a CSS file
     grid : int
         number of columns
@@ -246,7 +262,7 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[st
     asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor))
     return f"{output} saved."
 
-def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int=1):
+def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, grid:int=1):
     """
     Launch a web application to render plot. In a jupyter environment, display directly the plot.
 
@@ -256,7 +272,7 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
         data used for plots
     plot : JSInput
         plot javascript code
-    style : Union[str, dict]
+    style : Union[Path, str, dict]
         a file or a dictionary defining a CSS file
     grid : int
         number of columns
@@ -279,7 +295,7 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
     >>> plot = Plot.plot({"color": , "marks": [contour]})
     >>> render(df, plot)
     """
-    from quart import Quart, request
+    from quart import Quart
     try:
         import nest_asyncio
         nest_asyncio.apply()
@@ -307,27 +323,45 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str]=None, grid:int
 
         app.run()
 
-def websocket_render(generator: callable, script: Script, event: str, data = None):
+def websocket_render(generator: Generator[dict, None, None], script: Script, event: str, style:Union[Path, str, dict]=None, init_data: Optional[DataInput] = None):
+    """
+    Launch a web application to render plot with dynamic updates of data
+    Jupyter environment not supported
+
+    Parameters
+    ----------
+    generator : Generator[dict, None, None]
+        generator function which return new updates of data
+    script : Script
+        plot javascript code (only d3 supported)
+    event : str
+        javascript code called during updates
+    style : Union[Path, str, dict]
+        a file or a dictionary defining a CSS file
+    init_data : Optional[DataInput]
+        initial data before updates
+    """
     from quart import Quart, websocket
-    from jinja2 import ChoiceLoader, Environment, PackageLoader, select_autoescape
+    try:
+        import nest_asyncio
+        nest_asyncio.apply()
+        from IPython import get_ipython
+        from IPython.display import HTML, display
+        JUPYTER_INSTALLED = True
+    except:
+        JUPYTER_INSTALLED = False
+    if JUPYTER_INSTALLED and jupyter_environment():
+        raise EnvironmentError("Dynamic updates in Jupyter environment unsupported")
+    else:
+        app = Quart("detroit")
 
-    app = Quart("detroit")
+        @app.websocket("/ws")
+        async def ws():
+            for data in generator():
+                await websocket.send_json(data)
 
-    @app.websocket("/ws")
-    async def ws():
-        for data in generator():
-            await websocket.send_json(data)
+        @app.route("/")
+        async def main():
+            return await html(data=arrange(init_data), plot=script, style=style, event=event)
 
-    @app.route("/")
-    async def main():
-        loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
-        env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
-        template = env.get_template("websocket.html")
-        code = Markup(script)
-        return await template.render_async(
-            code=code,
-            event=Markup(event),
-            data = Markup(f"const data = {data.data};") if data is not None else Markup(f"const data = [];")
-        )
-
-    app.run()
+        app.run()
