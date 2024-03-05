@@ -10,8 +10,6 @@ from .plot import Plot
 from .style import CSS, GRID
 from .utils import Data, DataInput, arrange
 
-FETCH = Markup("var data;fetch(\"/data\").then(response => response.json()).then(d => {data = d;})")
-
 JSCode = Union[Plot, Script]
 JSInput = Union[Dict[str, JSCode], List[JSCode]]
 
@@ -63,7 +61,7 @@ def identify(plot: JSInput) -> PlotType:
             return PlotType.MULTIPLE_D3
     return PlotType.UNIDENTIFIED
 
-async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, fetch:bool=True, svg:bool=False, grid:int=1, event:Optional[str] = None) -> str:
+async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg:bool=False, grid:int=1, event:Optional[str] = None) -> str:
     """
     Return HTML content filled by arguments from detroit templates
 
@@ -75,8 +73,6 @@ async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, fet
         plot javascript code
     style : Union[Path, str, dict]
         a file or a dictionary defining a CSS file
-    fetch : bool
-        True if data is fetched by the javascript code else the data is directly written into javascript
     svg : bool
         True to get javascript functions to generate a svg object in javascript
     grid : int
@@ -182,7 +178,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     if isinstance(output, str):
         output = Path(output)
     input = Path("~detroit-tmp.html")
-    input.write_text(await html(data, plot, style=style, grid=grid, fetch=False, svg=output.suffix == ".svg"))
+    input.write_text(await html(data, plot, style=style, grid=grid, svg=output.suffix == ".svg"))
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         if output.suffix == ".png":
@@ -307,7 +303,7 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, gr
     data = arrange(data)
     if JUPYTER_INSTALLED and jupyter_environment():
         display(
-            HTML(asyncio.run(html(data, plot, style=style, fetch=False, grid=grid))),
+            HTML(asyncio.run(html(data, plot, style=style, grid=grid))),
             metadata={"isolated": True}
         )
     else:
@@ -319,7 +315,7 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, gr
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, fetch=True, grid=grid)
+            return await html(data, plot, style=style, grid=grid)
 
         app.run()
 
