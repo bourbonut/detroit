@@ -336,6 +336,39 @@ def websocket_render(generator: Generator[dict, None, None], script: Script, eve
         a file or a dictionary defining a CSS file
     init_data : Optional[DataInput]
         initial data before updates
+
+    Examples
+    --------
+
+    Check :ref:`the full example<Update Guide>` for more information
+
+    >>> update = function("data", "xmax", name="update")
+    >>> update(d3(content="x").domain([0, js("xmax")]).nice())
+    >>> update(svg.selectAll("g.xaxis").call(d3.axisBottom(x)))
+    >>> update(
+    ...     svg(content="line").datum(data)
+    ...       .attr("d", d3.line()
+    ...       .x(function("d").inline("x(d.x)"))
+    ...       .y(function("d").inline("y(d.y)"))
+    ...     )
+    ... )
+    >>> script(update)
+    >>> def generator():
+    ...     s = 1000
+    ...     istep = 4 * pi / 1000
+    ...     xv = [istep * i for i in range(1000)]
+    ...     yv = list(map(sin, xv))
+    ...     for i in range(1000):
+    ...         xmax = istep * (s + i)
+    ...         xv.append(xmax)
+    ...         yv.append(sin(istep * (s + i)))
+    ...         yield {"values": arrange([xv, yv]), "xmax": xmax}
+    >>> websocket_render(
+    ...     generator,
+    ...     script,
+    ...     event=js("update(received_data.values, received_data.xmax);"),
+    ...     init_data=data
+    ... )
     """
     from quart import Quart, websocket
     try:
