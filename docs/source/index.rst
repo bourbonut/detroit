@@ -83,14 +83,7 @@ Quick Example
    general
    d3
    plot
+   update
    style
    export
    api/index
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
