@@ -9,9 +9,9 @@ import detroit
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'detroit'
-copyright = '2023, bourbonut'
+copyright = '2024, bourbonut'
 author = 'bourbonut'
-release = '1.0.0'
+release = '1.0.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -19,6 +19,7 @@ release = '1.0.0'
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinxcontrib.video",
 ]
 
 templates_path = ['_templates']
@@ -39,6 +40,10 @@ html_theme_options = {
     "light_logo": "light-logo.svg",
     "dark_logo": "dark-logo.svg",
 }
+
+html_css_files = [
+    'css/style.css',
+]
 
 html_title = f"Detroit v{detroit.__version__}"
 

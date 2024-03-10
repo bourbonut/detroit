@@ -1,6 +1,6 @@
 .. _Update Guide:
 
-Update Visualization Guide
+Visualization Update Guide
 ==========================
 
 `Observable Plot <https://observablehq.com/plot/>`_ does not offer an easy way to update dynamically the visualization. Currently, the only way for updating a :code:`Plot` is by `following this example <https://observablehq.com/@fil/plot-animate-a-bar-chart/2>`_.
@@ -12,6 +12,9 @@ Example
 -------
 
 The goal of this example is to update a sine wave by adding new values.
+
+Render visualization
+********************
 
 First we create a :code:`Script` class :
 
@@ -124,3 +127,31 @@ Finally, you must inform how your plot must be updated :
       event=event,
       init_data=data, # optional
     )
+
+Save visualization
+******************
+
+Replace the :code:`websocket_render` by the function :code:`websocket_save` :
+
+.. code:: python
+
+    from detroit import websocket_save
+
+    websocket_render(
+      generator,
+      script,
+      event=event,
+      init_data=data, # optional
+      record_video_dir="videos/",
+      time=2000,
+      width=660,
+      height=420,
+    )
+
+Output
+******
+
+.. video:: _static/sinus.webm
+    :loop:
+    :autoplay:
+    :class: sinus-video
