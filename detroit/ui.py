@@ -258,6 +258,97 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[Pa
     asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor))
     return f"{output} saved."
 
+def websocket_save(generator: Generator[dict, None, None], script: Script, event: str, style:Union[Path, str, dict]=None, init_data: Optional[DataInput] = None, record_video_dir:str="videos/", time:int = 2000, width:int = 660, height:int = 420, verbose=False) -> str:
+    """
+    Record the rendering into a headless browser and
+    save the video as :code:`.webm` in :code:`record_video_dir`.
+
+    Parameters
+    ----------
+    generator : Generator[dict, None, None]
+        Generator function which return new updates of data
+    script : Script
+        Plot javascript code (only d3 supported)
+    event : str
+        Javascript code called during updates
+    style : Union[Path, str, dict]
+        A file or a dictionary defining a CSS file
+    init_data : Optional[DataInput]
+        Initial data before updates
+    record_video_dir : str
+        Directory where videos are saved
+    time : int
+        Timeout to wait
+    width : int
+        Width of the video
+    height : int
+        Height of the video
+    verbose :
+        True to enable logging
+
+    Returns
+    -------
+    str
+        Message which confirms the save of the file
+
+    Examples
+    --------
+
+    Check :ref:`the full example<Update Guide>` for more information
+
+    >>> websocket_save(
+    ...     generator,
+    ...     script,
+    ...     event=js("update(received_data.values, received_data.xmax);"),
+    ...     init_data=data,
+    ... )
+    """
+    from quart import Quart, websocket
+    from hypercorn.asyncio import serve
+    from hypercorn import Config
+    from playwright.async_api import async_playwright
+    import logging
+
+    if not verbose:
+        logging.disable(logging.CRITICAL)
+
+    app = Quart("detroit")
+
+    @app.websocket("/ws")
+    async def ws():
+        for data in generator():
+            await websocket.send_json(data)
+
+    @app.route("/")
+    async def main():
+        return await html(data=arrange(init_data), plot=script, style=style, event=event)
+
+    shutdown_event = asyncio.Event()
+    async def local_save(url: str):
+        async with async_playwright() as p:
+            browser = await p.chromium.launch()
+            context = await browser.new_context(
+                record_video_dir=record_video_dir,
+                viewport={"width": width, "height": height}
+            )
+            page = await context.new_page()
+            await page.goto(url)
+            await page.wait_for_timeout(time)
+            await page.close()
+            await context.close()
+            await browser.close()
+        shutdown_event.set()
+
+    config = Config()
+    config.bind = ["localhost:5000"]
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(local_save("http://localhost:5000"))
+    loop.run_until_complete(
+        serve(app, config, shutdown_trigger=shutdown_event.wait)
+    )
+    return f"Video saved."
+
 def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, grid:int=1):
     """
     Launch a web application to render plot. In a jupyter environment, display directly the plot.
@@ -327,15 +418,15 @@ def websocket_render(generator: Generator[dict, None, None], script: Script, eve
     Parameters
     ----------
     generator : Generator[dict, None, None]
-        generator function which return new updates of data
+        Generator function which return new updates of data
     script : Script
-        plot javascript code (only d3 supported)
+        Plot javascript code (only d3 supported)
     event : str
-        javascript code called during updates
+        Javascript code called during updates
     style : Union[Path, str, dict]
-        a file or a dictionary defining a CSS file
+        A file or a dictionary defining a CSS file
     init_data : Optional[DataInput]
-        initial data before updates
+        Initial data before updates
 
     Examples
     --------
