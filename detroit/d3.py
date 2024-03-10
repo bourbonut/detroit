@@ -791,6 +791,31 @@ class Script:
     def __str__(self):
         return "\n".join(map(str, self.code))
 
+def wrap_method_var(cls, method):
+    """
+    Decorator used to generate a method to the :code:`svg` class
+    automatically given the class and a name of the method
+    """
+    def wrapper(*args, no_arg=False):
+        if no_arg:
+            return var(f"{args[0]}.{method}")
+        if len(args) and isinstance(args[0], var):
+            arguments = ", ".join(map(repr, args[1:]))
+            return var(f"{args[0]}.{method}({arguments})")
+        arguments = ", ".join(map(repr, args))
+        return var(f"{args[0]}.{method}({arguments})")
+    return wrapper
+
+def wrap_methods(cls):
+    """
+    Decorator used to generate all methods to the :code:`var` class
+    automatically based on :code:`var.WRAP_METHODS`
+    """
+    for name in cls.WRAP_METHODS:
+        setattr(cls, name, wrap_method_var(cls, name))
+    return cls
+
+@wrap_methods
 class var:
     """
     Class only used to avoid writing :code:`js("var_name")`
@@ -806,17 +831,19 @@ class var:
     ["true"]
     """
 
+    WRAP_METHODS = d3.WRAP_METHODS + svg.WRAP_METHODS
+
     def __init__(self, name):
-        self.name = name
+        self.content = name
 
     def __neg__(self):
-        return js(f"-{self.name}")
+        return js(f"-{self.content}")
 
     def __str__(self):
-        return str(js(f"{self.name}"))
+        return str(js(f"{self.content}"))
 
     def __repr__(self):
-        return str(js(f"{self.name}"))
+        return str(js(f"{self.content}"))
 
 class function:
     """
@@ -861,3 +888,7 @@ class function:
 
     def __str__(self):
         return self.signature + "{\n  " + "\n  ".join(map(str, self.code)) + "\n}"
+
+    def call(self, *args):
+        arguments = ", ".join(map("received_data.{}".format, args))
+        return js(f"{self.name}({arguments})")
