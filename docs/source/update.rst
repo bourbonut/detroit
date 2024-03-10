@@ -82,15 +82,13 @@ Then we add a function to update our values in our plot :
     # Create `function update(data, xmax){...}` in javascript
     update = function("data", "xmax", name="update")
 
-    # Replace the word "d3" by "x" and
-    # update the domain given the `xmax` value
-    update(d3(content="x").domain([0, js("xmax")]).nice())
+    # Update the domain given the `xmax` value
+    update(x.domain([0, js("xmax")]).nice())
     update(svg.selectAll("g.xaxis").call(d3.axisBottom(x)))
 
-    # Replace the word "svg" by "line" and
-    # update new data
+    # Update new data
     update(
-        svg(content="line").datum(data)
+        line.datum(data)
           .attr("d", d3.line()
           .x(function("d").inline("x(d.x)"))
           .y(function("d").inline("y(d.y)"))
@@ -119,7 +117,7 @@ Finally, you must inform how your plot must be updated :
 
 .. code:: python
 
-    event = js("update(received_data.values, received_data.xmax);")
+    event = update.call("values", "xmax")
 
     websocket_render(
       generator,
