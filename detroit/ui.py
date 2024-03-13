@@ -258,7 +258,18 @@ def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[Pa
     asyncio.run(_save(arrange(data), plot, output, style, grid, scale_factor))
     return f"{output} saved."
 
-def websocket_save(generator: Generator[dict, None, None], script: Script, event: str, style:Union[Path, str, dict]=None, init_data: Optional[DataInput] = None, record_video_dir:str="videos/", time:int = 2000, width:int = 660, height:int = 420, verbose=False) -> str:
+def websocket_save(
+    generator: Generator[dict, None, None],
+    script: Script,
+    event: str,
+    style:Union[Path, str, dict]=None,
+    init_data: Optional[DataInput] = None,
+    record_video_dir:str="videos/",
+    time:int = 2000,
+    width:int = 660,
+    height:int = 420,
+    verbose=False,
+) -> str:
     """
     Record the rendering into a headless browser and
     save the video as :code:`.webm` in :code:`record_video_dir`.
@@ -266,25 +277,25 @@ def websocket_save(generator: Generator[dict, None, None], script: Script, event
     Parameters
     ----------
     generator : Generator[dict, None, None]
-        Generator function which return new updates of data
+        generator function which return new updates of data
     script : Script
-        Plot javascript code (only d3 supported)
+        plot javascript code (only d3 supported)
     event : str
-        Javascript code called during updates
+        javascript code called during updates
     style : Union[Path, str, dict]
-        A file or a dictionary defining a CSS file
+        a file or a dictionary defining a CSS file
     init_data : Optional[DataInput]
-        Initial data before updates
+        initial data before updates
     record_video_dir : str
-        Directory where videos are saved
+        directory where videos are saved
     time : int
-        Timeout to wait
+        timeout to wait
     width : int
-        Width of the video
+        width of the video
     height : int
-        Height of the video
+        height of the video
     verbose :
-        True to enable logging
+        :code:`True` to enable logging
 
     Returns
     -------
