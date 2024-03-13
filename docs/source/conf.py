@@ -11,7 +11,7 @@ import detroit
 project = 'detroit'
 copyright = '2024, bourbonut'
 author = 'bourbonut'
-release = '1.0.3'
+release = detroit.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
