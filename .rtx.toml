@@ -1,8 +1,0 @@
-[tools]
-python = {version="3.9", virtualenv=".venv"}
-
-[plugins]
-python = "https://github.com/jdx/rtx-python"
-
-[settings]
-verbose = true
