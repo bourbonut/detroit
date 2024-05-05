@@ -84,6 +84,7 @@ Quick Example
    d3
    plot
    update
+   templates
    style
    export
    api/index
