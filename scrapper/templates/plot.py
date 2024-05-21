@@ -1,3 +1,6 @@
+from functools import partial
+from operator import is_not
+
 class Plot:
     def __init__(self, content="Plot"):
         self.content = content
@@ -12,6 +15,10 @@ class Plot:
     def {{ name }}({{ args }}):
         """
         {{ docstring }}
-        """
-        return Plot(f"Plot.{{ name }}({{ format_args }})")
+        """{% if format_args %}
+        arguments = ", ".join(map(str, filter(partial(is_not, None), ({{ format_args }}))))
+        return Plot(f"Plot.{{ name }}({arguments})")
+{% else %}
+        return Plot(f"Plot.{{ name }}()")
+{% endif %}
 {% endfor %}

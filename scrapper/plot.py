@@ -86,14 +86,15 @@ async def make_method(method, client):
     elif "..." in head:
         name = signature[1]
         args = signature[2]
-        format_args = (f"', '.join(map(str, {arg.replace('...', '')}))" for arg in args.split(", ") if "..." in arg)
-        format_args = "{" + "}, {".join(format_args) + "}"
+        format_args = args.replace("...", "")
+        # format_args = (f"', '.join(map(str, {arg.replace('...', '')}))" for arg in args.split(", ") if "..." in arg)
+        # format_args = "{" + "}, {".join(format_args) + "}"
         args = args.replace("...", "*")
     else:
         name = signature[1]
-        args = signature[2]
-        format_args = "{" + "}, {".join(args.split(", "))+ "}"
-        args = ", ".join((f"{arg}=None" for arg in args.split(", ")))
+        format_args = signature[2]
+        # format_args = "{" + "}, {".join(args.split(", "))+ "}"
+        args = ", ".join((f"{arg}=None" for arg in format_args.split(", ")))
     docstring = "\n".join(strings) + f"\nSee more informations `here` <{method.url}>`_."
     docstring = "\n        ".join(docstring.split("\n"))
     return (name, args, format_args, docstring)
