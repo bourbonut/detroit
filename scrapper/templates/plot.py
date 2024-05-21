@@ -7,10 +7,11 @@ class Plot:
 
     def __str__(self):
         return self.content
-    {% for name, args, format_args, docstring in methods %}
-    def {{ name }}(self, {{ args }}):
+{% for name, args, format_args, docstring in methods %}
+    @staticmethod
+    def {{ name }}({{ args }}):
         """
         {{ docstring }}
         """
         return Plot(f"Plot.{{ name }}({{ format_args }})")
-    {% endfor %}
+{% endfor %}

@@ -10,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 
 Method = namedtuple("Method", ["name", "url"])
-SIGNATURE = re.compile(r"([a-zA-Z]*)\((.*)\)")
+SIGNATURE = re.compile(r"([a-zA-Z0-9]*)\((.*)\)")
 
 def get_methods():
     """
@@ -83,10 +83,17 @@ async def make_method(method, client):
         name = head.split(" ^")[0]
         args = ""
         format_args = ""
+    elif "..." in head:
+        name = signature[1]
+        args = signature[2]
+        format_args = (f"', '.join(map(str, {arg.replace('...', '')}))" for arg in args.split(", ") if "..." in arg)
+        format_args = "{" + "}, {".join(format_args) + "}"
+        args = args.replace("...", "*")
     else:
         name = signature[1]
         args = signature[2]
         format_args = "{" + "}, {".join(args.split(", "))+ "}"
+        args = ", ".join((f"{arg}=None" for arg in args.split(", ")))
     docstring = "\n".join(strings) + f"\nSee more informations `here` <{method.url}>`_."
     docstring = "\n        ".join(docstring.split("\n"))
     return (name, args, format_args, docstring)
@@ -108,7 +115,7 @@ async def make_template():
 
 async def main():
     async with httpx.AsyncClient() as client:
-        for string in (await make_method(Method(name='identity', url='https://observablehq.com/plot/features/transforms#identity'), client)):
-            print(string)
+        for string in (await make_method(Method(name='marks', url='https://observablehq.com/plot/features/marks#marks'), client)):
+            print(f"{string!r}")
 
 asyncio.run(make_template())
