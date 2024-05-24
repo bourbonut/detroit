@@ -1,4 +1,3 @@
-import requests
 import httpx
 from bs4 import BeautifulSoup
 from collections import namedtuple
@@ -16,7 +15,7 @@ def get_methods():
     """
     Get methods from the API index
     """
-    response = requests.get("https://observablehq.com/plot/api")
+    response = httpx.get("https://observablehq.com/plot/api")
     soup = BeautifulSoup(response.text, "lxml")
     for link in soup.find("main", {"class": "main"}).find("ul").find_all("a"):
         yield Method(link.text, f"https://observablehq.com/plot/{link['href']}")
@@ -119,4 +118,4 @@ async def main():
         for string in (await make_method(Method(name='marks', url='https://observablehq.com/plot/features/marks#marks'), client)):
             print(f"{string!r}")
 
-asyncio.run(make_template())
+# asyncio.run(make_template())

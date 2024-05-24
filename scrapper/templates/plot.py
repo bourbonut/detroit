@@ -2,7 +2,27 @@ from functools import partial
 from operator import is_not
 
 class Plot:
-    def __init__(self, content="Plot"):
+    """
+    Class which mimick :code:`Plot`
+
+    See `documentation <https://observablehq.com/plot/getting-started>`_.
+
+    Examples
+    --------
+
+    >>> from detroit import Plot, js
+    >>> Plot.dot(js("data"), {
+    ...     "x": "Component 1",
+    ...     "y": "Component 2",
+    ...     "stroke": "digit",
+    ...     "symbol": "digit",
+    ... }).plot({
+    ...     "symbol": {"legend": js("true")},
+    ...     "color": {"scheme": "rainbow"},
+    ... })
+    Plot.dot(data, {'x': 'Component 1', 'y': 'Component 2', 'stroke': 'digit', 'symbol': 'digit'}).plot({'symbol': {'legend': true}, 'color': {'scheme': 'rainbow'}})
+    """
+    def __init__(self, content: str = "Plot"):
         self.content = content
 
     def __repr__(self):
