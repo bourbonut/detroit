@@ -10,8 +10,9 @@ class {{ class_name }}:
 
     def __str__(self):
         return self.content
-{% for name, args, format_args, docstring in methods %}
-    def {{ name }}(self, {{ args }}):
+{% for name, args, format_args, docstring in methods %}{% if format_args %}
+    def {{ name.replace("from", "from_") }}(self, {{ args }}):{% else %}
+    def {{ name.replace("raise", "raise_") }}(self):{% endif %}
         """
         {{ docstring }}
         """{% if format_args %}

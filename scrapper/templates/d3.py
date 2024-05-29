@@ -1,6 +1,6 @@
 from functools import partial
 from operator import is_not{% for name, args, format_args, docstring in subclasses %}
-from .{{ name.lower() }} import {{ name }}{% endfor %}
+from {{ name.replace("d3.", "").replace("new ", "") }} import {{ name.replace("d3.", "").replace("new ", "") }}{% endfor %}
 
 class d3:
     """
@@ -25,22 +25,22 @@ class d3:
         return self.content
 {% for name, args, format_args, docstring in methods %}
     @staticmethod
-    def {{ name }}({{ args }}):
+    def {{ name.replace("d3.", "").replace("new ", "") }}({{ args }}):
         """
         {{ docstring }}
         """{% if format_args %}
         arguments = ", ".join(map(str, filter(partial(is_not, None), {{ format_args }})))
-        return d3(f"d3.{{ name }}({arguments})")
+        return d3(f"{{ name }}({arguments})")
 {% else %}
-        return d3(f"d3.{{ name }}()")
+        return d3("{{ name }}()")
 {% endif %}{% endfor %}
 {% for name, args, format_args, docstring in subclasses %}
     @staticmethod
-    def {{ name }}({{ args }}):
+    def {{ name.replace("d3.", "").replace("new ", "") }}({{ args }}):
         """
         {{ docstring }}
         """{% if format_args %}
         arguments = ", ".join(map(str, filter(partial(is_not, None), {{ format_args }})))
-        return {{name}}(f"d3.{{ name }}({arguments})"){% else %}
-        return {{ name }}(f"d3.{{ name }}()"){% endif %}
+        return {{ name.replace("d3.", "").replace("new ", "") }}(f"{{ name }}({arguments})"){% else %}
+        return {{ name.replace("d3.", "").replace("new ", "") }}("{{ name }}()"){% endif %}
 {% endfor %}
