@@ -100,7 +100,7 @@ def get_methods():
 
 async def scrap_methods():
     """
-    Scrap methods from the API index and save them as "./results.pkl"
+    Scrap methods from the API index and return them
     """
     async with httpx.AsyncClient() as client:
         return [

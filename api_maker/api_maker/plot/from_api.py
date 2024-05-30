@@ -4,12 +4,12 @@ from collections import namedtuple
 from itertools import repeat
 import re
 import asyncio
-
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from pathlib import Path
+import logging
 
 Method = namedtuple("Method", ["name", "url"])
 SIGNATURE = re.compile(r"([a-zA-Z0-9]*)\((.*)\)")
+
+logging.getLogger(__name__)
 
 def get_methods():
     """
@@ -19,7 +19,6 @@ def get_methods():
     soup = BeautifulSoup(response.text, "lxml")
     for link in soup.find("main", {"class": "main"}).find("ul").find_all("a"):
         yield Method(link.text, f"https://observablehq.com/plot/{link['href']}")
-
 
 def code_per_line(lines):
     for span_line in lines:
@@ -53,7 +52,6 @@ def format_paragraph(paragraph):
     words = paragraph.split(" ")
     return "\n".join(make_lines(words))
 
-
 def extract(h2):
     parent = h2.parent
     yield h2.text
@@ -86,36 +84,18 @@ async def make_method(method, client):
         name = signature[1]
         args = signature[2]
         format_args = args.replace("...", "")
-        # format_args = (f"', '.join(map(str, {arg.replace('...', '')}))" for arg in args.split(", ") if "..." in arg)
-        # format_args = "{" + "}, {".join(format_args) + "}"
         args = args.replace("...", "*")
     else:
         name = signature[1]
         format_args = signature[2]
-        # format_args = "{" + "}, {".join(args.split(", "))+ "}"
         args = ", ".join((f"{arg}=None" for arg in format_args.split(", ")))
     docstring = "\n".join(strings) + f"\nSee more informations `here` <{method.url}>`_."
     docstring = "\n        ".join(docstring.split("\n"))
     return (name, args, format_args, docstring)
 
-# for string in get_docstring(Method("ruleX", "https://observablehq.com/plot/marks/rule#ruleX")):
-#     print(string)
-
-# full_method = make_method(Method("ruleX", "https://observablehq.com/plot/marks/rule#ruleX"))
-async def make_template():
-    loader = FileSystemLoader([Path("scrapper/templates")])
-    env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
-    template = env.get_template("plot.py")
-    methods = get_methods()
+async def scrap_methods():
+    """
+    Scrap methods from the API index and return them
+    """
     async with httpx.AsyncClient() as client:
-        methods = await asyncio.gather(*map(make_method, methods, repeat(client)))
-    result = await template.render_async(methods=methods)
-    with open("/tmp/plot.py", "w") as file:
-        file.write(result)
-
-async def main():
-    async with httpx.AsyncClient() as client:
-        for string in (await make_method(Method(name='marks', url='https://observablehq.com/plot/features/marks#marks'), client)):
-            print(f"{string!r}")
-
-# asyncio.run(make_template())
+        return await asyncio.gather(*map(make_method, get_methods(), repeat(client)))
