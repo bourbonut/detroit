@@ -11,11 +11,9 @@ import pickle
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 
-from scrapper.logging_config import configure_logging
-
 logger = logging.getLogger(__name__)
 
-Method = namedtuple("Method", ["name", "url"])
+Method = namedtuple("Method", ["name", "url", "docstring"])
 SIGNATURE = re.compile(r"\((.*)\)")
 
 # {{{
@@ -105,7 +103,7 @@ def get_methods():
     soup = BeautifulSoup(response.text, "lxml")
     for ul in soup.find("main", {"class": "main"}).find_all("ul"):
         yield (
-            Method(link.text, f"https://d3js.org{link['href'][1:]}")
+            Method(link.text, f"https://d3js.org{link['href'][1:]}", None)
             for link in ul.find_all("a") 
         )
 
@@ -120,7 +118,7 @@ async def scrap_methods():
             docstrings = await asyncio.gather(*map(get_docstring, methods, repeat(client)))
             results.append(
                 [
-                    {"name": method.name, "url": method.url, "docstring": docstring}
+                    Method(method.name, method.url, docstring)
                     for method, docstring in zip(methods, docstrings)
                 ]
             )
@@ -143,43 +141,43 @@ def insert(method, group):
     """
     Insert the method in the group
     """
-    name = method["name"]
+    name = method.name
     if "[" in name:
         return
     if "d3." in name:
-        group[name] = {"_primary": method["docstring"]}
+        group[name] = {"_primary": method.docstring}
     elif "new" in name:
         name = name.replace("new ", "new d3.")
-        group[name] = {"_primary": method["docstring"]}
+        group[name] = {"_primary": method.docstring}
     elif "." in name:
         prefix, suffix = name.split(".")
         found = False
         for method_name in group:
             if prefix.lower() in method_name.lower():
-                group[method_name][suffix] = method["docstring"]
+                group[method_name][suffix] = method.docstring
                 found = True
         if not found:
             name = f"d3.{prefix}"
-            group[name] = {"_primary": [f"{prefix}()", f"\nSee more informations `here <{method['url']}>`_."]}
-            group[name][suffix] = method["docstring"]
+            group[name] = {"_primary": [f"{prefix}()", f"\nSee more informations `here <{method.url}>`_."]}
+            group[name][suffix] = method.docstring
     else:
         stop = False
         for method_name in group:
             if name.lower() in method_name.lower():
                 docstring = group[method_name]["_primary"]
-                docstring[0] = method["docstring"][0]
-                docstring.extend(method["docstring"][1:])
+                docstring[0] = method.docstring[0]
+                docstring.extend(method.docstring[1:])
                 group[method_name]["_primary"] = docstring
                 return
 
         name = f"d3.{name}"
         if name in group: # mix docstring
             docstring = group[name]["_primary"]
-            docstring[0] = method["docstring"][0]
-            docstring.extend(method["docstring"][1:])
+            docstring[0] = method.docstring[0]
+            docstring.extend(method.docstring[1:])
             group[name]["_primary"] = docstring
         else:
-            group[name] = {"_primary": method["docstring"]}
+            group[name] = {"_primary": method.docstring}
 
 def remove_blank(line: str):
     """
@@ -292,7 +290,7 @@ def make_template():
                         docstring = format_docstring(group[class_][method])
                         methods_.append((method, *docstring))
 
-    loader = FileSystemLoader([Path("scrapper/templates")])
+    loader = FileSystemLoader([Path("scraper/templates")])
     env = Environment(loader=loader, autoescape=select_autoescape())
     d3_template = env.get_template("d3.py")
     subclass_template = env.get_template("d3_subclass.py")
@@ -305,5 +303,5 @@ def make_template():
     with open("/tmp/d3.py", "w") as file:
         file.write(result)
 
-# asyncio.run(new_methods())
+# asyncio.run(scrap_methods())
 make_template()
