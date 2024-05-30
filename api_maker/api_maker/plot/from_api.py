@@ -89,6 +89,8 @@ async def make_method(method, client):
         name = signature[1]
         format_args = signature[2]
         args = ", ".join((f"{arg}=None" for arg in format_args.split(", ")))
+    if format_args:
+        format_args = f"({format_args})" if "," in format_args else f"({format_args},)"
     docstring = "\n".join(strings) + f"\nSee more informations `here` <{method.url}>`_."
     docstring = "\n        ".join(docstring.split("\n"))
     return (name, args, format_args, docstring)

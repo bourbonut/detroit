@@ -1,4 +1,5 @@
 import re
+import shutil
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
@@ -93,8 +94,9 @@ def format_docstring(docstring: list):
         return "", "", docstring
     elif "..." in signature: # "..." is "*" in python
         args = match
-        format_args = args.replace("...", "")
+        format_args = args.replace("...", "*")
         args = args.replace("...", "*")
+        format_args = f"({format_args})" if "," in format_args else f"({format_args},)"
     elif "blur2" in signature: # special signature
         args = "matrix=None, rx=None, ry=None"
         format_args = "(matrix, rx, ry)"
@@ -177,15 +179,17 @@ def make_templates(sections):
                         methods_.append((method, *docstring))
 
     # Make templates
+    directory = Path("../detroit/d3")
+    directory.mkdir(exist_ok=True)
     loader = FileSystemLoader([Path("api_maker/templates")])
     env = Environment(loader=loader, autoescape=select_autoescape())
     d3_template = env.get_template("d3.py")
     subclass_template = env.get_template("d3_subclass.py")
     for class_, methods in submethods.items():
         result = subclass_template.render(methods=methods, class_name=class_)
-        with open(f"/tmp/{class_.replace('select', '_select')}.py", "w") as file:
+        with open(directory / f"{class_.replace('select', '_select')}.py", "w") as file:
             file.write(result)
 
     result = d3_template.render(methods=simple_methods, subclasses=subclasses)
-    with open("/tmp/d3.py", "w") as file:
+    with open(directory / "__init__.py", "w") as file:
         file.write(result)
