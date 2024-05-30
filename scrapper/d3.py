@@ -105,92 +105,11 @@ def get_methods():
     """
     response = httpx.get("https://d3js.org/api")
     soup = BeautifulSoup(response.text, "lxml")
-    # excluded_methods = ("back.", "elastic.", "poly.", "iterator", "cardinal.", "bundle.", "catmullRom.", "new d3.FormatSpecifier", "symbolType.")
     for ul in soup.find("main", {"class": "main"}).find_all("ul"):
         yield (
             Method(link.text, f"https://d3js.org{link['href'][1:]}")
             for link in ul.find_all("a") 
-            # if not any(map(contains, repeat(link.text), excluded_methods))
         )
-
-async def make_method(method, client):
-    """
-    Return informations useful to make a method
-    """
-    try:
-        strings = await get_docstring(method, client)
-        valid_subclass = "." in method.name and "d3" not in method.name
-        subclass = method.name.split(".")[0] if valid_subclass else None
-        head = strings.pop(0).replace("new ", "").replace(" \u200b", "")
-        if subclass:
-            head = head.replace(f"{subclass}.", "")
-            subclass = subclass.replace("adder", "Adder")
-        signature = SIGNATURE.match(head)
-        if "[k]" in head:
-            name = head.replace("[k]", "")
-            args = ""
-            format_args = ""
-        elif signature is None:
-            name = head.split(" ^")[0]
-            args = ""
-            format_args = ""
-        elif "..." in head:
-            name = signature[1]
-            args = signature[2]
-            format_args = args.replace("...", "")
-            args = args.replace("...", "*")
-        elif "blur2" in head:
-            name = "blur2"
-            args = "matrix=None, rx=None, ry=None"
-            format_args = "(matrix, rx, ry)"
-        else:
-            name = signature[1]
-            format_args = signature[2].replace("lambda", "lambda_")
-            if "3" in format_args:
-                args = format_args
-                format_args = format_args.replace(" = 3", "")
-            else:
-                args = ", ".join((f"{arg} = None" for arg in format_args.split(", "))) if format_args else ""
-            if format_args:
-                format_args = f"({format_args})" if "," in format_args else f"({format_args},)"
-        docstring = "\n\n".join(strings) + f"\nSee more informations `here <{method.url}>`_."
-        docstring = "\n        ".join(docstring.split("\n"))
-        return name, args, format_args, docstring, subclass
-
-    except Exception as e:
-        logger.error(method)
-        logger.error(e.__traceback__())
-
-async def gather_all(groups):
-    """
-    Gather results from groups of methods
-    """
-    result = []
-    async with httpx.AsyncClient() as client:
-        for methods in groups:
-            result.extend(await asyncio.gather(*map(make_method, methods, repeat(client))))
-    return result
-
-def groupby(methods):
-    """
-    Group methods by their subclasses
-    """
-    d = {subclass: [] for _, _, _, _, subclass in methods if subclass}
-    d[None] = []
-    for name, args, format_args, docstring, subclass in methods:
-        if subclass or name in d:
-            d[subclass or name].append((name, args, format_args, docstring))
-        else:
-            d[subclass].append((name, args, format_args, docstring))
-    for subclass, methods in d.items():
-        if len(methods) > 1 and methods[0][0] == methods[1][0]:
-            docstring = "\n\n        ".join((methods[0][3], methods[1][3]))
-            name = methods[1][0]
-            args = methods[1][1]
-            format_args = methods[1][2]
-            d[subclass] = d[subclass][2:]
-            d[subclass].insert(0, (name, args, format_args, docstring))
-    return d
 
 async def new_methods():
     results = []
@@ -206,87 +125,6 @@ async def new_methods():
             )
     with open("results.pkl", "wb") as file:
         pickle.dump(results, file)
-
-
-async def test_make_template():
-    loader = FileSystemLoader([Path("scrapper/templates")])
-    env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
-    groups = get_methods()
-    for methods in groups:
-        methods = list(methods)
-        if "d3-shape/symbol" in methods[0].url:
-            break
-
-    methods = await gather_all([methods])
-    subclasses = groupby(methods)
-    # __import__('pprint').pprint(methods)
-    # __import__('pprint').pprint(subclasses)
-
-    template = env.get_template("d3_subclass.py")
-    for subclass in subclasses.keys() - {None}:
-        result = await template.render_async(methods=subclasses[subclass][1:], class_name=subclass)
-        print(result)
-        # with open(f"/tmp/{subclass}.py", "w") as file:
-        #     file.write(result)
-    template = env.get_template("d3.py")
-    methods = subclasses[None]
-    subclasses = [subclasses[key][0] for key in subclasses.keys() - {None}]
-    result = await template.render_async(methods=methods, subclasses=subclasses)
-    print(result)
-    # with open("/tmp/d3.py", "w") as file:
-    #     file.write(result)
-
-# def correction_voronoi(path):
-#     content = path.read_text()
-#     for correction in ("xmin", "ymin", "xmax", "ymax"):
-#         content = re.sub(r"xminyminxmaxymax", correction, content, count=2)
-#     content = re.sub(r"\(self, \)", r"(self)", content)
-#     path.write_text(content)
-
-# async def make_template():
-#     loader = FileSystemLoader([Path("scrapper/templates")])
-#     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
-#
-#     methods = await gather_all(get_methods())
-#     subclasses = groupby(methods)
-#
-#     template = env.get_template("d3_subclass.py")
-#     for subclass in subclasses.keys() - {None}:
-#         result = await template.render_async(methods=subclasses[subclass][1:], class_name=subclass)
-#         with open(f"/tmp/{subclass}.py", "w") as file:
-#             file.write(result)
-#
-#     template = env.get_template("d3.py")
-#     methods = subclasses[None]
-#     subclasses = [subclasses[key][0] for key in subclasses.keys() - {None}]
-#     result = await template.render_async(methods=methods, subclasses=subclasses)
-#     with open("/tmp/d3.py", "w") as file:
-#         file.write(result)
-#
-#     correction_voronoi(Path("/tmp/voronoi.py"))
-
-async def main():
-    async with httpx.AsyncClient() as client:
-        for string in (await make_method(Method(name='symbolType.draw', url='https://d3js.org/d3-shape/symbol#symbolType_draw'), client)):
-            print(f"{string!r}")
-
-# asyncio.run(new_methods())
-# correction_voronoi()
-
-def sort(methods):
-    return sorted(
-        filter(
-            lambda m: "d3." in m["name"],
-            methods
-        ),
-        key=lambda m: m["name"]
-    ) + sorted(
-        filter(
-            lambda m: "d3." not in m["name"],
-            methods
-        ),
-        key=lambda m: m["name"]
-    )
 
 def group_methods(sections):
     groups = []
@@ -426,8 +264,6 @@ def make_template():
     simple_methods = []
     subclasses = []
     submethods = {}
-    # group = groups[59]
-    # group = groups[-1]
     for i, group in enumerate(groups):
         for class_ in group:
             try:
@@ -460,4 +296,5 @@ def make_template():
     with open("/tmp/d3.py", "w") as file:
         file.write(result)
 
+# asyncio.run(new_methods())
 make_template()
