@@ -1,6 +1,23 @@
-from functools import partial
+from functools import partial, update_wrapper
 from operator import is_not{% for name, args, format_args, docstring in subclasses %}
 from {{ name.replace("d3.", "").replace("new ", "").replace("select", "_select") }} import {{ name.replace("d3.", "").replace("new ", "").replace("bin", "_bin") }}{% endfor %}
+
+class ReprWrapper:
+    """
+    Wrapper class to make possible to represent methods in a different way
+    """
+    def __init__(self, repr, func):
+        self._repr = repr
+        self._func = func
+        update_wrapper(self, func)
+
+    def __call__(self, *args, **kw):
+        return self._func(*args, **kw)
+    def __repr__(self):
+        return self._repr(self._func)
+
+def repr_wrapper(func):
+    return ReprWrapper(lambda method: f"d3.{method.__name__}", func)
 
 class d3:
     """
@@ -24,7 +41,8 @@ class d3:
     def __str__(self):
         return self.content
 {% for name, args, format_args, docstring in methods %}
-    @staticmethod
+    @staticmethod{% if "scheme" in name or "interpolate" in name %}
+    @repr_wrapper{% endif %}
     def {{ name.replace("d3.", "").replace("new ", "") }}({{ args }}):
         """
         {{ docstring }}
