@@ -111,7 +111,10 @@ def get_methods():
             for link in ul.find_all("a") 
         )
 
-async def new_methods():
+async def scrap_methods():
+    """
+    Scrap methods from the API index and save them as "./results.pkl"
+    """
     results = []
     async with httpx.AsyncClient() as client:
         for methods in get_methods():
@@ -127,6 +130,9 @@ async def new_methods():
         pickle.dump(results, file)
 
 def group_methods(sections):
+    """
+    Group methods per section
+    """
     groups = []
     for methods in sections:
         group = {}
@@ -136,6 +142,9 @@ def group_methods(sections):
     return groups
 
 def insert(method, group):
+    """
+    Insert the method in the group
+    """
     name = method["name"]
     if "[" in name:
         return
@@ -174,20 +183,29 @@ def insert(method, group):
         else:
             group[name] = {"_primary": method["docstring"]}
 
-def remove_blank(line):
+def remove_blank(line: str):
+    """
+    Remove blank of a line
+    """
     no_blank = line.replace(" ", "")
     if not no_blank:
         return no_blank
     return line
 
-def remove_first_blank(docstring):
+def remove_first_blank(docstring: list):
+    """
+    Remove first blank of a section
+    """
     if not docstring[0] and len(docstring) > 1:
         docstring = docstring[1:]
         docstring[0] = docstring[0][8:]
         return docstring
     return docstring
     
-def format_docstring(docstring):
+def format_docstring(docstring: list):
+    """
+    Format the docstring to be used in templates
+    """
     signature = docstring[0].replace("\u200b", "")
     docstring = "\n        ".join("\n".join(docstring[1:]).split("\n"))
     docstring = "\n".join(map(remove_blank, remove_first_blank(docstring.split("\n"))))
@@ -219,9 +237,6 @@ def make_template():
         sections = pickle.load(file)
 
     groups = group_methods(sections)
-
-    loader = FileSystemLoader([Path("scrapper/templates")])
-    env = Environment(loader=loader, autoescape=select_autoescape())
 
     selection_groups = []
     locale = "d3.locale"
@@ -266,25 +281,21 @@ def make_template():
     submethods = {}
     for i, group in enumerate(groups):
         for class_ in group:
-            try:
-                if len(group[class_]) == 1:
-                    docstring = format_docstring(group[class_]["_primary"])
-                    simple_methods.append((class_, *docstring))
-                else:
-                    docstring = format_docstring(group[class_]["_primary"])
-                    subclasses.append((class_, *docstring))
-                    methods_ = []
-                    submethods[class_.replace("d3.", "").replace("new ", "")] = methods_
-                    for method in group[class_]:
-                        if method != "_primary":
-                            docstring = format_docstring(group[class_][method])
-                            methods_.append((method, *docstring))
-            except Exception as e:
-                print(class_, method, i)
-                __import__('pprint').pprint(group[class_])
-                print(e)
-                raise
+            if len(group[class_]) == 1:
+                docstring = format_docstring(group[class_]["_primary"])
+                simple_methods.append((class_, *docstring))
+            else:
+                docstring = format_docstring(group[class_]["_primary"])
+                subclasses.append((class_, *docstring))
+                methods_ = []
+                submethods[class_.replace("d3.", "").replace("new ", "")] = methods_
+                for method in group[class_]:
+                    if method != "_primary":
+                        docstring = format_docstring(group[class_][method])
+                        methods_.append((method, *docstring))
 
+    loader = FileSystemLoader([Path("scrapper/templates")])
+    env = Environment(loader=loader, autoescape=select_autoescape())
     d3_template = env.get_template("d3.py")
     subclass_template = env.get_template("d3_subclass.py")
     for class_, methods in submethods.items():
