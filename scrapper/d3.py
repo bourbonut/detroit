@@ -412,6 +412,15 @@ def make_template():
             else:
                 mix_selection[method_name] = docstring
 
+    select = "d3.select"
+    select_all = "d3.selectAll"
+    _primary = mix_selection.pop("_primary")
+    for group in groups:
+        if select in group.keys() and select_all in group.keys():
+            group[select].update(mix_selection)
+            group[select_all].update(mix_selection)
+    mix_selection["_primary"] = _primary
+
     groups.append({"d3.selection": mix_selection})
     
     simple_methods = []
@@ -444,7 +453,7 @@ def make_template():
     subclass_template = env.get_template("d3_subclass.py")
     for class_, methods in submethods.items():
         result = subclass_template.render(methods=methods, class_name=class_)
-        with open(f"/tmp/{class_}.py", "w") as file:
+        with open(f"/tmp/{class_.replace('select', '_select')}.py", "w") as file:
             file.write(result)
 
     result = d3_template.render(methods=simple_methods, subclasses=subclasses)

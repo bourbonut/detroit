@@ -1,7 +1,7 @@
 from functools import partial
 from operator import is_not
 
-class {{ class_name }}:
+class {{ class_name.replace("bin", "_bin") }}:
     def __init__(self, content="{{class_name}}"):
         self.content = content
 

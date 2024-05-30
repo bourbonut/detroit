@@ -1,6 +1,6 @@
 from functools import partial
 from operator import is_not{% for name, args, format_args, docstring in subclasses %}
-from {{ name.replace("d3.", "").replace("new ", "") }} import {{ name.replace("d3.", "").replace("new ", "") }}{% endfor %}
+from {{ name.replace("d3.", "").replace("new ", "").replace("select", "_select") }} import {{ name.replace("d3.", "").replace("new ", "").replace("bin", "_bin") }}{% endfor %}
 
 class d3:
     """
@@ -41,6 +41,6 @@ class d3:
         {{ docstring }}
         """{% if format_args %}
         arguments = ", ".join(map(str, filter(partial(is_not, None), {{ format_args }})))
-        return {{ name.replace("d3.", "").replace("new ", "") }}(f"{{ name }}({arguments})"){% else %}
+        return {{ name.replace("d3.", "").replace("new ", "").replace("bin", "_bin") }}(f"{{ name }}({arguments})"){% else %}
         return {{ name.replace("d3.", "").replace("new ", "") }}("{{ name }}()"){% endif %}
 {% endfor %}
