@@ -2,21 +2,16 @@ import httpx
 from bs4 import BeautifulSoup
 from collections import namedtuple
 from itertools import repeat
-from operator import contains
 import re
 import asyncio
-import logging
 import pickle
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
-
 Method = namedtuple("Method", ["name", "url", "docstring"])
 SIGNATURE = re.compile(r"\((.*)\)")
 
-# {{{
 def code_per_line(lines):
     """
     Return the code of each line
@@ -83,6 +78,9 @@ def extract(header):
         current_index += 1
 
 async def get_docstring(method, client):
+    """
+    Get docstring of a method
+    """
     response = await client.get(method.url)
     soup = BeautifulSoup(response.text, "lxml")
     id_ = method.url.split("#")[-1]
@@ -93,7 +91,6 @@ async def get_docstring(method, client):
     else:
         h3 = soup.find("h3", {"id": method.url.split("#")[-1]})
         return list(extract(h3)) + [f"\nSee more informations `here <{method.url}>`_."]
-# }}}
 
 def get_methods():
     """
