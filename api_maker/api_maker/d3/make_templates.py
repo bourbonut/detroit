@@ -1,126 +1,9 @@
-import httpx
-from bs4 import BeautifulSoup
-from collections import namedtuple
-from itertools import repeat
 import re
-import asyncio
-import pickle
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 
-Method = namedtuple("Method", ["name", "url", "docstring"])
 SIGNATURE = re.compile(r"\((.*)\)")
-
-def code_per_line(lines):
-    """
-    Return the code of each line
-    """
-    for span_line in lines:
-        yield "".join((span.text for span in span_line.find_all("span")))
-
-def code_section(content):
-    """
-    Return a code section
-    """
-    code = content.find("code")
-    lines = code.find_all("span", {"class": "line"})
-    embedded_code = "\n    ".join(code_per_line(lines))
-    full_code = f""".. code:: javascript
-
-    {embedded_code}
-    """
-    return full_code
-
-def make_lines(words):
-    """
-    Split lines of docstring and apply 88 characters maximum per line
-    """
-    total_count = 0
-    line = ""
-    for word in words:
-        length = len(word) + 1
-        if total_count + length > 88:
-            yield line[:-1]
-            line = word + " "
-            total_count = length
-        else:
-            line += word + " "
-            total_count += length
-    yield line[:-1]
-
-def format_paragraph(paragraph):
-    """
-    Format a paragraph to fit 88 characters maximum
-    """
-    words = paragraph.split(" ")
-    return "\n".join(make_lines(words))
-
-def extract(header):
-    """
-    Extract different informations such as:
-    - the signature of the function
-    - the docstring
-    """
-    parent = header.parent
-    yield header.text
-    current_index = parent.index(header)
-    while current_index < len(parent) - 1:
-        next_content = parent.contents[current_index + 1]
-        if next_content.name == "div":
-            if next_content.contents:
-                if next_content.contents[0].name not in {"svg", "p"}:
-                    yield code_section(next_content)
-        elif next_content.name == "p":
-            yield format_paragraph(next_content.text)
-        elif next_content.name == "h2":
-            break
-        current_index += 1
-
-async def get_docstring(method, client):
-    """
-    Get docstring of a method
-    """
-    response = await client.get(method.url)
-    soup = BeautifulSoup(response.text, "lxml")
-    id_ = method.url.split("#")[-1]
-    id_ = "namespaces-1" if id_ == "namespaces" else id_
-    h2 = soup.find("h2", {"id": id_})
-    if h2:
-        return list(extract(h2)) + [f"\nSee more informations `here <{method.url}>`_."]
-    else:
-        h3 = soup.find("h3", {"id": method.url.split("#")[-1]})
-        return list(extract(h3)) + [f"\nSee more informations `here <{method.url}>`_."]
-
-def get_methods():
-    """
-    Get methods from the API index
-    """
-    response = httpx.get("https://d3js.org/api")
-    soup = BeautifulSoup(response.text, "lxml")
-    for ul in soup.find("main", {"class": "main"}).find_all("ul"):
-        yield (
-            Method(link.text, f"https://d3js.org{link['href'][1:]}", None)
-            for link in ul.find_all("a") 
-        )
-
-async def scrap_methods():
-    """
-    Scrap methods from the API index and save them as "./results.pkl"
-    """
-    results = []
-    async with httpx.AsyncClient() as client:
-        for methods in get_methods():
-            methods = list(methods)
-            docstrings = await asyncio.gather(*map(get_docstring, methods, repeat(client)))
-            results.append(
-                [
-                    Method(method.name, method.url, docstring)
-                    for method, docstring in zip(methods, docstrings)
-                ]
-            )
-    with open("results.pkl", "wb") as file:
-        pickle.dump(results, file)
 
 def group_methods(sections):
     """
@@ -139,27 +22,26 @@ def insert(method, group):
     Insert the method in the group
     """
     name = method.name
-    if "[" in name:
+    if "[" in name: # javascript iterators
         return
-    if "d3." in name:
+    if "d3." in name: # main methods
         group[name] = {"_primary": method.docstring}
-    elif "new" in name:
+    elif "new" in name: # special methods starting with "new d3.xxx"
         name = name.replace("new ", "new d3.")
         group[name] = {"_primary": method.docstring}
-    elif "." in name:
+    elif "." in name: # submethods "prefix.suffix(...)"
         prefix, suffix = name.split(".")
         found = False
         for method_name in group:
             if prefix.lower() in method_name.lower():
                 group[method_name][suffix] = method.docstring
                 found = True
-        if not found:
+        if not found: # convert submethod as a main method
             name = f"d3.{prefix}"
             group[name] = {"_primary": [f"{prefix}()", f"\nSee more informations `here <{method.url}>`_."]}
             group[name][suffix] = method.docstring
-    else:
-        stop = False
-        for method_name in group:
+    else: # if method has no bracket
+        for method_name in group: # mix it with a main method
             if name.lower() in method_name.lower():
                 docstring = group[method_name]["_primary"]
                 docstring[0] = method.docstring[0]
@@ -167,6 +49,8 @@ def insert(method, group):
                 group[method_name]["_primary"] = docstring
                 return
 
+        # if return was not called 
+        # try to mix it with a main method but with a new name
         name = f"d3.{name}"
         if name in group: # mix docstring
             docstring = group[name]["_primary"]
@@ -174,7 +58,7 @@ def insert(method, group):
             docstring.extend(method.docstring[1:])
             group[name]["_primary"] = docstring
         else:
-            group[name] = {"_primary": method.docstring}
+            group[name] = {"_primary": method.docstring} # make a main method
 
 def remove_blank(line: str):
     """
@@ -207,30 +91,31 @@ def format_docstring(docstring: list):
         match = match[0] 
     if "[k]" in signature or not match:
         return "", "", docstring
-    elif "..." in signature:
+    elif "..." in signature: # "..." is "*" in python
         args = match
         format_args = args.replace("...", "")
         args = args.replace("...", "*")
-    elif "blur2" in signature:
+    elif "blur2" in signature: # special signature
         args = "matrix=None, rx=None, ry=None"
         format_args = "(matrix, rx, ry)"
     else:
-        format_args = match.replace("lambda", "lambda_")
-        if "3" in format_args:
+        format_args = match.replace("lambda", "lambda_") # native python keyword
+        if "3" in format_args: # special default argument
             args = format_args.replace(" = 3", "=3")
             format_args = format_args.replace(" = 3", "")
         else:
             args = ", ".join((f"{arg}=None" for arg in format_args.split(", "))) if format_args else ""
-        if format_args:
+        if format_args: # add a comma if there is only one argument to make a tuple
             format_args = f"({format_args})" if "," in format_args else f"({format_args},)"
     return args, format_args, docstring
 
-def make_template():
-    with open("results.pkl", "rb") as file:
-        sections = pickle.load(file)
-
+def make_templates(sections):
+    """
+    Make d3 API from sections using templates "templates/d3.py" and "templates/d3_subclass.py"
+    """
     groups = group_methods(sections)
 
+    # correction of locale and extract selection
     selection_groups = []
     locale = "d3.locale"
     selection = "d3.selection"
@@ -250,6 +135,7 @@ def make_template():
             selection_groups.append(group.pop("d3.selection"))       
 
 
+    # make selection as a unique class
     mix_selection = {}
     for selection_methods in selection_groups:
         for method_name, docstring in selection_methods.items():
@@ -258,6 +144,7 @@ def make_template():
             else:
                 mix_selection[method_name] = docstring
 
+    # add selection methods in d3.select and d3.selectAll
     select = "d3.select"
     select_all = "d3.selectAll"
     _primary = mix_selection.pop("_primary")
@@ -267,11 +154,13 @@ def make_template():
             group[select_all].update(mix_selection)
     mix_selection["_primary"] = _primary
 
+    # add selection class
     groups.append({"d3.selection": mix_selection})
     
-    simple_methods = []
-    subclasses = []
-    submethods = {}
+    # seperate groups
+    simple_methods = [] # simple methods with only _primary as method
+    subclasses = [] # subclasses for d3.py template
+    submethods = {} # submethods for d3_subclass.py template
     for i, group in enumerate(groups):
         for class_ in group:
             if len(group[class_]) == 1:
@@ -287,7 +176,8 @@ def make_template():
                         docstring = format_docstring(group[class_][method])
                         methods_.append((method, *docstring))
 
-    loader = FileSystemLoader([Path("scraper/templates")])
+    # Make templates
+    loader = FileSystemLoader([Path("api_maker/templates")])
     env = Environment(loader=loader, autoescape=select_autoescape())
     d3_template = env.get_template("d3.py")
     subclass_template = env.get_template("d3_subclass.py")
@@ -299,6 +189,3 @@ def make_template():
     result = d3_template.render(methods=simple_methods, subclasses=subclasses)
     with open("/tmp/d3.py", "w") as file:
         file.write(result)
-
-# asyncio.run(scrap_methods())
-make_template()
