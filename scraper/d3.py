@@ -13,8 +13,6 @@ from pathlib import Path
 
 from scrapper.logging_config import configure_logging
 
-configure_logging()
-
 logger = logging.getLogger(__name__)
 
 Method = namedtuple("Method", ["name", "url"])
