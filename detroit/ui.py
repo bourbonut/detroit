@@ -5,12 +5,12 @@ from typing import Dict, Generator, List, Optional, Union
 
 from markupsafe import Markup
 
-from .d3 import Script
-from .plot import Plot
+from .d3_utils import Script
+from .plot import Plot_
 from .style import CSS, GRID
 from .utils import Data, DataInput, arrange
 
-JSCode = Union[Plot, Script]
+JSCode = Union[Plot_, Script]
 JSInput = Union[Dict[str, JSCode], List[JSCode]]
 
 class PlotType(Enum):
@@ -44,18 +44,18 @@ def identify(plot: JSInput) -> PlotType:
     PlotType
         type of the plot
     """
-    if isinstance(plot, Plot):
+    if isinstance(plot, Plot_):
         return PlotType.SINGLE_PLOT
     elif isinstance(plot, Script):
         return PlotType.SINGLE_D3
     elif isinstance(plot, dict):
         objs = plot.values()
-        if all(map(lambda obj: isinstance(obj, Plot), objs)):
+        if all(map(lambda obj: isinstance(obj, Plot_), objs)):
             return PlotType.MULTIPLE_PLOTS
         elif all(map(lambda obj: isinstance(obj, Script), objs)):
             return PlotType.MULTIPLE_D3
     elif isinstance(plot, list):
-        if all(map(lambda obj: isinstance(obj, Plot), plot)):
+        if all(map(lambda obj: isinstance(obj, Plot_), plot)):
             return PlotType.MULTIPLE_PLOTS
         elif all(map(lambda obj: isinstance(obj, Script), plot)):
             return PlotType.MULTIPLE_D3
