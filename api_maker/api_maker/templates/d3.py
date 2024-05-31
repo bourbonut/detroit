@@ -54,7 +54,7 @@ class d3:
         """
         {{ docstring }}
         """{% if format_args %}
-        arguments = ", ".join(map(str, filter(partial(is_not, None), {{ format_args }})))
+        arguments = ", ".join(map(repr, filter(partial(is_not, None), {{ format_args }})))
         return d3(f"{{ name }}({arguments})")
 {% else %}
         return d3("{{ name }}()")
@@ -65,8 +65,8 @@ class d3:
         """
         {{ docstring }}
         """{% if format_args %}
-        arguments = ", ".join(map(str, filter(partial(is_not, None), {{ format_args }})))
+        arguments = ", ".join(map(repr, filter(partial(is_not, None), {{ format_args }})))
         return {{ name.replace("d3.", "").replace("new ", "").replace("bin", "_bin") }}(f"{{ name }}({arguments})"){% else %}
         return {{ name.replace("d3.", "").replace("new ", "") }}("{{ name }}()"){% endif %}
 {% endfor %}
-svg = d3.selection()
+svg = selection(content="svg")

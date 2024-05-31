@@ -96,6 +96,7 @@ def format_docstring(docstring: list):
         args = match
         format_args = args.replace("...", "*")
         args = args.replace("...", "*")
+        args = ", ".join((f"{arg}=None" if "*" not in arg else arg for arg in args.split(", ")))
         format_args = f"({format_args})" if "," in format_args else f"({format_args},)"
     elif "blur2" in signature: # special signature
         args = "matrix=None, rx=None, ry=None"
@@ -121,6 +122,8 @@ def make_templates(sections):
     selection_groups = []
     locale = "d3.locale"
     selection = "d3.selection"
+    geo_identity = "d3.geoIdentity"
+    projection = "d3.projection"
     for group in groups:
         contains_locale = locale in group.keys()
         if contains_locale and len(group[locale]) == 3:
@@ -135,7 +138,15 @@ def make_templates(sections):
             group.pop(locale)
         elif selection in group.keys():
             selection_groups.append(group.pop("d3.selection"))       
+        elif geo_identity in group.keys():
+            class_geo_identity = group[geo_identity]
+        elif projection in group.keys():
+            class_projection = group[projection]
 
+    # add more methods to d3.geoIdentity
+    _primary = class_geo_identity.pop("_primary")
+    class_geo_identity.update(class_projection)
+    class_projection["_primary"] = _primary
 
     # make selection as a unique class
     mix_selection = {}
@@ -158,6 +169,13 @@ def make_templates(sections):
 
     # add selection class
     groups.append({"d3.selection": mix_selection})
+
+    # add domain and nice methods for all d3.scaleSomething
+    for group in groups:
+        for key in group:
+            if "d3.scale" in key:
+                group[key]["domain"] = ["domain(domain)", "Auto generated method"]
+                group[key]["nice"] = ["nice()", "Auto generated method"]
     
     # seperate groups
     simple_methods = [] # simple methods with only _primary as method

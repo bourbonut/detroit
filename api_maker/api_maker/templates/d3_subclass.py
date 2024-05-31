@@ -23,7 +23,7 @@ class {{ class_name.replace("bin", "_bin") }}:
         """
         {{ docstring }}
         """{% if format_args %}
-        arguments = ", ".join(map(str, filter(partial(is_not, None), {{ format_args }})))
+        arguments = ", ".join(map(repr, filter(partial(is_not, None), {{ format_args }})))
         return {{class_name}}(content=f"{self.content}.{{ name }}({arguments})")
 {% else %}
         return {{class_name}}(content=f"{self.content}.{{ name }}()")
