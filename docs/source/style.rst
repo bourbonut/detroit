@@ -63,8 +63,8 @@ With :code:`d3`, it is more complicated, you need to change the colors depending
            "d",
            function("d")(
                d3.line()
-                 .x(function("d")("x(d.x)"))
-                 .y(function("d")("y(d.y)"))(js("d.values"))
+                 .x(function("d").inline("x(d.x)"))
+                 .y(function("d").inline("y(d.y)"))(js("d.values"))
            ),
        )
    )
