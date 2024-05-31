@@ -81,9 +81,7 @@ Now here is the version with :code:`detroit`:
 
    color = script(
        "color",
-       d3.scaleSequential(
-         d3.interpolateTurbo(no_arg=True)
-       ).domain(d3.extent(data.values)).nice()
+       d3.scaleSequential(d3.interpolateTurbo).domain(d3.extent(data.values)).nice()
    )
 
    script(
@@ -129,12 +127,6 @@ In Python version, the code is
   d3.select(script.plot_id).append("svg")
 
 The reason for this, is because the Javascript code is running into a **Observable** environment. However, with :code:`detroit`, it is in your browser or in a Jupyter notebook. :code:`select` selects prebuild HTML :code:`div` tag with the ID :code:`script.plot_id`.
-
-* Sometimes, you need to write :code:`d3.someMethod` without parenthesis. Then you must pass `no_arg=True` as keyword arguments :
-
-.. code:: python
-
-   d3.interpolateTurbo(no_arg=True)
 
 * :code:`detroit` cannot offer all **javascript** syntax possibilities like javascript lambda functions :
 
@@ -202,10 +194,10 @@ In order to get multiple visualizations, you must generate multiple :code:`Scrip
        return script
 
    interpolations = {
-       "Turbo color scheme": d3.interpolateTurbo(no_arg=True),
-       "Warm color scheme": d3.interpolateWarm(no_arg=True),
-       "Plasma color scheme": d3.interpolatePlasma(no_arg=True),
-       "Inferno color scheme": d3.interpolateInferno(no_arg=True),
+       "Turbo color scheme": d3.interpolateTurbo,
+       "Warm color scheme": d3.interpolateWarm,
+       "Plasma color scheme": d3.interpolatePlasma,
+       "Inferno color scheme": d3.interpolateInferno,
    }
 
    length = len(interpolations)

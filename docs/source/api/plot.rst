@@ -1,4 +1,4 @@
 detroit.plot
 ============
 
-.. autoclass:: detroit.plot.Plot
+.. autoclass:: detroit.plot.Plot_

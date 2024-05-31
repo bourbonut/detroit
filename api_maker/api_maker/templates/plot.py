@@ -27,7 +27,7 @@ class Plot_:
 
     Notes
     -----
-    Do not use directly this class. Instead use :code:`detroit.Plot` or `Plot = detroit.plot.Plot_()`.
+    Do not use directly this class. Instead use :code:`detroit.Plot` or :code:`Plot = detroit.plot.Plot_()`.
     """
     def __init__(self, content: str = "Plot"):
         self.content = content

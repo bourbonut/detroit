@@ -7,6 +7,7 @@ API
   
    d3
    plot
+   d3_utils
    style
    ui
    utils
