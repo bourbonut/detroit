@@ -162,6 +162,7 @@ cython_debug/
 # Data files
 *.csv
 *.json
+*.pkl
 
 # Fuzzy finder
 .ignore
