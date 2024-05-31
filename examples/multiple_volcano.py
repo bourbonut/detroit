@@ -42,10 +42,10 @@ def make_contours(script, interpolation):
 
 
 interpolations = {
-    "Turbo color scheme": d3.interpolateTurbo(no_arg=True),
-    "Warm color scheme": d3.interpolateWarm(no_arg=True),
-    "Plasma color scheme": d3.interpolatePlasma(no_arg=True),
-    "Inferno color scheme": d3.interpolateInferno(no_arg=True),
+    "Turbo color scheme": d3.interpolateTurbo,
+    "Warm color scheme": d3.interpolateWarm,
+    "Plasma color scheme": d3.interpolatePlasma,
+    "Inferno color scheme": d3.interpolateInferno,
 }
 
 length = len(interpolations)

@@ -19,9 +19,7 @@ contours = script("contours", d3.contours().size([n, m]))
 
 color = script(
     "color",
-    d3.scaleSequential(
-      d3.interpolateTurbo(no_arg=True)
-    ).domain(d3.extent(data.values)).nice()
+    d3.scaleSequential(d3.interpolateTurbo).domain(d3.extent(data.values)).nice()
 )
 
 script(
