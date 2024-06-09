@@ -72,7 +72,10 @@ class Data:
         self.data = data
         if isinstance(data, dict):
             for method, datum in data.items():
-                setattr(self, method, Data(datum, method, header))
+                if not isinstance(datum, list):
+                    setattr(self, method, Data(datum, method, header))
+                else:
+                    setattr(self, method, Datum(datum, method, header))
 
     def __str__(self):
         if self.method is None:
@@ -95,6 +98,27 @@ class Data:
     def __contains__(self, item):
         return item in self.data
 
+    def __gt__(self, other):
+        """
+        Useful to do :code:`d => ...`
+        """
+        return js(f"d => {other}")
+
+    @property
+    def datum(self):
+        """
+        Change the prefix "data" to "d"
+
+        Examples
+        --------
+        >>> data = {"curves": {"values": [{"x": 1, "y": 2}], "color": "blue"}}
+        >>> data = Data(data)
+        >>> d = data.datum
+        >>> print(d.curves.values)
+        d.values
+        """
+        return Data(self.data, method=None, header="d")
+
     @staticmethod
     def arrange(obj: Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]) -> Data:
         """
@@ -111,6 +135,19 @@ class Data:
            :code:`Data` from :code:`obj`
         """
         return Data(arrange(obj))
+
+class Datum(Data):
+    def __init__(self, data, method: Optional[str] = None, header: str = "d"):
+        self.method = method
+        self.header = header
+        self.data = data
+        sample = self.data[0]
+        if isinstance(sample, dict):
+            for method, datum in sample.items():
+                if not isinstance(datum, list):
+                    setattr(self, method, Data(datum, method, "d"))
+                else:
+                    setattr(self, method, Datum(datum))
 
 DataInput = Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]
 
