@@ -72,10 +72,10 @@ class Data:
         self.data = data
         if isinstance(data, dict):
             for method, datum in data.items():
-                if not isinstance(datum, list):
-                    setattr(self, method, Data(datum, method, header))
-                else:
+                if isinstance(datum, list):
                     setattr(self, method, Datum(datum, method, header))
+                else:
+                    setattr(self, method, Data(datum, method, header))
 
     def __str__(self):
         if self.method is None:
@@ -98,9 +98,19 @@ class Data:
     def __contains__(self, item):
         return item in self.data
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> js:
         """
         Useful to do :code:`d => ...`
+
+        Parameters
+        ----------
+        other: Any
+            other
+
+        Returns
+        -------
+        js
+            :code:`d => ...`
         """
         return js(f"d => {other}")
 
@@ -141,13 +151,14 @@ class Datum(Data):
         self.method = method
         self.header = header
         self.data = data
-        sample = self.data[0]
-        if isinstance(sample, dict):
-            for method, datum in sample.items():
-                if not isinstance(datum, list):
-                    setattr(self, method, Data(datum, method, "d"))
-                else:
-                    setattr(self, method, Datum(datum))
+        if self.data:
+            sample = self.data[0]
+            if isinstance(sample, dict):
+                for method, datum in sample.items():
+                    if not isinstance(datum, list):
+                        setattr(self, method, Data(datum, method, "d"))
+                    else:
+                        setattr(self, method, Datum(datum))
 
 DataInput = Union[dict, DataFrameLike, Data, Tuple[list, list], Tuple[list, list, list]]
 
