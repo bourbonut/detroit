@@ -61,7 +61,7 @@ def identify(plot: JSInput) -> PlotType:
             return PlotType.MULTIPLE_D3
     return PlotType.UNIDENTIFIED
 
-async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg:bool=False, grid:int=1, event:Optional[str] = None) -> str:
+async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg:bool=False, grid:int=1, event:Optional[str] = None, autoreload:bool = False) -> str:
     """
     Return HTML content filled by arguments from detroit templates
 
@@ -79,14 +79,15 @@ async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg
         number of columns
     event: Optional[str]
         for dynamic update, this javascript code is inserted into the websocket updates
+    autoreload : bool
+        reload automatically your browser page
 
     Returns
     -------
     str
         HTML content filled by arguments
     """
-    from jinja2 import (ChoiceLoader, Environment, PackageLoader,
-                        select_autoescape)
+    from jinja2 import (ChoiceLoader, Environment, PackageLoader, select_autoescape)
     loader = ChoiceLoader([PackageLoader("detroit", "templates"), PackageLoader("detroit", "static")])
     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
     plot_type = identify(plot)
@@ -148,6 +149,7 @@ async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg
         serialize_code=serialize_code,
         width_code=width_code,
         id=id,
+        autoreload=autoreload,
     )
 
 async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
@@ -360,7 +362,7 @@ def websocket_save(
     )
     return f"Video saved."
 
-def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, grid:int=1):
+def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, grid:int=1, autoreload:bool=False):
     """
     Launch a web application to render plot. In a jupyter environment, display directly the plot.
 
@@ -374,6 +376,8 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, gr
         a file or a dictionary defining a CSS file
     grid : int
         number of columns
+    autoreload : bool
+        reload automatically your browser page
 
     Examples
     --------
@@ -417,7 +421,7 @@ def render(data: DataInput, plot: JSInput, style:Union[Path, str, dict]=None, gr
 
         @app.route("/")
         async def main():
-            return await html(data, plot, style=style, grid=grid)
+            return await html(data, plot, style=style, grid=grid, autoreload=autoreload)
 
         app.run()
 

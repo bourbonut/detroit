@@ -1,9 +1,10 @@
 <!doctype html>
-{% if style %}
-<head>
+{% if style or autoreload %}
+<head>{% if style %}
   <style>
     {{ style }}
-  </style>
+  </style>{% endif %}{% if autoreload %}
+  <script type="text/javascript" src="https://livejs.com/live.js"></script>{% endif %}
 </head>
 {% endif %}
 <body>
