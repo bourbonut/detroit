@@ -77,7 +77,9 @@ class function:
 
     >>> from detroit import function
     >>> function("d")("x(d.x)")
-    function(d){ return x(d.x); }
+    function(d){
+      return x(d.x);
+    }
     """
     def __init__(self, *args, name:str=None):
         self.args = args
@@ -92,7 +94,7 @@ class function:
         else:
             self.signature = f"function {self.name}({arguments})"
 
-    def __call__(self, *args, return_:bool=False):
+    def __call__(self, *args, return_:bool=True):
         if len(args) > 2:
             raise ValueError("Too many arguments (len(args) > 2)")
         elif len(args) == 2:
@@ -105,6 +107,7 @@ class function:
                 self.code.append(str(js(f"{args[0]}")))
         else:
             raise ValueError("No argument supplied")
+        return self
 
     def inline(self, arg):
         return js(self.signature + "{ return " + arg + "; }")
