@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from enum import Enum, auto
 import subprocess
 from pathlib import Path
@@ -200,7 +199,7 @@ async def javascript(data: dict, plot: JSInput, style:Union[Path, str, dict]=Non
 
     return await template.render_async(data=data, code=code)
 
-async def run_node_script(script: str, output: Path, shutdown_event: asyncio.Event):
+async def run_node_script(script: str, shutdown_event: asyncio.Event):
     """
     Pass and execute a script to nodejs
 
@@ -208,8 +207,6 @@ async def run_node_script(script: str, output: Path, shutdown_event: asyncio.Eve
     ----------
     script : str
         Javascript script
-    output : Path
-        Output path where results are written
     shutdown_event : asyncio.Event
         Event to shutdown websocket for sending data
     """
@@ -222,8 +219,8 @@ async def run_node_script(script: str, output: Path, shutdown_event: asyncio.Eve
 
     error = await process.stderr.read()
     svg = await process.stdout.read()
-    output.write_text(svg.decode(encoding="utf-8"))
     shutdown_event.set()
+    return svg, error
 
 async def run_data_websocket(data: dict, shutdown_event: asyncio.Event):
     """
@@ -236,6 +233,9 @@ async def run_data_websocket(data: dict, shutdown_event: asyncio.Event):
     shutdown_event : asyncio.Event
         Event triggered when wesocket needs to stop
     """
+    from quart import Quart, websocket
+    from hypercorn.asyncio import serve
+    from hypercorn import Config
     app = Quart("detroit")
 
     @app.websocket("/")
@@ -244,8 +244,8 @@ async def run_data_websocket(data: dict, shutdown_event: asyncio.Event):
 
     config = Config()
     config.bind = ["localhost:5000"]
+    config.loglevel = "NOTSET"
 
-    shutdown_event = asyncio.Event()
     await serve(app, config, shutdown_trigger=shutdown_event.wait)
 
 async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
@@ -273,9 +273,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
     from playwright.async_api import async_playwright
-    from quart import Quart, websocket
-    from hypercorn.asyncio import serve
-    from hypercorn import Config
+    import cairosvg
 
     if isinstance(output, str):
         output = Path(output)
@@ -285,8 +283,20 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
 
         shutdown_event = asyncio.Event()
 
-        asyncio.create_task(local_save())
+        task = asyncio.create_task(run_node_script(script, shutdown_event))
         await run_data_websocket(arrange(data), shutdown_event)
+        svg, error = task.result()
+        output.write_text(svg.decode(encoding="utf-8"))
+        return
+    elif output.suffix == ".png":
+        script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
+
+        shutdown_event = asyncio.Event()
+
+        task = asyncio.create_task(run_node_script(script, shutdown_event))
+        await run_data_websocket(arrange(data), shutdown_event)
+        svg, error = task.result()
+        cairosvg.svg2png(bytestring=svg, write_to=str(output), scale=scale_factor)
         return
 
     input = Path("~detroit-tmp.html")
