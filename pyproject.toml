@@ -12,6 +12,7 @@ dependencies = [
   "markupsafe",
   "playwright",
   "quart",
+  "cairosvg",
 ]
 classifiers = [
   "License :: OSI Approved :: BSD License",
