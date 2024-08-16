@@ -274,6 +274,9 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     """
     import cairosvg
 
+    if isinstance(output, str):
+        output = Path(output)
+
     # Get node script
     script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
 
@@ -284,7 +287,7 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     svg, error = task.result()
 
     if output.suffix == ".svg":
-        output = Path(output).write_text(svg.decode(encoding="utf-8"))
+        output.write_text(svg.decode(encoding="utf-8"))
     elif output.suffix == ".png":
         cairosvg.svg2png(bytestring=svg, write_to=str(output), scale=scale_factor)
     elif output.suffix == ".pdf":
