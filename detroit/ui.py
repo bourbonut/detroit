@@ -217,8 +217,8 @@ async def run_node_script(script: str, shutdown_event: asyncio.Event):
         stdout=subprocess.PIPE,
     )
 
-    error = await process.stderr.read()
     svg = await process.stdout.read()
+    error = await process.stderr.read()
     shutdown_event.set()
     return svg, error
 
@@ -272,56 +272,25 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
-    from playwright.async_api import async_playwright
     import cairosvg
 
-    if isinstance(output, str):
-        output = Path(output)
+    # Get node script
+    script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
+
+    # Use websocket to send data from node and run node script
+    shutdown_event = asyncio.Event()
+    task = asyncio.create_task(run_node_script(script, shutdown_event))
+    await run_data_websocket(arrange(data), shutdown_event)
+    svg, error = task.result()
+
     if output.suffix == ".svg":
-        logging.disable()
-        script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
-
-        shutdown_event = asyncio.Event()
-
-        task = asyncio.create_task(run_node_script(script, shutdown_event))
-        await run_data_websocket(arrange(data), shutdown_event)
-        svg, error = task.result()
-        output.write_text(svg.decode(encoding="utf-8"))
-        return
+        output = Path(output).write_text(svg.decode(encoding="utf-8"))
     elif output.suffix == ".png":
-        script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
-
-        shutdown_event = asyncio.Event()
-
-        task = asyncio.create_task(run_node_script(script, shutdown_event))
-        await run_data_websocket(arrange(data), shutdown_event)
-        svg, error = task.result()
         cairosvg.svg2png(bytestring=svg, write_to=str(output), scale=scale_factor)
-        return
-
-    input = Path("~detroit-tmp.html")
-    input.write_text(await html(data, plot, style=style, grid=grid, svg=output.suffix == ".svg"))
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        if output.suffix == ".png":
-            context = await browser.new_context(device_scale_factor=scale_factor)
-            page = await context.new_page()
-            await page.goto(f'file://{input.absolute()}')
-            width = await page.evaluate_handle("width");
-            height = await page.evaluate_handle("height");
-            await page.set_viewport_size({'width': int(float(str(width))), 'height': int(float(str(height)))})
-            await page.goto(f'file://{input.absolute()}')
-            await page.screenshot(path=output, type='png')
-        elif output.suffix == ".pdf":
-            page = await browser.new_page()
-            await page.goto(f'file://{input.absolute()}')
-            await page.pdf(path=output)
-        else:
-            await browser.close()
-            input.unlink()
-            raise ValueError(f"Unsupported \"{output.suffix}\" file")
-        await browser.close()
-        input.unlink()
+    elif output.suffix == ".pdf":
+        cairosvg.svg2pdf(bytestring=svg, write_to=str(output))
+    else:
+        raise ValueError(f"Unsupported \"{output.suffix}\" file")
 
 def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[Path, str, dict]=None, grid:int=1, scale_factor:float=1) -> str:
     """
