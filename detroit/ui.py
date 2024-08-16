@@ -1,5 +1,7 @@
 import asyncio
+import logging
 from enum import Enum, auto
+import subprocess
 from pathlib import Path
 from typing import Dict, Generator, List, Optional, Union
 
@@ -152,6 +154,100 @@ async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg
         autoreload=autoreload,
     )
 
+
+async def javascript(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg:bool=False, grid:int=1, event:Optional[str] = None, autoreload:bool = False) -> str:
+    """
+    Return Javascript script filled by arguments from detroit templates
+
+    Parameters
+    ----------
+    data : Union[dict, Generator[dict, None, None]]
+        data used for plots
+    plot : JSInput
+        plot javascript code
+    style : Union[Path, str, dict]
+        a file or a dictionary defining a CSS file
+    svg : bool
+        True to get javascript functions to generate a svg object in javascript
+    grid : int
+        number of columns
+    event: Optional[str]
+        for dynamic update, this javascript code is inserted into the websocket updates
+    autoreload : bool
+        reload automatically your browser page
+
+    Returns
+    -------
+    str
+        HTML content filled by arguments
+    """
+    from jinja2 import (ChoiceLoader, Environment, PackageLoader, select_autoescape)
+    loader = PackageLoader("detroit", "templates")
+    env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
+    template = env.get_template("svg_maker.js")
+    plot_type = identify(plot)
+    # style = CSS(style)
+
+    if plot_type == PlotType.UNIDENTIFIED:
+        raise TypeError("Unsupported type of argument \"plot\"")
+    elif plot_type == PlotType.MULTIPLE_D3 or plot_type == PlotType.MULTIPLE_PLOTS or plot_type == PlotType.SINGLE_PLOT:
+        raise NotImplemented()
+    else:
+        code = str(plot).replace("d3.select('#myplot')", "d3.select(dom.window.document).select('#myplot')")
+        code = code.replace("'", '"')
+        code = Markup(code)
+        data = Markup(f"const data = {data};")
+
+    return await template.render_async(data=data, code=code)
+
+async def run_node_script(script: str, output: Path, shutdown_event: asyncio.Event):
+    """
+    Pass and execute a script to nodejs
+
+    Parameters
+    ----------
+    script : str
+        Javascript script
+    output : Path
+        Output path where results are written
+    shutdown_event : asyncio.Event
+        Event to shutdown websocket for sending data
+    """
+    process = await asyncio.create_subprocess_shell(
+        f"node --input-type=module --eval='{script}'",
+        stdin=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+
+    error = await process.stderr.read()
+    svg = await process.stdout.read()
+    output.write_text(svg.decode(encoding="utf-8"))
+    shutdown_event.set()
+
+async def run_data_websocket(data: dict, shutdown_event: asyncio.Event):
+    """
+    Deploy a websocket to send data
+
+    Parameters
+    ----------
+    data : dict
+        Data to be sent
+    shutdown_event : asyncio.Event
+        Event triggered when wesocket needs to stop
+    """
+    app = Quart("detroit")
+
+    @app.websocket("/")
+    async def ws():
+        await websocket.send_json(data)
+
+    config = Config()
+    config.bind = ["localhost:5000"]
+
+    shutdown_event = asyncio.Event()
+    await serve(app, config, shutdown_trigger=shutdown_event.wait)
+
 async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
     """
     Save the plot into a `output` file given arguments.
@@ -177,8 +273,22 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
     from playwright.async_api import async_playwright
+    from quart import Quart, websocket
+    from hypercorn.asyncio import serve
+    from hypercorn import Config
+
     if isinstance(output, str):
         output = Path(output)
+    if output.suffix == ".svg":
+        logging.disable()
+        script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
+
+        shutdown_event = asyncio.Event()
+
+        asyncio.create_task(local_save())
+        await run_data_websocket(arrange(data), shutdown_event)
+        return
+
     input = Path("~detroit-tmp.html")
     input.write_text(await html(data, plot, style=style, grid=grid, svg=output.suffix == ".svg"))
     async with async_playwright() as p:
@@ -196,12 +306,6 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
             page = await browser.new_page()
             await page.goto(f'file://{input.absolute()}')
             await page.pdf(path=output)
-        elif output.suffix == ".svg":
-            page = await browser.new_page()
-            await page.set_viewport_size({'width': 2560, 'height': 1440})
-            await page.goto(f'file://{input.absolute()}')
-            jshandle = await page.evaluate_handle("mysvg")
-            output.write_text(str(jshandle))
         else:
             await browser.close()
             input.unlink()
