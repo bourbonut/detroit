@@ -13,6 +13,8 @@ dependencies = [
   "playwright",
   "quart",
   "cairosvg",
+  "websockets"
+  "orjson",
 ]
 classifiers = [
   "License :: OSI Approved :: BSD License",

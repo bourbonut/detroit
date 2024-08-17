@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, Generator, List, Optional, Union
 
 from markupsafe import Markup
+import cairosvg
 
 from .d3_utils import Script
 from .plot import Plot_
@@ -189,17 +190,21 @@ async def javascript(data: dict, plot: JSInput, style:Union[Path, str, dict]=Non
 
     if plot_type == PlotType.UNIDENTIFIED:
         raise TypeError("Unsupported type of argument \"plot\"")
-    elif plot_type == PlotType.MULTIPLE_D3 or plot_type == PlotType.MULTIPLE_PLOTS or plot_type == PlotType.SINGLE_PLOT:
+    elif plot_type == PlotType.MULTIPLE_D3 or plot_type == PlotType.MULTIPLE_PLOTS:
         raise NotImplemented()
-    else:
+    elif plot_type == PlotType.SINGLE_PLOT:
+        import_package = 'import * as Plot from "@observablehq/plot";'
+        is_plot = True
+        code = Markup(str(plot).replace("'", '"'))
+    elif plot_type == PlotType.SINGLE_D3:
+        import_package = 'import * as d3 from "d3";'
+        is_plot = False
         code = str(plot).replace("d3.select('#myplot')", "d3.select(dom.window.document).select('#myplot')")
-        code = code.replace("'", '"')
-        code = Markup(code)
-        data = Markup(f"const data = {data};")
+        code = Markup(code.replace("'", '"'))
 
-    return await template.render_async(data=data, code=code)
+    return await template.render_async(import_package=import_package, code=code, plot=is_plot)
 
-async def run_node_script(script: str, shutdown_event: asyncio.Event):
+async def run_node_script(script: str) -> str:
     """
     Pass and execute a script to nodejs
 
@@ -207,22 +212,21 @@ async def run_node_script(script: str, shutdown_event: asyncio.Event):
     ----------
     script : str
         Javascript script
-    shutdown_event : asyncio.Event
-        Event to shutdown websocket for sending data
+
+    Returns
+    -------
+    str
+        Error of the node script
     """
     process = await asyncio.create_subprocess_shell(
         f"node --input-type=module --eval='{script}'",
-        stdin=subprocess.PIPE,
-        stderr=subprocess.PIPE,
         stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
-
-    svg = await process.stdout.read()
     error = await process.stderr.read()
-    shutdown_event.set()
-    return svg, error
+    return error.decode("utf-8")
 
-async def run_data_websocket(data: dict, shutdown_event: asyncio.Event):
+async def run_data_websocket(data: dict) -> str:
     """
     Deploy a websocket to send data
 
@@ -230,23 +234,27 @@ async def run_data_websocket(data: dict, shutdown_event: asyncio.Event):
     ----------
     data : dict
         Data to be sent
-    shutdown_event : asyncio.Event
-        Event triggered when wesocket needs to stop
-    """
-    from quart import Quart, websocket
-    from hypercorn.asyncio import serve
-    from hypercorn import Config
-    app = Quart("detroit")
 
-    @app.websocket("/")
-    async def ws():
-        await websocket.send_json(data)
+    Returns
+    -------
+    str
+        Data received by websocket
+    """ 
+    from websockets.server import serve
+    import orjson
 
-    config = Config()
-    config.bind = ["localhost:5000"]
-    config.loglevel = "NOTSET"
+    shutdown_event = asyncio.Event()
+    future = asyncio.Future()
+    async def main(websocket):
+        await websocket.send(orjson.dumps(data))
+        future.set_result(await websocket.recv())
+        shutdown_event.set()
 
-    await serve(app, config, shutdown_trigger=shutdown_event.wait)
+    server = serve(main, "localhost", 5000)
+    async with server:
+        await shutdown_event.wait()
+
+    return await future
 
 async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Union[str, dict], grid: int, scale_factor: float):
     """
@@ -272,8 +280,6 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
-    import cairosvg
-
     if isinstance(output, str):
         output = Path(output)
 
@@ -281,13 +287,11 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
 
     # Use websocket to send data from node and run node script
-    shutdown_event = asyncio.Event()
-    task = asyncio.create_task(run_node_script(script, shutdown_event))
-    await run_data_websocket(arrange(data), shutdown_event)
-    svg, error = task.result()
+    error = asyncio.create_task(run_node_script(script))
+    svg = await run_data_websocket(arrange(data))
 
     if output.suffix == ".svg":
-        output.write_text(svg.decode(encoding="utf-8"))
+        output.write_text(svg)
     elif output.suffix == ".png":
         cairosvg.svg2png(bytestring=svg, write_to=str(output), scale=scale_factor)
     elif output.suffix == ".pdf":
