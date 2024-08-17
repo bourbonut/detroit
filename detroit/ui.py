@@ -155,7 +155,7 @@ async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg
     )
 
 
-async def javascript(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg:bool=False, grid:int=1, event:Optional[str] = None, autoreload:bool = False) -> str:
+async def javascript(data: dict, plot: JSInput, style: Union[Path, str, dict] = None, svg: bool=False, grid:int=1, event:Optional[str] = None, autoreload: bool = False) -> str:
     """
     Return Javascript script filled by arguments from detroit templates
 
@@ -220,10 +220,14 @@ async def run_node_script(script: str) -> str:
     """
     process = await asyncio.create_subprocess_shell(
         f"node --input-type=module --eval='{script}'",
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
+    logs = await process.stdout.read()
     error = await process.stderr.read()
+    print(logs.decode("utf-8"))
+    print(error.decode("utf-8"))
     return error.decode("utf-8")
 
 async def run_data_websocket(data: dict) -> str:
@@ -250,8 +254,7 @@ async def run_data_websocket(data: dict) -> str:
         future.set_result(await websocket.recv())
         shutdown_event.set()
 
-    server = serve(main, "localhost", 5000)
-    async with server:
+    async with serve(main, "localhost", 5000):
         await shutdown_event.wait()
 
     return await future
@@ -287,8 +290,9 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
 
     # Use websocket to send data from node and run node script
-    error = asyncio.create_task(run_node_script(script))
+    task = asyncio.create_task(run_node_script(script))
     svg = await run_data_websocket(arrange(data))
+    await task
 
     if output.suffix == ".svg":
         output.write_text(svg)
