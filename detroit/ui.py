@@ -1,6 +1,5 @@
 import asyncio
 from enum import Enum, auto
-import subprocess
 from pathlib import Path
 from typing import Dict, Generator, List, Optional, Union
 
@@ -220,12 +219,11 @@ async def run_node_script(script: str) -> str:
     """
     process = await asyncio.create_subprocess_shell(
         f"node --input-type=module --eval='{script}'",
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
-    logs = await process.stdout.read()
-    error = await process.stderr.read()
+    logs, error = await process.communicate()
     print(logs.decode("utf-8"))
     print(error.decode("utf-8"))
     return error.decode("utf-8")
@@ -283,25 +281,32 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
+    from time import perf_counter
     if isinstance(output, str):
         output = Path(output)
 
     # Get node script
+    st = perf_counter()
     script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
 
     # Use websocket to send data from node and run node script
     task = asyncio.create_task(run_node_script(script))
     svg = await run_data_websocket(arrange(data))
     await task
+    end = perf_counter()
+    print(end - st)
+    # print(svg)
+    with open("test.svg", "w") as file:
+        file.write(svg)
 
-    if output.suffix == ".svg":
-        output.write_text(svg)
-    elif output.suffix == ".png":
-        cairosvg.svg2png(bytestring=svg, write_to=str(output), scale=scale_factor)
-    elif output.suffix == ".pdf":
-        cairosvg.svg2pdf(bytestring=svg, write_to=str(output))
-    else:
-        raise ValueError(f"Unsupported \"{output.suffix}\" file")
+    # if output.suffix == ".svg":
+    #     output.write_text(svg)
+    # elif output.suffix == ".png":
+    #     cairosvg.svg2png(bytestring=svg, write_to=str(output), scale=scale_factor)
+    # elif output.suffix == ".pdf":
+    #     cairosvg.svg2pdf(bytestring=svg, write_to=str(output))
+    # else:
+    #     raise ValueError(f"Unsupported \"{output.suffix}\" file")
 
 def save(data: DataInput, plot: JSInput, output:Union[Path, str], style:Union[Path, str, dict]=None, grid:int=1, scale_factor:float=1) -> str:
     """
