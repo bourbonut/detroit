@@ -22,17 +22,26 @@ function float(string){
 
 class Tracer {
   constructor(figure, grid = 1) {
-    const svg = (figure.tagName == "FIGURE") ? figure.childNodes[figure.childNodes.length - 1] : figure
+    const svg = (figure.tagName == "FIGURE") ? figure.childNodes[figure.childNodes.length - 1] : figure;
     this.fontSize = 10;
     this.grid = grid;
     this.svg = this.create("svg");
-    const [width, height] = this.walkInto(figure, this.svg).slice(0, 2);
+    const [width, height] = figure.tagName === "svg" ? this.walkIntoSVG(figure) : this.walkInto(figure, this.svg).slice(0, 2);
     this.svg.setAttribute("width", width);
     this.svg.setAttribute("height", height);
     this.svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     this.svg.setAttribute("style", svg.getAttribute("style"));
     this.svg.setAttribute("fill", svg.getAttribute("fill"));
     this.svg.setAttribute("font-family", svg.getAttribute("font-family"));
+  }
+
+  walkIntoSVG(svg){
+    const g = this.create("g");
+    const width = float(svg.getAttribute("width"));
+    const height = float(svg.getAttribute("height"));
+    this.extractSVG(svg, g, 0);
+    this.svg.append(g);
+    return [width, height];
   }
 
   create(element){
@@ -120,6 +129,8 @@ class Tracer {
             break;
           case "FIGURE":
             [width, height, x, y] = this.walkInto(child, support);
+            break;
+          case "g":
             break;
           default:
             break;
