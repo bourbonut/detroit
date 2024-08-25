@@ -1,4 +1,5 @@
 import asyncio
+import re
 from enum import Enum, auto
 from pathlib import Path
 from typing import Dict, Generator, List, Optional, Union
@@ -181,6 +182,7 @@ async def javascript(data: dict, plot: JSInput, style: Union[Path, str, dict] = 
         HTML content filled by arguments
     """
     from jinja2 import (ChoiceLoader, Environment, PackageLoader, select_autoescape)
+    import orjson
     loader = PackageLoader("detroit", "templates")
     env = Environment(loader=loader, autoescape=select_autoescape(), enable_async=True)
     template = env.get_template("svg_maker.js")
@@ -194,7 +196,13 @@ async def javascript(data: dict, plot: JSInput, style: Union[Path, str, dict] = 
     elif plot_type == PlotType.SINGLE_PLOT:
         import_package = 'import * as Plot from "@observablehq/plot";'
         is_plot = True
-        code = Markup(str(plot).replace("'", '"'))
+        code = str(plot).replace("'", '"')
+        pattern = re.compile(r"(.*)plot\((.*)\)")
+        if plot_content := pattern.match(code)[2]:
+            plot_content = re.sub(r"(.*)}", r'\1, "document": dom.window.document}', plot_content)
+        else:
+            plot_content = '{"document": dom.window.document}'
+        code = Markup(pattern.sub(fr"\1plot({plot_content})", code))
     elif plot_type == PlotType.SINGLE_D3:
         import_package = 'import * as d3 from "d3";'
         is_plot = False

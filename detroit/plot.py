@@ -3,7 +3,6 @@
 
 from functools import partial
 from operator import is_not
-from .utils import js
 
 class Plot_:
     """
@@ -1387,10 +1386,6 @@ class Plot_:
         guide.
         See more informations `here` <https://observablehq.com/plot/features/plots#plot>`_.
         """
-        if options is None:
-            options = {"document": repr("dom.window.document")}
-        else:
-            options.update({"document": js("dom.window.document")})
         arguments = ", ".join(map(repr, filter(partial(is_not, None), (options,))))
         return Plot_(f"{self.content}.plot({arguments})")
 
