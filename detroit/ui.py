@@ -154,6 +154,29 @@ async def html(data: dict, plot: JSInput, style:Union[Path, str, dict]=None, svg
         autoreload=autoreload,
     )
 
+def prepare_plot_code(plot: Plot_) -> Markup:
+    """
+    Add :code:`dom.window.document` to :code:`Plot.plot(...)`
+    in order to work when using :code:`node`.
+
+    Parameters
+    ----------
+    plot : Plot_
+        plot javascript code
+
+    Returns
+    -------
+    Markup
+        modified code with :code:`dom.window.document` 
+    """
+    code = str(plot).replace("'", '"')
+    pattern = re.compile(r"(.*)plot\((.*)\)")
+    if plot_content := pattern.match(code)[2]:
+        plot_content = re.sub(r"(.*)}", r'\1, "document": dom.window.document}', plot_content)
+    else:
+        plot_content = '{"document": dom.window.document}'
+    code = Markup(pattern.sub(fr"\1plot({plot_content})", code))
+    return code
 
 async def javascript(data: dict, plot: JSInput, style: Union[Path, str, dict] = None, svg: bool=False, grid:int=1, event:Optional[str] = None, autoreload: bool = False) -> str:
     """
@@ -191,25 +214,37 @@ async def javascript(data: dict, plot: JSInput, style: Union[Path, str, dict] = 
 
     if plot_type == PlotType.UNIDENTIFIED:
         raise TypeError("Unsupported type of argument \"plot\"")
-    elif plot_type == PlotType.MULTIPLE_D3 or plot_type == PlotType.MULTIPLE_PLOTS:
+    elif plot_type == PlotType.MULTIPLE_D3:
         raise NotImplemented()
+    elif plot_type == PlotType.MULTIPLE_PLOTS:
+        import_package = 'import * as Plot from "@observablehq/plot";'
+        is_plot = True
+        multiple = True
+        titles, code = zip(*plot.items())
+        titles = ", ".join(map('"{}"'.format, titles))
+        code = list(enumerate(map(prepare_plot_code, code)))
     elif plot_type == PlotType.SINGLE_PLOT:
         import_package = 'import * as Plot from "@observablehq/plot";'
         is_plot = True
-        code = str(plot).replace("'", '"')
-        pattern = re.compile(r"(.*)plot\((.*)\)")
-        if plot_content := pattern.match(code)[2]:
-            plot_content = re.sub(r"(.*)}", r'\1, "document": dom.window.document}', plot_content)
-        else:
-            plot_content = '{"document": dom.window.document}'
-        code = Markup(pattern.sub(fr"\1plot({plot_content})", code))
+        multiple = False
+        code = prepare_plot_code(plot)
+        titles = []
     elif plot_type == PlotType.SINGLE_D3:
         import_package = 'import * as d3 from "d3";'
         is_plot = False
+        multiple = False
         code = str(plot).replace("d3.select('#myplot')", "d3.select(dom.window.document).select('#myplot')")
         code = Markup(code.replace("'", '"'))
+        titles = []
 
-    return await template.render_async(import_package=import_package, code=code, plot=is_plot)
+    return await template.render_async(
+        import_package=import_package,
+        titles=titles,
+        code=code,
+        plot=is_plot,
+        multiple=multiple,
+        grid=grid
+    )
 
 async def run_node_script(script: str) -> str:
     """
@@ -232,8 +267,8 @@ async def run_node_script(script: str) -> str:
         stderr=asyncio.subprocess.PIPE,
     )
     logs, error = await process.communicate()
-    print(logs.decode("utf-8"))
-    print(error.decode("utf-8"))
+    # print(logs.decode("utf-8"))
+    # print(error.decode("utf-8"))
     return error.decode("utf-8")
 
 async def run_data_websocket(data: dict) -> str:
