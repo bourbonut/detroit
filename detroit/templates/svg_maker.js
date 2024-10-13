@@ -2,7 +2,6 @@
 import { JSDOM } from "jsdom";
 import WebSocket from "ws";
 import performance from "perf_hooks";
-import { transform } from "@observablehq/plot";
 const dom = new JSDOM();
 
 var start = performance.performance.now();
@@ -168,11 +167,13 @@ class Tracer {
                     .filter(name => name.includes("height"))
                     .map(key => this.convertUnit(style[key]))
             );
-            [width, height, x, y] = this.walkInto(child, g);
             if (Array.from(child.childNodes).length !== 1){
+              [width, height, x, y] = this.walkInto(child, g);
               g.setAttribute("transform", `translate(${width / 2}, ${heightOffset / 2})`); 
+              support.append(g);
+            } else {
+              [width, height, x, y] = this.walkInto(child, support);
             }
-            support.append(g);
             break;
           case "FIGURE":
             [width, height, x, y] = this.walkInto(child, support);
@@ -272,5 +273,3 @@ ws.on("message", function message(received_data) {
   var end = performance.performance.now();
   console.log((end - start) * 1e-3);
 });
-
-

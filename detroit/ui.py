@@ -267,7 +267,7 @@ async def run_node_script(script: str) -> str:
         stderr=asyncio.subprocess.PIPE,
     )
     logs, error = await process.communicate()
-    # print(logs.decode("utf-8"))
+    print(logs.decode("utf-8"))
     # print(error.decode("utf-8"))
     return error.decode("utf-8")
 
@@ -324,16 +324,20 @@ async def _save(data: dict, plot: JSInput, output: Union[Path, str], style: Unio
     scale_factor : float
         only for :code:`.png` file; the more the number is higher, the more the quality of image will be
     """
+    import time
     if isinstance(output, str):
         output = Path(output)
 
     # Get node script
     script = await javascript(data, plot, style=style, grid=grid, svg=output.suffix == ".svg")
 
+    st = time.perf_counter()
     # Use websocket to send data from node and run node script
     task = asyncio.create_task(run_node_script(script))
     svg = await run_data_websocket(arrange(data))
     await task
+    end = time.perf_counter()
+    print(end - st)
 
     if output.suffix == ".svg":
         output.write_text(svg)
