@@ -1,17 +1,15 @@
 [project]
 name = "detroit"
 description = "detroit is wrapper for Python of d3js and Observable Plot."
-version = "1.2.2"
+version = "2.0.0"
 readme = "README.md"
 authors = [
   { name = "Benjamin BOURBON", email = "ben.bourbon06@gmail.com"},
 ]
 requires-python = ">=3.9"
 dependencies = [
-  "jinja2",
-  "markupsafe",
-  "playwright",
-  "quart",
+  "bs4",
+  "lxml",
 ]
 classifiers = [
   "License :: OSI Approved :: BSD License",
@@ -35,4 +33,3 @@ jupyter = ["notebook", "nest_asyncio"]
 
 [tool.setuptools.packages.find]
 include = ["detroit"]
-exclude = ["api_maker"]

@@ -1,4 +1,0 @@
-httpx
-Jinja2
-beautifulsoup4
-lxml
