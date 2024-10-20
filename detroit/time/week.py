@@ -1,21 +1,27 @@
 from .interval import TimeInterval
+from .duration import duration_minute, duration_week
 from datetime import timedelta
+import calendar
 
 def time_weekday(i):
     class TimeWeekDay(TimeInterval):
 
         def floor(self, date):
-            print(date, date.weekday())
-            return date.replace(day=date.day - (date.weekday() + 7 - i) % 7, hour=0, minute=0, second=0, microsecond=0)
+            return date.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=(date.weekday() + 7 - (i - 1)) % 7)
 
         def offset(self, date, step):
             return date + timedelta(weeks=step)
 
         def count(self, start, end):
-            return (end - start).days // 7
+            index = (i + 6) % 7
+            a = start.weekday()
+            b = end.weekday()
+            days = list(range(a, b + 1)) if a < b else list(range(a, 7)) + list(range(b + 1))
+            return (end - start).days // 7 + bool(index in days and (a != b or index == a))
 
         def field(self, date):
             return date.weekday()
+
     return TimeWeekDay()
 
 time_sunday = time_week = time_weekday(0)

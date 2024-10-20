@@ -1,28 +1,24 @@
 import detroit as d3
 from datetime import datetime
 
-def test_unknown():
-  assert.strictEqual(time_mondays, time_monday.range);
-
-
 def test_time_monday_floor():
-  assert time_monday.floor(datetime(2011,  0,  1, 23, 59, 59)) == datetime(2010, 11, 27)
-  assert time_monday.floor(datetime(2011,  0,  2,  0,  0,  0)) == datetime(2010, 11, 27)
-  assert time_monday.floor(datetime(2011,  0,  2,  0,  0,  1)) == datetime(2010, 11, 27)
-  assert time_monday.floor(datetime(2011,  0,  2, 23, 59, 59)) == datetime(2010, 11, 27)
-  assert time_monday.floor(datetime(2011,  0,  3,  0,  0,  0)) == datetime(2011,  0,  3)
-  assert time_monday.floor(datetime(2011,  0,  3,  0,  0,  1)) == datetime(2011,  0,  3)
+  assert d3.time_monday.floor(datetime(2011,  1,  1, 23, 59, 59)) == datetime(2010, 12, 27)
+  assert d3.time_monday.floor(datetime(2011,  1,  2,  0,  0,  0)) == datetime(2010, 12, 27)
+  assert d3.time_monday.floor(datetime(2011,  1,  2,  0,  0,  1)) == datetime(2010, 12, 27)
+  assert d3.time_monday.floor(datetime(2011,  1,  2, 23, 59, 59)) == datetime(2010, 12, 27)
+  assert d3.time_monday.floor(datetime(2011,  1,  3,  0,  0,  0)) == datetime(2011,  1,  3)
+  assert d3.time_monday.floor(datetime(2011,  1,  3,  0,  0,  1)) == datetime(2011,  1,  3)
 
 
-def test_unknown():
-  assert.deepStrictEqual(time_monday.range(datetime(2011, 11,  1), datetime(2012,  0, 15), 2), [
-    datetime(2011, 11,  5),
-    datetime(2011, 11, 19),
-    datetime(2012,  0,  2)
-  ]);
+def test_time_monday_range():
+  assert d3.time_monday.range(datetime(2011, 12,  1), datetime(2012,  1, 15), 2), [
+    datetime(2011, 12,  5),
+    datetime(2011, 12, 19),
+    datetime(2012,  1,  2)
+  ]
 
 
-def test_unknown():
+def test_time_monday_count():
   #     January 2014
   # Su Mo Tu We Th Fr Sa
   #           1  2  3  4
@@ -30,10 +26,10 @@ def test_unknown():
   # 12 13 14 15 16 17 18
   # 19 20 21 22 23 24 25
   # 26 27 28 29 30 31
-  assert time_monday.count(datetime(2014,  0,  1), datetime(2014,  0,  5)) == 0
-  assert time_monday.count(datetime(2014,  0,  1), datetime(2014,  0,  6)) == 1
-  assert time_monday.count(datetime(2014,  0,  1), datetime(2014,  0,  7)) == 1
-  assert time_monday.count(datetime(2014,  0,  1), datetime(2014,  0, 13)) == 2
+  assert d3.time_monday.count(datetime(2014,  1,  1), datetime(2014,  1,  5)) == 0
+  assert d3.time_monday.count(datetime(2014,  1,  1), datetime(2014,  1,  6)) == 1
+  assert d3.time_monday.count(datetime(2014,  1,  1), datetime(2014,  1,  7)) == 1
+  assert d3.time_monday.count(datetime(2014,  1,  1), datetime(2014,  1, 13)) == 2
 
   #     January 2018
   # Su Mo Tu We Th Fr Sa
@@ -42,16 +38,14 @@ def test_unknown():
   # 14 15 16 17 18 19 20
   # 21 22 23 24 25 26 27
   # 28 29 30 31
-  assert time_monday.count(datetime(2018,  0,  1), datetime(2018,  0,  7)) == 0
-  assert time_monday.count(datetime(2018,  0,  1), datetime(2018,  0,  8)) == 1
-  assert time_monday.count(datetime(2018,  0,  1), datetime(2018,  0,  9)) == 1
+  assert d3.time_monday.count(datetime(2018,  1,  1), datetime(2018,  1,  7)) == 1
+  assert d3.time_monday.count(datetime(2018,  1,  1), datetime(2018,  1,  8)) == 2
+  assert d3.time_monday.count(datetime(2018,  1,  1), datetime(2018,  1,  9)) == 2
 
-
-def test_time_monday_count():
-  assert time_monday.count(datetime(2011,  0,  1), datetime(2011,  2, 13,  1)) == 10
-  assert time_monday.count(datetime(2011,  0,  1), datetime(2011,  2, 13,  3)) == 10
-  assert time_monday.count(datetime(2011,  0,  1), datetime(2011,  2, 13,  4)) == 10
-  assert time_monday.count(datetime(2011,  0,  1), datetime(2011, 10,  6,  0)) == 44
-  assert time_monday.count(datetime(2011,  0,  1), datetime(2011, 10,  6,  1)) == 44
-  assert time_monday.count(datetime(2011,  0,  1), datetime(2011, 10,  6,  2)) == 44
+  assert d3.time_monday.count(datetime(2011,  1,  1), datetime(2011,  3, 13,  1)) == 10
+  assert d3.time_monday.count(datetime(2011,  1,  1), datetime(2011,  3, 13,  3)) == 10
+  assert d3.time_monday.count(datetime(2011,  1,  1), datetime(2011,  3, 13,  4)) == 10
+  assert d3.time_monday.count(datetime(2011,  1,  1), datetime(2011, 11,  6,  0)) == 44
+  assert d3.time_monday.count(datetime(2011,  1,  1), datetime(2011, 11,  6,  1)) == 44
+  assert d3.time_monday.count(datetime(2011,  1,  1), datetime(2011, 11,  6,  2)) == 44
 

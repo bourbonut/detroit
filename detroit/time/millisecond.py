@@ -13,7 +13,7 @@ class TimeMillisecond(TimeInterval):
         return (end - start).milliseconds
 
     def field(self, date):
-        return date.millisecond
+        return date.microsecond // 1000
 
 time_millisecond = TimeMillisecond()
 time_milliseconds = time_millisecond.range
