@@ -15,4 +15,5 @@ from .time import (
     time_thursday,
     time_friday,
     time_saturday,
+    time_ticks,
 )

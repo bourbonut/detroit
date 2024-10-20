@@ -14,8 +14,8 @@ def test_time_multi_year_every_ceil():
 
 
 def test_time_multi_year_offset():
-  assert d3.time_year.every(5).offset(datetime(2010, 12, 31, 23, 59, 59, 999), +1), datetime(2015, 12, 31, 23, 59, 59, 999)
-  assert d3.time_year.every(5).offset(datetime(2010, 12, 31, 23, 59, 59, 456), -2), datetime(2000, 12, 31, 23, 59, 59, 456)
+  assert d3.time_year.every(5).offset(datetime(2010, 12, 31, 23, 59, 59, 999), +1) == datetime(2015, 12, 31, 23, 59, 59, 999)
+  assert d3.time_year.every(5).offset(datetime(2010, 12, 31, 23, 59, 59, 456), -2) == datetime(2000, 12, 31, 23, 59, 59, 456)
 
 
 def test_time_multi_year_range():
