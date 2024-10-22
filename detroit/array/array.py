@@ -996,11 +996,11 @@ from internmap import InternSet
 def intersection(values, *others):
     values = InternSet(values)
     others = [set_(other) for other in others]
-    out: for value in values:
+    for value in values:
         for other in others:
             if value not in other:
                 values.remove(value)
-                continue out
+                continue
     return values
 
 def set_(values):
@@ -1391,4 +1391,3 @@ def threshold_sturges(values):
     return max(1, math.ceil(math.log(count(values)) / math.log(2)) + 1)
 
 # -----
-

@@ -17,3 +17,10 @@ from .time import (
     time_saturday,
     time_ticks,
 )
+from .array import (
+    tick_increment,
+    tick_step,
+    ticks,
+    nice,
+    extent,
+)
