@@ -229,10 +229,9 @@ def test_bin_17():
     pass
 
 
-@pytest.mark.skip
 def test_bin_18():
     for n in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]:
-        assert d3.bin().thresholds(n)(ticks(1, 2, n)).every(lambda d: len(d) == 1)
+        assert all(map(lambda d: len(d._list) == 1, d3.bin().thresholds(n)(ticks(1, 2, n))))
 
 def test_bin_19():
     assert d3.bin().domain([4, 5])([5]) == [box([5], 4, 5)]
