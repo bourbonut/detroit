@@ -23,4 +23,5 @@ from .array import (
     ticks,
     nice,
     extent,
+    bin,
 )
