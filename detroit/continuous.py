@@ -1,22 +1,6 @@
-from bisect import bisect
-from d3_interpolate import interpolate as interpolate_value, interpolate_number, interpolate_round
-from constant import constant
-from number import number
+import math
+from bisect import bisect_right
 
-def identity(x):
-    return x
-
-def normalize(a, b):
-    b = b - a
-    if b:
-        return lambda x: (x - a) / b
-    else:
-        return math.nan if math.isnan(b) else 0.5
-
-def clamper(a, b):
-    if a > b:
-        a, b = b, a
-    return lambda x: max(a, min(b, x))
 
 class BiMap:
     def __init__(self, domain, range_vals, interpolate):
@@ -60,6 +44,56 @@ def copy(source, target):
         .clamp(source.clamp())
         .unknown(source.unknown())
     )
+
+
+def normalize(a, b):
+    b = b - a
+    if b:
+        return lambda x: (x - a) / b
+    else:
+        return math.nan if math.isnan(b) else 0.5
+
+
+def clamper(a, b):
+    if a > b:
+        a, b = b, a
+    return lambda x: max(a, min(b, x))
+
+
+def interpolate_number(a, b):
+    a, b = float(a), float(b)
+    return lambda t: a * (1 - t) + b * t
+
+
+def interpolate_round(a, b):
+    a, b = float(a), float(b)
+    return lambda t: round(a * (1 - t) + b * t)
+
+
+def interpolate_value(a, b):
+    if b is None or isinstance(b, bool):
+        return constant(b)
+    if isinstance(b, (int, float)):
+        return number
+    if isinstance(b, str):
+        c = color(b)
+        return rgb if c else string
+    if isinstance(b, color):
+        return rgb
+    if isinstance(b, datetime.date):
+        return date
+    if isNumberArray(b):
+        return numberArray
+    if isinstance(b, (list, tuple)):
+        return genericArray
+    if not hasattr(b, "valueOf") and not hasattr(b, "__str__") or math.isnan(b):
+        return object_interpolator
+    return number
+
+
+def identity(x):
+    return x
+
 
 class Transformer:
     def __init__(self, t, u):
@@ -130,7 +164,3 @@ class Transformer:
             self._unknown = args[0]
             return scale
         return self._unknown
-
-
-def continuous():
-    return Transformer(identity, identity)
