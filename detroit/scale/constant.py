@@ -1,2 +1,2 @@
-def constants(x):
+def constant(x):
     return lambda: x

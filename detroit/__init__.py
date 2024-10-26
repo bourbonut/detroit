@@ -1,4 +1,10 @@
-from .time_format import time_format, time_parse, time_format_locale, iso_format, iso_parse
+from .time_format import (
+    time_format,
+    time_parse,
+    time_format_locale,
+    iso_format,
+    iso_parse,
+)
 from .time import (
     time_millisecond,
     time_second,
@@ -24,4 +30,7 @@ from .array import (
     nice,
     extent,
     bin,
+)
+from .scale import (
+    scale_linear
 )

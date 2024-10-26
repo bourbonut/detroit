@@ -1,7 +1,42 @@
 from bisect import bisect
-from d3_interpolate import interpolate as interpolate_value, interpolate_number, interpolate_round
-from constant import constant
-from number import number
+# from ..interpolate import interpolate as interpolate_value, interpolate_number, interpolate_round
+from .constant import constant
+from .number import number
+from datetime import datetime
+
+# ============== TEMP =================
+
+def interpolate_number(a, b):
+    a, b = float(a), float(b)
+    return lambda t: a * (1 - t) + b * t
+
+
+def interpolate_round(a, b):
+    a, b = float(a), float(b)
+    return lambda t: round(a * (1 - t) + b * t)
+
+
+def interpolate_value(a, b):
+    if b is None or isinstance(b, bool):
+        return constant(b)
+    elif isinstance(b, (int, float)):
+        return number
+    # if isinstance(b, str):
+    #     c = color(b)
+    #     return rgb if c else string
+    # elif isinstance(b, color):
+    #     return rgb
+    elif isinstance(b, datetime):
+        return date
+    # elif isNumberArray(b):
+    #     return numberArray
+    # elif isinstance(b, (list, tuple)):
+    #     return genericArray
+    # elif not hasattr(b, "valueOf") and not hasattr(b, "__str__") or math.isnan(b):
+    #     return object_interpolator
+    return number
+
+# ============== TEMP =================
 
 def identity(x):
     return x
@@ -62,7 +97,7 @@ def copy(source, target):
     )
 
 class Transformer:
-    def __init__(self, t, u):
+    def __init__(self, t = identity, u = identity):
         self.transform = t
         self.untransform = u
         self._domain = [0, 1]
@@ -100,7 +135,7 @@ class Transformer:
         if args:
             self._domain = list(map(float, args))
             return rescale()
-        return copy(self._domain)
+        return list(self._domain)
 
     def range(self, *args):
         if args:

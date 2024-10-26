@@ -1,24 +1,26 @@
 from ..array import ticks, tick_increment
-from .continuous import continuous, copy
+from .continuous import continuous, copy, Transformer
 from .init import init_range
-from ..tickFormat import tick_format
+# from .tick_format import tick_format
+import math
 
-def linearish(scale):
-    domain = scale.domain
 
-    def ticks_func(count=None):
-        d = domain()
+class ScaleLinear(Transformer):
+
+    def ticks(self, count=None):
+        d = self.domain()
         return ticks(d[0], d[-1], count if count is not None else 10)
 
-    def tick_format_func(count=None, specifier=None):
-        d = domain()
-        return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
+    def tick_format(self, count=None, specifier=None):
+        d = self.domain()
+        return None
+        # return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
 
-    def nice_func(count=None):
+    def nice(self, count=None):
         if count is None:
             count = 10
 
-        d = domain()
+        d = self.domain()
         i0 = 0
         i1 = len(d) - 1
         start = d[i0]
@@ -40,7 +42,7 @@ def linearish(scale):
             if step == prestep:
                 d[i0] = start
                 d[i1] = stop
-                return domain(d)
+                return self.domain(d)
             elif step > 0:
                 start = math.floor(start / step) * step
                 stop = math.ceil(stop / step) * step
@@ -52,26 +54,11 @@ def linearish(scale):
             prestep = step
             max_iter -= 1
 
-        return scale
+        return self.scale
 
-    scale.ticks = ticks_func
-    scale.tick_format = tick_format_func
-    scale.nice = nice_func
+    def copy(self):
+        return copy(self, ScaleLinear())
 
-    return scale
-
-
-def linear():
-    scale = continuous()
-
-    def copy_func():
-        return copy(scale, linear())
-
-    scale.copy = copy_func
-    init_range(scale)
-
-    return linearish(scale)
-
-
-# -----
-
+def scale_linear(*args):
+    scale = ScaleLinear()
+    return init_range(scale, *args)

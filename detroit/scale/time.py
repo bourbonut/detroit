@@ -111,7 +111,7 @@ class Calendar:
         )
 
 
-def time(*args):
+def scale_time(*args):
     calendar = Calendar(
         time_ticks,
         time_tick_interval,
