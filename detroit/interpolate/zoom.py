@@ -1,57 +1,84 @@
-import math
+from math import exp, log, sqrt, cosh, sinh, tanh, dist
 
-epsilon2 = 1e-12
+EPSILON = 1e-12
+SQRT2 = sqrt(2)
 
-def cosh(x):
-    return (math.exp(x) + 1 / math.exp(x)) / 2
+class Base:
 
-def sinh(x):
-    return (math.exp(x) - 1 / math.exp(x)) / 2
-
-def tanh(x):
-    return (math.exp(2 * x) - 1) / (math.exp(2 * x) + 1)
-
-def zoomRho(rho, rho2, rho4):
-    def zoom(p0, p1):
+    def __init__(self, rho, p0, p1):
         ux0, uy0, w0 = p0
         ux1, uy1, w1 = p1
         dx = ux1 - ux0
         dy = uy1 - uy0
-        d2 = dx * dx + dy * dy
+        self.rho = rho
+        self.ux0 = ux0
+        self.uy0 = uy0
+        self.w0 = w0
+        self.w1 = w1
+        self.dx = dx
+        self.dy = dy
+        self.d2 = dx * dx + dy * dy
 
-        if d2 < epsilon2:
-            S = math.log(w1 / w0) / rho
-            def interpolator(t):
-                return [
-                    ux0 + t * dx,
-                    uy0 + t * dy,
-                    w0 * math.exp(rho * t * S)
-                ]
-        else:
-            d1 = math.sqrt(d2)
-            b0 = (w1 * w1 - w0 * w0 + rho4 * d2) / (2 * w0 * rho2 * d1)
-            b1 = (w1 * w1 - w0 * w0 - rho4 * d2) / (2 * w1 * rho2 * d1)
-            r0 = math.log(math.sqrt(b0 * b0 + 1) - b0)
-            r1 = math.log(math.sqrt(b1 * b1 + 1) - b1)
-            S = (r1 - r0) / rho
-            def interpolator(t):
-                s = t * S
-                coshr0 = cosh(r0)
-                u = w0 / (rho2 * d1) * (coshr0 * tanh(rho * s + r0) - sinh(r0))
-                return [
-                    ux0 + u * dx,
-                    uy0 + u * dy,
-                    w0 * coshr0 / cosh(rho * s + r0)
-                ]
+class SingularZoomRhoInterpolator(Base):
 
-        interpolator.duration = S * 1000 * rho / math.sqrt(2)
-        return interpolator
+    def __init__(self, rho, rho2, rho4, p0, p1):
+        super().__init__(rho, p0, p1)
+        w0 = self.w0
+        w1 = self.w1
+        self.s = log(w1 / w0) / rho
+        self.duration = self.s * 1000 * rho / SQRT2
 
-    def set_rho(new_rho):
+    def __call__(self, t):
+        return [
+            self.ux0 + t * self.dx,
+            self.uy0 + t * self.dy,
+            self.w0 * exp(self.rho * t * self.s),
+        ]
+
+class GeneralZoomRhoInterpolator(Base):
+
+    def __init__(self, rho, rho2, rho4, p0, p1):
+        super().__init__(rho, p0, p1)
+        d2 = self.d2
+        w0 = self.w0
+        w1 = self.w1
+
+        self.rho2 = rho2
+        self.d1 = d1 = sqrt(d2)
+
+        b0 = (w1 * w1 - w0 * w0 + rho4 * d2) / (2 * w0 * rho2 * d1)
+        b1 = (w1 * w1 - w0 * w0 - rho4 * d2) / (2 * w1 * rho2 * d1)
+        self.r0 = r0 = log(sqrt(b0 * b0 + 1) - b0)
+        self.r1 = r1 = log(sqrt(b1 * b1 + 1) - b1)
+
+        self.s = (r1 - r0) / rho
+        self.duration = self.s * 1000 * self.rho / SQRT2
+
+    def __call__(self, t):
+        c = self.w0 / (self.rho2 * self.d1)
+        u = c * (cosh(self.r0) * tanh(self.rho * t * self.s + self.r0) - sinh(self.r0))
+        return [
+            self.ux0 + u * self.dx,
+            self.uy0 + u * self.dy,
+            self.w0 * cosh(self.r0) / cosh(self.rho * t * self.s + self.r0)
+        ]
+
+class ZoomRho:
+
+    def __init__(self, rho, rho2, rho4):
+        self.rho = rho
+        self.rho2 = rho2
+        self.rho4 = rho4
+
+    def __call__(self, p0, p1):
+        d = dist(p0[:-1], p1[:-1]) ** 2
+        interpolator = SingularZoomRhoInterpolator if d < EPSILON else GeneralZoomRhoInterpolator
+        return interpolator(self.rho, self.rho2, self.rho4, p0, p1)
+
+
+    def set_rho(self, new_rho):
         new_rho = max(1e-3, float(new_rho))
-        return zoomRho(new_rho, new_rho * new_rho, new_rho ** 4)
+        return ZoomRho(new_rho, new_rho * new_rho, new_rho ** 4)
 
-    zoom.rho = set_rho
-    return zoom
 
-zoom = zoomRho(math.sqrt(2), 2, 4)
+interpolate_zoom = ZoomRho(SQRT2, 2, 4)

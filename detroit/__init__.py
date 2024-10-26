@@ -34,3 +34,15 @@ from .array import (
 from .scale import (
     scale_linear
 )
+from .interpolate import (
+    interpolate_number_array,
+    interpolate_number,
+    interpolate_array,
+    interpolate,
+    interpolate_date,
+    interpolate_string,
+    interpolate_round,
+    interpolate_discrete,
+    interpolate_zoom,
+    interpolate_object,
+)

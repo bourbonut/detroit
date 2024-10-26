@@ -1,17 +1,15 @@
-from .value import value as default_value
+from .object_to_value import interpolate as interpolate_value
 
 def piecewise(interpolate, values=None):
     if values is None:
         values = interpolate
-        interpolate = default_value
+        interpolate = interpolate_value
 
-    i = 0
     n = len(values) - 1
-    v = values[0]
-    I = [interpolate(v, values[i+1]) for i in range(n)]
+    I = [interpolate_value(values[i], values[i + 1]) for i in range(n)]
 
-    def interpolator(t):
+    def local_interpolate(t):
         i = max(0, min(n - 1, int(t * n)))
         return I[i](t * n - i)
 
-    return interpolator
+    return local_interpolate

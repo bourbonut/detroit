@@ -1,7 +1,8 @@
 import detroit as d3
+from detroit.interpolate.piecewise import piecewise
 
 def test_piecewise_1():
-    i = piecewise(interpolate, [0, 2, 10])
+    i = piecewise(d3.interpolate, [0, 2, 10])
     assert i(-1) == -4
     assert i(0) == 0
     assert i(0.19) == 0.76
