@@ -181,6 +181,9 @@ class Color:
     def format_rgb(self):
         return self.rgb().format_rgb()
 
+    def __str__(self):
+        return self.format_rgb()
+
 def color(format):
     format = format.strip().lower()
     if format == "transparent":
@@ -274,9 +277,6 @@ class RGB(Color):
         a = clampa(self.opacity)
         return f"{'rgb(' if a == 1 else 'rgba('}{clampi(self.r)}, {clampi(self.g)}, {clampi(self.b)}{')' if a == 1 else f', {a})'}"
 
-    def __str__(self):
-        return self.format_rgb()
-
 def clampa(opacity):
     return 1 if math.isnan(opacity) else max(0, min(1, opacity))
 
@@ -302,7 +302,7 @@ def hsl_convert(obj):
     if not isinstance(obj, Color):
         obj = color(obj)
     if not obj:
-        return HSL()
+        return HSL(0, 0, 0)
     if isinstance(obj, HSL):
         return obj
     obj = obj.rgb()
@@ -327,10 +327,16 @@ def hsl_convert(obj):
         s = l > 0 and l < 1 and 0 or h
     return HSL(h, s, l, obj.opacity)
 
-def hsl(h, s, l, opacity=None):
-    if opacity is None:
+def hsl(*args):
+    if len(args) == 1:
+        return hsl_convert(args[0])
+    elif len(args) == 3:
+        h, l, s = args
         opacity = 1
-    return hsl_convert(h) if isinstance(h, (HSL, Color)) else HSL(h, s, l, opacity)
+        return HSL(h, l, s, opacity)
+    elif len(args) == 4:
+        h, l, s, opacity = args
+        return HSL(h, l, s, opacity)
 
 class HSL(Color):
     def __init__(self, h, s, l, opacity=1):

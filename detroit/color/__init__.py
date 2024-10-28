@@ -1,1 +1,1 @@
-from .color import rgb
+from .color import rgb, hsl

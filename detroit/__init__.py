@@ -48,4 +48,5 @@ from .interpolate import (
 )
 from .color import (
     rgb,
+    hsl,
 )
