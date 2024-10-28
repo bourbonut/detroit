@@ -1,23 +1,22 @@
-from define import define, extend
+import re
+import math
 
-class Color:
-    pass
+DARKER = 0.7
+BRIGHTER = 1 / DARKER
 
-darker = 0.7
-brighter = 1 / darker
+RE_I = re.compile(r"\s*([+-]?\d+)\s*")
+RE_N = re.compile(r"\s*([+-]?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?)\s*")
+RE_P = re.compile(r"\s*([+-]?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?)%\s*")
+RE_HEX = re.compile(r"^#([0-9a-f]{3,8})$")
+RE_RGB_INTEGER = re.compile(rf"^rgb\({RE_I.pattern},{RE_I.pattern},{RE_I.pattern}\)$")
+RE_RGB_PERCENT = re.compile(rf"^rgb\({RE_P.pattern},{RE_P.pattern},{RE_P.pattern}\)$")
+RE_RGBA_INTEGER = re.compile(rf"^rgba\({RE_I.pattern},{RE_I.pattern},{RE_I.pattern},{RE_N.pattern}\)$")
+RE_RGBA_PERCENT = re.compile(rf"^rgba\({RE_P.pattern},{RE_P.pattern},{RE_P.pattern},{RE_N.pattern}\)$")
+RE_HSL_PERCENT = re.compile(rf"^hsl\({RE_N.pattern},{RE_P.pattern},{RE_P.pattern}\)$")
+RE_HSLA_PERCENT = re.compile(rf"^hsla\({RE_N.pattern},{RE_P.pattern},{RE_P.pattern},{RE_N.pattern}\)$")
 
-reI = r"\s*([+-]?\d+)\s*"
-reN = r"\s*([+-]?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?)\s*"
-reP = r"\s*([+-]?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?)%\s*"
-reHex = r"^#([0-9a-f]{3,8})$"
-reRgbInteger = re.compile(rf"^rgb\({reI},{reI},{reI}\)$")
-reRgbPercent = re.compile(rf"^rgb\({reP},{reP},{reP}\)$")
-reRgbaInteger = re.compile(rf"^rgba\({reI},{reI},{reI},{reN}\)$")
-reRgbaPercent = re.compile(rf"^rgba\({reP},{reP},{reP},{reN}\)$")
-reHslPercent = re.compile(rf"^hsl\({reN},{reP},{reP}\)$")
-reHslaPercent = re.compile(rf"^hsla\({reN},{reP},{reP},{reN}\)$")
 
-named = {
+NAMED = {
     "aliceblue": 0xf0f8ff,
     "antiquewhite": 0xfaebd7,
     "aqua": 0x00ffff,
@@ -168,118 +167,121 @@ named = {
     "yellowgreen": 0x9acd32
 }
 
-def color_formatHex(self):
-    return self.rgb().formatHex()
+class Color:
 
-def color_formatHex8(self):
-    return self.rgb().formatHex8()
+    def format_hex(self):
+        return self.rgb().format_hex()
 
-def color_formatHsl(self):
-    return hslConvert(self).formatHsl()
+    def format_hex_8(self):
+        return self.rgb().format_hex_8()
 
-def color_formatRgb(self):
-    return self.rgb().formatRgb()
+    def format_hsl(self):
+        return hsl_convert(self).format_hsl()
+
+    def format_rgb(self):
+        return self.rgb().format_rgb()
 
 def color(format):
     format = format.strip().lower()
-    m = reHex.match(format)
-    if m:
-        l = len(m.group(1))
-        m = int(m.group(1), 16)
-        if l == 6:
-            return rgbn(m)  # #ff0000
-        elif l == 3:
-            return Rgb((m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1)  # #f00
-        elif l == 8:
-            return rgba(m >> 24 & 0xff, m >> 16 & 0xff, m >> 8 & 0xff, (m & 0xff) / 0xff)  # #ff000000
-        elif l == 4:
-            return rgba((m >> 12 & 0xf) | (m >> 8 & 0xf0), (m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), (((m & 0xf) << 4) | (m & 0xf)) / 0xff)  # #f000
-        else:
-            return None  # invalid hex
-    m = reRgbInteger.match(format)
-    if m:
-        return Rgb(int(m.group(1)), int(m.group(2)), int(m.group(3)), 1)  # rgb(255, 0, 0)
-    m = reRgbPercent.match(format)
-    if m:
-        return Rgb(float(m.group(1)) * 255 / 100, float(m.group(2)) * 255 / 100, float(m.group(3)) * 255 / 100, 1)  # rgb(100%, 0%, 0%)
-    m = reRgbaInteger.match(format)
-    if m:
-        return rgba(int(m.group(1)), int(m.group(2)), int(m.group(3)), float(m.group(4)))  # rgba(255, 0, 0, 1)
-    m = reRgbaPercent.match(format)
-    if m:
-        return rgba(float(m.group(1)) * 255 / 100, float(m.group(2)) * 255 / 100, float(m.group(3)) * 255 / 100, float(m.group(4)))  # rgb(100%, 0%, 0%, 1)
-    m = reHslPercent.match(format)
-    if m:
-        return hsla(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, 1)  # hsl(120, 50%, 50%)
-    m = reHslaPercent.match(format)
-    if m:
-        return hsla(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, float(m.group(4)))  # hsla(120, 50%, 50%, 1)
-    if format in named:
-        return rgbn(named[format])
     if format == "transparent":
-        return Rgb(float('nan'), float('nan'), float('nan'), 0)
+        return RGB(math.nan, math.nan, math.nan, 0)
+    elif m := RE_HEX.match(format):
+        length = len(m.group(1))
+        m = int(m.group(1), 16)
+        if length == 6:
+            return rgbn(m)  # #ff0000
+        elif length == 3:
+            return RGB((m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1)  # #f00
+        elif length == 8:
+            return rgba(m >> 24 & 0xff, m >> 16 & 0xff, m >> 8 & 0xff, (m & 0xff) / 0xff)  # #ff000000
+        elif length == 4:
+            return rgba((m >> 12 & 0xf) | (m >> 8 & 0xf0), (m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), (((m & 0xf) << 4) | (m & 0xf)) / 0xff)  # #f000
+        return None  # invalid hex
+    elif m := RE_RGB_INTEGER.match(format):
+        return RGB(int(m.group(1)), int(m.group(2)), int(m.group(3)), 1)  # rgb(255, 0, 0)
+    elif m := RE_RGB_PERCENT.match(format):
+        return RGB(float(m.group(1)) * 255 / 100, float(m.group(2)) * 255 / 100, float(m.group(3)) * 255 / 100, 1)  # rgb(100%, 0%, 0%)
+    elif m := RE_RGBA_INTEGER.match(format):
+        return rgba(int(m.group(1)), int(m.group(2)), int(m.group(3)), float(m.group(4)))  # rgba(255, 0, 0, 1)
+    elif m := RE_RGBA_PERCENT.match(format):
+        return rgba(float(m.group(1)) * 255 / 100, float(m.group(2)) * 255 / 100, float(m.group(3)) * 255 / 100, float(m.group(4)))  # rgb(100%, 0%, 0%, 1)
+    elif m := RE_HSL_PERCENT.match(format):
+        return hsla(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, 1)  # hsl(120, 50%, 50%)
+    elif m := RE_HSLA_PERCENT.match(format):
+        return hsla(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, float(m.group(4)))  # hsla(120, 50%, 50%, 1)
+    elif format in NAMED:
+        return rgbn(NAMED[format])
     return None
 
 def rgbn(n):
-    return Rgb(n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff, 1)
+    return RGB(n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff, 1)
 
 def rgba(r, g, b, a):
     if a <= 0:
-        r = g = b = float('nan')
-    return Rgb(r, g, b, a)
+        r = g = b = math.nan
+    return RGB(r, g, b, a)
 
-def rgbConvert(o):
-    if not isinstance(o, Color):
-        o = color(o)
-    if not o:
-        return Rgb()
-    o = o.rgb()
-    return Rgb(o.r, o.g, o.b, o.opacity)
+def rgb_convert(obj):
+    if not isinstance(obj, (Color, RGB, HSL)):
+        obj = color(obj)
+    if not obj:
+        return RGB(0, 0, 0)
+    obj = obj.rgb()
+    return RGB(obj.r, obj.g, obj.b, obj.opacity)
 
-def rgb(r, g, b, opacity=None):
-    if opacity is None:
+def rgb(*args):
+    if len(args) == 1:
+        return rgb_convert(args[0])
+    elif len(args) == 3:
+        r, g, b = args
         opacity = 1
-    return rgbConvert(r) if isinstance(r, (Color, Rgb)) else Rgb(r, g, b, opacity)
+        return RGB(r, g, b, opacity)
+    elif len(args) == 4:
+        r, g, b, opacity = args
+        return RGB(r, g, b, opacity)
 
-class Rgb:
-    def __init__(self, r, g, b, opacity):
+class RGB(Color):
+    def __init__(self, r, g, b, opacity=1):
         self.r = float(r)
         self.g = float(g)
         self.b = float(b)
         self.opacity = float(opacity)
 
     def brighter(self, k=None):
-        k = brighter if k is None else brighter ** k
-        return Rgb(self.r * k, self.g * k, self.b * k, self.opacity)
+        k = BRIGHTER if k is None else BRIGHTER ** k
+        return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
     def darker(self, k=None):
-        k = darker if k is None else darker ** k
-        return Rgb(self.r * k, self.g * k, self.b * k, self.opacity)
+        k = DARKER if k is None else DARKER ** k
+        return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
     def rgb(self):
         return self
 
     def clamp(self):
-        return Rgb(clampi(self.r), clampi(self.g), clampi(self.b), clampa(self.opacity))
+        return RGB(clampi(self.r), clampi(self.g), clampi(self.b), clampa(self.opacity))
 
     def displayable(self):
         return (-0.5 <= self.r < 255.5) and (-0.5 <= self.g < 255.5) and (-0.5 <= self.b < 255.5) and (0 <= self.opacity <= 1)
 
-    def formatHex(self):
+    def format_hex(self):
         return f"#{hex(self.r)}{hex(self.g)}{hex(self.b)}"
 
-    def formatHex8(self):
+    def format_hex_8(self):
         return f"#{hex(self.r)}{hex(self.g)}{hex(self.b)}{hex((1 if math.isnan(self.opacity) else self.opacity) * 255)}"
 
-    def formatRgb(self):
+    def format_rgb(self):
         a = clampa(self.opacity)
         return f"{'rgb(' if a == 1 else 'rgba('}{clampi(self.r)}, {clampi(self.g)}, {clampi(self.b)}{')' if a == 1 else f', {a})'}"
+
+    def __str__(self):
+        return self.format_rgb()
 
 def clampa(opacity):
     return 1 if math.isnan(opacity) else max(0, min(1, opacity))
 
 def clampi(value):
-    return max(0, min(255, round(value) or 0))
+    return 0 if math.isnan(value) else max(0, min(255, round(value) or 0))
 
 def hex(value):
     value = clampi(value)
@@ -287,29 +289,29 @@ def hex(value):
 
 def hsla(h, s, l, a):
     if a <= 0:
-        h = s = l = float('nan')
+        h = s = l = math.nan
     elif l <= 0 or l >= 1:
-        h = s = float('nan')
+        h = s = math.nan
     elif s <= 0:
-        h = float('nan')
-    return Hsl(h, s, l, a)
+        h = math.nan
+    return HSL(h, s, l, a)
 
-def hslConvert(o):
-    if isinstance(o, Hsl):
-        return Hsl(o.h, o.s, o.l, o.opacity)
-    if not isinstance(o, Color):
-        o = color(o)
-    if not o:
-        return Hsl()
-    if isinstance(o, Hsl):
-        return o
-    o = o.rgb()
-    r = o.r / 255
-    g = o.g / 255
-    b = o.b / 255
+def hsl_convert(obj):
+    if isinstance(obj, HSL):
+        return HSL(obj.h, obj.s, obj.l, obj.opacity)
+    if not isinstance(obj, Color):
+        obj = color(obj)
+    if not obj:
+        return HSL()
+    if isinstance(obj, HSL):
+        return obj
+    obj = obj.rgb()
+    r = obj.r / 255
+    g = obj.g / 255
+    b = obj.b / 255
     min_val = min(r, g, b)
     max_val = max(r, g, b)
-    h = float('nan')
+    h = math.nan
     s = max_val - min_val
     l = (max_val + min_val) / 2
     if s:
@@ -323,27 +325,27 @@ def hslConvert(o):
         h *= 60
     else:
         s = l > 0 and l < 1 and 0 or h
-    return Hsl(h, s, l, o.opacity)
+    return HSL(h, s, l, obj.opacity)
 
 def hsl(h, s, l, opacity=None):
     if opacity is None:
         opacity = 1
-    return hslConvert(h) if isinstance(h, (Hsl, Color)) else Hsl(h, s, l, opacity)
+    return hsl_convert(h) if isinstance(h, (HSL, Color)) else HSL(h, s, l, opacity)
 
-class Hsl:
-    def __init__(self, h, s, l, opacity):
+class HSL(Color):
+    def __init__(self, h, s, l, opacity=1):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
         self.opacity = float(opacity)
 
     def brighter(self, k=None):
-        k = brighter if k is None else brighter ** k
-        return Hsl(self.h, self.s, self.l * k, self.opacity)
+        k = BRIGHTER if k is None else BRIGHTER ** k
+        return HSL(self.h, self.s, self.l * k, self.opacity)
 
     def darker(self, k=None):
-        k = darker if k is None else darker ** k
-        return Hsl(self.h, self.s, self.l * k, self.opacity)
+        k = DARKER if k is None else DARKER ** k
+        return HSL(self.h, self.s, self.l * k, self.opacity)
 
     def rgb(self):
         h = self.h % 360 + (self.h < 0) * 360
@@ -351,7 +353,7 @@ class Hsl:
         l = self.l
         m2 = l + (l < 0.5 and l or 1 - l) * s
         m1 = 2 * l - m2
-        return Rgb(
+        return RGB(
             hsl2rgb(h >= 240 and h - 240 or h + 120, m1, m2),
             hsl2rgb(h, m1, m2),
             hsl2rgb(h < 120 and h + 240 or h - 120, m1, m2),
@@ -359,14 +361,17 @@ class Hsl:
         )
 
     def clamp(self):
-        return Hsl(clamph(self.h), clampt(self.s), clampt(self.l), clampa(self.opacity))
+        return HSL(clamph(self.h), clampt(self.s), clampt(self.l), clampa(self.opacity))
 
     def displayable(self):
         return (0 <= self.s <= 1 or math.isnan(self.s)) and (0 <= self.l <= 1) and (0 <= self.opacity <= 1)
 
-    def formatHsl(self):
+    def format_hsl(self):
         a = clampa(self.opacity)
-        return f"{'hsl(' if a == 1 else 'hsla('}{clamph(self.h)}, {clampt(self.s) * 100}%, {clampt(self.l) * 100}%{')' if a == 1 else f', {a})'}"
+        h = str(clamph(self.h)).removesuffix(".0")
+        s = str(clampt(self.s) * 100).removesuffix(".0")
+        l = str(clampt(self.l) * 100).removesuffix(".0")
+        return f"{'hsl(' if a == 1 else 'hsla('}{h}, {s}%, {l}%{')' if a == 1 else f', {a})'}"
 
 def clamph(value):
     value = (value or 0) % 360
@@ -376,4 +381,11 @@ def clampt(value):
     return max(0, min(1, value or 0))
 
 def hsl2rgb(h, m1, m2):
-    return (m1 + (m2 - m1) * h / 60 if h < 60 else m2 if h < 180 else m1 + (m2 - m1) * (240 - h) / 60 if h < 240 else m1) * 255
+    if h < 60:
+        return (m1 + (m2 - m1) * h / 60) * 255
+    elif h < 180:
+        return m2 * 255
+    elif h < 240:
+        return (m1 + (m2 - m1) * (240 - h) / 60) * 255
+    else:
+        return m1 * 255
