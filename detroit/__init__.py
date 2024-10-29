@@ -46,7 +46,11 @@ from .interpolate import (
     interpolate_zoom,
     interpolate_object,
 )
-from .color import (
+from .coloration import (
     rgb,
     hsl,
+    hcl,
+    lab,
+    gray,
+    color,
 )

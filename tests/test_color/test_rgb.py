@@ -1,5 +1,5 @@
 import detroit as d3
-from detroit.color.color import Color, RGB, HSL
+from detroit.coloration.color import Color, RGB, HSL
 import math
 
 def approx_equal(actual, expected):
