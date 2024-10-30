@@ -50,7 +50,9 @@ from .coloration import (
     rgb,
     hsl,
     hcl,
+    lch,
     lab,
     gray,
     color,
+    cubehelix,
 )
