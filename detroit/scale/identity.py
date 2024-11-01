@@ -1,30 +1,38 @@
-from .linear import linearish
+from .linear import LinearBase
 from .number import number
+import math
 
-def identity(domain=None):
-    unknown = None
+class Identity(LinearBase):
 
-    def scale(x):
-        return unknown if x is None or (isinstance(x, float) and math.isnan(x)) else x
+    def __init__(self, domain=None):
+        self._domain = list(map(float, domain)) if domain is not None else [0, 1]
+        self._unknown = None
 
-    scale.invert = scale
+    def __call__(self, x):
+        unvalid_type = x is None or (isinstance(x, float) and math.isnan(x))
+        return self._unknown if unvalid_type else x
 
-    def domain_func(_=None):
-        return domain if _ is None else (domain := list(map(float, _)), scale)
+    def invert(self, x):
+        return self(x)
 
-    scale.domain = scale.range = domain_func
+    def domain(self, *args):
+        if args:
+            self._domain = list(map(number, args[0]))
+            return self
+        else:
+            return self._domain 
 
-    def unknown_func(_=None):
-        nonlocal unknown
-        return unknown if _ is None else (unknown := _, scale)
+    def range(self, *args):
+        return self.domain(*args)
 
-    scale.unknown = unknown_func
+    def unknown(self, *args):
+        if args:
+            self._unknown = args[0]
+            return self
+        else:
+            return self._unknown
 
-    def copy_func():
-        return identity(domain).unknown(unknown)
+    def copy(self):
+        return Identity(self._domain).unknown(self._unknown)
 
-    scale.copy = copy_func
-
-    domain = list(map(float, domain)) if domain is not None else [0, 1]
-
-    return linearish(scale)
+scale_identity = Identity

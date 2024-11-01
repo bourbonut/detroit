@@ -32,7 +32,8 @@ from .array import (
     bin,
 )
 from .scale import (
-    scale_linear
+    scale_linear,
+    scale_identity,
 )
 from .interpolate import (
     interpolate_number_array,

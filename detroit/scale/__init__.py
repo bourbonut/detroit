@@ -1,5 +1,5 @@
 # from .band import scale_band, point as scale_point
-# from .identity import scale_identity
+from .identity import scale_identity
 from .linear import scale_linear
 # from .log import scale_log
 # from .symlog import scale_symlog

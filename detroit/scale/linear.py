@@ -5,7 +5,7 @@ from .init import init_range
 import math
 
 
-class ScaleLinear(Transformer):
+class LinearBase:
 
     def ticks(self, count=None):
         d = self.domain()
@@ -56,6 +56,7 @@ class ScaleLinear(Transformer):
 
         return self.scale
 
+class ScaleLinear(Transformer, LinearBase):
     def copy(self):
         return copy(self, ScaleLinear())
 
