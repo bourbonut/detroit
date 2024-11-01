@@ -1,2 +1,4 @@
 def constant(x):
-    return lambda: x
+    def f(*args):
+        return x
+    return f

@@ -1,57 +1,40 @@
 from bisect import bisect
-# from ..interpolate import interpolate as interpolate_value, interpolate_number, interpolate_round
+from ..interpolate import interpolate as interpolate_value, interpolate_number, interpolate_round
 from .constant import constant
 from .number import number
+import math
 from datetime import datetime
-
-# ============== TEMP =================
-
-def interpolate_number(a, b):
-    a, b = float(a), float(b)
-    return lambda t: a * (1 - t) + b * t
-
-
-def interpolate_round(a, b):
-    a, b = float(a), float(b)
-    return lambda t: round(a * (1 - t) + b * t)
-
-
-def interpolate_value(a, b):
-    if b is None or isinstance(b, bool):
-        return constant(b)
-    elif isinstance(b, (int, float)):
-        return number
-    # if isinstance(b, str):
-    #     c = color(b)
-    #     return rgb if c else string
-    # elif isinstance(b, color):
-    #     return rgb
-    elif isinstance(b, datetime):
-        return date
-    # elif isNumberArray(b):
-    #     return numberArray
-    # elif isinstance(b, (list, tuple)):
-    #     return genericArray
-    # elif not hasattr(b, "valueOf") and not hasattr(b, "__str__") or math.isnan(b):
-    #     return object_interpolator
-    return number
-
-# ============== TEMP =================
 
 def identity(x):
     return x
 
 def normalize(a, b):
+    if isinstance(a, datetime):
+        a = a.timestamp()
+    elif isinstance(a, str):
+        a = float(a)
+    if isinstance(b, datetime):
+        b = b.timestamp()
+    elif isinstance(b, str):
+        b = float(b)
     b = b - a
-    if b:
-        return lambda x: (x - a) / b
+    if not math.isnan(b) and b:
+        def f(x):
+            if isinstance(x, datetime):
+                x = x.timestamp()
+            elif isinstance(x, str):
+                x = float(x)
+            return (x - a) / b
+        return f
     else:
-        return math.nan if math.isnan(b) else 0.5
+        return constant(math.nan if math.isnan(b) else 0.5)
 
 def clamper(a, b):
     if a > b:
         a, b = b, a
-    return lambda x: max(a, min(b, x))
+    def f(x):
+        return max(a, min(b, x))
+    return f
 
 class BiMap:
     def __init__(self, domain, range_vals, interpolate):
@@ -70,21 +53,22 @@ class BiMap:
 
 class PolyMap:
     def __init__(self, domain, range_vals, interpolate):
-        self.j = j = min(len(domain), len(range_vals)) - 1
+        self.domain = domain
+        self.j = j = min(len(self.domain), len(range_vals)) - 1
         self.d = [None] * j
         self.r = [None] * j
 
-        if domain[j] < domain[0]:
-            self.domain = domain = domain[::-1]
+        if self.domain[j] < self.domain[0]:
+            self.domain = self.domain[::-1]
             range_vals = range_vals[::-1]
 
         for i in range(j):
-            self.d[i] = normalize(domain[i], domain[i + 1])
+            self.d[i] = normalize(self.domain[i], self.domain[i + 1])
             self.r[i] = interpolate(range_vals[i], range_vals[i + 1])
 
     def __call__(self, x):
-        x = self.d[bisect_right(self.domain, x, 1, self.j) - 1](x)
-        return self.r[bisect_right(self.domain, x, 1, self.j) - 1](x)
+        i = bisect(self.domain, x, 1, self.j) - 1
+        return self.r[i](self.d[i](x))
 
 
 def copy(source, target):
@@ -110,43 +94,43 @@ class Transformer:
 
     def rescale(self):
         n = min(len(self._domain), len(self._range))
-        if self.clamp != identity:
-            self.clamp = clamper(self._domain[0], self._domain[n - 1])
+        if self._clamp != identity:
+            self._clamp = clamper(self._domain[0], self._domain[n - 1])
         self.piecewise = PolyMap if n > 2 else BiMap
         self.output = self.input = None
-        return self.scale
+        return self
 
-    def scale(self, x):
+    def __call__(self, x):
         if x is None or (isinstance(x, float) and math.isnan(x)):
             return self._unknown
         else:
             if not self.output:
                 domain = [self.transform(x) for x in self._domain]
-                self.output = piecewise(domain, self._range, self._interpolate)
-            return self.output(self.transform(self.clamp_func(x)))
+                self.output = self.piecewise(domain, self._range, self._interpolate)
+            return self.output(self.transform(self._clamp(x)))
 
     def invert(self, y):
         if not self.input:
-            range_vals = [self.transform(x) for x in self._domain]
-            self.input = piecewise(self._range, range_vals, interpolate_number)
-        return self.clamp(self.untransform(self.input(y)))
+            domain = [self.transform(x) for x in self._domain]
+            self.input = self.piecewise(self._range, domain, interpolate_number)
+        return self._clamp(self.untransform(self.input(y)))
 
     def domain(self, *args):
         if args:
-            self._domain = list(map(float, args))
-            return rescale()
+            self._domain = list(map(number, args[0]))
+            return self.rescale()
         return list(self._domain)
 
     def range(self, *args):
         if args:
-            self._range = list(map(float, args))
-            return rescale()
+            self._range = list(args[0])
+            return self.rescale()
         return list(self._range)
 
     def range_round(self, *args):
-        self._range = list(map(float, args))
+        self._range = list(map(float, args[0]))
         self._interpolate = interpolate_round
-        return rescale()
+        return self.rescale()
 
     def clamp(self, *args):
         if args:
@@ -163,7 +147,7 @@ class Transformer:
     def unknown(self, *args):
         if args:
             self._unknown = args[0]
-            return scale
+            return self.rescale()
         return self._unknown
 
 

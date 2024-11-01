@@ -1,5 +1,6 @@
 from ..array import tick_step
 from ..format import format, format_prefix, format_specifier, precision_fixed, precision_prefix, precision_round
+import math
 
 def tick_format(start, stop, count, specifier):
     step = tick_step(start, stop, count)

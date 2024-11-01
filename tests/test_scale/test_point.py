@@ -1,46 +1,40 @@
-import assert from "assert";
-import {scaleBand, scalePoint} from "../src/index.js";
+import detroit as d3
 
-it("scalePoint() has the expected defaults", () => {
-  const s = scalePoint();
-  assert.deepStrictEqual(s.domain(), []);
-  assert.deepStrictEqual(s.range(), [0, 1]);
-  assert.strictEqual(s.bandwidth(), 0);
-  assert.strictEqual(s.step(), 1);
-  assert.strictEqual(s.round(), false);
-  assert.strictEqual(s.padding(), 0);
-  assert.strictEqual(s.align(), 0.5);
-});
+def test_point_1():
+    s = scalePoint()
+    assert s.domain() == [])
+    assert s.range() == [0, 1])
+    assert s.bandwidth() == 0
+    assert s.step() == 1
+    assert s.round() == false
+    assert s.padding() == 0
+    assert s.align() == 0.5
 
-it("scalePoint() does not expose paddingInner and paddingOuter", () => {
-  const s = scalePoint();
-  assert.strictEqual(s.paddingInner, undefined);
-  assert.strictEqual(s.paddingOuter, undefined);
-});
+def test_point_2():
+    s = scalePoint()
+    assert s.paddingInner == None
+    assert s.paddingOuter == None
 
-it("scalePoint() is similar to scaleBand().paddingInner(1)", () => {
-  const p = scalePoint().domain(["foo", "bar"]).range([0, 960]);
-  const b = scaleBand().domain(["foo", "bar"]).range([0, 960]).paddingInner(1);
-  assert.deepStrictEqual(p.domain().map(p), b.domain().map(b));
-  assert.strictEqual(p.bandwidth(), b.bandwidth());
-  assert.strictEqual(p.step(), b.step());
-});
+def test_point_3():
+    p = scalePoint().domain(["foo", "bar"]).range([0, 960])
+    b = scaleBand().domain(["foo", "bar"]).range([0, 960]).paddingInner(1)
+    assert p.domain().map(p) == b.domain().map(b)
+    assert p.bandwidth() == b.bandwidth()
+    assert p.step() == b.step()
 
-it("point.padding(p) sets the band outer padding to p", () => {
-  const p = scalePoint().domain(["foo", "bar"]).range([0, 960]).padding(0.5);
-  const b = scaleBand().domain(["foo", "bar"]).range([0, 960]).paddingInner(1).paddingOuter(0.5);
-  assert.deepStrictEqual(p.domain().map(p), b.domain().map(b));
-  assert.strictEqual(p.bandwidth(), b.bandwidth());
-  assert.strictEqual(p.step(), b.step());
-});
+def test_point_4():
+    p = scalePoint().domain(["foo", "bar"]).range([0, 960]).padding(0.5)
+    b = scaleBand().domain(["foo", "bar"]).range([0, 960]).paddingInner(1).paddingOuter(0.5)
+    assert p.domain().map(p) == b.domain().map(b)
+    assert p.bandwidth() == b.bandwidth()
+    assert p.step() == b.step()
 
-it("point.copy() returns a copy", () => {
-  const s = scalePoint();
-  assert.deepStrictEqual(s.domain(), []);
-  assert.deepStrictEqual(s.range(), [0, 1]);
-  assert.strictEqual(s.bandwidth(), 0);
-  assert.strictEqual(s.step(), 1);
-  assert.strictEqual(s.round(), false);
-  assert.strictEqual(s.padding(), 0);
-  assert.strictEqual(s.align(), 0.5);
-});
+def test_point_5():
+    s = scalePoint()
+    assert s.domain() == [])
+    assert s.range() == [0, 1])
+    assert s.bandwidth() == 0
+    assert s.step() == 1
+    assert s.round() == false
+    assert s.padding() == 0
+    assert s.align() == 0.5

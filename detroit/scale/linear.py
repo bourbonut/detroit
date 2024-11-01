@@ -1,5 +1,5 @@
 from ..array import ticks, tick_increment
-from .continuous import continuous, copy, Transformer
+from .continuous import copy, Transformer
 from .init import init_range
 # from .tick_format import tick_format
 import math
@@ -61,4 +61,9 @@ class ScaleLinear(Transformer):
 
 def scale_linear(*args):
     scale = ScaleLinear()
-    return init_range(scale, *args)
+    if len(args) == 1:
+        return init_range(scale, range_vals=args[0])
+    elif len(args) == 2:
+        domain, range_vals = args
+        return init_range(scale, domain=domain, range_vals=range_vals)
+    return init_range(scale)
