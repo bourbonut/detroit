@@ -5,7 +5,7 @@ import math
 def test_object_1():
     assert d3.interpolate_object({"a": 2, "b": 12}, {"a": 4, "b": 24})(0.5) == {"a": 3, "b": 18}
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_object_2():
     assert d3.interpolate_object({"background": "red"}, {"background": "green"})(0.5) == {"background": "rgb(128, 64, 0)"}
     assert d3.interpolate_object({"fill": "red"}, {"fill": "green"})(0.5) == {"fill": "rgb(128, 64, 0)"}

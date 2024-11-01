@@ -1,31 +1,32 @@
-from d3_color import cubehelix as colorCubehelix
+from ..coloration import cubehelix as color_cubehelix
 from .color import color, hue
 
-def cubehelix(hue_func):
-    def cubehelixGamma(y):
-        y = float(y)
+class CubeHelixInterpolator:
 
-        def interpolator(start, end):
-            start = colorCubehelix(start)
-            end = colorCubehelix(end)
-            h = hue_func(start.h, end.h)
-            s = color(start.s, end.s)
-            l = color(start.l, end.l)
-            opacity = color(start.opacity, end.opacity)
+    def __init__(self, func):
+        self.func = func
+        self.gamma = 1
 
-            def interpolate(t):
-                start.h = h(t)
-                start.s = s(t)
-                start.l = l(t ** y)
-                start.opacity = opacity(t)
-                return str(start)
+    def __call__(self, start, end):
+        start = color_cubehelix(start)
+        end = color_cubehelix(end)
+        h = self.func(start.h, end.h)
+        s = color(start.s, end.s)
+        l = color(start.l, end.l)
+        opacity = color(start.opacity, end.opacity)
 
-            return interpolate
+        def interpolate(t):
+            start.h = h(t)
+            start.s = s(t)
+            start.l = l(t ** self.gamma)
+            start.opacity = opacity(t)
+            return str(start)
 
-        interpolator.gamma = cubehelixGamma
-        return interpolator
+        return interpolate
 
-    return cubehelixGamma(1)
+    def set_gamma(self, gamma):
+        self.gamma = gamma
+        return self
 
-cubehelix_default = cubehelix(hue)
-cubehelixLong = cubehelix(color)
+interpolate_cubehelix = CubeHelixInterpolator(hue)
+interpolate_cubehelix_long = CubeHelixInterpolator(color)

@@ -1,5 +1,5 @@
-# from d3_color import color
-# from .rgb import rgb
+from ..coloration.color import color, Color
+from .rgb import interpolate_rgb
 from .constant import constant
 from .date import interpolate_date
 from .number import interpolate_number
@@ -7,8 +7,6 @@ from .string import interpolate_string
 from .number_array import interpolate_number_array, is_number_array
 
 from datetime import datetime
-
-rgb = None
 
 def interpolate_object(a, b):
     i = {}
@@ -54,11 +52,14 @@ def interpolate(a, b):
     if isinstance(b, (int, float)):
         return interpolate_number(a, b)
     if isinstance(b, str):
-        # c = color(b)
-        # return rgb if c else string
-        return interpolate_string(a, b)
-    # if isinstance(b, color):
-    #     return rgb
+        c = color(b)
+        if c:
+            b = c
+            return interpolate_rgb(a, b)
+        else:
+            return interpolate_string(a, b)
+    if isinstance(b, Color):
+        return interpolate_rgb(a, b)
     if isinstance(b, datetime):
         return interpolate_date(a, b)
     if is_number_array(b):

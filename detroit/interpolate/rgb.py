@@ -1,17 +1,18 @@
-from d3_color import rgb as colorRgb
+from ..coloration import rgb as color_rgb
 from .basis import basis
-from .basisClosed import basisClosed
-from .color import nogamma, gamma
+from .basis_closed import basis_closed
+from .color import gamma, color as nogamma
 
-def rgbGamma(y):
-    color = gamma(y)
+class RGBGammaInterpolator:
+    def __init__(self, y):
+        self.color = gamma(y)
 
-    def rgb(start, end):
-        start = colorRgb(start)
-        end = colorRgb(end)
-        r = color(start.r, end.r)
-        g = color(start.g, end.g)
-        b = color(start.b, end.b)
+    def __call__(self, start, end):
+        start = color_rgb(start)
+        end = color_rgb(end)
+        r = self.color(start.r, end.r)
+        g = self.color(start.g, end.g)
+        b = self.color(start.b, end.b)
         opacity = nogamma(start.opacity, end.opacity)
         
         def interpolate(t):
@@ -23,29 +24,33 @@ def rgbGamma(y):
         
         return interpolate
 
-    rgb.gamma = rgbGamma
-    return rgb
+    def set_gamma(self, y):
+        self.color = gamma(y)
+        return self
 
-rgb = rgbGamma(1)
+interpolate_rgb = RGBGammaInterpolator(1)
 
-def rgbSpline(spline):
-    def interpolate(colors):
+class RGBSplineInterpolator:
+    def __init__(self, spline):
+        self.spline = spline
+
+    def __call__(self, colors):
         n = len(colors)
         r = [0] * n
         g = [0] * n
         b = [0] * n
         
         for i, color in enumerate(colors):
-            color = colorRgb(color)
+            color = color_rgb(color)
             r[i] = color.r or 0
             g[i] = color.g or 0
             b[i] = color.b or 0
         
-        r_spline = spline(r)
-        g_spline = spline(g)
-        b_spline = spline(b)
+        r_spline = self.spline(r)
+        g_spline = self.spline(g)
+        b_spline = self.spline(b)
         
-        color = colorRgb()
+        color = color_rgb()
         color.opacity = 1
         
         def interpolate(t):
@@ -56,7 +61,5 @@ def rgbSpline(spline):
         
         return interpolate
     
-    return interpolate
-
-rgbBasis = rgbSpline(basis)
-rgbBasisClosed = rgbSpline(basisClosed)
+interpolate_rgb_basis = RGBSplineInterpolator(basis)
+interpolate_rgb_basis_closed = RGBSplineInterpolator(basis_closed)

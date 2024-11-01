@@ -324,7 +324,7 @@ def hsl_convert(obj):
         s /= l < 0.5 and (max_val + min_val) or (2 - max_val - min_val)
         h *= 60
     else:
-        s = l > 0 and l < 1 and 0 or h
+        s = 0 if 0 < l < 1 else h
     return HSL(h, s, l, obj.opacity)
 
 def hsl(*args):
@@ -354,15 +354,15 @@ class HSL(Color):
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
     def rgb(self):
-        h = self.h % 360 + (self.h < 0) * 360
+        h = self.h % 360
         s = 0 if math.isnan(h) or math.isnan(self.s) else self.s
         l = self.l
-        m2 = l + (l < 0.5 and l or 1 - l) * s
+        m2 = l + (l if l < 0.5 else 1 - l) * s
         m1 = 2 * l - m2
         return RGB(
-            hsl2rgb(h >= 240 and h - 240 or h + 120, m1, m2),
+            hsl2rgb(h - 240 if h >= 240 else h + 120, m1, m2),
             hsl2rgb(h, m1, m2),
-            hsl2rgb(h < 120 and h + 240 or h - 120, m1, m2),
+            hsl2rgb(h + 240 if h < 120 else h - 120, m1, m2),
             self.opacity
         )
 
@@ -387,6 +387,7 @@ def clampt(value):
     return max(0, min(1, value or 0))
 
 def hsl2rgb(h, m1, m2):
+    # print(h, m1, m2)
     if h < 60:
         return (m1 + (m2 - m1) * h / 60) * 255
     elif h < 180:

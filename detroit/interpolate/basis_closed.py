@@ -1,6 +1,6 @@
 from .basis import basis
 
-def basisClosed(values):
+def basis_closed(values):
     n = len(values)
     
     def interpolate(t):

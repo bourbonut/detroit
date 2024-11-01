@@ -1,11 +1,14 @@
-from d3_color import hsl as colorHsl
+from ..coloration import hsl as color_hsl
 from .color import color, hue
 
-def hsl(hue_func):
-    def interpolator(start, end):
-        start = colorHsl(start)
-        end = colorHsl(end)
-        h = hue_func(start.h, end.h)
+class HSLInterpolator:
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, start, end):
+        start = color_hsl(start)
+        end = color_hsl(end)
+        h = self.func(start.h, end.h)
         s = color(start.s, end.s)
         l = color(start.l, end.l)
         opacity = color(start.opacity, end.opacity)
@@ -19,7 +22,5 @@ def hsl(hue_func):
 
         return interpolate
 
-    return interpolator
-
-hsl_default = hsl(hue)
-hslLong = hsl(color)
+interpolate_hsl = HSLInterpolator(hue)
+interpolate_hsl_long = HSLInterpolator(color)

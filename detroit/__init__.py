@@ -45,6 +45,17 @@ from .interpolate import (
     interpolate_discrete,
     interpolate_zoom,
     interpolate_object,
+    interpolate_hsl,
+    interpolate_hsl_long,
+    interpolate_hue,
+    interpolate_cubehelix,
+    interpolate_cubehelix_long,
+    interpolate_lab,
+    interpolate_hcl,
+    interpolate_hcl_long,
+    interpolate_rgb,
+    interpolate_rgb_basis,
+    interpolate_rgb_basis_closed,
 )
 from .coloration import (
     rgb,

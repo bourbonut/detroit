@@ -1,11 +1,14 @@
-from d3_color import hcl as colorHcl
+from ..coloration import hcl as color_hcl
 from .color import color, hue
 
-def hcl(hue_func):
-    def interpolator(start, end):
-        start = colorHcl(start)
-        end = colorHcl(end)
-        h = hue_func(start.h, end.h)
+class HLCInterpolator:
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, start, end):
+        start = color_hcl(start)
+        end = color_hcl(end)
+        h = self.func(start.h, end.h)
         c = color(start.c, end.c)
         l = color(start.l, end.l)
         opacity = color(start.opacity, end.opacity)
@@ -19,7 +22,5 @@ def hcl(hue_func):
 
         return interpolate
 
-    return interpolator
-
-hcl_default = hcl(hue)
-hclLong = hcl(color)
+interpolate_hcl = HLCInterpolator(hue)
+interpolate_hcl_long = HLCInterpolator(color)

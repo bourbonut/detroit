@@ -22,8 +22,11 @@ def cubehelix_convert(obj):
     l = (BC_DA * b + ED * r - EB * g) / (BC_DA + ED - EB)
     bl = b - l
     k = (E * (g - l) - C * bl) / D
-    s = (k * k + bl * bl) ** 0.5 / (E * l * (1 - l))  # NaN if l=0 or l=1
-    h = (math.degrees(math.atan2(k, bl)) - 120) if s else math.nan
+    if l == 0 or l == 1:
+        s = math.nan
+    else:
+        s = (k * k + bl * bl) ** 0.5 / (E * l * (1 - l))  # NaN if l=0 or l=1
+    h = (math.degrees(math.atan2(k, bl)) - 120) if not math.isnan(s) and s else math.nan
     return Cubehelix(h + 360 if h < 0 else h, s, l, obj.opacity)
 
 def cubehelix(*args):

@@ -7,21 +7,31 @@ def linear(a, d):
     return f
 
 def exponential(a, b, y):
+    a = a ** y
+    b = b ** y - a
+    y = 1 / y
     def f(t):
-        return math.pow(a + t * (math.pow(b, y) - a), 1 / y)
+        return (a + t * b) ** y
     return f
 
 def hue(a, b):
     d = b - a
-    return linear(a, d if abs(d) <= 180 else d - 360 * round(d / 360)) if d else constant(math.isnan(a) and b or a)
+    if not math.isnan(d) and d:
+        if d < -180 or 180 < d:
+            return linear(a, d - 360 * round(d / 360))
+        else:
+            return linear(a, d)
+    else:
+        return constant(b if math.isnan(a) else a)
 
 def gamma(y):
     if round(y) == 1.:
-        return nogamma
+        return color
     def f(a, b):
-        return exponential(a, b, y) if b - a else constant(math.isnan(a) and b or a)
+        d = b - a
+        return exponential(a, b, y) if not math.isnan(d) and d else constant(math.isnan(a) and b or a)
     return f
 
-def nogamma(a, b):
+def color(a, b):
     d = b - a
-    return linear(a, d) if d else constant(math.isnan(a) and b or a)
+    return linear(a, d) if not math.isnan(d) and d else constant(b if math.isnan(a) else a)

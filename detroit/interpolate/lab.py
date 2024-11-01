@@ -1,9 +1,9 @@
-from d3_color import lab as colorLab
+from ..coloration import lab as color_lab
 from .color import color
 
-def lab(start, end):
-    start = colorLab(start)
-    end = colorLab(end)
+def interpolate_lab(start, end):
+    start = color_lab(start)
+    end = color_lab(end)
     l = color(start.l, end.l)
     a = color(start.a, end.a)
     b = color(start.b, end.b)

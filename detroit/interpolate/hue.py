@@ -1,6 +1,7 @@
 from .color import hue
+import math
 
-def hue_interpolator(a, b):
+def interpolate_hue(a, b):
     i = hue(float(a), float(b))
     def interpolate(t):
         x = i(t)
