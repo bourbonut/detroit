@@ -91,6 +91,7 @@ class Transformer:
         self._unknown = None
         self.input = None
         self.output = None
+        self.rescale()
 
     def rescale(self):
         n = min(len(self._domain), len(self._range))

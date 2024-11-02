@@ -34,6 +34,9 @@ from .array import (
 from .scale import (
     scale_linear,
     scale_identity,
+    scale_time,
+    scale_pow,
+    scale_sqrt,
 )
 from .interpolate import (
     interpolate_number_array,

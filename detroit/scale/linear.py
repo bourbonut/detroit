@@ -12,8 +12,8 @@ class LinearBase:
         return ticks(d[0], d[-1], count if count is not None else 10)
 
     def tick_format(self, count=None, specifier=None):
-        d = self.domain()
-        return None
+        raise NotImplementedError()
+        # d = self.domain()
         # return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
 
     def nice(self, count=None):

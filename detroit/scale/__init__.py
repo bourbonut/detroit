@@ -4,12 +4,12 @@ from .linear import scale_linear
 # from .log import scale_log
 # from .symlog import scale_symlog
 # from .ordinal import scale_ordinal, implicit as scale_implicit
-# from .pow import scale_pow, sqrt as scale_sqrt
+from .pow import scale_pow, scale_sqrt
 # from .radial import scale_radial
 # from .quantile import scale_quantile
 # from .quantize import scale_quantize
 # from .threshold import scale_threshold
-# from .time import scale_time
+from .time import scale_time
 # from .utcTime import scale_utc
 # from .sequential import (scale_sequential, scale_sequential_log, scale_sequential_pow, scale_sequential_sqrt, scale_sequential_symlog)
 # from .sequentialQuantile import scale_sequential_quantile

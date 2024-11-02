@@ -1,17 +1,19 @@
 from .continuous import Transformer, identity, copy
 from .init import init_range
+from .nice import nice
 from ..time import (
     time_ticks,
     time_tick_interval,
     time_year,
     time_month,
     time_week,
-    time_month,
+    time_day,
     time_hour,
     time_minute,
     time_second,
 )
 from ..time_format import time_format
+import math
 from datetime import datetime
 
 
@@ -23,13 +25,13 @@ def number(t):
     )
 
 
-class Calendar:
+class Calendar(Transformer):
     def __init__(
         self, ticks, tick_interval, year, month, week, day, hour, minute, second
     ):
-        self._scale = Transformer(identity, identity)
-        self._invert = scale.invert
-        self._domain = scale.domain
+        super().__init__(identity, identity)
+        # self._invert = super().invert
+        # self._domain = super().domain
 
         self._ticks = ticks
         self._tick_interval = tick_interval
@@ -51,7 +53,7 @@ class Calendar:
         self._format_month = time_format("%B")
         self._format_year = time_format("%Y")
 
-    def tick_format(date):
+    def _tick_format(self, date):
         return (
             self._format_millisecond
             if self.second(date) < date
@@ -71,22 +73,21 @@ class Calendar:
     def invert(self, y):
         return datetime.datetime.fromtimestamp(self._invert(y))
 
-    def domain(self, array):
-        return (
-            self._domain([number(x) for x in array])
-            if array is not None
-            else [datetime(x) for x in self._domain()]
-        )
+    def domain(self, domain=None):
+        if domain is not None:
+            return super().domain([number(x) for x in domain])
+        else:
+            return [math.nan if math.isnan(x) else datetime.fromtimestamp(x) for x in super().domain()]
 
-    def ticks_func(self, interval):
-        d = self._domain()
+    def ticks(self, interval):
+        d = super().domain()
         return self._ticks(d[0], d[-1], interval if interval is not None else 10)
 
-    def tick_format_func(self, count, specifier=None):
+    def tick_format(self, count, specifier=None):
         return specifier is None and self._tick_format or self._format(specifier)
 
     def nice(self, interval=None):
-        d = self._domain()
+        d = super().domain()
         if not interval or not hasattr(interval, "range"):
             interval = self._tick_interval(
                 d[0], d[-1], interval if interval is not None else 10
@@ -122,5 +123,5 @@ def scale_time(*args):
         time_hour,
         time_minute,
         time_second,
-    ).domain([datetime(2000, 0, 1), datetime(2000, 0, 2)])
+    ).domain([datetime(2000, 1, 1), datetime(2000, 1, 2)])
     return init_range(calendar, *args)
