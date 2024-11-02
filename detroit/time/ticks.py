@@ -1,7 +1,5 @@
 from bisect import bisect_right
-from .duration import (
-    duration_day, duration_hour, duration_minute, duration_month, duration_second, duration_week, duration_year
-)
+from .duration import duration_year
 from .millisecond import time_millisecond
 from .second import time_second
 from .minute import time_minute
@@ -10,6 +8,7 @@ from .day import time_day
 from .week import time_sunday, time_week
 from .month import time_month
 from .year import time_year
+from ..array import tick_step
 
 from datetime import timedelta
 
@@ -60,4 +59,4 @@ class Ticker:
         return t.every(step)
 
 time = Ticker(time_year, time_month, time_sunday, time_day, time_hour, time_minute)
-time_ticks, time_tick_interval = time.ticks, time.tick_intervals
+time_ticks, time_tick_interval = time.ticks, time.tick_interval
