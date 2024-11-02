@@ -7,7 +7,7 @@ from .linear import scale_linear
 from .pow import scale_pow, scale_sqrt
 # from .radial import scale_radial
 # from .quantile import scale_quantile
-# from .quantize import scale_quantize
+from .quantize import scale_quantize
 # from .threshold import scale_threshold
 from .time import scale_time
 # from .utcTime import scale_utc

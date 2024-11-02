@@ -37,6 +37,7 @@ from .scale import (
     scale_time,
     scale_pow,
     scale_sqrt,
+    scale_quantize,
 )
 from .interpolate import (
     interpolate_number_array,

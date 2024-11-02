@@ -1,55 +1,66 @@
 from bisect import bisect
-from .linear import linearish
+from .linear import LinearBase
 from .init import init_range
+import math
 
-def quantize():
-    x0 = 0
-    x1 = 1
-    n = 1
-    domain = [0.5]
-    range_vals = [0, 1]
-    unknown = None
+class ScaleQuantize(LinearBase):
+    def __init__(self):
+        self._x0 = 0
+        self._x1 = 1
+        self._n = 1
+        self._domain = [0.5]
+        self._range_vals = [0, 1]
+        self._unknown = None
 
-    def scale(x):
-        return range_vals[bisect(domain, x, 0, n)] if x is not None and x <= x else unknown
+    def __call__(self, x = None):
+        if x is not None and not math.isnan(x):
+            return self._range_vals[bisect(self._domain, x, 0, self._n)]
+        else:
+            return self._unknown
 
-    def rescale():
-        nonlocal domain
-        domain = [(i + 1) * x1 - (i - n) * x0 / (n + 1) for i in range(n)]
-        return scale
+    def rescale(self):
+        x0, x1 = self._x0, self._x1
+        n = self._n
+        self._domain = [((i + 1) * x1 - (i - n) * x0) / (n + 1) for i in range(n)]
+        return self
 
-    def domain_func(_=None):
-        return (x0, x1) if _ is None else (x0 := float(_[0]), x1 := float(_[1]), rescale())
+    def domain(self, *args):
+        if args:
+            self._x0, self._x1 = map(float, sorted(args[0])[:2])
+            return self.rescale()
+        else:
+            return [self._x0, self._x1]
 
-    def range_func(_=None):
-        return range_vals.copy() if _ is None else (n := (range_vals := list(_)).length - 1, rescale())
+    def range(self, *args):
+        if args:
+            self._range_vals = list(args[0])
+            self._n = len(self._range_vals) - 1
+            return self.rescale()
+        return self._range_vals.copy()
 
-    def invert_extent(y):
-        i = range_vals.index(y)
-        return [None, None] if i < 0 else [
-            domain[i - 1] if i > 0 else x0,
-            domain[i] if i < n else x1
-        ]
+    def invert_extent(self, y):
+        i = self._range_vals.index(y)
+        if i < 0:
+            return [math.nan, math.nan]
+        elif i < 1:
+            return [self._x0, self._domain[0]]
+        elif i >= self._n:
+            return [self._domain[self._n - 1], self._x1]
+        else:
+            return [self._domain[i - 1], self._domain[i]]
 
-    def unknown_func(_=None):
-        nonlocal unknown
-        return unknown if _ is None else (unknown := _, scale)
+    def unknown(self, *args):
+        if args:
+            self._unknown = args[0]
+            return self
+        return self._unknown
 
-    def thresholds_func():
-        return domain.copy()
+    def thresholds(self):
+        return self._domain.copy()
 
-    def copy_func():
-        return quantize().domain([x0, x1]).range(range_vals).unknown(unknown)
-
-    scale.domain = domain_func
-    scale.range = range_func
-    scale.invert_extent = invert_extent
-    scale.unknown = unknown_func
-    scale.thresholds = thresholds_func
-    scale.copy = copy_func
-
-    return init_range(linearish(scale))
+    def copy(self):
+        return ScaleQuantize().domain([self._x0, self._x1]).range(self._range_vals).unknown(self._unknown)
 
 
-# -----
-
+def scale_quantize():
+    return init_range(ScaleQuantize())
