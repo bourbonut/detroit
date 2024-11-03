@@ -72,3 +72,4 @@ from .coloration import (
     color,
     cubehelix,
 )
+from .path import Path as path
