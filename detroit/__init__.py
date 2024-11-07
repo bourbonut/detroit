@@ -73,3 +73,4 @@ from .coloration import (
     cubehelix,
 )
 from .path import Path as path
+from .shape import Line as line
