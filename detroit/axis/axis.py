@@ -1,16 +1,16 @@
-import numpy as np
+import math
 
-top = 1
-right = 2
-bottom = 3
-left = 4
-epsilon = 1e-6
+TOP = 1
+RIGHT = 2
+BOTTOM = 3
+LEFT = 4
+EPSILON = 1e-6
 
 def translate_x(x):
-    return f"translate({x},0)"
+    return f"translate({x}, 0)"
 
 def translate_y(y):
-    return f"translate(0,{y})"
+    return f"translate(0, {y})"
 
 def number(scale):
     return lambda d: float(scale(d))
@@ -24,54 +24,76 @@ def center(scale, offset):
 def entering(context):
     return not hasattr(context, '__axis')
 
-def axis(orient, scale):
-    tick_arguments = []
-    tick_values = None
-    tick_format = None
-    tick_size_inner = 6
-    tick_size_outer = 6
-    tick_padding = 3
-    offset = 0 if np.isfinite(1 / 1) else 0.5  # Simulating devicePixelRatio > 1
-    k = -1 if orient in [top, left] else 1
-    x = 'x' if orient in [left, right] else 'y'
-    transform = translate_x if orient in [top, bottom] else translate_y
+class Axis:
 
-    def axis_func(context):
-        nonlocal tick_values, tick_format, tick_size_inner, tick_size_outer, tick_padding, offset
+    def __init__(self, orient, scale):
+        self._scale = scale
+        self._orient = orient
+        self._tick_arguments = []
+        self._tick_values = None
+        self._tick_format = None
+        self._tick_size_inner = 6
+        self._tick_size_outer = 6
+        self._tick_padding = 3
+        self._offset = 0.5
+        self._k = -1 if orient in [TOP, LEFT] else 1
+        self._x = 'x' if orient in [LEFT, RIGHT] else 'y'
+        self._transform = translate_x if orient in [TOP, BOTTOM] else translate_y
 
-        values = (tick_values if tick_values is not None else 
-                  (scale.ticks(*tick_arguments) if hasattr(scale, 'ticks') else scale.domain()))
-        format_func = (tick_format if tick_format is not None else 
-                       (scale.tick_format(*tick_arguments) if hasattr(scale, 'tick_format') else lambda d: d))
-        spacing = max(tick_size_inner, 0) + tick_padding
-        range_ = scale.range()
-        range0 = float(range_[0]) + offset
-        range1 = float(range_[-1]) + offset
-        position = (center(scale.copy(), offset) if hasattr(scale, 'bandwidth') else number(scale.copy()))
+    def axis(self, context):
+        if self._tick_values is not None:
+            values = self._tick_values
+        elif hasattr(self._scale, 'ticks'):
+            values = self._scale.ticks(*self._tick_arguments) 
+        else:
+            values = self.scale.domain()
+
+        if self._tick_format is not None:
+            format_func = self._tick_format
+        elif hasattr(self._scale, "tick_format"):
+            format_func = self._tick_format
+        else:
+            def format_func(d):
+                return d
+
+        spacing = max(self._tick_size_inner, 0) + self._tick_padding
+        range_values = self._scale.range()
+        range0 = float(range_values[0]) + self._offset
+        range1 = float(range_values[-1]) + self._offset
+
+        if hasattr(self._scale, 'bandwidth'):
+            position = center(self._scale.copy(), self._offset)
+        else:
+            position = number(self._scale.copy(), self._offset)
         
-        # Simulating selection and data binding (context.selection is not a direct equivalent in Python)
         selection = context.selection() if hasattr(context, 'selection') else context
         path = selection.select_all(".domain").data([None])
-        tick = selection.select_all(".tick").data(values, scale).order()
+        tick = selection.select_all(".tick").data(values, self._scale).order()
         tick_exit = tick.exit()
         tick_enter = tick.enter().append("g").attr("class", "tick")
         line = tick.select("line")
         text = tick.select("text")
 
-        path = path.merge(path.enter().insert("path", ".tick")
-                          .attr("class", "domain")
-                          .attr("stroke", "currentColor"))
+        path = path.merge(
+            path.enter().insert("path", ".tick")
+                        .attr("class", "domain")
+                        .attr("stroke", "currentColor")
+        )
 
         tick = tick.merge(tick_enter)
 
-        line = line.merge(tick_enter.append("line")
-                          .attr("stroke", "currentColor")
-                          .attr(f"{x}2", k * tick_size_inner))
+        line = line.merge(
+            tick_enter.append("line")
+                      .attr("stroke", "currentColor")
+                      .attr(f"{self._x}2", self._k * self._tick_size_inner)
+        )
 
-        text = text.merge(tick_enter.append("text")
-                          .attr("fill", "currentColor")
-                          .attr(x, k * spacing)
-                          .attr("dy", "0em" if orient == top else "0.71em" if orient == bottom else "0.32em"))
+        text = text.merge(
+            tick_enter.append("text")
+                      .attr("fill", "currentColor")
+                      .attr(self._x, self._k * spacing)
+                      .attr("dy", "0em" if self._orient == TOP else "0.71em" if self._orient == BOTTOM else "0.32em")
+        )
 
         if context != selection:
             path = path.transition(context)
@@ -79,57 +101,54 @@ def axis(orient, scale):
             line = line.transition(context)
             text = text.transition(context)
 
-            tick_exit = tick_exit.transition(context)\
-                .attr("opacity", epsilon)\
-                .attr("transform", lambda d: transform(position(d) + offset) if np.isfinite(d := position(d)) else None)
+            def transform(d):
+                d = position(d)
+                if d is not None and math.isfinite(d):
+                    return self._transform(position(d) + self._offset)
 
-            tick_enter\
-                .attr("opacity", epsilon)\
-                .attr("transform", lambda d: transform((p := getattr(this.parentNode, '__axis', None)(d) if p else position(d)) + offset))
+            tick_exit = (
+                tick_exit.transition(context)
+                         .attr("opacity", EPSILON)
+                         .attr("transform", transform)
+            )
+
+            def transform(d): # TODO
+                return None
+
+            tick_enter.attr("opacity", EPSILON).attr("transform", transform)
 
         tick_exit.remove()
 
-        path.attr("d", (f"M{(k * tick_size_outer)},{range0}H{offset}V{range1}H{(k * tick_size_outer)}" if tick_size_outer else f"M{offset},{range0}V{range1}"))
+        if self._tick_size_outer:
+            path.attr("d", f"M{(self._k * self._tick_size_outer)},{range0}H{self._offset}V{range1}H{(self._k * self._tick_size_outer)}")
+        else:
+            path.attr("d", f"M{self._offset},{range0}V{range1}")
 
-        tick.attr("opacity", 1)\
-            .attr("transform", lambda d: transform(position(d) + offset))
+        def transform(d):
+            return self._transform(self._position(d) + self._offset)
 
-        line.attr(f"{x}2", k * tick_size_inner)
+        tick.attr("opacity", 1).attr("transform", transform)
 
-        text.attr(x, k * spacing)\
-            .text(format_func)
+        line.attr(f"{self._x}2", self._k * self._tick_size_inner)
 
-        selection.filter(entering(context))\
-            .attr("fill", "none")\
-            .attr("font-size", 10)\
-            .attr("font-family", "sans-serif")\
-            .attr("text-anchor", "start" if orient == right else "end" if orient == left else "middle")
+        text.attr(self._x, self._k * spacing).text(format_func)
 
-        for elem in selection:
-            elem.__axis = position
-
-    axis_func.scale = lambda _: (scale := _, axis_func) if _ else scale
-    axis_func.ticks = lambda *args: (tick_arguments := list(args), axis_func)
-    axis_func.tick_arguments = lambda _: (tick_arguments := [] if _ is None else list(_), axis_func) if _ else tick_arguments.copy()
-    axis_func.tick_values = lambda _: (tick_values := None if _ is None else list(_), axis_func) if _ else (tick_values.copy() if tick_values else None)
-    axis_func.tick_format = lambda _: (tick_format := _, axis_func) if _ else tick_format
-    axis_func.tick_size = lambda _: (tick_size_inner := tick_size_outer := float(_), axis_func) if _ else tick_size_inner
-    axis_func.tick_size_inner = lambda _: (tick_size_inner := float(_), axis_func) if _ else tick_size_inner
-    axis_func.tick_size_outer = lambda _: (tick_size_outer := float(_), axis_func) if _ else tick_size_outer
-    axis_func.tick_padding = lambda _: (tick_padding := float(_), axis_func) if _ else tick_padding
-    axis_func.offset = lambda _: (offset := float(_), axis_func) if _ else offset
-
-    return axis_func
+        (
+            selection.filter(entering(context))
+                .attr("fill", "none")
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
+        )
 
 def axis_top(scale):
-    return axis(top, scale)
+    return Axis(TOP, scale)
 
 def axis_right(scale):
-    return axis(right, scale)
+    return Axis(RIGHT, scale)
 
 def axis_bottom(scale):
-    return axis(bottom, scale)
+    return Axis(BOTTOM, scale)
 
 def axis_left(scale):
-    return axis(left, scale)
-
+    return Axis(LEFT, scale)
