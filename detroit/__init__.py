@@ -74,3 +74,5 @@ from .coloration import (
 )
 from .path import Path as path
 from .shape import Line as line
+from .axis import axis_top, axis_left, axis_right, axis_bottom
+from .format import locale_format as format

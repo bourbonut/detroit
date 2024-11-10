@@ -40,13 +40,13 @@ class Axis:
         self._x = 'x' if orient in [LEFT, RIGHT] else 'y'
         self._transform = translate_x if orient in [TOP, BOTTOM] else translate_y
 
-    def axis(self, context):
+    def __call__(self, context):
         if self._tick_values is not None:
             values = self._tick_values
         elif hasattr(self._scale, 'ticks'):
             values = self._scale.ticks(*self._tick_arguments) 
         else:
-            values = self.scale.domain()
+            values = self._scale.domain()
 
         if self._tick_format is not None:
             format_func = self._tick_format
@@ -64,7 +64,7 @@ class Axis:
         if hasattr(self._scale, 'bandwidth'):
             position = center(self._scale.copy(), self._offset)
         else:
-            position = number(self._scale.copy(), self._offset)
+            position = number(self._scale.copy())
         
         selection = context.selection() if hasattr(context, 'selection') else context
         path = selection.select_all(".domain").data([None])
@@ -140,6 +140,65 @@ class Axis:
                 .attr("font-family", "sans-serif")
                 .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
         )
+
+    def scale(self, scale=None):
+        if scale is not None:
+            self._scale = scale
+            return self
+        return self._scale
+
+    def ticks(self, ticks=None):
+        if ticks is not None:
+            self.tick_arguments = ticks
+        return self
+
+    def tick_arguments(self, tick_arguments=None):
+        if tick_arguments is not None:
+            self._tick_arguments = tick_arguments
+            return self
+        return self._tick_arguments.copy()
+
+    def tick_values(self, tick_values=None):
+        if tick_values is not None:
+            self._tick_values = tick_values
+            return self
+        return self._tick_values
+
+    def tick_format(self, tick_format=None):
+        if tick_format is not None:
+            self._tick_format = tick_format
+            return self
+        return self._tick_format
+
+    def tick_size(self, tick_size=None):
+        if tick_size is not None:
+            self._tick_size_inner = self._tick_size_outer = tick_size
+            return self
+        return self._tick_size_inner
+
+    def tick_size_inner(self, tick_size_inner):
+        if tick_size_inner is not None:
+            self._tick_size_inner = tick_size_inner
+            return self
+        return self._tick_size_inner
+
+    def tick_size_outer(self, tick_size_outer):
+        if tick_size_outer is not None:
+            self._tick_size_outer = tick_size_outer
+            return self
+        return self._tick_size_outer
+
+    def tick_padding(self, tick_padding=None):
+        if tick_padding is not None:
+            self._tick_padding = tick_padding
+            return self
+        return self._tick_padding
+
+    def offset(self, offset=None):
+        if offset is not None:
+            self._offset = offset
+            return self
+        return self._offset
 
 def axis_top(scale):
     return Axis(TOP, scale)
