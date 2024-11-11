@@ -1,5 +1,3 @@
-import math
-
 TOP = 1
 RIGHT = 2
 BOTTOM = 3
@@ -13,7 +11,9 @@ def translate_y(y):
     return f"translate(0, {y})"
 
 def number(scale):
-    return lambda d: float(scale(d))
+    def f(d):
+        return float(scale(d))
+    return f
 
 def center(scale, offset):
     offset = max(0, scale.bandwidth() - offset * 2) / 2
@@ -95,27 +95,28 @@ class Axis:
                       .attr("dy", "0em" if self._orient == TOP else "0.71em" if self._orient == BOTTOM else "0.32em")
         )
 
-        if context != selection:
-            path = path.transition(context)
-            tick = tick.transition(context)
-            line = line.transition(context)
-            text = text.transition(context)
-
-            def transform(d):
-                d = position(d)
-                if d is not None and math.isfinite(d):
-                    return self._transform(position(d) + self._offset)
-
-            tick_exit = (
-                tick_exit.transition(context)
-                         .attr("opacity", EPSILON)
-                         .attr("transform", transform)
-            )
-
-            def transform(d): # TODO
-                return None
-
-            tick_enter.attr("opacity", EPSILON).attr("transform", transform)
+        # TODO : transition implementation
+        # if context != selection:
+        #     path = path.transition(context)
+        #     tick = tick.transition(context)
+        #     line = line.transition(context)
+        #     text = text.transition(context)
+        #
+        #     def transform(d):
+        #         d = position(d)
+        #         if d is not None and math.isfinite(d):
+        #             return self._transform(position(d) + self._offset)
+        #
+        #     tick_exit = (
+        #         tick_exit.transition(context)
+        #                  .attr("opacity", EPSILON)
+        #                  .attr("transform", transform)
+        #     )
+        #
+        #     def transform(d): # TODO
+        #         return None
+        #
+        #     tick_enter.attr("opacity", EPSILON).attr("transform", transform)
 
         tick_exit.remove()
 
@@ -124,8 +125,8 @@ class Axis:
         else:
             path.attr("d", f"M{self._offset},{range0}V{range1}")
 
-        def transform(d):
-            return self._transform(self._position(d) + self._offset)
+        def transform(d, *args):
+            return self._transform(position(d) + self._offset)
 
         tick.attr("opacity", 1).attr("transform", transform)
 
@@ -133,13 +134,13 @@ class Axis:
 
         text.attr(self._x, self._k * spacing).text(format_func)
 
-        (
-            selection.filter(entering(context))
-                .attr("fill", "none")
-                .attr("font-size", 10)
-                .attr("font-family", "sans-serif")
-                .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
-        )
+        # (
+        #     selection.filter(entering(context))
+        #         .attr("fill", "none")
+        #         .attr("font-size", 10)
+        #         .attr("font-family", "sans-serif")
+        #         .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
+        # )
 
     def scale(self, scale=None):
         if scale is not None:

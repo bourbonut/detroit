@@ -5,4 +5,4 @@ from lxml import etree
 def create(name):
     fullname = namespace(name)
     document = etree.Element(fullname["local"], attrib=fullname["space"])
-    return Selection([document], document)
+    return Selection([[document]], [document])
