@@ -5,15 +5,17 @@ from .constant import constant
 from .attr import attr_function, attr_constant
 from .text import text_function, text_constant
 from .enter import EnterNode
+from itertools import zip_longest
 from lxml import etree
 
-def selector(element, selection):
+def selector(element, selection, whole=False):
+    prefix = "//" if whole else "/"
     if "." in selection:
         tag, class_name = selection.split(".")
         tag = tag or "*"
         class_name = f"[@class='{class_name}']" if class_name else ""
-        return element.xpath(f"//{tag}{class_name}")
-    return element.xpath(f"//{selection}")
+        return element.xpath(f"{prefix}{tag}{class_name}")
+    return element.xpath(f"{prefix}{selection}")
 
 def creator(node, fullname):
     return (
@@ -21,6 +23,36 @@ def creator(node, fullname):
         if isinstance(fullname, dict)
         else etree.SubElement(node, fullname)
     )
+
+class DataDict:
+
+    def __init__(self, keys=None, items=None):
+        self.keys = keys or []
+        self.items = items or []
+
+    def __getitem__(self, key):
+        return self.items[self.keys.index(key)]
+
+    def __setitem__(self, key, item):
+        self.keys.append(key)
+        self.items.append(item)
+
+    def __or__(self, other):
+        k1 = set(self.keys)
+        k2 = set(other.keys)
+        common_keys = list(k1 & k2)
+        keys_left = list(k1 - k2)
+        keys_right = list(k2 - k1)
+        keys = common_keys + keys_left + keys_right
+        items = [self[key] for key in common_keys] + [self[key] for key in keys_left] + [other[key] for key in keys_right]
+        return DataDict(keys, items)
+
+    def get(self, key):
+        if key in self.keys:
+            return self[key]
+
+    def __str__(self):
+        return "{" + ", ".join(f"{key}:{item}" for key, item in zip(self.keys, self.items)) + "}"
 
 class Selection:
     def __init__(self, groups, parents, enter=None, exit=None, data=None):
@@ -70,9 +102,9 @@ class Selection:
         selection = context.selection() if hasattr(context, 'selection') else context
 
         merges = []
-        for groups0, groups1 in zip(self._groups, selection._groups):
+        for groups0, groups1 in zip_longest(self._groups, selection._groups, fillvalue=[]):
             merge = []
-            for group0, group1 in zip(groups0, groups1):
+            for group0, group1 in zip_longest(groups0, groups1, fillvalue=None):
                 node = group0 if group0 is not None else group1
                 merge.append(node)
             merges.append(merge)
@@ -80,7 +112,7 @@ class Selection:
         for j in range(len(merges), len(self._groups)):
             merges.append(self._groups[j])
 
-        return Selection(merges, self._parents, data=self._data | context._data)
+        return Selection(merges, self._parents, data=self._data | selection._data)
 
     def append(self, name):
         fullname = namespace(name)
@@ -99,6 +131,7 @@ class Selection:
                     subnode = creator(node, fullname)
                     node.append(subnode)
                     subgroup.append(subnode)
+                    self._data[subnode] = self._data.get(node)
             subgroups.append(subgroup)
         parents = [
             (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
@@ -137,7 +170,7 @@ class Selection:
         elif callable(value):
             self.each(text_function(value))
         else:
-            self.each(attr_constant(value))
+            self.each(text_constant(value))
         return self
 
     def datum(self, value):
@@ -195,7 +228,11 @@ class Selection:
                 if node is not None:
                     if isinstance(node, EnterNode):
                         node = node._parent
-                    if selection := selector(node, before):
+                    selection = selector(node, before, True)
+                    if selection := [
+                        found for found in selection
+                        if found.getparent() == node
+                    ]:
                         index = node.index(selection[0])
                         created = creator(node, fullname)
                         node.insert(index, created)
@@ -229,10 +266,10 @@ class Selection:
         return self
 
     def to_string(self, pretty_print=True):
-        return etree.tostring(self._parents[0], pretty_print=True).decode("utf-8")
+        return etree.tostring(self._parents[0], pretty_print=pretty_print).decode("utf-8")
 
     def __str__(self):
-        return self.to_string(True)
+        return self.to_string(False)
 
     def __repr__(self):
         def node_repr(node):
@@ -245,6 +282,7 @@ class Selection:
             if class_name:
                 return f"{tag}.{class_name}"
             return tag
+
         groups = [
             f"[{', '.join(node_repr(node) for node in group)}]"
             for group in self._groups
@@ -252,5 +290,5 @@ class Selection:
         parents = f"[{', '.join(node_repr(parent) for parent in self._parents)}]"
         return (
             f"Selection(\n    groups=[{', '.join(groups)}],\n    parents={parents},"
-            f"\n    enter={self._enter},\n    exit={self._exit},\n    data={self._data}\n)"
+            f"\n    enter={self._enter},\n    exit={self._exit},\n    data={self._data},\n)"
         )

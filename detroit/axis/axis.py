@@ -135,13 +135,12 @@ class Axis:
 
         text.attr(self._x, self._k * spacing).text(format_func)
 
-        # (
-        #     selection.filter(entering(context))
-        #         .attr("fill", "none")
-        #         .attr("font-size", 10)
-        #         .attr("font-family", "sans-serif")
-        #         .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
-        # )
+        (
+            selection.attr("fill", "none") # .filter(entering(context))
+                .attr("font-size", 10)
+                .attr("font-family", "sans-serif")
+                .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
+        )
 
     def scale(self, scale=None):
         if scale is not None:
