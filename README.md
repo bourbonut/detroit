@@ -12,9 +12,9 @@
     </a>
 </p>
 
-detroit is Python implentation of [d3js](https://d3js.org/).
+`detroit` is Python implentation of [d3js](https://d3js.org/).
 
-- [Documentation](https://detroit.readthedocs.io/en/latest/)
+- [Documentation](https://detroit.readthedocs.io/en/latest/) (not updated)
 
 # Installation
 
@@ -24,35 +24,35 @@ pip install detroit
 
 # Coverage
 
-| Package Name                                           | Yes / No                                   | Tests OK | Notes                         |
-|--------------------------------------------------------|--------------------------------------------|----------|-------------------------------|
-| <span style="color:lightgreen;">array</span>           | <span style="color:lightgreen;">Yes</span> | Yes      | Some tests must be updated    |
-| <span style="color:lightgreen;">axis</span>            | <span style="color:lightgreen;">Yes</span> | No       | TODO: tests                   |
-| brush                                                  | No                                         | -        |                               |
-| chord                                                  | No                                         | -        |                               |
-| <span style="color:lightgreen;">color</span>           | <span style="color:lightgreen;">Yes</span> | Yes      |                               |
-| contour                                                | No                                         | -        |                               |
-| delaunay                                               | No                                         | -        |                               |
-| dispatch                                               | No                                         | -        |                               |
-| drag                                                   | No                                         | -        |                               |
-| <del>dsv</del>                                         | No                                         | -        | use `import pandas / polars`  |
-| ease                                                   | No                                         | -        |                               |
-| <del>fetch</del>                                       | No                                         | -        | use `import requests`         |
-| force                                                  | No                                         | -        |                               |
-| <span style="color:lightgreen;">format</span>          | <span style="color:lightgreen;">Yes</span> | Yes      | Only `d3.format`              |
-| geo                                                    | No                                         | -        |                               |
-| hierarchy                                              | No                                         | -        |                               |
-| <span style="color:lightgreen;">interpolate</span>     | <span style="color:lightgreen;">Yes</span> | Yes      | interpolate CSS not supported |
-| <span style="color:lightgreen;">path</span>            | <span style="color:lightgreen;">Yes</span> | Yes      |                               |
-| polygone                                               | No                                         | -        |                               |
-| quadtree                                               | No                                         | -        |                               |
-| <del>random</del>                                      | No                                         | -        | Use `import random`           |
-| <span style="color:lightgreen;">scale</span>           | <span style="color:lightgreen;">Yes</span> | Yes      | Mostly `test_linear`          |
-| <span style="color:lightgreen;">scale-chromatic</span> | <span style="color:lightgreen;">Yes</span> | No       | TODO: tests                   |
-| <span style="color:lightgreen;">selection</span>       | <span style="color:lightgreen;">Yes</span> | No       | TODO: tests                   |
-| <span style="color:lightgreen;">shape</span>           | <span style="color:lightgreen;">Yes</span> | Yes      | Missing most of shapes        |
-| <span style="color:lightgreen;">time</span>            | <span style="color:lightgreen;">Yes</span> | Yes      | TODO: pass tests              |
-| <span style="color:lightgreen;">time-format</span>     | <span style="color:lightgreen;">Yes</span> | Yes      |                               |
-| timer                                                  | No                                         | -        |                               |
-| transition                                             | No                                         | -        |                               |
-| zoom                                                   | No                                         | -        |                               |
+| Package Name    | Yes / No | Tests OK | Notes                         |
+|-----------------|----------|----------|-------------------------------|
+| array           | Yes      | Yes      | Some tests must be updated    |
+| axis            | Yes      | No       | TODO: tests                   |
+| brush           | No       | -        |                               |
+| chord           | No       | -        |                               |
+| color           | Yes      | Yes      |                               |
+| contour         | No       | -        |                               |
+| delaunay        | No       | -        |                               |
+| dispatch        | No       | -        |                               |
+| drag            | No       | -        |                               |
+| dsv             | No       | -        | use `import pandas / polars`  |
+| ease            | No       | -        |                               |
+| fetch           | No       | -        | use `import requests`         |
+| force           | No       | -        |                               |
+| format          | Yes      | Yes      | Only `d3.format`              |
+| geo             | No       | -        |                               |
+| hierarchy       | No       | -        |                               |
+| interpolate     | Yes      | Yes      | interpolate CSS not supported |
+| path            | Yes      | Yes      |                               |
+| polygone        | No       | -        |                               |
+| quadtree        | No       | -        |                               |
+| random          | No       | -        | Use `import random`           |
+| scale           | Yes      | Yes      | Mostly `test_linear`          |
+| scale-chromatic | Yes      | No       | TODO: tests                   |
+| selection       | Yes      | No       | TODO: tests                   |
+| shape           | Yes      | Yes      | Missing most of shapes        |
+| time            | Yes      | Yes      | TODO: pass tests              |
+| time-format     | Yes      | Yes      |                               |
+| timer           | No       | -        |                               |
+| transition      | No       | -        |                               |
+| zoom            | No       | -        |                               |
