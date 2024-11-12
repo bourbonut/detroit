@@ -120,10 +120,16 @@ class Axis:
 
         tick_exit.remove()
 
-        if self._tick_size_outer:
-            path.attr("d", f"M{(self._k * self._tick_size_outer)},{range0}H{self._offset}V{range1}H{(self._k * self._tick_size_outer)}")
+        if self._orient == LEFT or self._orient == RIGHT:
+            if self._tick_size_outer:
+                path.attr("d", f"M{self._k * self._tick_size_outer},{range0}H{self._offset}V{range1}H{self._k * self._tick_size_outer}")
+            else:
+                path.attr("d", f"M{self._offset},{range0}V{range1}")
         else:
-            path.attr("d", f"M{self._offset},{range0}V{range1}")
+            if self._tick_size_outer:
+                path.attr("d", f"M{range0},{self._k * self._tick_size_outer}V{self._offset}H{range1}V{self._k * self._tick_size_outer}")
+            else:
+                path.attr("d", f"M{self._offset},{range0}H{range1}")
 
 
         def transform(d, *args):
