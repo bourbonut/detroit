@@ -12,7 +12,7 @@
     </a>
 </p>
 
-detroit is wrapper for Python of [d3js](https://d3js.org/) and [Observable Plot](https://observablehq.com/plot/).
+detroit is Python implentation of [d3js](https://d3js.org/).
 
 - [Documentation](https://detroit.readthedocs.io/en/latest/)
 
@@ -22,58 +22,37 @@ detroit is wrapper for Python of [d3js](https://d3js.org/) and [Observable Plot]
 pip install detroit
 ```
 
-Then you will need to install a browser through the Python package `playwright`.
-For the moment, only `chromium` is supported.
+# Coverage
 
-```sh
-playwright install chromium
-```
-
-# Features
-
-- Write as close as possible `d3` and `Plot` code
-- Render one or multiple plots in your browser or in your jupyter notebook
-- Customize style as you want
-- Save them into `.svg`, `.png` or `.pdf`
-
-# Quick Example
-
-
-```py
-import polars as pl
-from sklearn.datasets import load_digits
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-
-from detroit import Plot, js, render, save
-
-mnsit = load_digits()
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(mnsit.data)
-pca = PCA(n_components=2)
-components = pca.fit_transform(X_scaled)
-
-# Prepare your data with Polars, Pandas or manually
-df = pl.DataFrame(components, schema=["Component 1", "Component 2"])
-df = df.insert_column(2, pl.Series("digit", mnsit.target))
-
-plot = Plot.plot({
-  "style": {"backgroundColor": "#161b22", "color": "#e6edf3"},
-  "symbol": {"legend": js("true")},
-  "color": {"scheme": "rainbow"},
-  "marks": [
-      Plot.dot(js("data"), {
-          "x": "Component 1",
-          "y": "Component 2",
-          "stroke": "digit",
-          "symbol": "digit"
-      })
-  ]
-})
-
-render(df, plot, style={"body": {"background": "#161b22", "color": "#e6edf3"}})
-```
-
-<p align="center">
-    <img src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/figures/quick.png"></img>
-</p>
+| Package Name                                           | Yes / No                                   | Tests OK | Notes                         |
+|--------------------------------------------------------|--------------------------------------------|----------|-------------------------------|
+| <span style="color:lightgreen;">array</span>           | <span style="color:lightgreen;">Yes</span> | Yes      | Some tests must be updated    |
+| <span style="color:lightgreen;">axis</span>            | <span style="color:lightgreen;">Yes</span> | No       | TODO: tests                   |
+| brush                                                  | No                                         | -        |                               |
+| chord                                                  | No                                         | -        |                               |
+| <span style="color:lightgreen;">color</span>           | <span style="color:lightgreen;">Yes</span> | Yes      |                               |
+| contour                                                | No                                         | -        |                               |
+| delaunay                                               | No                                         | -        |                               |
+| dispatch                                               | No                                         | -        |                               |
+| drag                                                   | No                                         | -        |                               |
+| <del>dsv</del>                                         | No                                         | -        | use `import pandas / polars`  |
+| ease                                                   | No                                         | -        |                               |
+| <del>fetch</del>                                       | No                                         | -        | use `import requests`         |
+| force                                                  | No                                         | -        |                               |
+| <span style="color:lightgreen;">format</span>          | <span style="color:lightgreen;">Yes</span> | Yes      | Only `d3.format`              |
+| geo                                                    | No                                         | -        |                               |
+| hierarchy                                              | No                                         | -        |                               |
+| <span style="color:lightgreen;">interpolate</span>     | <span style="color:lightgreen;">Yes</span> | Yes      | interpolate CSS not supported |
+| <span style="color:lightgreen;">path</span>            | <span style="color:lightgreen;">Yes</span> | Yes      |                               |
+| polygone                                               | No                                         | -        |                               |
+| quadtree                                               | No                                         | -        |                               |
+| <del>random</del>                                      | No                                         | -        | Use `import random`           |
+| <span style="color:lightgreen;">scale</span>           | <span style="color:lightgreen;">Yes</span> | Yes      | Mostly `test_linear`          |
+| <span style="color:lightgreen;">scale-chromatic</span> | <span style="color:lightgreen;">Yes</span> | No       | TODO: tests                   |
+| <span style="color:lightgreen;">selection</span>       | <span style="color:lightgreen;">Yes</span> | No       | TODO: tests                   |
+| <span style="color:lightgreen;">shape</span>           | <span style="color:lightgreen;">Yes</span> | Yes      | Missing most of shapes        |
+| <span style="color:lightgreen;">time</span>            | <span style="color:lightgreen;">Yes</span> | Yes      | TODO: pass tests              |
+| <span style="color:lightgreen;">time-format</span>     | <span style="color:lightgreen;">Yes</span> | Yes      |                               |
+| timer                                                  | No                                         | -        |                               |
+| transition                                             | No                                         | -        |                               |
+| zoom                                                   | No                                         | -        |                               |
