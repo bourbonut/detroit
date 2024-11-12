@@ -43,5 +43,5 @@ def bind_key(node_data, parent, group, enter, update, exit, data, key):
 
     for i in range(len(group)):
         node = group[i]
-        if node and node_by_key_value.get(key_values[i]) == node:
+        if node is not None and node_by_key_value.get(key_values[i]) == node:
             exit[i] = node

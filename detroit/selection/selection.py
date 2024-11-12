@@ -3,13 +3,9 @@ from .style import style_value
 from .bind import bind_key, bind_index
 from .constant import constant
 from .attr import attr_function, attr_constant
+from .text import text_function, text_constant
 from .enter import EnterNode
 from lxml import etree
-
-class Node:
-    def __init__(self, parent, datum=None):
-        self._parent = parent
-        self._data = datum or []
 
 def selector(element, selection):
     if "." in selection:
@@ -39,14 +35,22 @@ class Selection:
             selector(node, selection)[:1]
             for group in self._groups for node in group if node is not None
         ]
-        return Selection(subgroups, self._parents, data=self._data)
+        parents = [
+            (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
+            for group in self._groups if group[0] is not None
+        ]
+        return Selection(subgroups, parents or self._parents, data=self._data)
 
     def select_all(self, selection):
         subgroups = [
             selector(node, selection)
             for group in self._groups for node in group if node is not None
         ]
-        return Selection(subgroups, self._parents, data=self._data)
+        parents = [
+            (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
+            for group in self._groups if group[0] is not None
+        ]
+        return Selection(subgroups, parents or self._parents, data=self._data)
 
     def enter(self):
         return Selection(
@@ -69,14 +73,14 @@ class Selection:
         for groups0, groups1 in zip(self._groups, selection._groups):
             merge = []
             for group0, group1 in zip(groups0, groups1):
-                node = group0 or group1
+                node = group0 if group0 is not None else group1
                 merge.append(node)
             merges.append(merge)
 
         for j in range(len(merges), len(self._groups)):
             merges.append(self._groups[j])
 
-        return Selection(merges, self._parents, data=self._data)
+        return Selection(merges, self._parents, data=self._data | context._data)
 
     def append(self, name):
         fullname = namespace(name)
@@ -85,12 +89,22 @@ class Selection:
             subgroup = []
             for node in group:
                 if isinstance(node, EnterNode):
-                    node = node._parent
-                subnode = creator(node, fullname)
-                node.append(subnode)
-                subgroup.append(subnode)
+                    enter_node = node
+                    node = enter_node._parent
+                    subnode = creator(node, fullname)
+                    node.append(subnode)
+                    subgroup.append(subnode)
+                    self._data[subnode] = enter_node.__data__
+                else:
+                    subnode = creator(node, fullname)
+                    node.append(subnode)
+                    subgroup.append(subnode)
             subgroups.append(subgroup)
-        return Selection(subgroups, self._parents, data=self._data)
+        parents = [
+            (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
+            for group in self._groups if group[0] is not None
+        ]
+        return Selection(subgroups, parents or self._parents, data=self._data)
 
     def each(self, callback):
         for group in self._groups:
@@ -115,6 +129,15 @@ class Selection:
         for selected in self.nodes:
             current_value = selected.get("style", "")
             selected.set("style", f"{current_value}{name}:{value};")
+        return self
+
+    def text(self, value=None):
+        if value is None:
+            return self.node().get("text")
+        elif callable(value):
+            self.each(text_function(value))
+        else:
+            self.each(attr_constant(value))
         return self
 
     def datum(self, value):
@@ -168,13 +191,15 @@ class Selection:
     def insert(self, name, before):
         fullname = namespace(name)
         for group in self._groups:
-            for node in group:
+            for i, node in enumerate(group):
                 if node is not None:
                     if isinstance(node, EnterNode):
                         node = node._parent
                     if selection := selector(node, before):
                         index = node.index(selection[0])
-                        node.insert(index, creator(node, fullname))
+                        created = creator(node, fullname)
+                        node.insert(index, created)
+                        group[i] = created
         return self
 
     def remove(self):
@@ -203,11 +228,29 @@ class Selection:
     def selection(self):
         return self
 
+    def to_string(self, pretty_print=True):
+        return etree.tostring(self._parents[0], pretty_print=True).decode("utf-8")
+
     def __str__(self):
-        return etree.tostring(self._parents[0]).decode("utf-8")
+        return self.to_string(True)
 
     def __repr__(self):
-        selected_nodes = [
-            f"{element.tag}{'.' + element.attrib.get('class', '')}" for element in self.nodes
+        def node_repr(node):
+            if node is None:
+                return str(node)
+            if isinstance(node, EnterNode):
+                return str(node)
+            tag = node.tag
+            class_name = node.attrib.get("class")
+            if class_name:
+                return f"{tag}.{class_name}"
+            return tag
+        groups = [
+            f"[{', '.join(node_repr(node) for node in group)}]"
+            for group in self._groups
         ]
-        return f"Selection(root={self.root.tag}, nodes=[{', '.join(selected_nodes)}])"
+        parents = f"[{', '.join(node_repr(parent) for parent in self._parents)}]"
+        return (
+            f"Selection(\n    groups=[{', '.join(groups)}],\n    parents={parents},"
+            f"\n    enter={self._enter},\n    exit={self._exit},\n    data={self._data}\n)"
+        )

@@ -125,6 +125,7 @@ class Axis:
         else:
             path.attr("d", f"M{self._offset},{range0}V{range1}")
 
+
         def transform(d, *args):
             return self._transform(position(d) + self._offset)
 
