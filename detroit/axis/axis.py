@@ -156,7 +156,9 @@ class Axis:
 
     def ticks(self, ticks=None):
         if ticks is not None:
-            self.tick_arguments = ticks
+            self._tick_arguments = [ticks]
+        else:
+            self._tick_arguments = []
         return self
 
     def tick_arguments(self, tick_arguments=None):
@@ -183,13 +185,13 @@ class Axis:
             return self
         return self._tick_size_inner
 
-    def tick_size_inner(self, tick_size_inner):
+    def tick_size_inner(self, tick_size_inner=None):
         if tick_size_inner is not None:
             self._tick_size_inner = tick_size_inner
             return self
         return self._tick_size_inner
 
-    def tick_size_outer(self, tick_size_outer):
+    def tick_size_outer(self, tick_size_outer=None):
         if tick_size_outer is not None:
             self._tick_size_outer = tick_size_outer
             return self
