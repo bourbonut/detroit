@@ -13,7 +13,7 @@ class TimeDay(TimeInterval):
         return (end - start).days
 
     def field(self, date):
-        return date.day
+        return date.day - 1
 
 time_day = TimeDay()
 time_days = time_day.range

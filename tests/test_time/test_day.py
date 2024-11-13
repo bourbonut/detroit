@@ -136,6 +136,17 @@ def test_time_day_count():
 
 
 def test_time_day_every():
-    assert d3.time_day.every(3).range(datetime(2008, 12, 30, 0, 12), datetime(2009, 1, 5, 23, 48)) == [datetime(2009, 1, 3)]
-    assert d3.time_day.every(5).range(datetime(2008, 12, 30, 0, 12), datetime(2009, 1, 6, 23, 48)) == [datetime(2009, 1, 5)]
-    assert d3.time_day.every(7).range(datetime(2008, 12, 30, 0, 12), datetime(2009, 1, 8, 23, 48)) == []
+    assert d3.time_day.every(3).range(datetime(2008, 12, 30, 0, 12), datetime(2009, 1, 5, 23, 48)) == [
+        datetime(2008, 12, 31),
+        datetime(2009, 1, 1),
+        datetime(2009, 1, 4)
+    ]
+    assert d3.time_day.every(5).range(datetime(2008, 12, 30, 0, 12), datetime(2009, 1, 6, 23, 48)) == [
+        datetime(2008, 12, 31, 0, 0),
+        datetime(2009, 1, 1, 0, 0),
+        datetime(2009, 1, 6, 0, 0)
+    ]
+    assert d3.time_day.every(7).range(datetime(2008, 12, 30, 0, 12), datetime(2009, 1, 8, 23, 48)) == [
+        datetime(2009, 1, 1, 0, 0),
+        datetime(2009, 1, 8, 0, 0)
+    ]

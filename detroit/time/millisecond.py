@@ -4,7 +4,7 @@ from datetime import timedelta
 class TimeMillisecond(TimeInterval):
 
     def floor(self, date):
-        return date
+        return date.replace(microsecond=(date.microsecond // 1000) * 1000)
 
     def offset(self, date, step):
         return date + timedelta(milliseconds=step)

@@ -70,5 +70,13 @@ def test_time_second_range():
 
 
 def test_time_second_every():
-  assert d3.time_second.every(15).range(datetime(2008, 12, 30, 12, 36, 47), datetime(2008, 12, 30, 12, 37, 57)) == [datetime(2008, 12, 30, 12, 37, 15), datetime(2008, 12, 30, 12, 37, 30), datetime(2008, 12, 30, 12, 37, 45)]
-  assert d3.time_second.every(30).range(datetime(2008, 12, 30, 12, 36, 47), datetime(2008, 12, 30, 12, 37, 57)) == [datetime(2008, 12, 30, 12, 37, 30)]
+  assert d3.time_second.every(15).range(datetime(2008, 12, 30, 12, 36, 47), datetime(2008, 12, 30, 12, 37, 57)) == [
+        datetime(2008, 12, 30, 12, 37),
+        datetime(2008, 12, 30, 12, 37, 15),
+        datetime(2008, 12, 30, 12, 37, 30),
+        datetime(2008, 12, 30, 12, 37, 45)
+    ]
+  assert d3.time_second.every(30).range(datetime(2008, 12, 30, 12, 36, 47), datetime(2008, 12, 30, 12, 37, 57)) == [
+        datetime(2008, 12, 30, 12, 37),
+        datetime(2008, 12, 30, 12, 37, 30),
+    ]

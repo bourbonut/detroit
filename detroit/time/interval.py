@@ -15,7 +15,9 @@ class TimeInterval:
         if not step > 1:
             return self
         return self.filter(
-            lambda d: self.field(d) % step == 0 if self.field is not None else lambda d: self.count(0, d) % step == 0
+            (lambda d: self.field(d) % step == 0)
+            if self.field is not None
+            else (lambda d: self.count(0, d) % step == 0)
         )
 
     def ceil(self, date):
@@ -46,7 +48,7 @@ class TimeInterval:
             def floor(self, date):
                 date = cls.floor(self, date)
                 while not test(date):
-                    date = cls.floor(self, cls.offset(self, date, 1))
+                    date = cls.floor(self, date - timedelta(microseconds=1))
                 return date
 
             def offset(self, date, step):

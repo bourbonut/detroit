@@ -50,7 +50,7 @@ class Ticker:
         if i == len(self.tick_intervals) - 1:
             return time_year.every(tick_step(start / duration_year, stop / duration_year, count))
         if i == 0:
-            return time_millisecond.every(max(tick_step(start, stop, count), 1))
+            return time_millisecond.every(max(tick_step(start.timestamp(), stop.timestamp(), count), 1))
         t, step, _ = self.tick_intervals[
             i - 1
             if target / self.tick_intervals[i - 1][2] < self.tick_intervals[i][2] / target

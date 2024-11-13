@@ -69,6 +69,14 @@ def test_unknown():
 
 
 def test_time_minute_every():
-  assert d3.time_minute.every(15).range(datetime(2008, 12, 30, 12, 47), datetime(2008, 12, 30, 13, 57)) == [datetime(2008, 12, 30, 13, 15), datetime(2008, 12, 30, 13, 30), datetime(2008, 12, 30, 13, 45)]
-  assert d3.time_minute.every(30).range(datetime(2008, 12, 30, 12, 47), datetime(2008, 12, 30, 13, 57)) == [datetime(2008, 12, 30, 13, 30)]
+  assert d3.time_minute.every(15).range(datetime(2008, 12, 30, 12, 47), datetime(2008, 12, 30, 13, 57)) == [
+        datetime(2008, 12, 30, 13, 0),
+        datetime(2008, 12, 30, 13, 15),
+        datetime(2008, 12, 30, 13, 30),
+        datetime(2008, 12, 30, 13, 45),
+    ]
+  assert d3.time_minute.every(30).range(datetime(2008, 12, 30, 12, 47), datetime(2008, 12, 30, 13, 57)) == [
+        datetime(2008, 12, 30, 13, 0),
+        datetime(2008, 12, 30, 13, 30),
+    ]
 
