@@ -1,12 +1,13 @@
 import detroit as d3
+import math
 
 def test_sqrt_1():
-    s = scaleSqrt()
-    assert s.domain() == [0, 1])
-    assert s.range() == [0, 1])
-    assert s.clamp() == false
+    s = d3.scale_sqrt()
+    assert s.domain() == [0, 1]
+    assert s.range() == [0, 1]
+    assert s.clamp() is False
     assert s.exponent() == 0.5
-    assert.deepStrictEqual(s.interpolate()({array: ["red"]}, {array: ["blue"]})(0.5), {array: ["rgb(128, 0, 128)"]})
+    assert s.interpolate()({"array": ["red"]}, {"array": ["blue"]})(0.5) == {"array": ["rgb(128, 0, 128)"]}
 
 def test_sqrt_2():
-    assert.strictEqual(scaleSqrt()(0.5), Math.SQRT1_2)
+    assert d3.scale_sqrt()(0.5) == math.sqrt(2)

@@ -4,9 +4,12 @@ import math
 
 class TimeInterval:
 
-    def interval(self, date=None):
+    def __call__(self, date=None):
         date = datetime.now() if date is None else date
         return self.floor(date)
+
+    def interval(self, date=None):
+        return self(date)
 
     def every(self, step):
         step = int(step)

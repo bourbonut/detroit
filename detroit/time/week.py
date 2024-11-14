@@ -1,7 +1,5 @@
 from .interval import TimeInterval
-from .duration import duration_minute, duration_week
 from datetime import timedelta
-import calendar
 
 def time_weekday(i):
     class TimeWeekDay(TimeInterval):

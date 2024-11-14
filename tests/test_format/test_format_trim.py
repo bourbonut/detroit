@@ -22,8 +22,8 @@ def test_format_trim_2():
     assert f(42) == "4.2e+1"
     assert f(42000000) == "4.2e+7"
     assert f(0.042) == "4.2e-2"
-    assert.strictEqual(f(-4), "−4e+0")
-    assert.strictEqual(f(-42), "−4.2e+1")
+    assert f(-4) == "−4e+0"
+    assert f(-42) == "−4.2e+1"
     assert f(42000000000) == "4.2e+10"
     assert f(0.00000000042) == "4.2e-10"
 
@@ -32,15 +32,15 @@ def test_format_trim_3():
     assert f(0.00000000012345) == "1.2345e-10"
     assert f(0.00000000012340) == "1.234e-10"
     assert f(0.00000000012300) == "1.23e-10"
-    assert.strictEqual(f(-0.00000000012345), "−1.2345e-10")
-    assert.strictEqual(f(-0.00000000012340), "−1.234e-10")
-    assert.strictEqual(f(-0.00000000012300), "−1.23e-10")
+    assert f(-0.00000000012345) == "−1.2345e-10"
+    assert f(-0.00000000012340) == "−1.234e-10"
+    assert f(-0.00000000012300) == "−1.23e-10"
     assert f(12345000000) == "1.2345e+10"
     assert f(12340000000) == "1.234e+10"
     assert f(12300000000) == "1.23e+10"
-    assert.strictEqual(f(-12345000000), "−1.2345e+10")
-    assert.strictEqual(f(-12340000000), "−1.234e+10")
-    assert.strictEqual(f(-12300000000), "−1.23e+10")
+    assert f(-12345000000) == "−1.2345e+10"
+    assert f(-12340000000) == "−1.234e+10"
+    assert f(-12300000000) == "−1.23e+10"
 
 def test_format_trim_4():
     f = format("~s")
@@ -57,7 +57,7 @@ def test_format_trim_4():
     assert f(1e-15) == "1f"
     assert f(1e-12) == "1p"
     assert f(1e-9) == "1n"
-    assert.strictEqual(f(1e-6), "1µ")
+    assert f(1e-6) == "1µ"
     assert f(1e-3) == "1m"
     assert f(1e0) == "1"
     assert f(1e3) == "1k"
@@ -68,11 +68,11 @@ def test_format_trim_4():
 
 def test_format_trim_5():
     f = format("~%")
-    assert.strictEqual(f(0), "0%")
-    assert.strictEqual(f(0.1), "10%")
-    assert.strictEqual(f(0.01), "1%")
-    assert.strictEqual(f(0.001), "0.1%")
-    assert.strictEqual(f(0.0001), "0.01%")
+    assert f(0) == "0%"
+    assert f(0.1) == "10%"
+    assert f(0.01) == "1%"
+    assert f(0.001) == "0.1%"
+    assert f(0.0001) == "0.01%"
 
 def test_format_trim_6():
     f = format(",~g")

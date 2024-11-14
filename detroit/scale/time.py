@@ -13,7 +13,6 @@ from ..time import (
     time_second,
 )
 from ..time_format import time_format
-import math
 from datetime import datetime
 
 
@@ -30,8 +29,6 @@ class Calendar(Transformer):
         self, ticks, tick_interval, year, month, week, day, hour, minute, second
     ):
         super().__init__(identity, identity)
-        # self._invert = super().invert
-        # self._domain = super().domain
 
         self._ticks = ticks
         self._tick_interval = tick_interval
@@ -42,7 +39,7 @@ class Calendar(Transformer):
         self._hour = hour
         self._minute = minute
         self._second = second
-        self._format = format
+        self._format = time_format
 
         self._format_millisecond = time_format(".%L")
         self._format_second = time_format(":%S")
@@ -54,37 +51,36 @@ class Calendar(Transformer):
         self._format_year = time_format("%Y")
 
     def _tick_format(self, date):
-        return (
-            self._format_millisecond
-            if self.second(date) < date
-            else self._format_second
-            if self.minute(date) < date
-            else self._format_minute
-            if self.hour(date) < date
-            else self._format_hour
-            if self.day(date) < date
-            else self._format_week
-            if self.month(date) < date
-            else self._format_month
-            if self.year(date) < date
-            else self._format_year
-        )(date)
+        if self._second(date) < date:
+            return self._format_millisecond(date)
+        elif self._minute(date) < date:
+            return self._format_second(date)
+        elif self._hour(date) < date:
+            return self._format_minute(date)
+        elif self._day(date) < date:
+            return self._format_hour(date)
+        elif self._month(date) < date:
+            return self._format_week(date)
+        elif self._year(date) < date:
+            return self._format_month(date)
+        else:
+            return self._format_year(date)
 
     def invert(self, y):
-        return datetime.datetime.fromtimestamp(self._invert(y))
+        return datetime.fromtimestamp(super().invert(y))
 
     def domain(self, domain=None):
         if domain is not None:
-            return super().domain([number(x) for x in domain])
+            return super().domain(domain)
         else:
-            return [math.nan if math.isnan(x) else datetime.fromtimestamp(x) for x in super().domain()]
+            return super().domain()
 
     def ticks(self, interval):
         d = super().domain()
         return self._ticks(d[0], d[-1], interval if interval is not None else 10)
 
-    def tick_format(self, count, specifier=None):
-        return specifier is None and self._tick_format or self._format(specifier)
+    def tick_format(self, specifier=None):
+        return self._tick_format if specifier is None else self._format(specifier)
 
     def nice(self, interval=None):
         d = super().domain()
@@ -92,11 +88,11 @@ class Calendar(Transformer):
             interval = self._tick_interval(
                 d[0], d[-1], interval if interval is not None else 10
             )
-        return interval and self._domain(nice(d, interval)) or self.scale
+        return self.domain(nice(d, interval)) if interval else self
 
     def copy(self):
         return copy(
-            self._scale,
+            self,
             Calendar(
                 self._ticks,
                 self._tick_interval,
@@ -107,7 +103,6 @@ class Calendar(Transformer):
                 self._hour,
                 self._minute,
                 self._second,
-                self._format,
             ),
         )
 

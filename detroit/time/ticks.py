@@ -48,10 +48,8 @@ class Ticker:
         target = abs(stop - start) / count
         i = bisect_right([step for _, _, step in self.tick_intervals], target)
         if i == len(self.tick_intervals) - 1:
-            print("okk")
             return time_year.every(max(tick_step(start.timestamp() / duration_year, stop.timestamp() / duration_year, count), 1))
         if i == 0:
-            print("okk2")
             return time_millisecond.every(max(tick_step(start.timestamp(), stop.timestamp(), count) * 1000, 1))
         if i == len(self.tick_intervals):
             raise ValueError("Too large interval")

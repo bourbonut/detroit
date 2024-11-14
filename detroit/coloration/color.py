@@ -387,7 +387,6 @@ def clampt(value):
     return max(0, min(1, value or 0))
 
 def hsl2rgb(h, m1, m2):
-    # print(h, m1, m2)
     if h < 60:
         return (m1 + (m2 - m1) * h / 60) * 255
     elif h < 180:
