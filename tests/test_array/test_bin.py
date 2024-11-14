@@ -5,6 +5,7 @@ from detroit import ticks
 from detroit.array.threshold import threshold_sturges
 from detroit.array.bin import Bin
 
+
 def box(bin_values, x0, x1):
     bin = Bin()
     bin._list = bin_values
@@ -12,11 +13,13 @@ def box(bin_values, x0, x1):
     bin.x1 = x1
     return bin
 
+
 def test_bin_simple():
     h = d3.bin()
     assert h.value()(42) == 42
     assert h.domain() == d3.extent
     assert h.thresholds() == threshold_sturges
+
 
 def test_bin_1u():
     h = d3.bin()
@@ -25,8 +28,9 @@ def test_bin_1u():
         box([], 5, 10),
         box([10], 10, 15),
         box([], 15, 20),
-        box([20, 20], 20, 25)
+        box([20, 20], 20, 25),
     ]
+
 
 def test_bin_2():
     h = d3.bin()
@@ -35,15 +39,17 @@ def test_bin_2():
         box([], 5, 10),
         box([10], 10, 15),
         box([], 15, 20),
-        box([20, 20], 20, 25)
+        box([20, 20], 20, 25),
     ]
 
-@pytest.mark.skip
+
 def test_bin_3():
-    h = d3.bin().value(lambda d, i, data: 12) # Pointless, but for consistency.
-    assert h([0, 0, 0, 1, 2, 2]) == [
-        box([0, 0, 0, 1, 2, 2], 12, 12),
-    ]
+    with pytest.raises(ValueError):
+        h = d3.bin().value(lambda d, i, data: 12)  # Pointless, but for consistency.
+        assert h([0, 0, 0, 1, 2, 2]) == [
+            box([0, 0, 0, 1, 2, 2], 12, 12),
+        ]
+
 
 def test_bin_4():
     h = d3.bin()
@@ -52,8 +58,9 @@ def test_bin_4():
         box([], 5, 10),
         box([10], 10, 15),
         box([], 15, 20),
-        box([20, 20], 20, 25)
+        box([20, 20], 20, 25),
     ]
+
 
 def test_bin_5():
     h = d3.bin().value(lambda d: d["value"])
@@ -65,8 +72,9 @@ def test_bin_5():
         box([], 5, 10),
         box([b], 10, 15),
         box([], 15, 20),
-        box([c, c], 20, 25)
+        box([c, c], 20, 25),
     ]
+
 
 def test_bin_6():
     h = d3.bin().domain([0, 20])
@@ -75,12 +83,14 @@ def test_bin_6():
         box([1, 2, 2], 0, 5),
         box([], 5, 10),
         box([10], 10, 15),
-        box([18, 18], 15, 20)
+        box([18, 18], 15, 20),
     ]
+
 
 def test_bin_7():
     values = [1, 2, 2, 10, 18, 18]
     actual = []
+
     def domain(values):
         actual[:] = values
         return [0, 20]
@@ -91,9 +101,10 @@ def test_bin_7():
         box([1, 2, 2], 0, 5),
         box([], 5, 10),
         box([10], 10, 15),
-        box([18, 18], 15, 20)
+        box([18, 18], 15, 20),
     ]
     assert actual == values
+
 
 def test_bin_8():
     h = d3.bin().thresholds(3)
@@ -101,16 +112,18 @@ def test_bin_8():
         box([0, 0, 0], 0, 10),
         box([10], 10, 20),
         box([], 20, 30),
-        box([30, 30], 30, 40)
+        box([30, 30], 30, 40),
     ]
+
 
 def test_bin_8():
     h = d3.bin().thresholds([10, 20])
     assert h([0, 0, 0, 10, 30, 30]) == [
         box([0, 0, 0], 0, 10),
         box([10], 10, 20),
-        box([30, 30], 20, 30)
+        box([30, 30], 20, 30),
     ]
+
 
 def test_bin_9():
     h = d3.bin().thresholds([0, 1, 2, 3, 4])
@@ -118,12 +131,14 @@ def test_bin_9():
         box([0], 0, 1),
         box([1], 1, 2),
         box([2], 2, 3),
-        box([3], 3, 3)
+        box([3], 3, 3),
     ]
+
 
 def test_bin_10():
     actual = []
     values = [0, 0, 0, 10, 30, 30]
+
     def domain(values, x0, x1):
         actual[:] = [values, x0, x1]
         return [10, 20]
@@ -132,7 +147,7 @@ def test_bin_10():
     assert h(values) == [
         box([0, 0, 0], 0, 10),
         box([10], 10, 20),
-        box([30, 30], 20, 30)
+        box([30, 30], 20, 30),
     ]
     assert actual, [values, 0, 30]
     assert h.thresholds(lambda values, x0, x1: 5)(values) == [
@@ -142,8 +157,9 @@ def test_bin_10():
         box([], 15, 20),
         box([], 20, 25),
         box([], 25, 30),
-        box([30, 30], 30, 35)
+        box([30, 30], 30, 35),
     ]
+
 
 def test_bin_11():
     h = d3.bin().domain([0, 1]).thresholds(5)
@@ -152,8 +168,9 @@ def test_bin_11():
         [0.2, 0.4],
         [0.4, 0.6],
         [0.6, 0.8],
-        [0.8, 1.0]
+        [0.8, 1.0],
     ]
+
 
 def test_bin_12():
     h = d3.bin()
@@ -162,8 +179,9 @@ def test_bin_12():
         box([10], 10, 11),
         box([11], 11, 12),
         box([12], 12, 13),
-        box([13, 13.2], 13, 14)
+        box([13, 13.2], 13, 14),
     ]
+
 
 def test_bin_14():
     h = d3.bin().thresholds(10)
@@ -175,7 +193,7 @@ def test_bin_14():
         box([], 11.5, 12),
         box([12], 12, 12.5),
         box([], 12.5, 13),
-        box([13, 13.2], 13, 13.5)
+        box([13, 13.2], 13, 13.5),
     ]
 
 
@@ -189,7 +207,7 @@ def test_bin_14():
         box([], 11.5, 12),
         box([12], 12, 12.5),
         box([], 12.5, 13),
-        box([13, 13.2], 13, 13.3)
+        box([13, 13.2], 13, 13.3),
     ]
 
 
@@ -203,8 +221,9 @@ def test_bin_15():
         box([], 11.5, 12),
         box([12], 12, 12.5),
         box([], 12.5, 13),
-        box([13, 13.2], 13, 13.5)
+        box([13, 13.2], 13, 13.5),
     ]
+
 
 def test_bin_16():
     h = d3.bin().thresholds(10)
@@ -217,26 +236,49 @@ def test_bin_16():
         box([], 3.5, 4),
         box([4], 4, 4.5),
         box([], 4.5, 5),
-        box([5], 5, 5.5)
+        box([5], 5, 5.5),
     ]
 
 
-@pytest.mark.skip
-def test_bin_17():
-    # height = csvParse(await readFile("./test/data/athletes.csv", "utf8")).filter(d => d.height).map(d => +d.height)
-    # d3.bins = d3.bin().thresholds(57)(height)
-    # assert d3.bins.map(b => b.length) == [1, 0, 0, 0, 0, 0, 2, 1, 2, 1, 1, 4, 11, 7, 13, 39, 78, 93, 119, 193, 354, 393, 573, 483, 651, 834, 808, 763, 627, 648, 833, 672, 578, 498, 395, 425, 278, 235, 182, 128, 91, 69, 43, 29, 21, 23, 3, 3, 1, 1, 1]
-    pass
+# def test_bin_17():
+#     height = csvParse(await readFile("./test/data/athletes.csv", "utf8")).filter(d => d.height).map(d => +d.height)
+#     d3.bins = d3.bin().thresholds(57)(height)
+#     assert d3.bins.map(b => b.length) == [1, 0, 0, 0, 0, 0, 2, 1, 2, 1, 1, 4, 11, 7, 13, 39, 78, 93, 119, 193, 354, 393, 573, 483, 651, 834, 808, 763, 627, 648, 833, 672, 578, 498, 395, 425, 278, 235, 182, 128, 91, 69, 43, 29, 21, 23, 3, 3, 1, 1, 1]
 
 
 def test_bin_18():
-    for n in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]:
-        assert all(map(lambda d: len(d._list) == 1, d3.bin().thresholds(n)(ticks(1, 2, n))))
+    for n in [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000,
+    ]:
+        assert all(
+            map(lambda d: len(d._list) == 1, d3.bin().thresholds(n)(ticks(1, 2, n)))
+        )
+
 
 def test_bin_19():
     assert d3.bin().domain([4, 5])([5]) == [box([5], 4, 5)]
     eights = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
-    assert d3.bin().domain([3, 8])(eights) == [box([], 3, 4), box([], 4, 5), box([], 5, 6), box([], 6, 7), box(eights, 7, 8)]
+    assert d3.bin().domain([3, 8])(eights) == [
+        box([], 3, 4),
+        box([], 4, 5),
+        box([], 5, 6),
+        box([], 6, 7),
+        box(eights, 7, 8),
+    ]
 
 
 def test_bin_20():
