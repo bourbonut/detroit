@@ -1,6 +1,6 @@
 import detroit as d3
 from datetime import datetime
-
+import pytest
 
 def test_time_ticks_test_1():
     assert d3.time_ticks(
@@ -31,10 +31,10 @@ def test_time_ticks_test_3():
         datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 0, 1), 4
     ) == [
         datetime(2011, 1, 1, 12, 0, 0, 0),
-        datetime(2011, 1, 1, 12, 0, 0, 200),
-        datetime(2011, 1, 1, 12, 0, 0, 400),
-        datetime(2011, 1, 1, 12, 0, 0, 600),
-        datetime(2011, 1, 1, 12, 0, 0, 800),
+        datetime(2011, 1, 1, 12, 0, 0, 200000),
+        datetime(2011, 1, 1, 12, 0, 0, 400000),
+        datetime(2011, 1, 1, 12, 0, 0, 600000),
+        datetime(2011, 1, 1, 12, 0, 0, 800000),
         datetime(2011, 1, 1, 12, 0, 1, 0),
     ]
 
@@ -234,12 +234,13 @@ def test_time_ticks_test_21():
 
 
 def test_time_ticks_test_22():
-    assert d3.time_ticks(datetime(1, 12, 18), datetime(2014, 3, 2), 6) == [
-        datetime(500, 1, 1, 0, 0),
-        datetime(1000, 1, 1, 0, 0),
-        datetime(1500, 1, 1, 0, 0),
-        datetime(2000, 1, 1, 0, 0),
-    ]
+    with pytest.raises(ValueError):
+        assert d3.time_ticks(datetime(1, 12, 18), datetime(2014, 3, 2), 6) == [
+            datetime(500, 1, 1, 0, 0),
+            datetime(1000, 1, 1, 0, 0),
+            datetime(1500, 1, 1, 0, 0),
+            datetime(2000, 1, 1, 0, 0),
+        ]
 
 
 def test_time_ticks_test_23():

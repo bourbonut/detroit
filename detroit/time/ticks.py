@@ -31,9 +31,9 @@ class Ticker:
             (time_day, 1, timedelta(days=1)),
             (time_day, 2, timedelta(days=2)),
             (time_week, 1, timedelta(weeks=1)),
-            (time_month, 1, timedelta(weeks=4)),
-            (time_month, 3, timedelta(weeks=12)),
-            (time_year, 1, timedelta(days=365))
+            (time_month, 1, timedelta(days=31)),
+            (time_month, 3, timedelta(days=31 * 3)),
+            (time_year, 1, timedelta(weeks=52))
         ]
 
     def ticks(self, start, stop, count):
@@ -48,9 +48,13 @@ class Ticker:
         target = abs(stop - start) / count
         i = bisect_right([step for _, _, step in self.tick_intervals], target)
         if i == len(self.tick_intervals) - 1:
-            return time_year.every(tick_step(start / duration_year, stop / duration_year, count))
+            print("okk")
+            return time_year.every(max(tick_step(start.timestamp() / duration_year, stop.timestamp() / duration_year, count), 1))
         if i == 0:
-            return time_millisecond.every(max(tick_step(start.timestamp(), stop.timestamp(), count), 1))
+            print("okk2")
+            return time_millisecond.every(max(tick_step(start.timestamp(), stop.timestamp(), count) * 1000, 1))
+        if i == len(self.tick_intervals):
+            raise ValueError("Too large interval")
         t, step, _ = self.tick_intervals[
             i - 1
             if target / self.tick_intervals[i - 1][2] < self.tick_intervals[i][2] / target

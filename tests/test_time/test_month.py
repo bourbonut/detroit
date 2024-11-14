@@ -144,10 +144,11 @@ def test_time_month_count():
 
 def test_time_month_every():
   assert d3.time_month.every(3).range(datetime(2008, 12, 3), datetime(2010, 7, 5)) == [
-        datetime(2009, 3, 1, 0, 0),
-        datetime(2009, 6, 1, 0, 0),
-        datetime(2009, 9, 1, 0, 0),
-        datetime(2009, 12, 1, 0, 0),
-        datetime(2010, 3, 1, 0, 0),
-        datetime(2010, 6, 1, 0, 0)
+        datetime(2009, 1, 1),
+        datetime(2009, 4, 1),
+        datetime(2009, 7, 1),
+        datetime(2009, 10, 1),
+        datetime(2010, 1, 1),
+        datetime(2010, 4, 1),
+        datetime(2010, 7, 1),
     ]

@@ -14,7 +14,7 @@ class TimeMonth(TimeInterval):
         return days // 30 + bool(0 < days % 30 <= 15)
 
     def field(self, date):
-        return date.month
+        return date.month - 1
 
 time_month = TimeMonth()
 time_months = time_month.range

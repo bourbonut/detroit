@@ -70,6 +70,8 @@ def tick_step(start, stop, count):
     stop = float(stop)
     start = float(start)
     count = float(count)
+    if stop == start:
+        return 1
     reverse = stop < start
     inc = tick_increment(stop, start, count) if reverse else tick_increment(start, stop, count)
     return (1 if not reverse else -1) * (1 / -inc if inc < 0 else inc)
