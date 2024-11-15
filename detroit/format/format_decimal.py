@@ -19,6 +19,6 @@ def format_decimal_parts(x, p):
         if len(coefficient) > 1:
             coefficient = coefficient[0] + coefficient[2:]  # Remove decimal point
         
-        return [coefficient, int(x_str[i+1:])]
+        return [coefficient, int(x_str[i + 1:])]
     except (ValueError, TypeError):
         return None

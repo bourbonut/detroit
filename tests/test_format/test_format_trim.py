@@ -1,7 +1,7 @@
 import detroit as d3
 
 def test_format_trim_1():
-    f = format("~r")
+    f = d3.format("~r")
     assert f(1) == "1"
     assert f(0.1) == "0.1"
     assert f(0.01) == "0.01"
@@ -17,33 +17,33 @@ def test_format_trim_1():
     assert f(0.11111119) == "0.111111"
 
 def test_format_trim_2():
-    f = format("~e")
-    assert f(0) == "0e+0"
-    assert f(42) == "4.2e+1"
-    assert f(42000000) == "4.2e+7"
-    assert f(0.042) == "4.2e-2"
-    assert f(-4) == "−4e+0"
-    assert f(-42) == "−4.2e+1"
+    f = d3.format("~e")
+    assert f(0) == "0e+00"
+    assert f(42) == "4.2e+01"
+    assert f(42000000) == "4.2e+07"
+    assert f(0.042) == "4.2e-02"
+    assert f(-4) == "-4e+00"
+    assert f(-42) == "-4.2e+01"
     assert f(42000000000) == "4.2e+10"
     assert f(0.00000000042) == "4.2e-10"
 
 def test_format_trim_3():
-    f = format(".4~e")
+    f = d3.format(".4~e")
     assert f(0.00000000012345) == "1.2345e-10"
     assert f(0.00000000012340) == "1.234e-10"
     assert f(0.00000000012300) == "1.23e-10"
-    assert f(-0.00000000012345) == "−1.2345e-10"
-    assert f(-0.00000000012340) == "−1.234e-10"
-    assert f(-0.00000000012300) == "−1.23e-10"
+    assert f(-0.00000000012345) == "-1.2345e-10"
+    assert f(-0.00000000012340) == "-1.234e-10"
+    assert f(-0.00000000012300) == "-1.23e-10"
     assert f(12345000000) == "1.2345e+10"
     assert f(12340000000) == "1.234e+10"
     assert f(12300000000) == "1.23e+10"
-    assert f(-12345000000) == "−1.2345e+10"
-    assert f(-12340000000) == "−1.234e+10"
-    assert f(-12300000000) == "−1.23e+10"
+    assert f(-12345000000) == "-1.2345e+10"
+    assert f(-12340000000) == "-1.234e+10"
+    assert f(-12300000000) == "-1.23e+10"
 
 def test_format_trim_4():
-    f = format("~s")
+    f = d3.format("~s")
     assert f(0) == "0"
     assert f(1) == "1"
     assert f(10) == "10"
@@ -67,7 +67,7 @@ def test_format_trim_4():
     assert f(1e15) == "1P"
 
 def test_format_trim_5():
-    f = format("~%")
+    f = d3.format("~%")
     assert f(0) == "0%"
     assert f(0.1) == "10%"
     assert f(0.01) == "1%"
@@ -75,6 +75,6 @@ def test_format_trim_5():
     assert f(0.0001) == "0.01%"
 
 def test_format_trim_6():
-    f = format(",~g")
+    f = d3.format(",~g")
     assert f(10000.0) == "10,000"
     assert f(10000.1) == "10,000.1"

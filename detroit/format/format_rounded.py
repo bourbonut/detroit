@@ -6,7 +6,7 @@ def format_rounded(x, p):
         return str(x)
     coefficient, exponent = d
     if exponent < 0:
-        return "0." + "0" * (-exponent) + coefficient
+        return "0." + "0" * (-1 - exponent) + coefficient
     elif len(coefficient) > exponent + 1:
         return coefficient[:exponent + 1] + "." + coefficient[exponent + 1:]
     else:

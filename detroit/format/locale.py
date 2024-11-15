@@ -4,7 +4,7 @@ from .format_numerals import format_numerals
 from .format_specifier import format_specifier
 from .format_trim import format_trim
 from .format_types import format_types
-from .format_prefix_auto import prefix_exponent
+from .format_prefix_auto import prefix_auto
 from .identity import identity
 
 import math
@@ -97,9 +97,21 @@ class Locale:
                     if value_negative and float(value) == 0 and sign != "+":
                         value_negative = False
 
-                    value_prefix = ((sign if sign == "(" else self.minus) if value_negative 
-                                  else ("" if sign in "-(" else sign)) + self.prefix
-                    value_suffix = (prefixes[8 + prefix_exponent // 3] if type_ == "s" else "") + self.suffix
+                    if value_negative:
+                        value_prefix = sign if sign == "(" else self.minus
+                    elif sign == "-" or sign == "(":
+                        value_prefix = ""
+                    else:
+                        value_prefix = sign
+
+                    value_prefix += self.prefix
+
+                    if type_ == "s":
+                        value_suffix = prefixes[8 + prefix_auto.prefix_exponent // 3]
+                    else:
+                        value_suffix = ""
+
+                    value_suffix += self.suffix
                     value_suffix += ")" if value_negative and sign == "(" else ""
 
                     if maybe_suffix:
@@ -119,8 +131,7 @@ class Locale:
                 padding = fill * (width - length) if width and length < width else ""
 
                 if comma and zero:
-                    value = self.group(padding + value, 
-                                len(padding) and width - len(value_suffix) or float('inf'))
+                    value = self.group(padding + value, width - len(value_suffix) if len(padding) else math.inf)
                     padding = ""
 
                 if align == "<":

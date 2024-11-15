@@ -9,8 +9,8 @@ def format_group(grouping, thousands):
         while i > 0 and g > 0:
             if length + g + 1 > width:
                 g = max(1, width - length)
-            i = i - g
-            t.append(value[i:i + g])
+            i -= g
+            t.append(value[max(0, i):i + g])
             length += g + 1
             if length > width:
                 break
