@@ -1,4 +1,5 @@
 from bisect import bisect_right
+from .interval import TimeInterval
 from .duration import duration_year
 from .millisecond import time_millisecond
 from .second import time_second
@@ -10,9 +11,11 @@ from .month import time_month
 from .year import time_year
 from ..array import tick_step
 
-from datetime import timedelta
+from datetime import timedelta, datetime
+
 
 class Ticker:
+    """ """
 
     def __init__(self, year, month, week, day, hour, minute):
         self.tick_intervals = [
@@ -33,32 +36,87 @@ class Ticker:
             (time_week, 1, timedelta(weeks=1)),
             (time_month, 1, timedelta(days=31)),
             (time_month, 3, timedelta(days=31 * 3)),
-            (time_year, 1, timedelta(weeks=52))
+            (time_year, 1, timedelta(weeks=52)),
         ]
 
-    def ticks(self, start, stop, count):
+    def ticks(self, start: datetime, stop: datetime, count: int) -> list[datetime]:
+        """
+        Returns an array of approximately count dates at regular
+        intervals between start and stop (inclusive).
+
+        Parameters
+        ----------
+        start : datetime
+            Start date
+        stop : datetime
+            Stop date
+        count : int
+            Count
+
+        Returns
+        -------
+        list[datetime]
+            Array of approximated dates
+        """
         reverse = stop < start
         if reverse:
             start, stop = stop, start
-        interval = count if hasattr(count, 'range') else self.tick_interval(start, stop, count)
-        ticks = interval.range(start, stop + timedelta(microseconds=1)) if interval else []
+        interval = (
+            count if hasattr(count, "range") else self.tick_interval(start, stop, count)
+        )
+        ticks = (
+            interval.range(start, stop + timedelta(microseconds=1)) if interval else []
+        )
         return ticks[::-1] if reverse else ticks
 
-    def tick_interval(self, start, stop, count):
+    def tick_interval(
+        self, start: datetime, stop: datetime, count: int
+    ) -> TimeInterval:
+        """
+        Returns the time interval that would be used by :code:`d3.time_ticks`
+        given the same arguments
+
+        Parameters
+        ----------
+        start : datetime
+            Start date
+        stop : datetime
+            Stop date
+        count : int
+            Count
+
+        Returns
+        -------
+        TimeInterval
+            Time interval chosen used by :code:`d3.time_ticks`
+        """
         target = abs(stop - start) / count
         i = bisect_right([step for _, _, step in self.tick_intervals], target)
         if i == len(self.tick_intervals) - 1:
-            return time_year.every(max(tick_step(start.timestamp() / duration_year, stop.timestamp() / duration_year, count), 1))
+            return time_year.every(
+                max(
+                    tick_step(
+                        start.timestamp() / duration_year,
+                        stop.timestamp() / duration_year,
+                        count,
+                    ),
+                    1,
+                )
+            )
         if i == 0:
-            return time_millisecond.every(max(tick_step(start.timestamp(), stop.timestamp(), count) * 1000, 1))
+            return time_millisecond.every(
+                max(tick_step(start.timestamp(), stop.timestamp(), count) * 1000, 1)
+            )
         if i == len(self.tick_intervals):
             raise ValueError("Too large interval")
         t, step, _ = self.tick_intervals[
             i - 1
-            if target / self.tick_intervals[i - 1][2] < self.tick_intervals[i][2] / target
+            if target / self.tick_intervals[i - 1][2]
+            < self.tick_intervals[i][2] / target
             else i
         ]
         return t.every(step)
+
 
 time = Ticker(time_year, time_month, time_sunday, time_day, time_hour, time_minute)
 time_ticks, time_tick_interval = time.ticks, time.tick_interval

@@ -1,10 +1,13 @@
 import math
+from typing import TypeVar
+
+T = TypeVar("Number")
 
 e10 = math.sqrt(50)
 e5 = math.sqrt(10)
 e2 = math.sqrt(2)
 
-def tick_spec(start, stop, count):
+def tick_spec(start: T, stop: T, count: int) -> tuple[int, int, int]:
     step = (stop - start) / max(0, count)
     power = math.floor(math.log10(step))
     error = step / (10 ** power)
@@ -30,7 +33,25 @@ def tick_spec(start, stop, count):
         return tick_spec(start, stop, count * 2)
     return [i1, i2, inc]
 
-def ticks(start, stop, count):
+def ticks(start: T, stop: T, count: int) -> list[float]:
+    """
+    Returns an array of approximately count + 1 uniformly-spaced,
+    nicely-rounded values between start and stop (inclusive).
+
+    Parameters
+    ----------
+    start : T
+        Start value
+    stop : T
+        Stop value
+    count : int
+        Count value
+
+    Returns
+    -------
+    list[float]
+        Array of nicely-rounded values
+    """
     stop = float(stop)
     start = float(start)
     count = float(count)
@@ -60,13 +81,47 @@ def ticks(start, stop, count):
                 tick_list[i] = (i1 + i) * inc
     return tick_list
 
-def tick_increment(start, stop, count):
+def tick_increment(start: T, stop: T, count: int) -> int:
+    """
+    Returns the negative inverse tick step instead.
+
+    Parameters
+    ----------
+    start : T
+        Start value
+    stop : T
+        Stop value
+    count : int
+        Count value
+
+    Returns
+    -------
+    int
+        Increment value
+    """
     stop = float(stop)
     start = float(start)
     count = float(count)
     return tick_spec(start, stop, count)[2]
 
-def tick_step(start, stop, count):
+def tick_step(start: T, stop: T, count: int) -> float:
+    """
+    Returns the difference between adjacent tick value.
+
+    Parameters
+    ----------
+    start : T
+        Start value
+    stop : T
+        Stop value
+    count : int
+        Count value
+
+    Returns
+    -------
+    int
+        Increment value
+    """
     stop = float(stop)
     start = float(start)
     count = float(count)

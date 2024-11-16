@@ -1,7 +1,29 @@
 from .ticks import tick_increment
 import math
+from typing import TypeVar
 
-def nice(start, stop, count):
+T = TypeVar("Number")
+
+def nice(start: T, stop: T, count: int) -> tuple[T, T]:
+    """
+    Returns a new interval :code:`[niceStart, niceStop]` covering the given
+    interval :code:`[start, stop]` and where :code:`niceStart` and :code:`niceStop`
+    are guaranteed to align with the corresponding :code:`tick_step`
+
+    Parameters
+    ----------
+    start : T
+        Start value
+    stop : T
+        End value
+    count : int
+        Count value
+
+    Returns
+    -------
+    tuple[T, T]
+        Aligned interval
+    """
     prestep = None
     while True:
         step = tick_increment(start, stop, count)

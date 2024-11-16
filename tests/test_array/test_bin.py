@@ -21,7 +21,7 @@ def test_bin_simple():
     assert h.thresholds() == threshold_sturges
 
 
-def test_bin_1u():
+def test_bin_1():
     h = d3.bin()
     assert h([0, 0, 0, 10, 20, 20]) == [
         box([0, 0, 0], 0, 5),
@@ -116,7 +116,7 @@ def test_bin_8():
     ]
 
 
-def test_bin_8():
+def test_bin_9():
     h = d3.bin().thresholds([10, 20])
     assert h([0, 0, 0, 10, 30, 30]) == [
         box([0, 0, 0], 0, 10),
@@ -125,7 +125,7 @@ def test_bin_8():
     ]
 
 
-def test_bin_9():
+def test_bin_10():
     h = d3.bin().thresholds([0, 1, 2, 3, 4])
     assert h([0, 1, 2, 3]) == [
         box([0], 0, 1),
@@ -135,7 +135,7 @@ def test_bin_9():
     ]
 
 
-def test_bin_10():
+def test_bin_11():
     actual = []
     values = [0, 0, 0, 10, 30, 30]
 
@@ -161,7 +161,7 @@ def test_bin_10():
     ]
 
 
-def test_bin_11():
+def test_bin_12():
     h = d3.bin().domain([0, 1]).thresholds(5)
     assert list(map(lambda b: [b.x0, b.x1], h([]))) == [
         [0.0, 0.2],
@@ -172,7 +172,7 @@ def test_bin_11():
     ]
 
 
-def test_bin_12():
+def test_bin_13():
     h = d3.bin()
     assert h([9.8, 10, 11, 12, 13, 13.2]) == [
         box([9.8], 9, 10),
@@ -197,7 +197,7 @@ def test_bin_14():
     ]
 
 
-def test_bin_14():
+def test_bin_15():
     h = d3.bin().thresholds(10).domain([9.7, 13.3])
     assert h([9.8, 10, 11, 12, 13, 13.2]) == [
         box([9.8], 9.7, 10),
@@ -211,7 +211,7 @@ def test_bin_14():
     ]
 
 
-def test_bin_15():
+def test_bin_16():
     h = d3.bin().thresholds(10).domain([9.5, 13.5])
     assert h([9.8, 10, 11, 12, 13, 13.2]) == [
         box([9.8], 9.5, 10),
@@ -225,7 +225,7 @@ def test_bin_15():
     ]
 
 
-def test_bin_16():
+def test_bin_17():
     h = d3.bin().thresholds(10)
     assert h([1, 2, 3, 4, 5]) == [
         box([1], 1, 1.5),

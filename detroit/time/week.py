@@ -1,26 +1,99 @@
 from .interval import TimeInterval
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-def time_weekday(i):
+
+def time_weekday(i: int):
     class TimeWeekDay(TimeInterval):
+        """
+        Weeks in local time; typically 7 days
+        """
 
-        def floor(self, date):
-            return date.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=(date.weekday() + 7 - (i - 1)) % 7)
+        def floor(self, date: datetime) -> datetime:
+            """
+            Returns a new date representing the latest interval
+            boundary date before or equal to date.
 
-        def offset(self, date, step):
+            Parameters
+            ----------
+            date : datetime
+                Date
+
+            Returns
+            -------
+            datetime
+                Floored date
+            """
+            return date.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(
+                days=(date.weekday() + 7 - (i - 1)) % 7
+            )
+
+        def offset(self, date: datetime, step: int) -> datetime:
+            """
+            Returns a new date equal to date plus step intervals.
+
+            Parameters
+            ----------
+            date : datetime
+                Date
+            step : int
+                Step to add or substitute
+
+            Returns
+            -------
+            datetime
+                Date
+            """
             return date + timedelta(weeks=step)
 
-        def count(self, start, end):
+        def count(self, start: datetime, end: datetime) -> int:
+            """
+            Returns the number of interval boundaries after start
+            (exclusive) and before or equal to end (inclusive).
+
+            Parameters
+            ----------
+            start : datetime
+                Start date
+            end : datetime
+                End date
+
+            Returns
+            -------
+            int
+                Count
+            """
             index = (i + 6) % 7
             a = start.weekday()
             b = end.weekday()
-            days = list(range(a, b + 1)) if a < b else list(range(a, 7)) + list(range(b + 1))
-            return (end - start).days // 7 + bool(index in days and (a != b or index == a))
+            days = (
+                list(range(a, b + 1))
+                if a < b
+                else list(range(a, 7)) + list(range(b + 1))
+            )
+            return (end - start).days // 7 + bool(
+                index in days and (a != b or index == a)
+            )
 
-        def field(self, date):
+        def field(self, date: datetime) -> int:
+            """
+            Returns the field value of the specified date, corresponding to the
+            number of boundaries between this date (exclusive) and the latest
+            previous parent boundary.
+
+            Parameters
+            ----------
+            date : datetime
+                Floored date
+
+            Returns
+            -------
+            int
+                Field value
+            """
             return date.weekday()
 
     return TimeWeekDay()
+
 
 time_sunday = time_week = time_weekday(0)
 time_monday = time_weekday(1)

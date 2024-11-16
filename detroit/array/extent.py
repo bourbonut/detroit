@@ -1,9 +1,29 @@
 import math
+from collections.abc import Callable, Iterable
+from typing import TypeVar
 
-def extent(values, valueof=None):
+T = TypeVar("T")
+
+def extent(values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | None = None) -> tuple[T, T]:
+    """
+    Returns the minimum and maximum value in
+    the given iterable using natural order.
+
+    Parameters
+    ----------
+    values : Iterable[T]
+        Iterator
+    accessor : Callable[[T, int, Iterable[T]], T] | None
+        Accessor function
+
+    Returns
+    -------
+    tuple[T, T]
+        Minimum, maximum
+    """
     mini = None
     maxi = None
-    if valueof is None:
+    if accessor is None:
         for value in values:
             if value is not None and (isinstance(value, str) or not math.isnan(value)):
                 if mini is None:
@@ -14,9 +34,8 @@ def extent(values, valueof=None):
                     if maxi < value:
                         maxi = value
     else:
-        index = -1
-        for value in values:
-            new_value = valueof(value, index := index + 1, values)
+        for index, value in enumerate(values):
+            new_value = accessor(value, index, values)
             if new_value is not None and (isinstance(new_value, str) or not math.isnan(new_value)):
                 value = new_value
                 if mini is None:
@@ -26,5 +45,5 @@ def extent(values, valueof=None):
                         mini = value
                     if maxi < value:
                         maxi = value
-    return [mini, maxi]
+    return [mini, maxi] # TODO: remove brackets and fix tests
 

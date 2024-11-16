@@ -1,3 +1,4 @@
+from __future__ import annotations
 import math
 from bisect import bisect
 from .extent import extent
@@ -5,7 +6,9 @@ from .nice import nice
 from .ticks import ticks, tick_increment
 from .threshold import threshold_sturges
 
-import inspect
+from inspect import signature
+from collections.abc import Iterable, Callable
+from typing import Any
 
 def identity(x, *args):
     return x
@@ -18,7 +21,10 @@ def constant(*obj):
     return wrapper
 
 class Bin:
-
+    """
+    Bin quantitative values into consecutive, non-overlapping
+    intervals, as in histograms
+    """
     def __init__(self):
         self._list = []
         self.x0 = None
@@ -47,13 +53,29 @@ class Bin:
         )
 
 class bin:
-
+    """
+    bin generator with the default settings
+    """
     def __init__(self):
         self._value = identity
         self._domain = extent
         self._threshold = threshold_sturges
 
-    def __call__(self, data):
+    def __call__(self, data: Iterable[int | float]) -> list[Bin]:
+        """
+        Returns an array of bins, where each bin is an array
+        containing the associated elements from the input data.
+
+        Parameters
+        ----------
+        data : Iterable[int | float]
+            Data samples
+
+        Returns
+        -------
+        list[Bin]
+            Array of bins
+        """
         if not isinstance(data, list):
             data = list(data)
 
@@ -61,22 +83,10 @@ class bin:
         step = math.nan
         values = [None] * n
 
-        n_args = len(str(inspect.signature(self._value)).split(","))
-        if n_args == 0:
-            for i in range(n):
-                values[i] = self._value()
-        if n_args == 1:
-            for i in range(n):
-                values[i] = self._value(data[i])
-        elif n_args == 2:
-            for i in range(n):
-                values[i] = self._value(data[i], i)
-        elif n_args == 3:
-            for i in range(n):
-                values[i] = self._value(data[i], i, data)
-        else:
-            raise Exception("Too many arguments in value function")
-
+        nargs = len(signature(self._value).parameters)
+        for i in range(n):
+            args = [data[i], i, data][:nargs]
+            values[i] = self._value(*args)
 
         xz = self._domain(values)
         x0, x1 = xz[0], xz[1]
@@ -141,7 +151,20 @@ class bin:
 
         return bins
 
-    def value(self, obj=None):
+    def value(self, obj: Callable | Any | None = None) -> Callable | bin:
+        """
+        Set value to the given object or return the current value
+
+        Parameters
+        ----------
+        obj : Callable | Any | None
+            Object or function
+
+        Returns
+        -------
+        Callable | bin
+            Current value or updated self
+        """
         if obj is None:
             return self._value
         elif callable(obj):
@@ -151,7 +174,20 @@ class bin:
             self._value = constant(obj)
             return self
 
-    def domain(self, obj=None):
+    def domain(self, obj: Callable | Any | None = None) -> Callable | bin:
+        """
+        Set domain to the given object or return the current domain
+
+        Parameters
+        ----------
+        obj : Callable | Any | None
+            Object or function
+
+        Returns
+        -------
+        Callable | bin
+            Current domain or updated self
+        """
         if obj is None:
             return self._domain
         elif callable(obj):
@@ -161,12 +197,25 @@ class bin:
             self._domain = constant(obj[0], obj[1])
             return self
 
-    def thresholds(self, obj=None):
+    def thresholds(self, obj: Callable | Any | None = None) -> Callable | bin:
+        """
+        Set thresholds to the given object or return the current thresholds
+
+        Parameters
+        ----------
+        obj : Callable | Any | None
+            Object or function
+
+        Returns
+        -------
+        Callable | bin
+            Current thresholds or updated self
+        """
         if obj is None:
             return self._threshold
         elif callable(obj):
             self._threshold = obj
             return self
         else:
-            self._threshold = constant(obj) # list(obj)
+            self._threshold = constant(obj)
             return self

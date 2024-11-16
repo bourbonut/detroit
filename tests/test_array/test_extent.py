@@ -1,6 +1,5 @@
 import detroit as d3
 import math
-import pytest
 
 
 def box(obj):
