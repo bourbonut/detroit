@@ -1,0 +1,4 @@
+Format
+======
+
+.. autofunction:: detroit.format

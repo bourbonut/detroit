@@ -1,0 +1,4 @@
+Selection
+=========
+
+.. autofunction:: detroit.create

@@ -1,7 +1,7 @@
 import math
 from typing import TypeVar
 
-T = TypeVar("Number")
+T = TypeVar("T")
 
 e10 = math.sqrt(50)
 e5 = math.sqrt(10)

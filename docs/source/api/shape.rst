@@ -1,0 +1,4 @@
+Shape
+=====
+
+.. autofunction:: detroit.line

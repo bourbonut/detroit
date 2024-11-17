@@ -1,0 +1,4 @@
+Path
+====
+
+.. autofunction:: detroit.path

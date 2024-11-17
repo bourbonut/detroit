@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import TypeVar
 
-T = TypeVar("Number")
+T = TypeVar("T")
 
 def interpolate_number(a: T, b: T) -> Callable[[T], T]:
     """

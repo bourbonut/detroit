@@ -3,15 +3,13 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import detroit
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'detroit'
 copyright = '2024, bourbonut'
 author = 'bourbonut'
-release = detroit.__version__
+release = "2.0.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -45,6 +43,6 @@ html_css_files = [
     'css/style.css',
 ]
 
-html_title = f"Detroit v{detroit.__version__}"
+html_title = f"Detroit v{release}"
 
 napoleon_numpy_docstring = True

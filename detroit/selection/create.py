@@ -2,7 +2,23 @@ from .namespace import namespace
 from .selection import Selection
 from lxml import etree
 
-def create(name):
+def create(name: str) -> Selection:
+    """
+    Given the specified element name, returns a single-element selection
+    containing a detached element of the given name in the current document.
+    This method assumes the HTML namespace, so you must specify a namespace
+    explicitly when creating SVG or other non-HTML elements.
+
+    Parameters
+    ----------
+    name : str
+        Tag name
+
+    Returns
+    -------
+    Selection
+        XML tree
+    """
     fullname = namespace(name)
     document = etree.Element(fullname["local"], attrib=fullname["space"])
     return Selection([[document]], [document])

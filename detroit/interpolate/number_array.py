@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import TypeVar
 
-T = TypeVar("Number")
+T = TypeVar("T")
 
 def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[T], list[T]]:
     """

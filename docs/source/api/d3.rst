@@ -1,4 +1,0 @@
-detroit.d3
-==========
-
-.. autoclass:: detroit.d3.d3

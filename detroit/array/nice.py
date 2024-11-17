@@ -2,7 +2,7 @@ from .ticks import tick_increment
 import math
 from typing import TypeVar
 
-T = TypeVar("Number")
+T = TypeVar("T")
 
 def nice(start: T, stop: T, count: int) -> tuple[T, T]:
     """
