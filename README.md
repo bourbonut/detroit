@@ -19,7 +19,7 @@
 # Installation
 
 ```sh
-pip install detroit
+pip install git+https://github.com/bourbonut/detroit.git
 ```
 
 # Coverage
