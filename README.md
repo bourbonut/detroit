@@ -26,7 +26,7 @@ pip install detroit
 
 | Package Name    | Yes / No | Tests OK | Notes                         |
 |-----------------|----------|----------|-------------------------------|
-| array           | Yes      | Yes      | Some tests must be updated    |
+| array           | Yes      | Yes      |                               |
 | axis            | Yes      | No       | TODO: tests                   |
 | brush           | No       | -        |                               |
 | chord           | No       | -        |                               |
@@ -51,7 +51,7 @@ pip install detroit
 | scale-chromatic | Yes      | No       | TODO: tests                   |
 | selection       | Yes      | No       | TODO: tests                   |
 | shape           | Yes      | Yes      | Missing most of shapes        |
-| time            | Yes      | Yes      | TODO: pass tests              |
+| time            | Yes      | Yes      |                               |
 | time-format     | Yes      | Yes      |                               |
 | timer           | No       | -        |                               |
 | transition      | No       | -        |                               |
