@@ -26,7 +26,7 @@ def entering(context):
 
 class Axis:
 
-    def __init__(self, orient, scale):
+    def __init__(self, orient: int, scale):
         self._scale = scale
         self._orient = orient
         self._tick_arguments = []
@@ -41,6 +41,10 @@ class Axis:
         self._transform = translate_x if orient in [TOP, BOTTOM] else translate_y
 
     def __call__(self, context):
+        """
+        Render the axis to the given context, which may be either a selection
+        of SVG containers (either SVG or G elements) or a corresponding transition.
+        """
         if self._tick_values is not None:
             values = self._tick_values
         elif hasattr(self._scale, 'ticks'):
@@ -210,13 +214,33 @@ class Axis:
         return self._offset
 
 def axis_top(scale):
+    """
+    Builds a new top-oriented axis generator for the given scale,
+    with empty tick arguments, a tick size of 6 and padding of 3.
+    In this orientation, ticks are drawn above the horizontal domain path.
+    """
     return Axis(TOP, scale)
 
 def axis_right(scale):
+    """
+    Builds a new right-oriented axis generator for the given scale,
+    with empty tick arguments, a tick size of 6 and padding of 3.
+    In this orientation, ticks are drawn above the vertical domain path.
+    """
     return Axis(RIGHT, scale)
 
 def axis_bottom(scale):
+    """
+    Builds a new bottom-oriented axis generator for the given scale,
+    with empty tick arguments, a tick size of 6 and padding of 3.
+    In this orientation, ticks are drawn above the horizontal domain path.
+    """
     return Axis(BOTTOM, scale)
 
 def axis_left(scale):
+    """
+    Builds a new left-oriented axis generator for the given scale,
+    with empty tick arguments, a tick size of 6 and padding of 3.
+    In this orientation, ticks are drawn above the vertical domain path.
+    """
     return Axis(LEFT, scale)

@@ -1,4 +1,24 @@
-def interpolate_number_array(a, b):
+from collections.abc import Callable
+from typing import TypeVar
+
+T = TypeVar("Number")
+
+def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[T], list[T]]:
+    """
+    Returns an interpolator between the two arbitrary values a and b.
+
+    Parameters
+    ----------
+    a : list[T]
+        a value
+    b : list[T] | None
+        b value
+
+    Returns
+    -------
+    Callable[[T], list[T]]
+        Interpolator
+    """
     if b is None:
         b = []
     n = min(len(b), len(a)) if a else 0

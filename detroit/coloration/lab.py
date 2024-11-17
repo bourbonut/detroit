@@ -1,4 +1,6 @@
+from __future__ import annotations
 from .color import Color, rgb_convert, RGB
+from typing import overload
 import math
 
 K = 18
@@ -37,7 +39,22 @@ def gray(*args):
         l, opacity = args
         return LAB(l, 0, 0, opacity)
 
+@overload
+def lab(specifier: str) -> LAB:
+    ...
+
+@overload
+def lab(l: int | float, a: int | float, b: int | float) -> LAB:
+    ...
+
+@overload
+def lab(l: int | float, a: int | float, b: int | float, opacity: int | float) -> LAB:
+    ...
+
 def lab(*args):
+    """
+    Builds a new LAB color
+    """
     if len(args) == 1:
         return lab_convert(args[0])
     elif len(args) == 3:
@@ -49,19 +66,67 @@ def lab(*args):
         return LAB(l, a, b, opacity)
 
 class LAB(Color):
-    def __init__(self, l, a, b, opacity):
+    """
+    LAB color format
+
+    Parameters
+    ----------
+    l : int | float
+        L* channel value
+    a : int | float
+        a* channel value
+    b : int | float
+        b* channel value
+    opacity : int | float
+        Opacity value
+    """
+    def __init__(self, l: int | float, a: int | float, b: int | float, opacity: int | float = 1):
         self.l = float(l)
         self.a = float(a)
         self.b = float(b)
         self.opacity = float(opacity)
 
-    def brighter(self, k=None):
+    def brighter(self, k: float | None = None) -> LAB:
+        """
+        Returns a brighter copy of this color.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        LAB
+            Brighter LAB
+        """
         return LAB(self.l + K * (1 if k is None else k), self.a, self.b, self.opacity)
 
-    def darker(self, k=None):
+    def darker(self, k: float | None = None) -> LAB:
+        """
+        Returns a darker copy of this color.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        LAB
+            Brighter LAB
+        """
         return LAB(self.l - K * (1 if k is None else k), self.a, self.b, self.opacity)
 
-    def rgb(self):
+    def rgb(self) -> RGB:
+        """
+        Returns the RGB equivalent of this color
+
+        Returns
+        -------
+        RGB
+            RGB color format
+        """
         y = (self.l + 16) / 116
         x = y if math.isnan(self.a) else y + self.a / 500
         z = y if math.isnan(self.b) else y - self.b / 200
@@ -98,7 +163,22 @@ def hcl_convert(obj):
     h = math.degrees(math.atan2(obj.b, obj.a))
     return HCL(h + 360 if h < 0 else h, (obj.a ** 2 + obj.b ** 2) ** 0.5, obj.l, obj.opacity)
 
+@overload
+def lch(specifier: str) -> HCL:
+    ...
+
+@overload
+def lch(l: int | float, c: int | float, h: int | float) -> HCL:
+    ...
+
+@overload
+def lch(l: int | float, c: int | float, h: int | float, opacity: int | float) -> HCL:
+    ...
+
 def lch(*args):
+    """
+    Builds a new HCL color
+    """
     if len(args) == 1:
         return hcl_convert(args[0])
     elif len(args) == 3:
@@ -109,7 +189,22 @@ def lch(*args):
         l, c, h, opacity = args
         return HCL(h, c, l, opacity)
 
+@overload
+def hcl(specifier: str) -> HCL:
+    ...
+
+@overload
+def hcl(h: int | float, c: int | float, l: int | float) -> HCL:
+    ...
+
+@overload
+def hcl(h: int | float, c: int | float, l: int | float, opacity: int | float) -> HCL:
+    ...
+
 def hcl(*args):
+    """
+    Builds a new HCL color
+    """
     if len(args) == 1:
         return hcl_convert(args[0])
     elif len(args) == 3:
@@ -121,6 +216,20 @@ def hcl(*args):
         return HCL(h, c, l, opacity)
 
 class HCL(Color):
+    """
+    HCL color format
+
+    Parameters
+    ----------
+    h : int | float
+        Hue channel value
+    c : int | float
+        Chroma channel value
+    l : int | float
+        Luminance channel value
+    opacity : int | float
+        Opacity value
+    """
     def __init__(self, h, c, l, opacity):
         self.h = float(h)
         self.c = float(c)

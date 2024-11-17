@@ -1,6 +1,7 @@
 from .linear import LinearBase
 from .continuous import copy, identity, Transformer
 from .init import init_range
+from collections.abc import Callable
 import math
 
 def transform_pow(exponent):
@@ -13,7 +14,7 @@ def transform_square(x):
     return (-x * x if x < 0 else x * x)
 
 class ScalePow(Transformer, LinearBase):
-    def __init__(self, t = identity, u = identity, exponent = 1):
+    def __init__(self, t: Callable = identity, u: Callable = identity, exponent: float | int = 1):
         super().__init__(t, u)
         self._exponent = exponent
 
@@ -43,10 +44,29 @@ class ScalePow(Transformer, LinearBase):
     def copy(self):
         return copy(self, ScalePow()).exponent(self.exponent())
 
-def scale_pow():
+def scale_pow() -> ScalePow:
+    """
+    Constructs a new pow scale with the specified domain and
+    range, the exponent 1, the default interpolator and
+    clamping disabled.
+
+    Returns
+    -------
+    ScalePow
+        Scale object
+    """
     scale = ScalePow()
     return init_range(scale)
 
 
-def scale_sqrt():
+def scale_sqrt() -> ScalePow:
+    """
+    Constructs a new pow scale with the specified domain and range,
+    the exponent 0.5, the default interpolator and clamping disabled.
+
+    Returns
+    -------
+    ScalePow
+        Scale object
+    """
     return ScalePow().exponent(0.5)

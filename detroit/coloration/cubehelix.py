@@ -1,5 +1,7 @@
+from __future__ import annotations
 from .color import Color, rgb_convert, RGB, DARKER, BRIGHTER
 from .lab import hcl_convert, HCL
+from typing import overload
 import math
 
 A = -0.14861
@@ -29,7 +31,22 @@ def cubehelix_convert(obj):
     h = (math.degrees(math.atan2(k, bl)) - 120) if not math.isnan(s) and s else math.nan
     return Cubehelix(h + 360 if h < 0 else h, s, l, obj.opacity)
 
+@overload
+def cubehelix(specifier: str) -> Cubehelix:
+    ...
+
+@overload
+def cubehelix(h: int | float, s: int | float, l: int | float) -> Cubehelix:
+    ...
+
+@overload
+def cubehelix(h: int | float, s: int | float, l: int | float, opacity: int | float) -> Cubehelix:
+    ...
+
 def cubehelix(*args):
+    """
+    Build a new Cubehelix color
+    """
     if len(args) == 1:
         return cubehelix_convert(args[0])
     elif len(args) == 3:
@@ -52,21 +69,69 @@ def lch(*args):
         return HCL(h, c, l, opacity)
 
 class Cubehelix(Color):
-    def __init__(self, h, s, l, opacity):
+    """
+    Cubehelix color format
+
+    Parameters
+    ----------
+    h : int | float
+        Hue channel value
+    s : int | float
+        Saturation channel value
+    l : int | float
+        Lightness channel value
+    opacity : int | float
+        Opacity value
+    """
+    def __init__(self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k=None):
+    def brighter(self, k: float | None = None) -> Cubehelix:
+        """
+        Returns a brighter copy of this color.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        Cubehelix
+            Brighter Cubehelix
+        """
         k = BRIGHTER if k is None else BRIGHTER ** k
         return Cubehelix(self.h, self.s, self.l * k, self.opacity)
 
-    def darker(self, k=None):
+    def darker(self, k: float | None = None) -> Cubehelix:
+        """
+        Returns a darker copy of this color.
+
+        Parameters
+        ----------
+        k : float | None
+            Darkness coefficient
+
+        Returns
+        -------
+        Cubehelix
+            Darker Cubehelix
+        """
         k = DARKER if k is None else DARKER ** k
         return Cubehelix(self.h, self.s, self.l * k, self.opacity)
 
-    def rgb(self):
+    def rgb(self) -> RGB:
+        """
+        Returns the RGB equivalent of this color
+
+        Returns
+        -------
+        RGB
+            RGB color format
+        """
         h = 0 if math.isnan(self.h) else math.radians(self.h + 120)
         l = self.l
         a = 0 if math.isnan(self.s) else self.s * l * (1 - l)

@@ -3,9 +3,13 @@ from .path import WithPath
 from .point import x as point_x, y as point_y
 from .curves.linear import LinearCurve
 
-class Line(WithPath):
+from collections.abc import Callable
 
-    def __init__(self, x=None, y=None):
+class Line(WithPath):
+    """
+    Builds a line generator given x and y accessor
+    """
+    def __init__(self, x: Callable | None = None, y: Callable | None = None):
         super().__init__()
         self._defined = constant(True)
         self._context = None
@@ -26,7 +30,10 @@ class Line(WithPath):
         else:
             self._y = constant(y)
 
-    def __call__(self, data):
+    def __call__(self, data: list):
+        """
+        Generate a line for the given list of data
+        """
         data = list(data)
         n = len(data)
         defined0 = False
@@ -62,6 +69,9 @@ class Line(WithPath):
             return str(buffer) or None
 
     def x(self, *args):
+        """
+        Set x accessor
+        """
         if args:
             x = args[0]
             if x is None:
@@ -74,6 +84,9 @@ class Line(WithPath):
         return self._x
 
     def y(self, *args):
+        """
+        Set y accessor
+        """
         if args:
             y = args[0]
             if y is None:
@@ -86,6 +99,9 @@ class Line(WithPath):
         return self._y
 
     def defined(self, *args):
+        """
+        Set defined accessor
+        """
         if args:
             defined = args[0]
             if defined is None:
@@ -98,6 +114,9 @@ class Line(WithPath):
         return self._defined
 
     def curve(self, *args):
+        """
+        Set curve factory
+        """
         if args:
             self._curve = args[0]
             if self._context is not None:
@@ -106,6 +125,9 @@ class Line(WithPath):
         return self._curve
 
     def context(self, *args):
+        """
+        Set line context
+        """
         if args:
             context = args[0]
             if context is None:

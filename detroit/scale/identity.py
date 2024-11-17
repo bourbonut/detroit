@@ -3,6 +3,9 @@ from .number import number
 import math
 
 class Identity(LinearBase):
+    """
+    Build a new identity scale with the specified range (and by extension, domain).
+    """
 
     def __init__(self, domain=None):
         self._domain = list(map(float, domain)) if domain is not None else [0, 1]

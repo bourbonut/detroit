@@ -1,5 +1,6 @@
 from ..coloration import hsl as color_hsl
 from .color import color, hue
+from collections.abc import Callable
 
 class HSLInterpolator:
     def __init__(self, func):
@@ -22,5 +23,42 @@ class HSLInterpolator:
 
         return interpolate
 
-interpolate_hsl = HSLInterpolator(hue)
-interpolate_hsl_long = HSLInterpolator(color)
+def interpolate_hsl(a: str, b: str) -> Callable[[float], str]:
+    """
+    Returns an HSL color space interpolator between the two colors a and b.
+    The colors a and b need not be in HSL; they will be converted to HSL
+    using d3.hsl. If either color’s hue or saturation is NaN, the opposing
+    color’s channel value is used. The shortest path between hues is used.
+    The return value of the interpolator is an RGB string.
+
+    Parameters
+    ----------
+    a : str
+        String a
+    b : str
+        String b
+
+    Returns
+    -------
+    Callable[[float], str]
+        Interpolator
+    """
+    return HSLInterpolator(hue)(a, b)
+
+def interpolate_hsl_long(a: str, b: str) -> Callable[[float], str]:
+    """
+    Like :code:`interpolate_hsl`, but does not use the shortest path between hues.
+
+    Parameters
+    ----------
+    a : str
+        String a
+    b : str
+        String b
+
+    Returns
+    -------
+    Callable[[float], str]
+        Interpolator
+    """
+    return HSLInterpolator(color)(a, b)

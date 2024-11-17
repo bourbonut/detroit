@@ -1,4 +1,5 @@
 from math import exp, log, sqrt, cosh, sinh, tanh, dist
+from collections.abc import Callable
 
 EPSILON = 1e-12
 SQRT2 = sqrt(2)
@@ -64,16 +65,39 @@ class GeneralZoomRhoInterpolator(Base):
         ]
 
 class ZoomRho:
+    """
+    An interpolator for zooming smoothly between two views of a two-dimensional
+    plane based on “Smooth and efficient zooming and panning” by
+    Jarke J. van Wijk and Wim A.A. Nuij.
+    """
 
     def __init__(self, rho, rho2, rho4):
         self.rho = rho
         self.rho2 = rho2
         self.rho4 = rho4
 
-    def __call__(self, p0, p1):
-        d = dist(p0[:-1], p1[:-1]) ** 2
+    def __call__(self, a: list, b: list) -> Callable:
+        """
+        Returns an interpolator between the two views a and b. Each view is defined
+        as an array of three numbers: cx, cy and width. The first two coordinates cx,
+        cy represent the center of the viewport; the last coordinate width represents
+        the size of the viewport.
+
+        Parameters
+        ----------
+        a : list
+            View a
+        b : list
+            View b
+
+        Returns
+        -------
+        Callable
+            Interpolator
+        """
+        d = dist(a[:-1], b[:-1]) ** 2
         interpolator = SingularZoomRhoInterpolator if d < EPSILON else GeneralZoomRhoInterpolator
-        return interpolator(self.rho, self.rho2, self.rho4, p0, p1)
+        return interpolator(self.rho, self.rho2, self.rho4, a, b)
 
 
     def set_rho(self, new_rho):

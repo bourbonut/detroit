@@ -12,3 +12,27 @@ from .cubehelix import interpolate_cubehelix, interpolate_cubehelix_long
 from .lab import interpolate_lab
 from .hcl import interpolate_hcl, interpolate_hcl_long
 from .rgb import interpolate_rgb, interpolate_rgb_basis, interpolate_rgb_basis_closed
+
+__all__ = [
+    "interpolate_number_array",
+    "interpolate_number",
+    "interpolate",
+    "interpolate_array",
+    "interpolate_object",
+    "interpolate_date",
+    "interpolate_string",
+    "interpolate_round",
+    "interpolate_discrete",
+    "interpolate_zoom",
+    "interpolate_hsl",
+    "interpolate_hsl_long",
+    "interpolate_hue",
+    "interpolate_cubehelix",
+    "interpolate_cubehelix_long",
+    "interpolate_lab",
+    "interpolate_hcl",
+    "interpolate_hcl_long",
+    "interpolate_rgb",
+    "interpolate_rgb_basis",
+    "interpolate_rgb_basis_closed",
+]

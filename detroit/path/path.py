@@ -6,7 +6,15 @@ EPSILON = 1e-6
 TAU_EPSILON = TAU - EPSILON
 
 class Path:
-    def __init__(self, digits=None):
+    """
+    Build a path serializer
+
+    Parameters
+    ----------
+    digits : int | None
+        Number of digits to round
+    """
+    def __init__(self, digits: int | None = None):
         self.digit = digits or 3
         self._x0 = self._y0 = 0  # start of current subpath
         self._x1 = self._y1 = None  # end of current subpath
@@ -15,36 +23,116 @@ class Path:
     def _round(self, *values):
         return (string_round(value, self.digit) for value in values)
 
-    def move_to(self, x, y):
+    def move_to(self, x: int | float, y: int | float):
+        """
+        Move to the specified point (x, y).
+
+        Parameters
+        ----------
+        x : int | float
+            x position
+        y : int | float
+            y position
+        """
         self._x0 = self._x1 = x
         self._y0 = self._y1 = y
         x, y = self._round(x, y)
         self._string += f'M{x},{y}'
 
     def close_path(self):
+        """
+        Ends the current subpath and causes an automatic straight line
+        to be drawn from the current point to the initial point of the
+        current subpath. 
+        """
         if self._x1 is not None:
             self._x1, self._y1 = self._x0, self._y0
             self._string += 'Z'
 
-    def line_to(self, x, y):
+    def line_to(self, x: int | float, y: int | float):
+        """
+        Draws a straight line from the current point to the specified point (x, y).
+
+        Parameters
+        ----------
+        x : int | float
+            x position
+        y : int | float
+            y position
+        """
         self._x1 = x
         self._y1 = y
         x, y = self._round(x, y)
         self._string += f'L{x},{y}'
 
-    def quadratic_curve_to(self, x1, y1, x, y):
+    def quadratic_curve_to(self, cpx: int | float, cpy: int | float, x: int | float, y: int | float):
+        """
+        Draws a quadratic Bézier segment from the current point to the
+        specified point (x, y), with the specified control point (cpx, cpy).
+
+        Parameters
+        ----------
+        cpx : int | float
+            Specified control x position
+        cpy : int | float
+            Specified control y position
+        x : int | float
+            x position
+        y : int | float
+            y position
+        """
         self._x1 = x
         self._y1 = y
-        x, y, x1, y1 = self._round(x, y, x1, y1)
-        self._string += f'Q{x1},{y1},{x},{y}'
+        x, y, cpx, cpy = self._round(x, y, cpx, cpy)
+        self._string += f'Q{cpx},{cpy},{x},{y}'
 
-    def bezier_curve_to(self, x1, y1, x2, y2, x, y):
+    def bezier_curve_to(self, cpx1: int | float, cpy1: int | float, cpx2: int | float, cpy2: int | float, x: int | float, y: int | float):
+        """
+        Draws a cubic Bézier segment from the current point to the specified
+        point (x, y), with the specified control points (cpx1, cpy1) and
+        (cpx2, cpy2).
+
+        Parameters
+        ----------
+        cpx1 : int | float
+            Specified control x position 1
+        cpy1 : int | float
+            Specified control y position 1
+        cpx2 : int | float
+            Specified control x position 2
+        cpy2 : int | float
+            Specified control y position 2
+        x : int | float
+            x position
+        y : int | float
+            y position
+        """
         self._x1 = x
         self._y1 = y
-        x, y, x1, y1, x2, y2 = self._round(x, y, x1, y1, x2, y2)
-        self._string += f'C{x1},{y1},{x2},{y2},{x},{y}'
+        x, y, cpx1, cpy1, cpx2, cpy2 = self._round(x, y, cpx1, cpy1, cpx2, cpy2)
+        self._string += f'C{cpx1},{cpy1},{cpx2},{cpy2},{x},{y}'
 
-    def arc_to(self, x1, y1, x2, y2, r):
+    def arc_to(self, x1: int | float, y1: int | float, x2: int | float, y2: int | float, r: int | float):
+        """
+        Draws a circular arc segment with the specified radius that starts tangent
+        to the line between the current point and the specified point (x1, y1) and
+        ends tangent to the line between the specified points (x1, y1) and (x2, y2).
+        If the first tangent point is not equal to the current point, a straight line
+        is drawn between the current point and the first tangent point.
+
+        Parameters
+        ----------
+        x1 : int | float
+            Arc x position
+        y1 : int | float
+            Arc y position
+        x2 : int | float
+            Tangent x position
+        y2 : int | float
+            Tangent y position
+        r : int | float
+            Arc radius
+        """
         # Is the radius negative? Error.
         if r < 0:
             raise ValueError(f"negative radius: {r}")
@@ -94,11 +182,35 @@ class Path:
             m2, m3 = self._round(self._x1, self._y1)
             self._string += f'A{r},{r},0,0,{m1},{m2},{m3}'
 
-    def arc(self, x, y, r, a0, a1, ccw=False):
+    def arc(self, x: int | float, y: int | float, r: int | float, start_angle: int | float, end_angle: int | float, ccw: bool = False):
+        """
+        Draws a circular arc segment with the specified center (x, y), radius, start_angle
+        and end_angle. If anticlockwise is true, the arc is drawn in the anticlockwise direction;
+        otherwise, it is drawn in the clockwise direction. If the current point is not equal
+        to the starting point of the arc, a straight line is drawn from the current point
+        to the start of the arc.
+
+        Parameters
+        ----------
+        x : int | float
+            Center x position
+        y : int | float
+            Center y position
+        r : int | float
+            Radius
+        start_angle : int | float
+            Start angle
+        end_angle : int | float
+            End angle
+        ccw : bool
+            Clockwise direction
+        """
         # Is the radius negative? Error.
         if r < 0:
             raise ValueError(f"negative radius: {r}")
 
+        a0 = start_angle
+        a1 = end_angle
         dx = r * math.cos(a0)
         dy = r * math.sin(a0)
         x0 = x + dx
@@ -139,11 +251,27 @@ class Path:
             r, x1, y1 = self._round(r, self._x1, self._y1)
             self._string += f'A{r},{r},0,{int(da >= math.pi)},{cw},{x1},{y1}'
 
-    def rect(self, x, y, w, h):
+    def rect(self, x: int | float, y: int | float, w: int | float, h: int | float):
+        """
+        Creates a new subpath containing just the four points (x, y), (x + w, y),
+        (x + w, y + h), (x, y + h), with those four points connected by straight
+        lines, and then marks the subpath as closed.
+
+        Parameters
+        ----------
+        x : int | float
+            Rectangle x position
+        y : int | float
+            Rectangle y position
+        w : int | float
+            Rectangle width
+        h : int | float
+            Rectangle height
+        """
         self._x0 = self._x1 = x
         self._y0 = self._y1 = y
         x, y, w, h = self._round(x, y, w, h)
         self._string += f'M{x},{y}h{w}v{h}h-{w}Z'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._string

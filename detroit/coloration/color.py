@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import overload
 import re
 import math
 
@@ -184,7 +186,22 @@ class Color:
     def __str__(self):
         return self.format_rgb()
 
-def color(format):
+def color(format: str) -> RGB | HSL | None:
+    """
+    Parses the specified CSS Color specifier string,
+    returning an RGB or HSL color.
+    If the specifier was not valid, None is returned.
+
+    Parameters
+    ----------
+    format : str
+        Specifier
+
+    Returns
+    -------
+    RGB | HSL | None
+        Formatted color
+    """
     format = format.strip().lower()
     if format == "transparent":
         return RGB(math.nan, math.nan, math.nan, 0)
@@ -232,7 +249,22 @@ def rgb_convert(obj):
     obj = obj.rgb()
     return RGB(obj.r, obj.g, obj.b, obj.opacity)
 
+@overload
+def rgb(specifier: str) -> RGB:
+    ...
+
+@overload
+def rgb(r: int | float, g: int | float, b: int | float) -> RGB:
+    ...
+
+@overload
+def rgb(r: int | float, g: int | float, b: int | float, opacity: int | float) -> RGB:
+    ...
+
 def rgb(*args):
+    """
+    Builds a new RGB color
+    """
     if len(args) == 1:
         return rgb_convert(args[0])
     elif len(args) == 3:
@@ -244,36 +276,144 @@ def rgb(*args):
         return RGB(r, g, b, opacity)
 
 class RGB(Color):
-    def __init__(self, r, g, b, opacity=1):
+    """
+    RGB color format
+
+    Parameters
+    ----------
+    r : int | float
+        Red channel value
+    g : int | float
+        Green channel value
+    b : int | float
+        Blue channel value
+    opacity : int | float
+        Opacity value
+    """
+    def __init__(self, r: int | float, g: int | float, b: int | float, opacity: int | float = 1):
         self.r = float(r)
         self.g = float(g)
         self.b = float(b)
         self.opacity = float(opacity)
 
-    def brighter(self, k=None):
+    def brighter(self, k: float | None = None) -> RGB:
+        """
+        Returns a brighter copy of this color.
+        For example, if k is 1, steelblue in RGB color space becomes rgb(100, 186, 255).
+        The parameter k controls how much brighter the returned color should be (in arbitrary units);
+        if k is not specified, it defaults to 1. The behavior of this method is dependent
+        on the implementing color space.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        RGB
+            Brighter RGB
+        """
         k = BRIGHTER if k is None else BRIGHTER ** k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
-    def darker(self, k=None):
+    def darker(self, k: float | None = None) -> RGB:
+        """
+        Returns a darker copy of this color.
+        For example, if k is 1, steelblue in RGB color space becomes rgb(49, 91, 126).
+        The parameter k controls how much darker the returned color should be (in arbitrary units);
+        if k is not specified, it defaults to 1. The behavior of this method is dependent
+        on the implementing color space.
+
+        Parameters
+        ----------
+        k : float | None
+            Darkness coefficient
+
+        Returns
+        -------
+        RGB
+            Darker RGB
+        """
         k = DARKER if k is None else DARKER ** k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
-    def rgb(self):
+    def rgb(self) -> RGB:
+        """
+        Returns the RGB equivalent of this color
+
+        Returns
+        -------
+        RGB
+            RGB color format
+        """
         return self
 
-    def clamp(self):
+    def clamp(self) -> RGB:
+        """
+        Returns a new RGB color where the r, g, and b channels are clamped
+        to the range [0, 255] and rounded to the nearest integer value, and
+        the opacity is clamped to the range [0, 1].
+
+        Returns
+        -------
+        RGB
+            Clamped color
+        """
         return RGB(clampi(self.r), clampi(self.g), clampi(self.b), clampa(self.opacity))
 
-    def displayable(self):
+    def displayable(self) -> bool:
+        """
+        Returns :code:`True` if and only if the color is displayable on standard hardware.
+        For example, this returns false for an RGB color if any channel value is
+        less than zero or greater than 255 when rounded, or if the opacity is not
+        in the range [0, 1].
+
+        Returns
+        -------
+        bool
+            Is displayable
+        """
         return (-0.5 <= self.r < 255.5) and (-0.5 <= self.g < 255.5) and (-0.5 <= self.b < 255.5) and (0 <= self.opacity <= 1)
 
-    def format_hex(self):
+    def format_hex(self) -> str:
+        """
+        Returns a hexadecimal string representing this color in RGB space, such as #4682b4.
+        If this color is not displayable, a suitable displayable color is returned instead.
+        For example, RGB channel values greater than 255 are clamped to 255.
+
+        Returns
+        -------
+        str
+            Hex color representation
+        """
         return f"#{hex(self.r)}{hex(self.g)}{hex(self.b)}"
 
-    def format_hex_8(self):
+    def format_hex_8(self) -> str:
+        """
+        Returns a hexadecimal string representing this color in RGBA space, such as #4682b4cc.
+        If this color is not displayable, a suitable displayable color is returned instead.
+        For example, RGB channel values greater than 255 are clamped to 255.
+
+        Returns
+        -------
+        str
+            Hex 8 color representation
+      """
         return f"#{hex(self.r)}{hex(self.g)}{hex(self.b)}{hex((1 if math.isnan(self.opacity) else self.opacity) * 255)}"
 
-    def format_rgb(self):
+    def format_rgb(self) -> str:
+        """
+        Returns a string representing this color according to the CSS Object Model specification,
+        such as rgb(247, 234, 186) or rgba(247, 234, 186, 0.2). If this color is not displayable,
+        a suitable displayable color is returned instead by clamping RGB channel values to the
+        interval [0, 255].
+
+        Returns
+        -------
+        str
+            RGB color representation
+        """
         a = clampa(self.opacity)
         return f"{'rgb(' if a == 1 else 'rgba('}{clampi(self.r)}, {clampi(self.g)}, {clampi(self.b)}{')' if a == 1 else f', {a})'}"
 
@@ -327,7 +467,22 @@ def hsl_convert(obj):
         s = 0 if 0 < l < 1 else h
     return HSL(h, s, l, obj.opacity)
 
+@overload
+def hsl(specifier: str) -> HSL:
+    ...
+
+@overload
+def hsl(h: int | float, s: int | float, l: int | float) -> HSL:
+    ...
+
+@overload
+def hsl(h: int | float, s: int | float, l: int | float, opacity: int | float) -> HSL:
+    ...
+
 def hsl(*args):
+    """
+    Build a new HSL color
+    """
     if len(args) == 1:
         return hsl_convert(args[0])
     elif len(args) == 3:
@@ -339,21 +494,77 @@ def hsl(*args):
         return HSL(h, l, s, opacity)
 
 class HSL(Color):
-    def __init__(self, h, s, l, opacity=1):
+    """
+    HSL color format
+
+    Parameters
+    ----------
+    h : int | float
+        Hue channel value
+    s : int | float
+        Saturation channel value
+    l : int | float
+        Lightness channel value
+    opacity : int | float
+        Opacity value
+    """
+    def __init__(self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k=None):
+    def brighter(self, k: float | None = None) -> HSL:
+        """
+        Returns a brighter copy of this color.
+        For example, if k is 1, steelblue in RGB color space becomes rgb(100, 186, 255).
+        The parameter k controls how much brighter the returned color should be (in arbitrary units);
+        if k is not specified, it defaults to 1. The behavior of this method is dependent
+        on the implementing color space.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        HSL
+            Brighter HSL
+        """
         k = BRIGHTER if k is None else BRIGHTER ** k
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
-    def darker(self, k=None):
+    def darker(self, k: float | None = None) -> HSL:
+        """
+        Returns a darker copy of this color.
+        For example, if k is 1, steelblue in RGB color space becomes rgb(49, 91, 126).
+        The parameter k controls how much darker the returned color should be (in arbitrary units);
+        if k is not specified, it defaults to 1. The behavior of this method is dependent
+        on the implementing color space.
+
+        Parameters
+        ----------
+        k : float | None
+            Darkness coefficient
+
+        Returns
+        -------
+        HSL
+            Darker HSL
+        """
         k = DARKER if k is None else DARKER ** k
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
-    def rgb(self):
+    def rgb(self) -> RGB:
+        """
+        Returns the RGB equivalent of this color
+
+        Returns
+        -------
+        RGB
+            RGB color format
+        """
         h = self.h % 360
         s = 0 if math.isnan(h) or math.isnan(self.s) else self.s
         l = self.l
@@ -366,13 +577,32 @@ class HSL(Color):
             self.opacity
         )
 
-    def clamp(self):
+    def clamp(self) -> HSL:
+        """
+        Returns a new HSL color where the h channel is clamped to the range [0, 360),
+        and the s, l, and opacity channels are clamped to the range [0, 1].
+
+        Returns
+        -------
+        HSL
+            Clamped color
+        """
         return HSL(clamph(self.h), clampt(self.s), clampt(self.l), clampa(self.opacity))
 
-    def displayable(self):
+    def displayable(self) -> bool:
+        """
+        Returns :code:`True` if and only if the color is displayable on standard hardware.
+        For example, this returns false for an HSL color if any channel value are in the
+        range [0, 1] or if the opacity is not in the range [0, 1].
+
+        Returns
+        -------
+        bool
+            Is displayable
+        """
         return (0 <= self.s <= 1 or math.isnan(self.s)) and (0 <= self.l <= 1) and (0 <= self.opacity <= 1)
 
-    def format_hsl(self):
+    def format_hsl(self) -> str:
         a = clampa(self.opacity)
         h = str(clamph(self.h)).removesuffix(".0")
         s = str(clampt(self.s) * 100).removesuffix(".0")

@@ -1,5 +1,6 @@
 from ..coloration import hcl as color_hcl
 from .color import color, hue
+from collections.abc import Callable
 
 class HLCInterpolator:
     def __init__(self, func):
@@ -22,5 +23,42 @@ class HLCInterpolator:
 
         return interpolate
 
-interpolate_hcl = HLCInterpolator(hue)
-interpolate_hcl_long = HLCInterpolator(color)
+def interpolate_hcl(a: str, b: str) -> Callable[[float], str]:
+    """
+    Returns a CIELChab color space interpolator between the two colors a and b.
+    The colors a and b need not be in CIELChab; they will be converted to CIELChab
+    using d3.hcl. If either color's hue or chroma is NaN, the opposing color's channel
+    value is used. The shortest path between hues is used. The return value of the
+    interpolator is an RGB string.
+
+    Parameters
+    ----------
+    a : str
+        Color string a
+    b : str
+        Color string b
+
+    Returns
+    -------
+    Callable[[float], str]
+        Interpolator
+    """
+    return HLCInterpolator(hue)(a, b)
+
+def interpolate_hcl_long(a: str, b: str) -> Callable[[float], str]:
+    """
+    Like :code:`interpolate_hcl`, but does not use the shortest path between hues.
+
+    Parameters
+    ----------
+    a : str
+        Color string a
+    b : str
+        Color string b
+
+    Returns
+    -------
+    Callable[[float], str]
+        Interpolator
+    """
+    return HLCInterpolator(color)(a, b)

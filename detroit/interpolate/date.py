@@ -1,7 +1,22 @@
 from datetime import datetime
+from collections.abc import Callable
 
-def interpolate_date(a, b):
-    d = datetime.now()
+def interpolate_date(a: datetime, b: datetime) -> Callable[[float], datetime]:
+    """
+    Returns an interpolator between the two dates a and b.
+
+    Parameters
+    ----------
+    a : datetime
+        Date a
+    b : datetime
+        Date b
+
+    Returns
+    -------
+    Callable[[float], datetime]
+        Interpolator
+    """
     a, b = a.timestamp(), b.timestamp()
     def interpolate(t):
         d = datetime.fromtimestamp(a * (1 - t) + b * t)

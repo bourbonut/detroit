@@ -107,7 +107,16 @@ class Calendar(Transformer):
         )
 
 
-def scale_time(*args):
+def scale_time(*args) -> Calendar:
+    """
+    Builds a new time scale with the specified domain and range,
+    the default interpolator and clamping disabled
+
+    Returns
+    -------
+    Calendar
+        Scale object
+    """
     calendar = Calendar(
         time_ticks,
         time_tick_interval,

@@ -62,5 +62,14 @@ class ScaleQuantize(LinearBase):
         return ScaleQuantize().domain([self._x0, self._x1]).range(self._range_vals).unknown(self._unknown)
 
 
-def scale_quantize():
+def scale_quantize() -> ScaleQuantize:
+    """
+    Constructs a new quantize scale with the specified
+    domain and range.
+
+    Returns
+    -------
+    ScaleQuantize
+        Scale object
+    """
     return init_range(ScaleQuantize())

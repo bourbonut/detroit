@@ -3,6 +3,7 @@ from .continuous import copy, Transformer
 from .init import init_range
 # from .tick_format import tick_format
 import math
+from typing import overload
 
 
 class LinearBase:
@@ -60,7 +61,28 @@ class ScaleLinear(Transformer, LinearBase):
     def copy(self):
         return copy(self, ScaleLinear())
 
+@overload
+def scale_linear() -> ScaleLinear:
+    ...
+
+@overload
+def scale_linear(range_vals: list) -> ScaleLinear:
+    ...
+
+@overload
+def scale_linear(domain: list, range_vals: list) -> ScaleLinear:
+    ...
+
 def scale_linear(*args):
+    """
+    Build a new linear scale with the specified domain and range,
+    the default interpolator, and clamping disabled.
+
+    Returns
+    -------
+    ScaleLinear
+        Scale object
+    """
     scale = ScaleLinear()
     if len(args) == 1:
         return init_range(scale, range_vals=args[0])

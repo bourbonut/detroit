@@ -1,5 +1,6 @@
 import re
 from .number import interpolate_number
+from collections.abc import Callable
 
 reA = re.compile(r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?')
 reB = re.compile(reA.pattern)
@@ -14,7 +15,22 @@ def one(b):
         return str(b(t))
     return f
 
-def interpolate_string(a, b):
+def interpolate_string(a: str, b: str) -> Callable[[float], str]:
+    """
+    Returns an interpolator between the two strings a and b.
+
+    Parameters
+    ----------
+    a : str
+        String a
+    b : str
+        String b
+
+    Returns
+    -------
+    Callable[[float], str]
+        Interpolator
+    """
     a, b = str(a), str(b)
     
     bi = 0
