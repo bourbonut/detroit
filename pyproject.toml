@@ -29,6 +29,3 @@ Documentation="https://detroit.readthedocs.io/en/latest/"
 
 [project.optional-dependencies]
 jupyter = ["notebook", "nest_asyncio"]
-
-[tool.setuptools.packages.find]
-include = ["detroit"]
