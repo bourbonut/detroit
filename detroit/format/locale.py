@@ -7,6 +7,7 @@ from .format_types import format_types
 from .format_prefix_auto import prefix_auto
 from .identity import identity
 
+from inspect import signature
 import math
 
 prefixes = ["y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"]
@@ -18,8 +19,8 @@ class Locale:
             if "grouping" in locale_def and "thousands" in locale_def
             else identity
         )
-        self.currency_prefix = locale_def.get("currency", "")
-        self.currency_suffix = locale_def.get("currency", "")
+        self.currency_prefix = locale_def.get("currency", ["", ""])[0]
+        self.currency_suffix = locale_def.get("currency", ["", ""])[1]
         self.decimal = locale_def.get("decimal", ".")
         self.numerals = format_numerals(list(map(str, locale_def['numerals']))) if "numerals" in locale_def else identity
         self.percent = locale_def.get("percent", "%")
@@ -27,8 +28,6 @@ class Locale:
         self.nan = locale_def.get('nan', "NaN")
 
     def format(self, specifier):
-        specifier = format_specifier(specifier)
-        
         fill = specifier.fill
         align = specifier.align
         sign = specifier.sign
@@ -62,6 +61,7 @@ class Locale:
                  else "")
 
         format_type = format_types[type_]
+        nargs = len(signature(format_type).parameters)
         maybe_suffix = type_ in "defgprs%"
 
         if precision is None:
@@ -82,14 +82,19 @@ class Locale:
                 self.decimal = decimal
 
             def __call__(self, value):
+                value_prefix = self.prefix
+                value_suffix = self.suffix
+
                 if type_ == "c":
-                    value_suffix = format_type(value) + self.suffix
+                    args = [value, None][:nargs]
+                    value_suffix = format_type(*args) + self.suffix
                     value = ""
                 else:
                     value = float(value)
-                    value_negative = not(value != 0. and value >= 0. and 1 / value >= 0)
+                    value_negative = value < 0 or (value != 0 and 1 / value < 0)
 
-                    value = self.nan if math.isnan(value) else format_type(abs(value), precision)
+                    args = [abs(value), precision][:nargs]
+                    value = self.nan if math.isnan(value) else format_type(*args)
 
                     if trim:
                         value = format_trim(value)

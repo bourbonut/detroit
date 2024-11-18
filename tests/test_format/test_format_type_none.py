@@ -53,4 +53,4 @@ def test_format_type_none_6():
     assert d3.format("")(-0) == "0"
 
 def test_format_type_none_7():
-    assert d3.format("")(-math.inf) == "−math.inf"
+    assert d3.format("")(-math.inf) == "-inf"

@@ -3,9 +3,9 @@ import detroit as d3
 def test_format_type_r_1():
     assert d3.format(".2r")(0) == "0.0"
     assert d3.format(".1r")(0.049) == "0.05"
-    assert d3.format(".1r")(-0.049) == "−0.05"
+    assert d3.format(".1r")(-0.049) == "-0.05"
     assert d3.format(".1r")(0.49) == "0.5"
-    assert d3.format(".1r")(-0.49) == "−0.5"
+    assert d3.format(".1r")(-0.49) == "-0.5"
     assert d3.format(".2r")(0.449) == "0.45"
     assert d3.format(".3r")(0.4449) == "0.445"
     assert d3.format(".3r")(1.00) == "1.00"

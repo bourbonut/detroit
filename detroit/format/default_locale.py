@@ -1,9 +1,14 @@
 from .locale import Locale
+from .format_specifier import format_specifier
 
 locale = Locale({
     "thousands": ",",
     "grouping": [3],
     "currency": ["$", ""]
 })
-locale_format = locale.format
+
+def locale_format(specifier: str):
+    specifier = format_specifier(specifier)
+    return locale.format(specifier)
+
 format_prefix = locale.format_prefix

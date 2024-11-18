@@ -75,7 +75,13 @@ from .coloration import (
 from .path import Path as path
 from .shape import Line as line
 from .axis import axis_top, axis_left, axis_right, axis_bottom
-from .format import locale_format as format
+from .format import (
+    locale_format as format,
+    format_prefix,
+    precision_round,
+    precision_prefix,
+    precision_fixed,
+)
 from .selection import create
 
 
@@ -149,5 +155,9 @@ __all__ = [
     "axis_right",
     "axis_bottom",
     "format",
+    "format_prefix",
+    "precision_round",
+    "precision_prefix",
+    "precision_fixed",
     "create",
 ]
