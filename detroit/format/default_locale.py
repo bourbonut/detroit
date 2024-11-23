@@ -1,5 +1,5 @@
 from .locale import Locale
-from .format_specifier import format_specifier
+from .format_specifier import format_specifier, FormatSpecifier
 
 locale = Locale({
     "thousands": ",",
@@ -8,7 +8,8 @@ locale = Locale({
 })
 
 def locale_format(specifier: str):
-    specifier = format_specifier(specifier)
+    if not isinstance(specifier, FormatSpecifier):
+        specifier = format_specifier(specifier)
     return locale.format(specifier)
 
 format_prefix = locale.format_prefix

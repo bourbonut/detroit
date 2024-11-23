@@ -40,6 +40,7 @@ from .scale import (
     scale_quantize,
     scale_symlog,
     scale_radial,
+    scale_log,
 )
 from .interpolate import (
     interpolate_number_array,
@@ -123,6 +124,7 @@ __all__ = [
     "scale_quantize",
     "scale_symlog",
     "scale_radial",
+    "scale_log",
     "interpolate_number_array",
     "interpolate_number",
     "interpolate_array",

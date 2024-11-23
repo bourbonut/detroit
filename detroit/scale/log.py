@@ -1,23 +1,34 @@
 from ..array import ticks
-# from ..format import format, format_specifier
+from ..format import locale_format, format_specifier
 from .nice import nice
 from .continuous import copy, Transformer
 from .init import init_range
+from datetime import datetime
 import math
 
 def transform_log(x):
+    if isinstance(x, datetime):
+        x = x.timestamp()
     return math.log(x)
 
 def transform_exp(x):
+    if isinstance(x, datetime):
+        x = x.timestamp()
     return math.exp(x)
 
 def transform_logn(x):
+    if isinstance(x, datetime):
+        x = x.timestamp()
     return -math.log(-x)
 
 def transform_expn(x):
+    if isinstance(x, datetime):
+        x = x.timestamp()
     return -math.exp(-x)
 
 def pow10(x):
+    if isinstance(x, datetime):
+        x = x.timestamp()
     return 10 ** x if math.isfinite(x) else 0 if x < 0 else x
 
 def powp(base):
@@ -31,16 +42,17 @@ def powp(base):
 def logp(base):
     if base == math.e:
         return math.log
-    elif base == 10 and hasattr(math, 'log10'):
+    elif base == 10:
         return math.log10
-    elif base == 2 and hasattr(math, 'log2'):
+    elif base == 2:
         return math.log2
     else:
-        base = math.log(base)
-        return lambda x: math.log(x) / base
+        return lambda x: math.log(x, base)
 
 def reflect(f):
-    return lambda x, k: -f(-x, k)
+    def local_reflect(x):
+        return -f(-x)
+    return local_reflect
 
 class ScaleLog(Transformer):
     def __init__(self):
@@ -49,24 +61,37 @@ class ScaleLog(Transformer):
         self._logs = None
         self._pows = None
 
-    def rescale(self):
-        logs = logp(self.base)
-        pows = powp(self.base)
-        if self.domain()[0] < 0:
-            self._logs = reflect(logs)
-            self._pows = reflect(pows)
-            self.transform(transform_logn, transform_expn)
+    def _rescale(self):
+        self._logs = logp(self._base)
+        self._pows = powp(self._base)
+        d = self.domain()[0]
+        if isinstance(d, datetime):
+            d = d.timestamp()
+        if d < 0:
+            self._logs = reflect(self._logs)
+            self._pows = reflect(self._pows)
+            self.transform = transform_logn
+            self.untransform = transform_expn
+            super().rescale()
         else:
-            self.transform(transform_log, transform_exp)
+            self.transform = transform_log
+            self.untransform = transform_exp
+            super().rescale()
         return self
 
     def base(self, *args):
         if args:
             self._base = float(args[0])
-            return self.rescale()
+            return self._rescale()
         return self._base
 
-    def ticks(self, count):
+    def domain(self, *args):
+        if args:
+            super().domain(*args)
+            return self._rescale()
+        return self._domain
+
+    def ticks(self, count=None):
         d = self.domain()
         u = d[0]
         v = d[-1]
@@ -87,7 +112,7 @@ class ScaleLog(Transformer):
             j = math.ceil(j)
             if u > 0:
                 for i in range(i, j + 1):
-                    for k in range(1, self._base):
+                    for k in range(1, int(self._base)):
                         t = k / self._pows(-i) if i < 0 else k * self._pows(i)
                         if t < u:
                             continue
@@ -96,7 +121,7 @@ class ScaleLog(Transformer):
                         z.append(t)
             else:
                 for i in range(i, j + 1):
-                    for k in range(self._base - 1, 0, -1):
+                    for k in range(int(self._base) - 1, 0, -1):
                         t = k / self._pows(-i) if i > 0 else k * self._pows(i)
                         if t < u:
                             continue
@@ -106,7 +131,7 @@ class ScaleLog(Transformer):
             if len(z) * 2 < n:
                 z = ticks(u, v, n)
         else:
-            z = ticks(i, j, min(j - i, n)).map(self._pows)
+            z = list(map(self._pows, ticks(i, j, min(j - i, n))))
         return z[::-1] if r else z
 
     def tick_format(self, count=None, specifier=None):
@@ -115,10 +140,11 @@ class ScaleLog(Transformer):
         if specifier is None:
             specifier = "s" if self._base == 10 else ","
         if not callable(specifier):
-            if not (self._base % 1) and (specifier := format_specifier(specifier)).precision is None:
-                specifier.trim = True
-            specifier = format(specifier)
-        if count == float('inf'):
+            specifier_obj = format_specifier(specifier)
+            if not (self._base % 1) and specifier_obj is not None and specifier_obj.precision is None:
+                specifier_obj.trim = True
+            specifier = locale_format(specifier_obj or specifier)
+        if math.isinf(count):
             return specifier
         k = max(1, self._base * count / len(self.ticks()))
         def f(d):
@@ -129,13 +155,24 @@ class ScaleLog(Transformer):
         return f
 
     def nice(self):
-        return self.domain(nice(self.domain(), {
-            'floor': lambda x: self._pows(math.floor(self._logs(x))),
-            'ceil': lambda x: self._pows(math.ceil(self._logs(x)))
-        }))
+        class Interval:
+
+            @staticmethod
+            def floor(x):
+                if x == 0:
+                    return 0
+                return self._pows(math.floor(self._logs(x)))
+
+            @staticmethod
+            def ceil(x):
+                if x == 0:
+                    return 0
+                return self._pows(math.ceil(self._logs(x)))
+
+        return self.domain(nice(self.domain(), Interval))
 
     def copy(self):
-        return copy(self, self.log()).base(self.base())
+        return copy(self, ScaleLog()).base(self.base())
 
 def scale_log():
     scale = ScaleLog().domain([1, 10])
