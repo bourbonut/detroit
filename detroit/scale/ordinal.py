@@ -1,56 +1,54 @@
-from ..array import InternMap # TODO
 from .init import init_range
 
-implicit = object()
+class ScaleOrdinal:
+    def __init__(self):
+        self._index = {}
+        self._domain = []
+        self._range_vals = []
+        self._unknown = None
 
-def ordinal():
-    index = InternMap()
-    domain = []
-    range_vals = []
-    unknown = implicit
-
-    def scale(d):
-        i = index.get(d)
+    def __call__(self, d):
+        i = self._index.get(d)
         if i is None:
-            if unknown != implicit:
-                return unknown
-            index.set(d, i := len(domain))
-            domain.append(d)
-        return range_vals[i % len(range_vals)]
+            if self._unknown is not None:
+                return self._unknown
+            self._domain.append(d)
+            i = len(self._domain) - 1
+            self._index[d] = i
+        length = len(self._range_vals)
+        if not length:
+            return None
+        index = i % length
+        if index >= length or index < 0:
+            return None
+        return self._range_vals[index]
 
-    def domain_func(_=None):
-        if _ is None:
-            return domain.copy()
-        domain.clear()
-        index.clear()
-        for value in _:
-            if index.has(value):
-                continue
-            index.set(value, len(domain))
-            domain.append(value)
-        return scale
+    def domain(self, *args):
+        if args:
+            self._domain.clear()
+            self._index.clear()
+            for value in args[0]:
+                if value in self._index:
+                    continue
+                self._domain.append(value)
+                self._index[value] = len(self._domain) - 1
+            return self
+        return self._domain.copy()
 
-    def range_func(_=None):
-        if _ is not None:
-            range_vals[:] = list(_)
-            return scale
-        return range_vals.copy()
+    def range(self, *args):
+        if args:
+            self._range_vals = list(args[0])
+            return self
+        return self._range_vals.copy()
 
-    def unknown_func(_=None):
-        nonlocal unknown
-        if _ is not None:
-            unknown = _
-            return scale
-        return unknown
+    def unknown(self, *args):
+        if args:
+            self._unknown = args[0]
+            return self
+        return self._unknown
 
-    def copy():
-        return ordinal().domain(domain).range(range_vals).unknown(unknown)
+    def copy(self):
+        return ScaleOrdinal().domain(self._domain).range(self._range_vals).unknown(self._unknown)
 
-    scale.domain = domain_func
-    scale.range = range_func
-    scale.unknown = unknown_func
-    scale.copy = copy
-
-    init_range(scale)
-
-    return scale
+def scale_ordinal(*args):
+    return init_range(ScaleOrdinal(), *args)

@@ -1,116 +1,101 @@
-from bisect import bisect
 from .init import init_range
-from .ordinal import ordinal
+from .ordinal import ScaleOrdinal
 
-def band():
-    scale = ordinal().unknown(None)
-    domain = scale.domain
-    ordinal_range = scale.range
-    r0 = 0
-    r1 = 1
-    step = None
-    bandwidth = None
-    round = False
-    padding_inner = 0
-    padding_outer = 0
-    align = 0.5
+class ScaleBand(ScaleOrdinal):
+    def __init__(self):
+        super().__init__()
+        self._r0 = 0
+        self._r1 = 1
+        self._step = None
+        self._bandwidth = None
+        self._round = False
+        self._padding_inner = 0
+        self._padding_outer = 0
+        self._align = 0.5
+        self.rescale()
 
-    del scale.unknown
-
-    def rescale():
-        nonlocal step, bandwidth
-        n = len(domain())
-        reverse = r1 < r0
-        start = r1 if reverse else r0
-        stop = r0 if reverse else r1
-        step = (stop - start) / max(1, n - padding_inner + padding_outer * 2)
-        if round:
-            step = int(step)
-        start += (stop - start - step * (n - padding_inner)) * align
-        bandwidth = step * (1 - padding_inner)
-        if round:
+    def rescale(self):
+        n = len(self._domain)
+        reverse = self._r1 < self._r0
+        start = self._r1 if reverse else self._r0
+        stop = self._r0 if reverse else self._r1
+        self._step = (stop - start) / max(1, n - self._padding_inner + self._padding_outer * 2)
+        if self._round:
+            self._step = int(self._step)
+        start += (stop - start - self._step * (n - self._padding_inner)) * self._align
+        self._bandwidth = self._step * (1 - self._padding_inner)
+        if self._round:
             start = round(start)
-            bandwidth = round(bandwidth)
-        values = [start + step * i for i in range(n)]
-        return ordinal_range(values[::-1] if reverse else values)
+            self._bandwidth = round(self._bandwidth)
+        values = [start + self._step * i for i in range(n)]
+        return super().range(values[::-1] if reverse else values)
 
-    def domain_func(_=None):
-        if _ is not None:
-            domain(_)
-            return rescale()
-        return domain()
+    def domain(self, *args):
+        if args:
+            super().domain(*args)
+            return self.rescale()
+        return self._domain.copy()
 
-    def range_func(_=None):
-        nonlocal r0, r1
-        if _ is not None:
-            r0, r1 = map(float, _)
-            return rescale()
-        return [r0, r1]
+    def range(self, *args):
+        if args:
+            self._r0, self._r1 = map(float, args[0])
+            return self.rescale()
+        return [self._r0, self._r1]
 
-    def range_round_func(_=None):
-        nonlocal r0, r1, round
-        r0, r1 = map(float, _)
-        round = True
-        return rescale()
+    def range_round(self, *args):
+        self._r0, self._r1 = map(float, args[0])
+        self._round = True
+        return self.rescale()
 
-    def bandwidth_func():
-        return bandwidth
+    def bandwidth(self):
+        return self._bandwidth
 
-    def step_func():
-        return step
+    def step(self):
+        return self._step
 
-    def round_func(_=None):
-        nonlocal round
-        if _ is not None:
-            round = bool(_)
-            return rescale()
-        return round
+    def round(self, *args):
+        if args:
+            self._round = bool(args[0])
+            return self.rescale()
+        return self._round
 
-    def padding_func(_=None):
-        nonlocal padding_inner, padding_outer
-        if _ is not None:
-            padding_inner = min(1, padding_outer := float(_))
-            return rescale()
-        return padding_inner
+    def padding(self, *args):
+        if args:
+            self._padding_outer = float(args[0])
+            self._padding_inner = min(1, self._padding_outer)
+            return self.rescale()
+        return self._padding_inner
 
-    def padding_inner_func(_=None):
-        nonlocal padding_inner
-        if _ is not None:
-            padding_inner = min(1, float(_))
-            return rescale()
-        return padding_inner
+    def padding_inner(self, *args):
+        if args:
+            self._padding_inner = min(1, float(args[0]))
+            return self.rescale()
+        return self._padding_inner
 
-    def padding_outer_func(_=None):
-        nonlocal padding_outer
-        if _ is not None:
-            padding_outer = float(_)
-            return rescale()
-        return padding_outer
+    def padding_outer(self, *args):
+        if args:
+            self._padding_outer = float(args[0])
+            return self.rescale()
+        return self._padding_outer
 
-    def align_func(_=None):
-        nonlocal align
-        if _ is not None:
-            align = max(0, min(1, float(_)))
-            return rescale()
-        return align
+    def align(self, *args):
+        if args:
+            self._align = max(0, min(1, float(args[0])))
+            return self.rescale()
+        return self._align
 
-    def copy():
-        return band().domain(domain()).range([r0, r1]).round(round).padding_inner(padding_inner).padding_outer(padding_outer).align(align)
+    def copy(self):
+        return ScaleBand().domain(self._domain).range([self._r0, self._r1]).round(self._round).padding_inner(self._padding_inner).padding_outer(self._padding_outer).align(self._align)
 
-    scale.domain = domain_func
-    scale.range = range_func
-    scale.range_round = range_round_func
-    scale.bandwidth = bandwidth_func
-    scale.step = step_func
-    scale.round = round_func
-    scale.padding = padding_func
-    scale.padding_inner = padding_inner_func
-    scale.padding_outer = padding_outer_func
-    scale.align = align_func
-    scale.copy = copy
 
+def scale_band(*args):
+    scale = ScaleBand()
+    if len(args) == 1:
+        return init_range(scale, range_vals=args[0])
+    elif len(args) == 2:
+        domain, range_vals = args
+        return init_range(scale, domain=domain, range_vals=range_vals)
     return init_range(scale)
-
 
 def pointish(scale):
     copy = scale.copy
@@ -128,8 +113,4 @@ def pointish(scale):
 
 
 def point():
-    return pointish(band().padding_inner(1))
-
-
-# -----
-
+    return pointish(ScaleBand().padding_inner(1))

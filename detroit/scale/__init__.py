@@ -1,9 +1,9 @@
-# from .band import scale_band, point as scale_point
+from .band import scale_band
 from .identity import scale_identity
 from .linear import scale_linear
 from .log import scale_log
 from .symlog import scale_symlog
-# from .ordinal import scale_ordinal, implicit as scale_implicit
+from .ordinal import scale_ordinal
 from .pow import scale_pow, scale_sqrt
 from .radial import scale_radial
 # from .quantile import scale_quantile
@@ -25,4 +25,6 @@ __all__ = [
     "scale_symlog",
     "scale_radial",
     "scale_log",
+    "scale_ordinal",
+    "scale_band",
 ]
