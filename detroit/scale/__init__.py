@@ -6,7 +6,7 @@ from .symlog import scale_symlog
 from .ordinal import scale_ordinal
 from .pow import scale_pow, scale_sqrt
 from .radial import scale_radial
-# from .quantile import scale_quantile
+from .quantile import scale_quantile
 from .quantize import scale_quantize
 # from .threshold import scale_threshold
 from .time import scale_time
@@ -27,4 +27,5 @@ __all__ = [
     "scale_log",
     "scale_ordinal",
     "scale_band",
+    "scale_quantile",
 ]
