@@ -1,33 +1,37 @@
-from .linear import linearish
-from .continuous import copy, transformer
+from .linear import LinearBase
+from .continuous import copy, Transformer
 from .init import init_range
+import math
+
+def sign(x):
+    return -1 if x < 0 else 1
 
 def transform_symlog(c):
-    return lambda x: math.sign(x) * math.log1p(abs(x / c))
+    return lambda x: sign(x) * math.log1p(abs(x / c))
 
 def transform_symexp(c):
-    return lambda x: math.sign(x) * math.expm1(abs(x)) * c
+    return lambda x: sign(x) * math.expm1(abs(x)) * c
 
-def symlogish(transform):
-    c = 1
-    scale = transform(transform_symlog(c), transform_symexp(c))
+class ScaleSymlog(Transformer, LinearBase):
+    def __init__(self, c = 1):
+        self._c = c
+        super().__init__(transform_symlog(self._c), transform_symexp(self._c))
 
-    def constant_func(_=None):
-        nonlocal c
-        if _ is not None:
-            transform(transform_symlog(c := float(_)), transform_symexp(c))
-            return scale
-        return c
+    def constant(self, *args):
+        if args:
+            self._c = float(args[0])
+            super().__init__(transform_symlog(self._c), transform_symexp(self._c))
+            return self
+        return self._c
 
-    scale.constant = constant_func
-    return linearish(scale)
+    def copy(self):
+        return copy(self, ScaleSymlog()).constant(self.constant())
 
-
-def symlog():
-    scale = symlogish(transformer())
-    scale.copy = lambda: copy(scale, symlog()).constant(scale.constant())
+def scale_symlog(*args):
+    scale = ScaleSymlog()
+    if len(args) == 1:
+        return init_range(scale, range_vals=args[0])
+    elif len(args) == 2:
+        domain, range_vals = args
+        return init_range(scale, domain=domain, range_vals=range_vals)
     return init_range(scale)
-
-
-# -----
-

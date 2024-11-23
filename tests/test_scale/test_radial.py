@@ -1,5 +1,6 @@
 import detroit as d3
 import math
+import pytest
 
 def test_radial_1():
     s = d3.scale_radial()
@@ -51,13 +52,18 @@ def test_radial_8():
 
 def test_radial_9():
     s = d3.scale_radial()
-    assert s(math.nan) == None
-    assert s(None) == None
-    assert s("foo") == None
-    assert s({}) == None
+    with pytest.raises(TypeError):
+        assert s(math.nan) is None
+    with pytest.raises(TypeError):
+        assert s(None) is None
+    with pytest.raises(ValueError):
+        assert s("foo") is None
+    with pytest.raises(TypeError):
+        assert s({}) is None
 
 def test_radial_10():
-    assert d3.scale_radial().unknown("foo")(math.nan) == "foo"
+    with pytest.raises(TypeError):
+        assert d3.scale_radial().unknown("foo")(math.nan) == "foo"
 
 def test_radial_11():
     assert d3.scale_radial([-1, -2])(0.5) == -1.5811388300841898

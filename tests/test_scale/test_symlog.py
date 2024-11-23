@@ -50,7 +50,7 @@ def test_symlog_10():
     d = [1, 2]
     s = d3.scale_symlog().domain(d)
     assert s.domain() == [1, 2]
-    d.push(3)
+    d.append(3)
     assert s.domain() == [1, 2]
     assert d == [1, 2, 3]
 
@@ -58,7 +58,7 @@ def test_symlog_11():
     s = d3.scale_symlog()
     d = s.domain()
     assert d == [0, 1]
-    d.push(3)
+    d.append(3)
     assert s.domain() == [0, 1]
 
 def test_symlog_12():
@@ -74,7 +74,7 @@ def test_symlog_14():
     r = [1, 2]
     s = d3.scale_symlog().range(r)
     assert s.range() == [1, 2]
-    r.push(3)
+    r.append(3)
     assert s.range() == [1, 2]
     assert r == [1, 2, 3]
 
@@ -82,7 +82,7 @@ def test_symlog_15():
     s = d3.scale_symlog()
     r = s.range()
     assert r == [0, 1]
-    r.push(3)
+    r.append(3)
     assert s.range() == [0, 1]
 
 def test_symlog_16():

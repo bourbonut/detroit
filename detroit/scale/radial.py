@@ -1,77 +1,74 @@
-from .continuous import continuous
+from .continuous import Transformer, identity
 from .init import init_range
-from .linear import linearish
+from .linear import LinearBase
 from .number import number
+import math
+
+def sign(x):
+    return -1 if x < 0 else 1
 
 def square(x):
-    return math.sign(x) * x * x
+    return sign(x) * x * x
 
 def unsquare(x):
-    return math.sign(x) * math.sqrt(abs(x))
+    return sign(x) * math.sqrt(abs(x))
 
-def radial():
-    squared = continuous()
-    range_vals = [0, 1]
-    round = False
-    unknown = None
+class ScaleRadial(Transformer, LinearBase):
+    def __init__(self, t = identity, u = identity):
+        super().__init__(t, u)
+        self._range_vals = [0, 1]
+        self._round = False
+        self._unknown = None
 
-    def scale(x):
-        y = unsquare(squared(x))
-        return unknown if (isinstance(y, float) and math.isnan(y)) else (round and round(y) or y)
+    def __call__(self, x):
+        y = unsquare(super().__call__(x))
+        if isinstance(y, float) and math.isnan(y):
+            return self._unknown
+        elif self._round:
+            return round(y)
+        else:
+            return y
 
-    def invert(y):
-        return squared.invert(square(y))
+    def invert(self, y):
+        return super().invert(square(y))
 
-    def domain_func(_=None):
-        if _ is not None:
-            squared.domain(_)
-            return scale
-        return squared.domain()
+    def range(self, *args):
+        if args:
+            self._range_vals = [number(x) for x in args[0]]
+            super().range([square(x) for x in self._range_vals])
+            return self
+        return self._range_vals.copy()
 
-    def range_func(_=None):
-        if _ is not None:
-            squared.range([float(x) for x in _])
-            return scale
-        return range_vals.copy()
+    def range_round(self, *args):
+        return super().range(*args).round(True)
 
-    def range_round_func(_=None):
-        return scale.range(_).round(True)
+    def round(self, *args):
+        if args:
+            self._round = bool(args[0])
+            return self
+        return self._round
 
-    def round_func(_=None):
-        nonlocal round
-        if _ is not None:
-            round = bool(_)
-            return scale
-        return round
+    def clamp(self, *args):
+        if args:
+            super().clamp(*args)
+            return self
+        return super().clamp()
 
-    def clamp_func(_=None):
-        if _ is not None:
-            squared.clamp(_)
-            return scale
-        return squared.clamp()
+    def unknown(self, *args):
+        if args:
+            self._unknown = args[0]
+            return self
+        return self._unknown
 
-    def unknown_func(_=None):
-        nonlocal unknown
-        if _ is not None:
-            unknown = _
-            return scale
-        return unknown
-
-    def copy():
-        return radial().domain(squared.domain()).range(range_vals).round(round).clamp(squared.clamp()).unknown(unknown)
-
-    scale.domain = domain_func
-    scale.range = range_func
-    scale.range_round = range_round_func
-    scale.round = round_func
-    scale.clamp = clamp_func
-    scale.unknown = unknown_func
-    scale.copy = copy
-
-    init_range(scale)
-
-    return linearish(scale)
+    def copy(self):
+        return ScaleRadial().domain(self._domain).range(self._range_vals).round(self._round).clamp(self.clamp()).unknown(self._unknown)
 
 
-# -----
-
+def scale_radial(*args):
+    scale = ScaleRadial()
+    if len(args) == 1:
+        return init_range(scale, range_vals=args[0])
+    elif len(args) == 2:
+        domain, range_vals = args
+        return init_range(scale, domain=domain, range_vals=range_vals)
+    return init_range(scale)

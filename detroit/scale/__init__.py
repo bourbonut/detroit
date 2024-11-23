@@ -2,10 +2,10 @@
 from .identity import scale_identity
 from .linear import scale_linear
 # from .log import scale_log
-# from .symlog import scale_symlog
+from .symlog import scale_symlog
 # from .ordinal import scale_ordinal, implicit as scale_implicit
 from .pow import scale_pow, scale_sqrt
-# from .radial import scale_radial
+from .radial import scale_radial
 # from .quantile import scale_quantile
 from .quantize import scale_quantize
 # from .threshold import scale_threshold
@@ -22,4 +22,6 @@ __all__ = [
     "scale_sqrt",
     "scale_quantize",
     "scale_time",
+    "scale_symlog",
+    "scale_radial",
 ]

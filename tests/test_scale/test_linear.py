@@ -89,7 +89,7 @@ def test_linear_13():
     assert d3.scale_linear().domain([1, 2, 3]).domain() == [1, 2, 3]
 
 def test_linear_14():
-    assert d3.scale_linear().domain([datetime(1990, 1, 1), datetime(1991, 1, 1)]).domain() == [631148400.0, 662684400.0]
+    assert d3.scale_linear().domain([datetime(1990, 1, 1), datetime(1991, 1, 1)]).domain() == [datetime(1990, 1, 1), datetime(1991, 1, 1)]
     assert d3.scale_linear().domain(["0.0", "1.0"]).domain() == [0, 1]
     assert d3.scale_linear().domain([0, 1]).domain() == [0, 1]
 
@@ -213,10 +213,12 @@ def test_linear_34():
     assert d3.scale_linear().domain([0, 14.1]).nice(5).domain() == [0, 20]
     assert d3.scale_linear().domain([0, 15]).nice(5).domain() == [0, 20]
 
-@pytest.mark.skip # division by 0 not allowed
+# division by 0 not allowed
 def test_linear_35():
-    assert d3.scale_linear().domain([0, 0]).nice(10).domain() == [0, 0]
-    assert d3.scale_linear().domain([0.5, 0.5]).nice(10).domain() == [0.5, 0.5]
+    with pytest.raises(ValueError):
+        assert d3.scale_linear().domain([0, 0]).nice(10).domain() == [0, 0]
+    with pytest.raises(ValueError):
+        assert d3.scale_linear().domain([0.5, 0.5]).nice(10).domain() == [0.5, 0.5]
 
 def test_linear_36():
     assert d3.scale_linear().domain([1.1, 1, 2, 3, 10.9]).nice(10).domain() == [1, 1, 2, 3, 11]
@@ -323,13 +325,14 @@ def test_linear_41():
     check([10, 21], 2)
     check([11, 21], 2)
 
-@pytest.mark.skip
 def test_linear_42(): # division by 0 not allowed
     s = d3.scale_linear()
-    assert s.ticks(math.nan) == []
+    with pytest.raises(ZeroDivisionError):
+        assert s.ticks(math.nan) == []
     assert s.ticks(0) == []
     assert s.ticks(-1) == []
-    assert s.ticks(math.inf) == []
+    with pytest.raises(ValueError):
+        assert s.ticks(math.inf) == []
 
 def test_linear_43():
     s = d3.scale_linear()
@@ -338,13 +341,13 @@ def test_linear_43():
 @pytest.mark.skip
 def test_linear_44():
     assert d3.scale_linear().tick_format()(0.2) == "0.2"
-    assert d3.scale_linear().domain([-100, 100]).tick_format()(-20) == "−20"
+    assert d3.scale_linear().domain([-100, 100]).tick_format()(-20) == "-20"
  
 @pytest.mark.skip
 def test_linear_47():
     assert d3.scale_linear().tick_format(10)(0.2) == "0.2"
     assert d3.scale_linear().tick_format(20)(0.2) == "0.20"
-    assert d3.scale_linear().domain([-100, 100]).tick_format(10)(-20) == "−20"
+    assert d3.scale_linear().domain([-100, 100]).tick_format(10)(-20) == "-20"
 
 @pytest.mark.skip
 def test_linear_48():

@@ -38,6 +38,8 @@ from .scale import (
     scale_pow,
     scale_sqrt,
     scale_quantize,
+    scale_symlog,
+    scale_radial,
 )
 from .interpolate import (
     interpolate_number_array,
@@ -119,6 +121,8 @@ __all__ = [
     "scale_pow",
     "scale_sqrt",
     "scale_quantize",
+    "scale_symlog",
+    "scale_radial",
     "interpolate_number_array",
     "interpolate_number",
     "interpolate_array",

@@ -120,13 +120,13 @@ class Transformer:
         if args:
             self._domain = list(map(number, args[0]))
             return self.rescale()
-        return list(self._domain)
+        return self._domain.copy()
 
     def range(self, *args):
         if args:
             self._range = list(args[0])
             return self.rescale()
-        return list(self._range)
+        return self._range.copy()
 
     def range_round(self, *args):
         self._range = list(map(float, args[0]))

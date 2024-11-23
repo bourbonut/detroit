@@ -12,7 +12,7 @@ class ScaleQuantize(LinearBase):
         self._range_vals = [0, 1]
         self._unknown = None
 
-    def __call__(self, x = None):
+    def __call__(self, x=None):
         if x is not None and not math.isnan(x):
             return self._range_vals[bisect(self._domain, x, 0, self._n)]
         else:
