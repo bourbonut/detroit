@@ -56,6 +56,7 @@ from .scale import (
     scale_diverging_symlog,
     scale_point,
     scale_sequential_quantile,
+    scale_threshold,
     tick_format,
 )
 from .interpolate import (
@@ -156,6 +157,7 @@ __all__ = [
     "scale_diverging_sqrt",
     "scale_diverging_symlog",
     "scale_sequential_quantile",
+    "scale_threshold",
     "tick_format",
     "interpolate_number_array",
     "interpolate_number",

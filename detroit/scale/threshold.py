@@ -1,49 +1,65 @@
 from bisect import bisect
 from .init import init_range
+import math
 
-def threshold():
-    domain = [0.5]
-    range_vals = [0, 1]
-    unknown = None
-    n = 1
+class ScaleThreshold:
+    def __init__(self):
+        self._domain = [0.5]
+        self._range_vals = [0, 1]
+        self._unknown = None
+        self._n = 1
 
-    def scale(x):
-        return range_vals[bisect(domain, x, 0, n)] if x is not None and x <= x else unknown
+    def __call__(self, x=None):
+        if x is not None and not(isinstance(x, float) and math.isnan(x)):
+            return self._range_vals[bisect(self._domain, x, 0, self._n)]
+        else:
+            return self._unknown
 
-    def domain_func(_=None):
-        nonlocal domain, n
-        if _ is not None:
-            domain = list(_)
-            n = min(len(domain), len(range_vals) - 1)
-            return scale
-        return domain.copy()
+    def set_domain(self, domain):
+        self._domain = list(domain)
+        self._n = min(len(self._domain), len(self._range_vals) - 1)
+        return self
 
-    def range_func(_=None):
-        nonlocal range_vals, n
-        if _ is not None:
-            range_vals = list(_)
-            n = min(len(domain), len(range_vals) - 1)
-            return scale
-        return range_vals.copy()
+    @property
+    def domain(self):
+        return self._domain.copy()
 
-    def invert_extent(y):
-        i = range_vals.index(y)
-        return [domain[i - 1], domain[i]]
+    def set_range(self, range_vals):
+        self._range_vals = list(range_vals)
+        self._n = min(len(self._domain), len(self._range_vals) - 1)
+        return self
 
-    def unknown_func(_=None):
-        nonlocal unknown
-        if _ is not None:
-            unknown = _
-            return scale
-        return unknown
+    @property
+    def range(self):
+        return self._range_vals.copy()
 
-    def copy():
-        return threshold().domain(domain).range(range_vals).unknown(unknown)
+    def invert_extent(self, y):
+        if y not in self._range_vals:
+            return [None, None]
+        i = self._range_vals.index(y)
+        if i == 0:
+            return [None, self._domain[i]]
+        if i == len(self._domain):
+            return [self._domain[i - 1], None]
+        return [self._domain[i - 1], self._domain[i]]
 
-    scale.domain = domain_func
-    scale.range = range_func
-    scale.invert_extent = invert_extent
-    scale.unknown = unknown_func
-    scale.copy = copy
+    def set_unknown(self, unknown):
+        self._unknown = unknown
+        return self
 
+    @property
+    def unknown(self):
+        return self._unknown
+
+    def copy(self):
+        return ScaleThreshold().set_domain(self.domain).set_range(self.range_vals).set_unknown(self.unknown)
+
+
+def scale_threshold(*args):
+    scale = ScaleThreshold()
+    if len(args) == 1:
+        return init_range(scale, range_vals=args[0])
+    elif len(args) == 2:
+        domain, range_vals = args
+        return init_range(scale, domain=domain, range_vals=range_vals)
     return init_range(scale)
