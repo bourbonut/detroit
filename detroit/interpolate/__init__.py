@@ -12,6 +12,7 @@ from .cubehelix import interpolate_cubehelix, interpolate_cubehelix_long
 from .lab import interpolate_lab
 from .hcl import interpolate_hcl, interpolate_hcl_long
 from .rgb import interpolate_rgb, interpolate_rgb_basis, interpolate_rgb_basis_closed
+from .piecewise import piecewise
 
 __all__ = [
     "interpolate_number_array",
@@ -35,4 +36,5 @@ __all__ = [
     "interpolate_rgb",
     "interpolate_rgb_basis",
     "interpolate_rgb_basis_closed",
+    "piecewise",
 ]

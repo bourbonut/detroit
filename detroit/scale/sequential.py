@@ -2,11 +2,12 @@ from ..interpolate import interpolate, interpolate_round
 from .continuous import identity
 from .init import init_interpolator
 from .linear import LinearBase
-from .log import LogBase
+from .log import LogBase, transform_log, logp, powp, reflect, transform_logn
 from .symlog import transform_symlog
 from .pow import transform_pow, transform_sqrt
 
 import math
+from datetime import datetime
 
 class Sequential:
 
@@ -101,8 +102,30 @@ class SequentialLinear(Sequential, LinearBase):
 
 class SequentialLog(Sequential, LogBase):
     def __init__(self):
-        Sequential.__init__(self, identity)
+        Sequential.__init__(self)
         LogBase.__init__(self)
+        self.transform = transform_log
+        self.set_domain([1, 10])
+
+    def _rescale(self):
+        self._logs = logp(self._base)
+        self._pows = powp(self._base)
+        d = self.domain[0]
+        if isinstance(d, datetime):
+            d = d.timestamp()
+        if d < 0:
+            self._logs = reflect(self._logs)
+            self._pows = reflect(self._pows)
+            self.transform = transform_logn
+        else:
+            self.transform = transform_log
+        return self
+
+    def set_domain(self, domain):
+        self._x0, self._x1 = map(float, list(domain)[:2])
+        self._rescale()
+        super().set_domain(domain)
+        return self
 
     def copy(self):
         return copy(self, SequentialLog()).base(self.base)
@@ -161,20 +184,35 @@ def scale_sequential(*args):
     return init_interpolator(scale)
 
 
-def scale_sequential_log():
-    scale = SequentialLog().set_domain([1, 10])
+def scale_sequential_log(*args):
+    scale = SequentialLog()
+    if len(args) == 1:
+        return init_interpolator(scale, interpolator=args[0])
+    elif len(args) == 2:
+        domain, interpolator = args
+        return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
 
-def scale_sequential_symlog():
+def scale_sequential_symlog(*args):
     scale = SequentialSymlog()
+    if len(args) == 1:
+        return init_interpolator(scale, interpolator=args[0])
+    elif len(args) == 2:
+        domain, interpolator = args
+        return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
 
-def scale_sequential_pow():
+def scale_sequential_pow(*args):
     scale = SequentialPow()
+    if len(args) == 1:
+        return init_interpolator(scale, interpolator=args[0])
+    elif len(args) == 2:
+        domain, interpolator = args
+        return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
 
-def scale_sequential_sqrt():
-    return scale_sequential_pow().set_exponent(0.5)
+def scale_sequential_sqrt(*args):
+    return scale_sequential_pow(*args).set_exponent(0.5)
