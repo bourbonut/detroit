@@ -2,7 +2,7 @@ from ..array import tick_step
 from ..format import locale_format, format_prefix, format_specifier, precision_fixed, precision_prefix, precision_round
 import math
 
-def tick_format(start, stop, count, specifier):
+def tick_format(start, stop, count, specifier=None):
     step = tick_step(start, stop, count)
     precision = None
     specifier = format_specifier(specifier if specifier is not None else ",f")

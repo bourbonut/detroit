@@ -1,7 +1,7 @@
 from .exponent import exponent
 from .format_group import format_group
 from .format_numerals import format_numerals
-from .format_specifier import format_specifier
+from .format_specifier import format_specifier, FormatSpecifier
 from .format_trim import format_trim
 from .format_types import format_types
 from .format_prefix_auto import prefix_auto
@@ -157,7 +157,8 @@ class Locale:
         return Format(prefix, suffix, self.group, self.numerals, self.minus, self.decimal)
 
     def format_prefix(self, specifier, value):
-        specifier = format_specifier(specifier)
+        if not isinstance(specifier, FormatSpecifier):
+            specifier = format_specifier(specifier)
         specifier.type = "f"
         f = self.format(specifier)
         e = max(-8, min(8, exponent(value) // 3)) * 3
