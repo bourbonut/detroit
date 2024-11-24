@@ -54,45 +54,22 @@ def reflect(f):
         return -f(-x)
     return local_reflect
 
-class ScaleLog(Transformer):
+class LogBase:
     def __init__(self):
-        super().__init__(transform_log, transform_exp)
         self._base = 10
         self._logs = None
         self._pows = None
 
-    def _rescale(self):
-        self._logs = logp(self._base)
-        self._pows = powp(self._base)
-        d = self.domain()[0]
-        if isinstance(d, datetime):
-            d = d.timestamp()
-        if d < 0:
-            self._logs = reflect(self._logs)
-            self._pows = reflect(self._pows)
-            self.transform = transform_logn
-            self.untransform = transform_expn
-            super().rescale()
-        else:
-            self.transform = transform_log
-            self.untransform = transform_exp
-            super().rescale()
-        return self
+    def set_base(self, base):
+        self._base = float(base)
+        return self._rescale()
 
-    def base(self, *args):
-        if args:
-            self._base = float(args[0])
-            return self._rescale()
+    @property
+    def base(self):
         return self._base
 
-    def domain(self, *args):
-        if args:
-            super().domain(*args)
-            return self._rescale()
-        return self._domain
-
     def ticks(self, count=None):
-        d = self.domain()
+        d = self.domain
         u = d[0]
         v = d[-1]
         r = v < u
@@ -169,11 +146,38 @@ class ScaleLog(Transformer):
                     return 0
                 return self._pows(math.ceil(self._logs(x)))
 
-        return self.domain(nice(self.domain(), Interval))
+        return self.set_domain(nice(self.domain, Interval))
+
+class ScaleLog(Transformer, LogBase):
+    def __init__(self):
+        Transformer.__init__(self, transform_log, transform_exp)
+        LogBase.__init__(self)
+
+    def _rescale(self):
+        self._logs = logp(self._base)
+        self._pows = powp(self._base)
+        d = self.domain[0]
+        if isinstance(d, datetime):
+            d = d.timestamp()
+        if d < 0:
+            self._logs = reflect(self._logs)
+            self._pows = reflect(self._pows)
+            self.transform = transform_logn
+            self.untransform = transform_expn
+            super().rescale()
+        else:
+            self.transform = transform_log
+            self.untransform = transform_exp
+            super().rescale()
+        return self
+
+    def set_domain(self, domain):
+        super().set_domain(domain)
+        return self._rescale()
 
     def copy(self):
-        return copy(self, ScaleLog()).base(self.base())
+        return copy(self, ScaleLog()).set_base(self.base)
 
 def scale_log():
-    scale = ScaleLog().domain([1, 10])
+    scale = ScaleLog().set_domain([1, 10])
     return init_range(scale)

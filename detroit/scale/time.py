@@ -69,26 +69,20 @@ class Calendar(Transformer):
     def invert(self, y):
         return datetime.fromtimestamp(super().invert(y))
 
-    def domain(self, domain=None):
-        if domain is not None:
-            return super().domain(domain)
-        else:
-            return super().domain()
-
     def ticks(self, interval):
-        d = super().domain()
+        d = self.domain
         return self._ticks(d[0], d[-1], interval if interval is not None else 10)
 
     def tick_format(self, specifier=None):
         return self._tick_format if specifier is None else self._format(specifier)
 
     def nice(self, interval=None):
-        d = super().domain()
+        d = self.domain
         if not interval or not hasattr(interval, "range"):
             interval = self._tick_interval(
                 d[0], d[-1], interval if interval is not None else 10
             )
-        return self.domain(nice(d, interval)) if interval else self
+        return self.set_domain(nice(d, interval)) if interval else self
 
     def copy(self):
         return copy(
@@ -127,5 +121,5 @@ def scale_time(*args) -> Calendar:
         time_hour,
         time_minute,
         time_second,
-    ).domain([datetime(2000, 1, 1), datetime(2000, 1, 2)])
+    ).set_domain([datetime(2000, 1, 1), datetime(2000, 1, 2)])
     return init_range(calendar, *args)

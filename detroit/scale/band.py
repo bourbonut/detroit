@@ -28,64 +28,76 @@ class ScaleBand(ScaleOrdinal):
             start = round(start)
             self._bandwidth = round(self._bandwidth)
         values = [start + self._step * i for i in range(n)]
-        return super().range(values[::-1] if reverse else values)
+        return super().set_range(values[::-1] if reverse else values)
 
-    def domain(self, *args):
-        if args:
-            super().domain(*args)
-            return self.rescale()
+    def set_domain(self, domain):
+        super().set_domain(domain)
+        return self.rescale()
+
+    @property
+    def domain(self):
         return self._domain.copy()
 
-    def range(self, *args):
-        if args:
-            self._r0, self._r1 = map(float, args[0])
-            return self.rescale()
+    def set_range(self, range_vals):
+        self._r0, self._r1 = map(float, range_vals)
+        return self.rescale()
+
+    @property
+    def range(self):
         return [self._r0, self._r1]
 
-    def range_round(self, *args):
-        self._r0, self._r1 = map(float, args[0])
+    def set_range_round(self, range_vals):
+        self._r0, self._r1 = map(float, range_vals)
         self._round = True
         return self.rescale()
 
+    @property
     def bandwidth(self):
         return self._bandwidth
 
+    @property
     def step(self):
         return self._step
 
-    def round(self, *args):
-        if args:
-            self._round = bool(args[0])
-            return self.rescale()
+    def set_round(self, round_val):
+        self._round = bool(round_val)
+        return self.rescale()
+
+    @property
+    def round(self):
         return self._round
 
-    def padding(self, *args):
-        if args:
-            self._padding_outer = float(args[0])
-            self._padding_inner = min(1, self._padding_outer)
-            return self.rescale()
+    def set_padding(self, padding_inner):
+        self._padding_outer = float(padding_inner)
+        self._padding_inner = min(1, self._padding_outer)
+        return self.rescale()
+
+    @property
+    def padding_inner(self):
         return self._padding_inner
 
-    def padding_inner(self, *args):
-        if args:
-            self._padding_inner = min(1, float(args[0]))
-            return self.rescale()
-        return self._padding_inner
+    def set_padding_inner(self, padding_inner):
+        self._padding_inner = min(1, float(padding_inner))
+        return self.rescale()
 
-    def padding_outer(self, *args):
-        if args:
-            self._padding_outer = float(args[0])
-            return self.rescale()
+    def set_padding_outer(self, padding_outer):
+        self._padding_outer = float(padding_outer)
+        return self.rescale()
+
+    @property
+    def padding_outer(self):
         return self._padding_outer
 
-    def align(self, *args):
-        if args:
-            self._align = max(0, min(1, float(args[0])))
-            return self.rescale()
+    def set_align(self, align):
+        self._align = max(0, min(1, float(align)))
+        return self.rescale()
+
+    @property
+    def align(self):
         return self._align
 
     def copy(self):
-        return ScaleBand().domain(self._domain).range([self._r0, self._r1]).round(self._round).padding_inner(self._padding_inner).padding_outer(self._padding_outer).align(self._align)
+        return ScaleBand().set_domain(self._domain).set_range([self._r0, self._r1]).set_round(self._round).set_padding_inner(self._padding_inner).set_padding_outer(self._padding_outer).set_align(self._align)
 
 
 def scale_band(*args):

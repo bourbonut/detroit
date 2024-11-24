@@ -73,11 +73,11 @@ class PolyMap:
 
 def copy(source, target):
     return (
-        target.domain(source.domain())
-        .range(source.range())
-        .interpolate(source.interpolate())
-        .clamp(source.clamp())
-        .unknown(source.unknown())
+        target.set_domain(source.domain)
+        .set_range(source.range)
+        .set_interpolate(source.interpolate)
+        .set_clamp(source.clamp)
+        .set_unknown(source.unknown)
     )
 
 class Transformer:
@@ -116,39 +116,49 @@ class Transformer:
             self.input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self.untransform(self.input(y)))
 
-    def domain(self, *args):
-        if args:
-            self._domain = list(map(number, args[0]))
-            return self.rescale()
+    def set_domain(self, domain):
+        self._domain = list(map(number, domain))
+        return self.rescale()
+
+    @property
+    def domain(self):
         return self._domain.copy()
 
-    def range(self, *args):
-        if args:
-            self._range = list(args[0])
-            return self.rescale()
+    def set_range(self, range_vals):
+        self._range = list(range_vals)
+        return self.rescale()
+
+    @property
+    def range(self):
         return self._range.copy()
 
-    def range_round(self, *args):
-        self._range = list(map(float, args[0]))
+    def set_range_round(self, range_vals):
+        self._range = list(map(float, range_vals))
         self._interpolate = interpolate_round
         return self.rescale()
 
-    def clamp(self, *args):
-        if args:
-            self._clamp = True if args[0] else identity
-            return self.rescale()
+    def set_clamp(self, clamp):
+        self._clamp = True if clamp else identity
+        return self.rescale()
+
+    @property
+    def clamp(self):
         return self._clamp != identity
 
-    def interpolate(self, *args):
-        if args:
-            self._interpolate = args[0]
-            return self.rescale()
+    def set_interpolate(self, interpolate):
+        self._interpolate = interpolate
+        return self.rescale()
+
+    @property
+    def interpolate(self):
         return self._interpolate
 
-    def unknown(self, *args):
-        if args:
-            self._unknown = args[0]
-            return self.rescale()
+    def set_unknown(self, unknown):
+        self._unknown = unknown
+        return self.rescale()
+
+    @property
+    def unknown(self):
         return self._unknown
 
 

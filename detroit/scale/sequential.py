@@ -1,96 +1,180 @@
 from ..interpolate import interpolate, interpolate_round
 from .continuous import identity
 from .init import init_interpolator
-from .linear import linearish
-from .log import loggish
-from .symlog import symlogish
-from .pow import powish
+from .linear import LinearBase
+from .log import LogBase
+from .symlog import transform_symlog
+from .pow import transform_pow, transform_sqrt
 
-def transformer():
-    x0 = 0
-    x1 = 1
-    t0 = None
-    t1 = None
-    k10 = None
-    transform = None
-    interpolator = identity
-    clamp = False
-    unknown = None
+import math
 
-    def scale(x):
-        return unknown if x is None or (isinstance(x, float) and math.isnan(x)) else interpolator(k10 == 0 and 0.5 or (x := (transform(x) - t0) * k10, clamp and max(0, min(1, x)) or x))
+class Sequential:
 
-    def domain_func(_=None):
-        nonlocal x0, x1, t0, t1, k10
-        if _ is not None:
-            x0, x1 = map(float, _)
-            t0 = transform(x0)
-            t1 = transform(x1)
-            k10 = t0 == t1 and 0 or 1 / (t1 - t0)
-            return scale
-        return [x0, x1]
+    def __init__(self, t):
+        self._x0 = 0
+        self._x1 = 1
+        self._transform = t
+        self._t0 = t(self._x0)
+        self._t1 = t(self._x1)
+        self._k10 = 0 if self._t0 == self._t1 else 1 / (self._t1 - self._t0)
+        self._interpolator = identity
+        self._clamp = False
+        self._unknown = None
 
-    def clamp_func(_=None):
-        nonlocal clamp
-        if _ is not None:
-            clamp = bool(_)
-            return scale
-        return clamp
+    def __call__(self, x):
+        if x is None or (isinstance(x, float) and math.isnan(x)):
+            return self._unknown 
+        if self._k10 == 0:
+            x = 0.5 
+        else:
+            x = (self._transform(x) - self._t0) * self._k10
+            if self._clamp:
+                x = max(0, min(1, x)) 
+        return self._interpolator(x)
 
-    def interpolator_func(_=None):
-        nonlocal interpolator
-        if _ is not None:
-            interpolator = _
-            return scale
-        return interpolator
+    def set_domain(self, domain):
+        self._x0, self._x1 = map(float, list(domain)[:2])
+        self._t0 = self._transform(self._x0)
+        self._t1 = self._transform(self._x1)
+        self._k10 = 0 if self._t0 == self._t1 else 1 / (self._t1 - self._t0)
+        return self
 
-    def range(interpolate):
-        return lambda _: (r0, r1) if _ is None else (r0 := float(_[0]), r1 := float(_[1]), interpolator := interpolate(r0, r1), scale)
+    @property
+    def domain(self):
+        return [self._x0, self._x1]
 
-    scale.range = range(interpolate)
-    scale.range_round = range(interpolate_round)
+    def set_clamp(self, clamp):
+        self._clamp = bool(clamp)
+        return self
 
-    def unknown_func(_=None):
-        nonlocal unknown
-        if _ is not None:
-            unknown = _
-            return scale
-        return unknown
+    @property
+    def clamp(self):
+        return self._clamp
 
-    return lambda t: (transform := t, t0 := t(x0), t1 := t(x1), k10 := t0 == t1 and 0 or 1 / (t1 - t0), scale)
+    def set_interpolator(self, interpolator):
+        self._interpolator = interpolator
+        return self
+
+    @property
+    def interpolator(self):
+        return self._interpolator
+
+    def set_range(self, range_vals):
+        self._r0, self._r1 = list(range_vals)[:2]
+        self._interpolator = interpolate(self._r0, self._r1)
+        return self
+
+    @property
+    def range(self):
+        return [self._interpolator(0), self._interpolator(1)]
+
+    def range_round(self, range_vals):
+        self._r0, self._r1 = range_vals
+        self._interpolator = interpolate_round(self._r0, self._r1)
+        return self
+
+    @property
+    def set_range_round(self):
+        return [self._interpolator(0), self._interpolator(1)]
+
+    def set_unknown(self, *args):
+        self._unknown = args[0]
+        return self
+
+    @property
+    def unknown(self):
+        return self._unknown
 
 
 def copy(source, target):
-    return target.domain(source.domain()).interpolator(source.interpolator()).clamp(source.clamp()).unknown(source.unknown())
+    return target.set_domain(source.domain).set_interpolator(source.interpolator).set_clamp(source.clamp).set_unknown(source.unknown)
 
 
-def sequential():
-    scale = linearish(transformer()(identity))
-    scale.copy = lambda: copy(scale, sequential())
+class SequentialLinear(Sequential, LinearBase):
+    def __init__(self):
+        Sequential.__init__(self, identity)
+        LogBase.__init__(self)
+
+    def copy(self):
+        return copy(self, SequentialLinear())
+
+
+class SequentialLog(Sequential, LogBase):
+    def __init__(self):
+        Sequential.__init__(self, identity)
+        LogBase.__init__(self)
+
+    def copy(self):
+        return copy(self, SequentialLog()).base(self.base)
+
+class SequentialSymlog(Sequential):
+    def __init__(self, c = 1):
+        self._c = c
+        super().__init__(transform_symlog(self._c))
+
+    def set_constant(self, c):
+        self._c = float(c)
+        self.transform = transform_symlog(self._c)
+        self.rescale()
+        return self
+
+    def copy(self):
+        return copy(self, SequentialSymlog()).set_constant(self.constant)
+
+class SequentialPow(Sequential, LinearBase):
+    def __init__(self, t = identity):
+        super().__init__(t)
+        self._exponent = 1
+
+    def _rescale(self):
+        if self._exponent == 1:
+            self.transform = identity
+            self.rescale()
+            return self
+        elif self._exponent == 0.5:
+            self.transform = transform_sqrt
+            self.rescale()
+            return self
+        else:
+            self.transform = transform_pow(self._exponent)
+            self.rescale()
+            return self
+
+    def set_exponent(self, exponent):
+        self._exponent = float(exponent)
+        return self._rescale()
+
+    @property
+    def exponent(self):
+        return self._exponent
+
+    def copy(self):
+        return copy(self, SequentialPow()).set_exponent(self.exponent)
+
+def scale_sequential(*args):
+    scale = SequentialLinear()
+    if len(args) == 1:
+        return init_interpolator(scale, interpolator=args[0])
+    elif len(args) == 2:
+        domain, interpolator = args
+        return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
 
-def sequential_log():
-    scale = loggish(transformer()).domain([1, 10])
-    scale.copy = lambda: copy(scale, sequential_log()).base(scale.base())
+def scale_sequential_log():
+    scale = SequentialLog().set_domain([1, 10])
     return init_interpolator(scale)
 
 
-def sequential_symlog():
-    scale = symlogish(transformer())
-    scale.copy = lambda: copy(scale, sequential_symlog()).constant(scale.constant())
+def scale_sequential_symlog():
+    scale = SequentialSymlog()
     return init_interpolator(scale)
 
 
-def sequential_pow():
-    scale = powish(transformer())
-    scale.copy = lambda: copy(scale, sequential_pow()).exponent(scale.exponent())
+def scale_sequential_pow():
+    scale = SequentialPow()
     return init_interpolator(scale)
 
 
-def sequential_sqrt():
-    return sequential_pow().exponent(0.5)
-
-
-# -----
-
+def scale_sequential_sqrt():
+    return scale_sequential_pow().set_exponent(0.5)

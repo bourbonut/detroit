@@ -1,7 +1,7 @@
 from ..array import ticks, tick_increment
 from .continuous import copy, Transformer
 from .init import init_range
-# from .tick_format import tick_format
+from .tick_format import tick_format
 import math
 from typing import overload
 
@@ -9,19 +9,18 @@ from typing import overload
 class LinearBase:
 
     def ticks(self, count=None):
-        d = self.domain()
+        d = self.domain
         return ticks(d[0], d[-1], count if count is not None else 10)
 
     def tick_format(self, count=None, specifier=None):
-        raise NotImplementedError()
-        # d = self.domain()
-        # return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
+        d = self.domain
+        return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
 
     def nice(self, count=None):
         if count is None:
             count = 10
 
-        d = self.domain()
+        d = self.domain
         i0 = 0
         i1 = len(d) - 1
         start = d[i0]
@@ -43,7 +42,7 @@ class LinearBase:
             if step == prestep:
                 d[i0] = start
                 d[i1] = stop
-                return self.domain(d)
+                return self.set_domain(d)
             elif step > 0:
                 start = math.floor(start / step) * step
                 stop = math.ceil(stop / step) * step
@@ -55,7 +54,7 @@ class LinearBase:
             prestep = step
             max_iter -= 1
 
-        return self.scale
+        return self
 
 class ScaleLinear(Transformer, LinearBase):
     def copy(self):

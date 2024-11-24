@@ -35,14 +35,16 @@ class ScalePow(Transformer, LinearBase):
             self.rescale()
             return self
 
-    def exponent(self, *args):
-        if args:
-            self._exponent = float(args[0])
-            return self._rescale()
+    def set_exponent(self, exponent):
+        self._exponent = float(exponent)
+        return self._rescale()
+
+    @property
+    def exponent(self):
         return self._exponent
 
     def copy(self):
-        return copy(self, ScalePow()).exponent(self.exponent())
+        return copy(self, ScalePow()).set_exponent(self.exponent)
 
 def scale_pow() -> ScalePow:
     """
@@ -69,4 +71,4 @@ def scale_sqrt() -> ScalePow:
     ScalePow
         Scale object
     """
-    return ScalePow().exponent(0.5)
+    return ScalePow().set_exponent(0.5)

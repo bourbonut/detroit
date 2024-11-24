@@ -44,6 +44,7 @@ from .scale import (
     scale_ordinal,
     scale_band,
     scale_quantile,
+    scale_sequential,
 )
 from .interpolate import (
     interpolate_number_array,
@@ -131,6 +132,7 @@ __all__ = [
     "scale_ordinal",
     "scale_band",
     "scale_quantile",
+    "scale_sequential",
     "interpolate_number_array",
     "interpolate_number",
     "interpolate_array",

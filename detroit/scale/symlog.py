@@ -17,15 +17,19 @@ class ScaleSymlog(Transformer, LinearBase):
         self._c = c
         super().__init__(transform_symlog(self._c), transform_symexp(self._c))
 
-    def constant(self, *args):
-        if args:
-            self._c = float(args[0])
-            super().__init__(transform_symlog(self._c), transform_symexp(self._c))
-            return self
+    def set_constant(self, c):
+        self._c = float(c)
+        self.transform = transform_symlog(self._c)
+        self.untransform = transform_symexp(self._c)
+        self.rescale()
+        return self
+
+    @property
+    def constant(self):
         return self._c
 
     def copy(self):
-        return copy(self, ScaleSymlog()).constant(self.constant())
+        return copy(self, ScaleSymlog()).set_constant(self.constant)
 
 def scale_symlog(*args):
     scale = ScaleSymlog()

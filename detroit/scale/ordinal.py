@@ -23,32 +23,38 @@ class ScaleOrdinal:
             return None
         return self._range_vals[index]
 
-    def domain(self, *args):
-        if args:
-            self._domain.clear()
-            self._index.clear()
-            for value in args[0]:
-                if value in self._index:
-                    continue
-                self._domain.append(value)
-                self._index[value] = len(self._domain) - 1
-            return self
+    def set_domain(self, domain):
+        self._domain.clear()
+        self._index.clear()
+        for value in domain:
+            if value in self._index:
+                continue
+            self._domain.append(value)
+            self._index[value] = len(self._domain) - 1
+        return self
+
+    @property
+    def domain(self):
         return self._domain.copy()
 
-    def range(self, *args):
-        if args:
-            self._range_vals = list(args[0])
-            return self
+    def set_range(self, range_vals):
+        self._range_vals = list(range_vals)
+        return self
+
+    @property
+    def range(self):
         return self._range_vals.copy()
 
-    def unknown(self, *args):
-        if args:
-            self._unknown = args[0]
-            return self
+    def set_unknown(self, unknown):
+        self._unknown = unknown
+        return self
+
+    @property
+    def unknown(self):
         return self._unknown
 
     def copy(self):
-        return ScaleOrdinal().domain(self._domain).range(self._range_vals).unknown(self._unknown)
+        return ScaleOrdinal().set_domain(self.domain).set_range(self.range).set_unknown(self.unknown)
 
 def scale_ordinal(*args):
     return init_range(ScaleOrdinal(), *args)

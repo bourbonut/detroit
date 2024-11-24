@@ -1,5 +1,5 @@
 from ..array import tick_step
-from ..format import format, format_prefix, format_specifier, precision_fixed, precision_prefix, precision_round
+from ..format import locale_format, format_prefix, format_specifier, precision_fixed, precision_prefix, precision_round
 import math
 
 def tick_format(start, stop, count, specifier):
@@ -19,4 +19,4 @@ def tick_format(start, stop, count, specifier):
         if specifier.precision is None and not math.isnan(precision := precision_fixed(step)):
             specifier.precision = precision - (specifier.type == "%") * 2
 
-    return format(specifier)
+    return locale_format(specifier)

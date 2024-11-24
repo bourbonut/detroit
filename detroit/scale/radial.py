@@ -32,36 +32,28 @@ class ScaleRadial(Transformer, LinearBase):
     def invert(self, y):
         return super().invert(square(y))
 
-    def range(self, *args):
-        if args:
-            self._range_vals = [number(x) for x in args[0]]
-            super().range([square(x) for x in self._range_vals])
-            return self
+    def set_range(self, range_vals):
+        self._range_vals = [number(x) for x in range_vals]
+        super().set_range([square(x) for x in self._range_vals])
+        return self
+
+    @property
+    def range(self):
         return self._range_vals.copy()
 
-    def range_round(self, *args):
-        return super().range(*args).round(True)
+    def set_range_round(self, range_vals):
+        return super().set_range(range_vals).set_round(True)
 
-    def round(self, *args):
-        if args:
-            self._round = bool(args[0])
-            return self
+    def set_round(self, round_val):
+        self._round = bool(round_val)
+        return self
+
+    @property
+    def round(self):
         return self._round
 
-    def clamp(self, *args):
-        if args:
-            super().clamp(*args)
-            return self
-        return super().clamp()
-
-    def unknown(self, *args):
-        if args:
-            self._unknown = args[0]
-            return self
-        return self._unknown
-
     def copy(self):
-        return ScaleRadial().domain(self._domain).range(self._range_vals).round(self._round).clamp(self.clamp()).unknown(self._unknown)
+        return ScaleRadial().set_domain(self.domain).set_range(self.range).set_round(self.round).set_clamp(self.clamp).set_unknown(self._unknown)
 
 
 def scale_radial(*args):
