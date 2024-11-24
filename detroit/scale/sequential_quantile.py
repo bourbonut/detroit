@@ -1,47 +1,56 @@
-from ..array import ascending, bisect, quantile
 from .continuous import identity
 from .init import init_interpolator
 
-def sequential_quantile():
-    domain = []
-    interpolator = identity
+import math
+from bisect import bisect
+from statistics import quantiles
 
-    def scale(x):
-        return interpolator((bisect(domain, x, 1) - 1) / (len(domain) - 1)) if x is not None and not (isinstance(x, float) and math.isnan(x)) else None
+class SequentialQuantile:
 
-    def domain_func(_=None):
-        if _ is None:
-            return domain.copy()
-        domain.clear()
-        for d in _:
+    def __init__(self):
+        self._domain = []
+        self._interpolator = identity
+
+    def __call__(self, x):
+        if x is not None and not (isinstance(x, float) and math.isnan(x)):
+            return self._interpolator((bisect(self.domain, x, 1) - 1) / (len(self.domain) - 1))
+
+    def set_domain(self, domain):
+        self._domain.clear()
+        for d in domain:
             if d is not None and not (isinstance(d, float) and math.isnan(d)):
-                domain.append(d)
-        domain.sort(ascending)
-        return scale
+                self._domain.append(d)
+        self._domain = sorted(self._domain)
+        return self
 
-    def interpolator_func(_=None):
-        if _ is not None:
-            interpolator = _
-            return scale
-        return interpolator
+    @property
+    def domain(self):
+        return self._domain.copy()
 
-    def range_func():
-        return [interpolator(i / (len(domain) - 1)) for i in range(len(domain))]
+    def set_interpolator(self, interpolator):
+        self._interpolator = interpolator
+        return self
 
-    def quantiles_func(n):
-        return [quantile(domain, i / n) for i in range(n + 1)]
+    @property
+    def interpolator(self):
+        return self._interpolator
 
-    def copy():
-        return sequential_quantile().domain(domain)
+    @property
+    def range(self):
+        return [self._interpolator(i / (len(self.domain) - 1)) for i in range(len(self.domain))]
 
-    scale.domain = domain_func
-    scale.interpolator = interpolator_func
-    scale.range = range_func
-    scale.quantiles = quantiles_func
-    scale.copy = copy
+    def quantiles(self, n):
+        return [self.domain[0]] + quantiles(self.domain, n=n, method="inclusive") + [self.domain[-1]]
 
+    def copy(self):
+        return SequentialQuantile().set_domain(self.domain)
+
+
+def scale_sequential_quantile(*args):
+    scale = SequentialQuantile()
+    if len(args) == 1:
+        return init_interpolator(scale, interpolator=args[0])
+    elif len(args) == 2:
+        domain, interpolator = args
+        return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
-
-
-# -----
-

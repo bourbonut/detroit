@@ -67,13 +67,13 @@ class ScaleBand(ScaleOrdinal):
     def round(self):
         return self._round
 
-    def set_padding(self, padding_inner):
-        self._padding_outer = float(padding_inner)
+    def set_padding(self, padding):
+        self._padding_outer = float(padding)
         self._padding_inner = min(1, self._padding_outer)
         return self.rescale()
 
     @property
-    def padding_inner(self):
+    def padding(self):
         return self._padding_inner
 
     def set_padding_inner(self, padding_inner):
@@ -83,6 +83,10 @@ class ScaleBand(ScaleOrdinal):
     def set_padding_outer(self, padding_outer):
         self._padding_outer = float(padding_outer)
         return self.rescale()
+
+    @property
+    def padding_inner(self):
+        return self._padding_inner
 
     @property
     def padding_outer(self):
@@ -124,5 +128,5 @@ def pointish(scale):
     return scale
 
 
-def point():
-    return pointish(ScaleBand().padding_inner(1))
+def scale_point():
+    return ScaleBand().set_padding_inner(1)
