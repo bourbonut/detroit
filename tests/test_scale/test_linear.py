@@ -342,18 +342,18 @@ def test_linear_44():
     assert d3.scale_linear().tick_format()(0.2) == "0.2"
     assert d3.scale_linear().set_domain([-100, 100]).tick_format()(-20) == "-20"
  
-def test_linear_47():
+def test_linear_45():
     assert d3.scale_linear().tick_format(10)(0.2) == "0.2"
     assert d3.scale_linear().tick_format(20)(0.2) == "0.20"
     assert d3.scale_linear().set_domain([-100, 100]).tick_format(10)(-20) == "-20"
 
-def test_linear_48():
+def test_linear_46():
     assert d3.scale_linear().tick_format(10, "+f")(0.2) == "+0.2"
     assert d3.scale_linear().tick_format(20, "+f")(0.2) == "+0.20"
     assert d3.scale_linear().tick_format(10, "+%")(0.2) == "+20%"
     assert d3.scale_linear().set_domain([0.19, 0.21]).tick_format(10, "+%")(0.2) == "+20.0%"
 
-def test_linear_49():
+def test_linear_47():
     assert d3.scale_linear().set_domain([0, 9]).tick_format(10, "")(2.10) == "2"
     assert d3.scale_linear().set_domain([0, 9]).tick_format(100, "")(2.01) == "2"
     assert d3.scale_linear().set_domain([0, 9]).tick_format(100, "")(2.11) == "2.1"
@@ -369,18 +369,17 @@ def test_linear_49():
     assert d3.scale_linear().set_domain([0, 0.9]).tick_format(10, "p")(0.210) == "20%"
     assert d3.scale_linear().set_domain([0.19, 0.21]).tick_format(10, "p")(0.201) == "20.1%"
 
-@pytest.mark.skip
-def test_linear_50():
+def test_linear_48():
     assert d3.scale_linear().set_domain([0, 1e6]).tick_format(10, "$s")(0.51e6) == "$0.5M"
     assert d3.scale_linear().set_domain([0, 1e6]).tick_format(100, "$s")(0.501e6) == "$0.50M"
 
-@pytest.mark.skip
-def test_linear_51():
-    f = d3.scale_linear().set_domain([0, math.nan]).tick_format()
-    assert str(f) == " >- ==f"
-    assert f(0.12) == "0.120000"
+def test_linear_49():
+    with pytest.raises(ValueError):
+        f = d3.scale_linear().set_domain([0, math.nan]).tick_format()
+        assert str(f) == " >- ==f"
+        assert f(0.12) == "0.120000"
 
-def test_linear_52():
+def test_linear_50():
     x = d3.scale_linear()
     y = x.copy()
     x.set_domain([1, 2])
@@ -397,7 +396,7 @@ def test_linear_52():
     assert x.domain == [1, 2]
     assert y2.domain == [1, 1.9]
 
-def test_linear_53():
+def test_linear_51():
     x = d3.scale_linear()
     y = x.copy()
     x.set_range([1, 2])
@@ -410,7 +409,7 @@ def test_linear_53():
     assert x.range == [1, 2]
     assert y.range == [2, 3]
 
-def test_linear_54():
+def test_linear_52():
     x = d3.scale_linear().set_range(["red", "blue"])
     y = x.copy()
     i0 = x.interpolate
@@ -423,7 +422,7 @@ def test_linear_54():
     assert x(0.5) == "blue"
     assert y(0.5) == "rgb(128, 0, 128)"
 
-def test_linear_55():
+def test_linear_53():
     x = d3.scale_linear().set_clamp(True)
     y = x.copy()
     x.set_clamp(False)
@@ -435,7 +434,7 @@ def test_linear_55():
     assert y(2) == 2
     assert x.clamp is False
 
-def test_linear_56():
+def test_linear_54():
     x = d3.scale_linear()
     y = x.copy()
     x.set_unknown(2)

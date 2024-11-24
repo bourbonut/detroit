@@ -1,5 +1,4 @@
 from .linear import LinearBase
-from .number import number
 import math
 
 class Identity(LinearBase):
@@ -8,7 +7,7 @@ class Identity(LinearBase):
     """
 
     def __init__(self, domain=None):
-        self._domain = list(map(float, domain)) if domain is not None else [0, 1]
+        self._domain = list(domain) if domain is not None else [0, 1]
         self._unknown = None
 
     def __call__(self, x):
@@ -18,24 +17,31 @@ class Identity(LinearBase):
     def invert(self, x):
         return self(x)
 
-    def domain(self, *args):
-        if args:
-            self._domain = list(map(number, args[0]))
-            return self
-        else:
-            return self._domain 
+    def set_domain(self, domain):
+        self._domain = list(domain)
+        return self
 
-    def range(self, *args):
-        return self.domain(*args)
+    @property
+    def domain(self):
+        return self._domain 
 
-    def unknown(self, *args):
-        if args:
-            self._unknown = args[0]
-            return self
-        else:
-            return self._unknown
+    def set_range(self, range_vals):
+        return self.set_domain(range_vals)
+
+    @property
+    def range(self):
+        return self._domain 
+
+    def set_unknown(self, unknown):
+        self._unknown = unknown
+        return self
+        
+    @property
+    def unknown(self):
+        return self._unknown
 
     def copy(self):
-        return Identity(self._domain).unknown(self._unknown)
+        return Identity(self._domain).set_unknown(self._unknown)
 
-scale_identity = Identity
+def scale_identity(domain=None):
+    return Identity(domain=domain)

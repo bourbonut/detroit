@@ -342,7 +342,6 @@ def test_pow_42():
     assert d3.scale_pow().set_domain([0, 0.9]).tick_format(10, "p")(0.210) == "20%"
     assert d3.scale_pow().set_domain([0.19, 0.21]).tick_format(10, "p")(0.201) == "20.1%"
 
-@pytest.mark.skip
 def test_pow_43():
     assert d3.scale_pow().set_domain([0, 1e6]).tick_format(10, "$s")(0.51e6) == "$0.5M"
     assert d3.scale_pow().set_domain([0, 1e6]).tick_format(100, "$s")(0.501e6) == "$0.50M"
