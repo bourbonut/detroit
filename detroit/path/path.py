@@ -1,5 +1,6 @@
-from .string_round import string_round
 import math
+
+from .string_round import string_round
 
 TAU = 2 * math.pi
 EPSILON = 1e-6

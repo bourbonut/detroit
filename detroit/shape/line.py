@@ -1,9 +1,10 @@
-from .constant import constant
-from .path import WithPath
-from .point import x as point_x, y as point_y
-from .curves.linear import LinearCurve
-
 from collections.abc import Callable
+
+from .constant import constant
+from .curves.linear import LinearCurve
+from .path import WithPath
+from .point import x as point_x
+from .point import y as point_y
 
 
 class Line(WithPath):

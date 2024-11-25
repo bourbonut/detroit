@@ -1,8 +1,9 @@
+import math
+
 from .continuous import Transformer, identity
 from .init import init_range
 from .linear import LinearBase
 from .number import number
-import math
 
 
 def sign(x):

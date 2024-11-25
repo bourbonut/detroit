@@ -1,6 +1,7 @@
+from lxml import etree
+
 from .namespace import namespace
 from .selection import Selection
-from lxml import etree
 
 
 def create(name: str) -> Selection:

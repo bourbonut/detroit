@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
+
 from .interval import TimeInterval
-from datetime import timedelta, datetime
 
 
 class TimeSecond(TimeInterval):

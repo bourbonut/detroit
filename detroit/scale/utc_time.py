@@ -1,17 +1,17 @@
 from ..time import (
-    utcYear,
-    utcMonth,
-    utcWeek,
     utcDay,
     utcHour,
     utcMinute,
+    utcMonth,
     utcSecond,
-    utcTicks,
     utcTickInterval,
+    utcTicks,
+    utcWeek,
+    utcYear,
 )
 from ..time_format import utcFormat
-from .time import calendar
 from .init import init_range
+from .time import calendar
 
 
 def utc_time():

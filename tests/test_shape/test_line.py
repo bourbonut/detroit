@@ -1,7 +1,9 @@
+import math
+
+import pytest
+
 import detroit as d3
 from detroit.shape.curves.linear import LinearCurve
-import math
-import pytest
 
 
 def test_line_1():

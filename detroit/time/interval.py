@@ -1,8 +1,9 @@
 from __future__ import annotations
-from datetime import datetime, timedelta
-from collections.abc import Callable
-from typing import Optional
+
 import math
+from collections.abc import Callable
+from datetime import datetime, timedelta
+from typing import Optional
 
 
 class TimeInterval:

@@ -1,6 +1,6 @@
-from .color import rgb, hsl, color
-from .lab import hcl, lab, gray, lch
+from .color import color, hsl, rgb
 from .cubehelix import cubehelix
+from .lab import gray, hcl, lab, lch
 
 __all__ = [
     "rgb",

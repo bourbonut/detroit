@@ -1,2 +1,2 @@
-from .sparse import sparse
 from .selection import Selection
+from .sparse import sparse

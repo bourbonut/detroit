@@ -1,8 +1,10 @@
-import detroit as d3
 import math
 from datetime import datetime
-import pytest
 from functools import partial
+
+import pytest
+
+import detroit as d3
 
 
 def test_log_1():

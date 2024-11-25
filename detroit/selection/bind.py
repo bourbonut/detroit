@@ -1,5 +1,6 @@
-from .enter import EnterNode
 from inspect import signature
+
+from .enter import EnterNode
 
 
 def bind_index(node_data, parent, group, enter, update, exit, data, _):

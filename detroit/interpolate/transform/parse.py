@@ -1,5 +1,6 @@
-from .decompose import decompose, identity
 import math
+
+from .decompose import decompose, identity
 
 
 def parseCss(value):

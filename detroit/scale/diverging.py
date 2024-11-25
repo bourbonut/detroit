@@ -1,14 +1,14 @@
+import math
+from datetime import datetime
+
 from ..interpolate import interpolate, interpolate_round, piecewise
 from .continuous import identity
 from .init import init_interpolator
 from .linear import LinearBase
-from .log import LogBase, transform_log, logp, powp, reflect, transform_logn
+from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
+from .pow import transform_pow, transform_sqrt
 from .sequential import copy
 from .symlog import transform_symlog
-from .pow import transform_sqrt, transform_pow
-
-import math
-from datetime import datetime
 
 
 class Diverging:

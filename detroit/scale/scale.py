@@ -1,5 +1,6 @@
 # src/threshold.py
 from bisect import bisect
+
 from init import init_range
 
 
@@ -66,9 +67,10 @@ def colors(s):
 
 # src/band.py
 from bisect import bisect
+
+from d3_array import range as sequence
 from init import init_range
 from ordinal import ordinal
-from d3_array import range as sequence
 
 
 def band():
@@ -242,12 +244,13 @@ def init_interpolator(domain=None, interpolator=None):
 
 
 # src/log.py
+import math
+
+from continuous import copy, transformer
 from d3_array import ticks
 from d3_format import format, format_specifier
-from nice import nice
-from continuous import copy, transformer
 from init import init_range
-import math
+from nice import nice
 
 
 def transform_log(x):
@@ -426,13 +429,13 @@ def log():
 
 
 # src/sequential.py
-from d3_interpolate import interpolate, interpolate_round
 from continuous import identity
+from d3_interpolate import interpolate, interpolate_round
 from init import init_interpolator
 from linear import linearish
 from log import loggish
-from symlog import symlogish
 from pow import powish
+from symlog import symlogish
 
 
 def transformer():
@@ -625,12 +628,15 @@ def ordinal():
 
 # src/continuous.py
 from bisect import bisect
+
+from constant import constant
 from d3_interpolate import (
     interpolate as interpolate_value,
+)
+from d3_interpolate import (
     interpolate_number,
     interpolate_round,
 )
-from constant import constant
 from number import number
 
 unit = [0, 1]
@@ -789,14 +795,14 @@ def continuous():
 
 
 # src/diverging.py
-from d3_interpolate import interpolate, interpolate_round, piecewise
 from continuous import identity
+from d3_interpolate import interpolate, interpolate_round, piecewise
 from init import init_interpolator
 from linear import linearish
 from log import loggish
+from pow import powish
 from sequential import copy
 from symlog import symlogish
-from pow import powish
 
 
 def transformer():
@@ -919,19 +925,20 @@ def diverging_sqrt():
 
 
 # src/utcTime.py
+from time import calendar
+
 from d3_time import (
-    utcYear,
-    utcMonth,
-    utcWeek,
     utcDay,
     utcHour,
     utcMinute,
+    utcMonth,
     utcSecond,
-    utcTicks,
     utcTickInterval,
+    utcTicks,
+    utcWeek,
+    utcYear,
 )
 from d3_time_format import utcFormat
-from time import calendar
 from init import init_range
 
 
@@ -982,9 +989,9 @@ def nice(domain, interval):
 
 
 # src/pow.py
-from linear import linearish
 from continuous import copy, identity, transformer
 from init import init_range
+from linear import linearish
 
 
 def transform_pow(exponent):
@@ -1038,8 +1045,8 @@ def sqrt():
 
 
 # src/sequentialQuantile.py
-from d3_array import ascending, bisect, quantile
 from continuous import identity
+from d3_array import ascending, bisect, quantile
 from init import init_interpolator
 
 
@@ -1092,9 +1099,9 @@ def sequential_quantile():
 
 
 # src/symlog.py
-from linear import linearish
 from continuous import copy, transformer
 from init import init_range
+from linear import linearish
 
 
 def transform_symlog(c):
@@ -1223,7 +1230,8 @@ def radial():
 
 
 # src/quantile.py
-from d3_array import ascending, bisect, quantileSorted as threshold
+from d3_array import ascending, bisect
+from d3_array import quantileSorted as threshold
 from init import init_range
 
 
@@ -1310,19 +1318,27 @@ def constants(x):
 
 
 # src/index.py
-from band import scale_band, point as scale_point
+from time import scale_time
+
+from band import point as scale_point
+from band import scale_band
+from diverging import (
+    scale_diverging,
+    scale_diverging_log,
+    scale_diverging_pow,
+    scale_diverging_sqrt,
+    scale_diverging_symlog,
+)
 from identity import scale_identity
 from linear import scale_linear
 from log import scale_log
-from symlog import scale_symlog
-from ordinal import scale_ordinal, implicit as scale_implicit
-from pow import scale_pow, sqrt as scale_sqrt
-from radial import scale_radial
+from ordinal import implicit as scale_implicit
+from ordinal import scale_ordinal
+from pow import scale_pow
+from pow import sqrt as scale_sqrt
 from quantile import scale_quantile
 from quantize import scale_quantize
-from threshold import scale_threshold
-from time import scale_time
-from utcTime import scale_utc
+from radial import scale_radial
 from sequential import (
     scale_sequential,
     scale_sequential_log,
@@ -1331,13 +1347,9 @@ from sequential import (
     scale_sequential_symlog,
 )
 from sequentialQuantile import scale_sequential_quantile
-from diverging import (
-    scale_diverging,
-    scale_diverging_log,
-    scale_diverging_pow,
-    scale_diverging_sqrt,
-    scale_diverging_symlog,
-)
+from symlog import scale_symlog
+from threshold import scale_threshold
+from utcTime import scale_utc
 
 __all__ = [
     "scale_band",
@@ -1374,8 +1386,8 @@ __all__ = [
 
 
 # src/linear.py
-from d3_array import ticks, tick_increment
 from continuous import continuous, copy
+from d3_array import tick_increment, ticks
 from init import init_range
 from tickFormat import tick_format
 
@@ -1454,19 +1466,19 @@ def linear():
 
 
 # src/time.py
+from continuous import copy
 from d3_time import (
-    timeYear,
-    timeMonth,
-    timeWeek,
     timeDay,
     timeHour,
     timeMinute,
+    timeMonth,
     timeSecond,
-    timeTicks,
     timeTickInterval,
+    timeTicks,
+    timeWeek,
+    timeYear,
 )
 from d3_time_format import timeFormat
-from continuous import copy
 from init import init_range
 from nice import nice
 
@@ -1666,8 +1678,9 @@ def tick_format(start, stop, count, specifier):
 
 # src/quantize.py
 from bisect import bisect
-from linear import linearish
+
 from init import init_range
+from linear import linearish
 
 
 def quantize():

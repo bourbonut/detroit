@@ -1,9 +1,10 @@
-from ..array import ticks, tick_increment
-from .continuous import copy, Transformer
-from .init import init_range
-from .tick_format import tick_format
 import math
 from typing import overload
+
+from ..array import tick_increment, ticks
+from .continuous import Transformer, copy
+from .init import init_range
+from .tick_format import tick_format
 
 
 class LinearBase:

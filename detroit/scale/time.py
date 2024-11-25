@@ -1,19 +1,20 @@
-from .continuous import Transformer, identity, copy
-from .init import init_range
-from .nice import nice
+from datetime import datetime
+
 from ..time import (
-    time_ticks,
-    time_tick_interval,
-    time_year,
-    time_month,
-    time_week,
     time_day,
     time_hour,
     time_minute,
+    time_month,
     time_second,
+    time_tick_interval,
+    time_ticks,
+    time_week,
+    time_year,
 )
 from ..time_format import time_format
-from datetime import datetime
+from .continuous import Transformer, copy, identity
+from .init import init_range
+from .nice import nice
 
 
 def number(t):

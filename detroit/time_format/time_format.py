@@ -1,6 +1,6 @@
 import locale
-from datetime import datetime
 from collections.abc import Callable
+from datetime import datetime
 
 
 def time_format(specifier: str) -> Callable[[str], str]:

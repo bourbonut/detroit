@@ -1,7 +1,9 @@
-import detroit as d3
-from datetime import datetime
 import math
+from datetime import datetime
+
 import pytest
+
+import detroit as d3
 
 
 def test_identity_1():

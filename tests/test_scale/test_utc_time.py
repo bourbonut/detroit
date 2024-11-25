@@ -1,6 +1,8 @@
-import detroit as d3
 from datetime import datetime
+
 import pytest
+
+import detroit as d3
 
 
 def test_utc_time_1():

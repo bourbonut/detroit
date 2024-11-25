@@ -1,6 +1,7 @@
-from .interval import TimeInterval
-from datetime import timedelta, datetime
 from calendar import isleap
+from datetime import datetime, timedelta
+
+from .interval import TimeInterval
 
 
 class TimeYear(TimeInterval):

@@ -1,6 +1,7 @@
 import re
-from .number import interpolate_number
 from collections.abc import Callable
+
+from .number import interpolate_number
 
 reA = re.compile(r"[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?")
 reB = re.compile(reA.pattern)

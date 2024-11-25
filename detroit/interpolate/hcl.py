@@ -1,6 +1,7 @@
+from collections.abc import Callable
+
 from ..coloration import hcl as color_hcl
 from .color import color, hue
-from collections.abc import Callable
 
 
 class HLCInterpolator:

@@ -1,6 +1,7 @@
+from collections.abc import Callable
+
 from ..coloration import cubehelix as color_cubehelix
 from .color import color, hue
-from collections.abc import Callable
 
 
 class CubeHelixInterpolator:

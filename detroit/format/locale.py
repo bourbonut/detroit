@@ -1,14 +1,14 @@
+import math
+from inspect import signature
+
 from .exponent import exponent
 from .format_group import format_group
 from .format_numerals import format_numerals
-from .format_specifier import format_specifier, FormatSpecifier
+from .format_prefix_auto import prefix_auto
+from .format_specifier import FormatSpecifier, format_specifier
 from .format_trim import format_trim
 from .format_types import format_types
-from .format_prefix_auto import prefix_auto
 from .identity import identity
-
-from inspect import signature
-import math
 
 prefixes = [
     "y",

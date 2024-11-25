@@ -14,9 +14,10 @@ def hue_interpolator(a, b):
 
 # src/rgb.py
 from d3_color import rgb as colorRgb
+
 from .basis import basis
 from .basisClosed import basisClosed
-from .color import nogamma, gamma
+from .color import gamma, nogamma
 
 
 def rgbGamma(y):
@@ -133,6 +134,7 @@ def isNumberArray(x):
 
 # src/hcl.py
 from d3_color import hcl as colorHcl
+
 from .color import color, hue
 
 
@@ -169,6 +171,7 @@ def number(a, b):
 
 # src/cubehelix.py
 from d3_color import cubehelix as colorCubehelix
+
 from .color import color, hue
 
 
@@ -231,14 +234,15 @@ def round_interpolator(a, b):
 
 # src/value.py
 from d3_color import color
-from .rgb import rgb
+
 from .array import genericArray
+from .constant import constant
 from .date import date
 from .number import number
+from .numberArray import isNumberArray, numberArray
 from .object import object_interpolator
+from .rgb import rgb
 from .string import string
-from .constant import constant
-from .numberArray import numberArray, isNumberArray
 
 
 def value(a, b):
@@ -264,6 +268,7 @@ def value(a, b):
 
 # src/hsl.py
 from d3_color import hsl as colorHsl
+
 from .color import color, hue
 
 
@@ -300,6 +305,7 @@ def discrete(range_):
 
 # src/string.py
 import re
+
 from .number import number
 
 reA = re.compile(r"[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?")
@@ -357,8 +363,8 @@ def constant(x):
 
 
 # src/array.py
+from .numberArray import isNumberArray, numberArray
 from .value import value
-from .numberArray import numberArray, isNumberArray
 
 
 def array(a, b):
@@ -483,8 +489,9 @@ def basis_interpolator(values):
 
 
 # src/color.py
-from .constant import constant
 import math
+
+from .constant import constant
 
 
 def linear(a, d):
@@ -523,6 +530,7 @@ def nogamma(a, b):
 
 # src/lab.py
 from d3_color import lab as colorLab
+
 from .color import color
 
 
@@ -566,8 +574,9 @@ def quantize(interpolator, n):
 
 
 # src/transform/parse.py
-from .decompose import decompose, identity
 import math
+
+from .decompose import decompose, identity
 
 
 def parseCss(value):
@@ -643,8 +652,8 @@ def decompose(a, b, c, d, e, f):
 
 
 # src/transform/index.py
-from .parse import parseCss, parseSvg
 from ..number import number
+from .parse import parseCss, parseSvg
 
 
 def interpolateTransform(parse, pxComma, pxParen, degParen):

@@ -1,8 +1,8 @@
-from .default_locale import locale_format, format_prefix, format_default_locale
-from .precision_round import precision_round
-from .precision_prefix import precision_prefix
-from .precision_fixed import precision_fixed
+from .default_locale import format_default_locale, format_prefix, locale_format
 from .format_specifier import format_specifier
+from .precision_fixed import precision_fixed
+from .precision_prefix import precision_prefix
+from .precision_round import precision_round
 
 __all__ = [
     "locale_format",

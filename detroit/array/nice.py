@@ -1,6 +1,7 @@
-from .ticks import tick_increment
 import math
 from typing import TypeVar
+
+from .ticks import tick_increment
 
 T = TypeVar("T")
 

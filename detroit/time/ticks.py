@@ -1,17 +1,17 @@
 from bisect import bisect_right
-from .interval import TimeInterval
-from .duration import duration_year
-from .millisecond import time_millisecond
-from .second import time_second
-from .minute import time_minute
-from .hour import time_hour
-from .day import time_day
-from .week import time_sunday, time_week
-from .month import time_month
-from .year import time_year
-from ..array import tick_step
+from datetime import datetime, timedelta
 
-from datetime import timedelta, datetime
+from ..array import tick_step
+from .day import time_day
+from .duration import duration_year
+from .hour import time_hour
+from .interval import TimeInterval
+from .millisecond import time_millisecond
+from .minute import time_minute
+from .month import time_month
+from .second import time_second
+from .week import time_sunday, time_week
+from .year import time_year
 
 
 class Ticker:

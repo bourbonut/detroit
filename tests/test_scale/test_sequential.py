@@ -1,6 +1,8 @@
-import detroit as d3
 import math
+
 import pytest
+
+import detroit as d3
 
 
 def test_sequential_1():

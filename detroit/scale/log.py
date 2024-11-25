@@ -1,10 +1,11 @@
-from ..array import ticks
-from ..format import locale_format, format_specifier
-from .nice import nice
-from .continuous import copy, Transformer
-from .init import init_range
-from datetime import datetime
 import math
+from datetime import datetime
+
+from ..array import ticks
+from ..format import format_specifier, locale_format
+from .continuous import Transformer, copy
+from .init import init_range
+from .nice import nice
 
 
 def transform_log(x):

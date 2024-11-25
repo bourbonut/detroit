@@ -1,9 +1,10 @@
+from collections.abc import Callable
+
 from ..coloration import rgb as color_rgb
 from .basis import basis
 from .basis_closed import basis_closed
-from .color import gamma, color as nogamma
-
-from collections.abc import Callable
+from .color import color as nogamma
+from .color import gamma
 
 
 class RGBGammaInterpolator:

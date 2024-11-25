@@ -1,13 +1,13 @@
+import math
+from datetime import datetime
+
 from ..interpolate import interpolate, interpolate_round
 from .continuous import identity
 from .init import init_interpolator
 from .linear import LinearBase
-from .log import LogBase, transform_log, logp, powp, reflect, transform_logn
-from .symlog import transform_symlog
+from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
-
-import math
-from datetime import datetime
+from .symlog import transform_symlog
 
 
 class Sequential:

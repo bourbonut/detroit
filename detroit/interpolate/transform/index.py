@@ -1,5 +1,5 @@
-from .parse import parseCss, parseSvg
 from ..number import number
+from .parse import parseCss, parseSvg
 
 
 def interpolateTransform(parse, pxComma, pxParen, degParen):

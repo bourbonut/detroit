@@ -1,13 +1,16 @@
+import math
 from bisect import bisect
+from datetime import datetime
+
 from ..interpolate import (
     interpolate as interpolate_value,
+)
+from ..interpolate import (
     interpolate_number,
     interpolate_round,
 )
 from .constant import constant
 from .number import number
-import math
-from datetime import datetime
 
 
 def identity(x):

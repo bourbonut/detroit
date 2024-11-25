@@ -1,9 +1,11 @@
-import detroit as d3
 import math
+
 import pytest
+
+import detroit as d3
 from detroit import ticks
-from detroit.array.threshold import threshold_sturges
 from detroit.array.bin import Bin
+from detroit.array.threshold import threshold_sturges
 
 
 def box(bin_values, x0, x1):

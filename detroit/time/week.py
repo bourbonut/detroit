@@ -1,5 +1,6 @@
-from .interval import TimeInterval
 from datetime import datetime, timedelta
+
+from .interval import TimeInterval
 
 
 def time_weekday(i: int):

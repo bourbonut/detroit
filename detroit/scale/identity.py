@@ -1,5 +1,6 @@
-from .linear import LinearBase
 import math
+
+from .linear import LinearBase
 
 
 class Identity(LinearBase):

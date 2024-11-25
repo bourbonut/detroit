@@ -1,7 +1,9 @@
 from __future__ import annotations
-from .color import Color, rgb_convert, RGB
-from typing import overload
+
 import math
+from typing import overload
+
+from .color import RGB, Color, rgb_convert
 
 K = 18
 XN = 0.96422

@@ -1,5 +1,5 @@
-from ..scale import scale_sequential
 from ..interpolate import interpolate_rgb_basis_closed
+from ..scale import scale_sequential
 from .colors import color
 
 

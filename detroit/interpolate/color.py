@@ -1,5 +1,6 @@
-from .constant import constant
 import math
+
+from .constant import constant
 
 
 def linear(a, d):

@@ -1,13 +1,13 @@
-from ..coloration.color import color, Color
-from .rgb import interpolate_rgb
+from collections.abc import Callable
+from datetime import datetime
+
+from ..coloration.color import Color, color
 from .constant import constant
 from .date import interpolate_date
 from .number import interpolate_number
-from .string import interpolate_string
 from .number_array import interpolate_number_array, is_number_array
-
-from datetime import datetime
-from collections.abc import Callable
+from .rgb import interpolate_rgb
+from .string import interpolate_string
 
 
 def interpolate_object(a, b) -> Callable:

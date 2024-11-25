@@ -1,5 +1,6 @@
-from ..path import Path
 import math
+
+from ..path import Path
 
 
 class WithPath:

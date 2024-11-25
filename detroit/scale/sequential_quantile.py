@@ -1,9 +1,9 @@
-from .continuous import identity
-from .init import init_interpolator
-
 import math
 from bisect import bisect
 from statistics import quantiles
+
+from .continuous import identity
+from .init import init_interpolator
 
 
 class SequentialQuantile:

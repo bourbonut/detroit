@@ -1,6 +1,7 @@
-from .color import hue
 import math
 from collections.abc import Callable
+
+from .color import hue
 
 
 def interpolate_hue(a: int | float, b: int | float) -> Callable[[float], float]:

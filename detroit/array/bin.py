@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 import math
 from bisect import bisect
+from collections.abc import Callable, Iterable
+from inspect import signature
+from typing import Any
+
 from .extent import extent
 from .nice import nice
-from .ticks import ticks, tick_increment
 from .threshold import threshold_sturges
-
-from inspect import signature
-from collections.abc import Iterable, Callable
-from typing import Any
+from .ticks import tick_increment, ticks
 
 
 def identity(x, *args):

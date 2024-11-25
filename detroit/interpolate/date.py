@@ -1,5 +1,5 @@
-from datetime import datetime
 from collections.abc import Callable
+from datetime import datetime
 
 
 def interpolate_date(a: datetime, b: datetime) -> Callable[[float], datetime]:

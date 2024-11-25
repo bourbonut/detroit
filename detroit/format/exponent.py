@@ -1,5 +1,6 @@
-from .format_decimal import format_decimal_parts
 import math
+
+from .format_decimal import format_decimal_parts
 
 
 def exponent(x):

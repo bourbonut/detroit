@@ -1,7 +1,9 @@
-import detroit as d3
 import math
-import pytest
 from datetime import datetime
+
+import pytest
+
+import detroit as d3
 
 
 def test_symlog_1():

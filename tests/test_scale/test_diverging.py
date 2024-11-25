@@ -1,5 +1,6 @@
-import detroit as d3
 import math
+
+import detroit as d3
 
 
 def test_diverging_1():

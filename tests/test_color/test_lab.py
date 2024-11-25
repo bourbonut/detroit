@@ -1,7 +1,8 @@
-import detroit as d3
-from detroit.coloration.color import Color, RGB
-from detroit.coloration.lab import LAB
 import math
+
+import detroit as d3
+from detroit.coloration.color import RGB, Color
+from detroit.coloration.lab import LAB
 
 
 def approx_equal(actual, l, a, b, opacity):

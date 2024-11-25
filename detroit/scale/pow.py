@@ -1,8 +1,9 @@
-from .linear import LinearBase
-from .continuous import copy, identity, Transformer
-from .init import init_range
-from collections.abc import Callable
 import math
+from collections.abc import Callable
+
+from .continuous import Transformer, copy, identity
+from .init import init_range
+from .linear import LinearBase
 
 
 def transform_pow(exponent):

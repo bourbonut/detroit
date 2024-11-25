@@ -1,6 +1,7 @@
+from collections.abc import Callable
+
 from ..coloration import lab as color_lab
 from .color import color
-from collections.abc import Callable
 
 
 def interpolate_lab(a: str, b: str) -> Callable[[float], str]:

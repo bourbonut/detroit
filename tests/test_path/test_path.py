@@ -1,7 +1,9 @@
+import math
+
+import pytest
+
 import detroit as d3
 from detroit.path import Path
-import math
-import pytest
 
 
 def test_path_1():

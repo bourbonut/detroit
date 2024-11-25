@@ -1,12 +1,14 @@
+from itertools import zip_longest
+
+from lxml import etree
+
+from .attr import attr_constant, attr_function
+from .bind import bind_index, bind_key
+from .constant import constant
+from .enter import EnterNode
 from .namespace import namespace
 from .style import style_value
-from .bind import bind_key, bind_index
-from .constant import constant
-from .attr import attr_function, attr_constant
-from .text import text_function, text_constant
-from .enter import EnterNode
-from itertools import zip_longest
-from lxml import etree
+from .text import text_constant, text_function
 
 
 def selector(element, selection, whole=False):

@@ -1,7 +1,8 @@
-from bisect import bisect
-from .init import init_range
 import math
+from bisect import bisect
 from statistics import quantiles
+
+from .init import init_range
 
 
 class ScaleQuantile:

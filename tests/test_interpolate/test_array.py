@@ -1,5 +1,6 @@
-import detroit as d3
 import pytest
+
+import detroit as d3
 
 
 def test_array_1():

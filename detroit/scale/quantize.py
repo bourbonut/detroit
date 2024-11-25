@@ -1,7 +1,8 @@
-from bisect import bisect
-from .linear import LinearBase
-from .init import init_range
 import math
+from bisect import bisect
+
+from .init import init_range
+from .linear import LinearBase
 
 
 class ScaleQuantize(LinearBase):

@@ -1,8 +1,10 @@
 from __future__ import annotations
-from .color import Color, rgb_convert, RGB, DARKER, BRIGHTER
-from .lab import hcl_convert, HCL
-from typing import overload
+
 import math
+from typing import overload
+
+from .color import BRIGHTER, DARKER, RGB, Color, rgb_convert
+from .lab import HCL, hcl_convert
 
 A = -0.14861
 B = +1.78277

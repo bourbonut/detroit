@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import overload
-import re
+
 import math
+import re
+from typing import overload
 
 DARKER = 0.7
 BRIGHTER = 1 / DARKER

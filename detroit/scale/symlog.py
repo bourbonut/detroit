@@ -1,7 +1,8 @@
-from .linear import LinearBase
-from .continuous import copy, Transformer
-from .init import init_range
 import math
+
+from .continuous import Transformer, copy
+from .init import init_range
+from .linear import LinearBase
 
 
 def sign(x):

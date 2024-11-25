@@ -1,5 +1,5 @@
-from math import exp, log, sqrt, cosh, sinh, tanh, dist
 from collections.abc import Callable
+from math import cosh, dist, exp, log, sinh, sqrt, tanh
 
 EPSILON = 1e-12
 SQRT2 = sqrt(2)
