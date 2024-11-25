@@ -28,6 +28,8 @@ class Locale:
         self.nan = locale_def.get('nan', "NaN")
 
     def format(self, specifier):
+        if not isinstance(specifier, FormatSpecifier):
+            specifier = format_specifier(specifier)
         fill = specifier.fill
         align = specifier.align
         sign = specifier.sign
@@ -99,7 +101,7 @@ class Locale:
                     if trim:
                         value = format_trim(value)
 
-                    if value_negative and float(value) == 0 and sign != "+":
+                    if value_negative and sign != "+" and str(value) in ("0", "0."):
                         value_negative = False
 
                     if value_negative:

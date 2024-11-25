@@ -3,14 +3,14 @@ from datetime import datetime
 import pytest
 
 
-def test_datetimeTime_1():
+def test_utc_time_1():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 17), datetime(2009, 1, 1, 23, 42)]
     )
     assert x.nice().domain == [datetime(2009, 1, 1), datetime(2009, 1, 2)]
 
 
-def test_datetimeTime_2():
+def test_utc_time_2():
     x = d3.scale_time().set_domain(
         [datetime(2013, 1, 1, 12, 0, 0, 0), datetime(2013, 1, 1, 12, 0, 0, 128000)]
     )
@@ -20,13 +20,13 @@ def test_datetimeTime_2():
     ]
 
 
-def test_datetimeTime_3():
+def test_utc_time_3():
     x = d3.scale_time().set_domain([datetime(2001, 1, 1), datetime(2138, 1, 1)])
     with pytest.raises(ValueError):
         assert x.nice().domain == [datetime(2000, 1, 1), datetime(2140, 1, 1)]
 
 
-def test_datetimeTime_4():
+def test_utc_time_4():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 12), datetime(2009, 1, 1, 0, 12)]
     )
@@ -36,7 +36,7 @@ def test_datetimeTime_4():
     ]
 
 
-def test_datetimeTime_5():
+def test_utc_time_5():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 17), datetime(2009, 1, 1, 23, 42)]
     )
@@ -47,7 +47,7 @@ def test_datetimeTime_5():
     assert x.nice(10).domain == [datetime(2009, 1, 1), datetime(2009, 1, 2)]
 
 
-def test_datetimeTime_6():
+def test_utc_time_6():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 12), datetime(2009, 1, 1, 23, 48)]
     )
@@ -63,14 +63,14 @@ def test_datetimeTime_6():
     assert x.nice(d3.time_year).domain == [datetime(2008, 1, 1), datetime(2010, 1, 1)]
 
 
-def test_datetimeTime_7():
+def test_utc_time_7():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 12), datetime(2009, 1, 1, 0, 12)]
     )
     assert x.nice(d3.time_day).domain == [datetime(2009, 1, 1), datetime(2009, 1, 2)]
 
 
-def test_datetimeTime_8():
+def test_utc_time_8():
     x = (
         d3.scale_time()
         .set_domain(
@@ -89,7 +89,7 @@ def test_datetimeTime_8():
     ]
 
 
-def test_datetimeTime_9():
+def test_utc_time_9():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 12), datetime(2009, 1, 1, 23, 48)]
     )
@@ -97,36 +97,35 @@ def test_datetimeTime_9():
         datetime(2009, 1, 1),
         datetime(2009, 1, 4),
     ]
-    # TODO: solve these tests
-    # assert x.nice(d3.time_week.every(2)).domain == [
-    #     datetime(2008, 12, 21),
-    #     datetime(2009, 1, 4),
-    # ]
-    # assert x.nice(d3.time_month.every(3)).domain == [
-    #     datetime(2008, 10, 1),
-    #     datetime(2009, 4, 1),
-    # ]
+    assert x.nice(d3.time_week.every(2)).domain == [
+        datetime(2008, 12, 28), # maybe 2008, 12, 21
+        datetime(2009, 1, 4),
+    ]
+    assert x.nice(d3.time_month.every(3)).domain == [
+        datetime(2008, 10, 1),
+        datetime(2009, 4, 1),
+    ]
     assert x.nice(d3.time_year.every(10)).domain == [
         datetime(2000, 1, 1),
         datetime(2010, 1, 1),
     ]
 
 
-def test_datetimeTime_10():
+def test_utc_time_10():
     x = d3.scale_time().set_domain([datetime(2009, 1, 1), datetime(2010, 1, 1)])
     y = x.copy()
     x.set_domain([datetime(2010, 1, 1), datetime(2011, 1, 1)])
     assert y.domain == [datetime(2009, 1, 1), datetime(2010, 1, 1)]
-    assert x(datetime(2010, 1, 2)) == 0
-    assert y(datetime(2010, 1, 2)) == 1
+    assert x(datetime(2010, 1, 1)) == 0
+    assert y(datetime(2010, 1, 1)) == 1
     y.set_domain([datetime(2011, 1, 1), datetime(2012, 1, 1)])
-    assert x(datetime(2011, 1, 2)) == 1
-    assert y(datetime(2011, 1, 2)) == 0
+    assert x(datetime(2011, 1, 1)) == 1
+    assert y(datetime(2011, 1, 1)) == 0
     assert x.domain == [datetime(2010, 1, 1), datetime(2011, 1, 1)]
     assert y.domain == [datetime(2011, 1, 1), datetime(2012, 1, 1)]
 
 
-def test_datetimeTime_11():
+def test_utc_time_11():
     x = d3.scale_time().set_domain([datetime(2009, 1, 1), datetime(2010, 1, 1)])
     y = x.copy()
     x.set_range([1, 2])
@@ -140,7 +139,7 @@ def test_datetimeTime_11():
     assert y.range == [2, 3]
 
 
-def test_datetimeTime_12():
+def test_utc_time_12():
     x = (
         d3.scale_time()
         .set_domain([datetime(2009, 1, 1), datetime(2010, 1, 1)])
@@ -149,25 +148,25 @@ def test_datetimeTime_12():
     i = x.interpolate
     y = x.copy()
     x.set_interpolate(d3.interpolate_hsl)
-    assert x(datetime(2009, 6, 2)) == "rgb(255, 0, 253)"
-    assert y(datetime(2009, 6, 2)) == "rgb(129, 0, 126)"
+    assert x(datetime(2009, 7, 1)) == "rgb(255, 0, 253)"
+    assert y(datetime(2009, 7, 1)) == "rgb(129, 0, 126)"
     assert y.interpolate == i
 
 
-def test_datetimeTime_13():
+def test_utc_time_13():
     x = d3.scale_time().set_domain([datetime(2009, 1, 1), datetime(2010, 1, 1)]).set_clamp(True)
     y = x.copy()
     x.set_clamp(False)
     assert y.clamp is True
-    assert x(datetime(2011, 1, 2)) == 2
-    assert y(datetime(2011, 1, 2)) == 1
+    assert x(datetime(2011, 1, 1)) == 2
+    assert y(datetime(2011, 1, 1)) == 1
     y.set_clamp(False)
     assert x.clamp is False
-    assert x(datetime(2011, 1, 2)) == 2
-    assert y(datetime(2011, 1, 2)) == 2
+    assert x(datetime(2011, 1, 1)) == 2
+    assert y(datetime(2011, 1, 1)) == 2
 
 
-def test_datetimeTime_14():
+def test_utc_time_14():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 1, 0), datetime(2011, 1, 1, 12, 4, 4)]
     )
@@ -179,7 +178,7 @@ def test_datetimeTime_14():
     ]
 
 
-def test_datetimeTime_15():
+def test_utc_time_15():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 1, 0), datetime(2011, 1, 1, 12, 4, 4)]
     )
@@ -191,7 +190,7 @@ def test_datetimeTime_15():
     ]
 
 
-def test_datetimeTime_16():
+def test_utc_time_16():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 33, 4)]
     )
@@ -203,7 +202,7 @@ def test_datetimeTime_16():
     ]
 
 
-def test_datetimeTime_17():
+def test_utc_time_17():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 0, 1)]
     )
@@ -217,7 +216,7 @@ def test_datetimeTime_17():
     ]
 
 
-def test_datetimeTime_18():
+def test_utc_time_18():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 0, 4)]
     )
@@ -230,7 +229,7 @@ def test_datetimeTime_18():
     ]
 
 
-def test_datetimeTime_19():
+def test_utc_time_19():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 0, 20)]
     )
@@ -243,7 +242,7 @@ def test_datetimeTime_19():
     ]
 
 
-def test_datetimeTime_20():
+def test_utc_time_20():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 0, 50)]
     )
@@ -255,7 +254,7 @@ def test_datetimeTime_20():
     ]
 
 
-def test_datetimeTime_21():
+def test_utc_time_21():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 0), datetime(2011, 1, 1, 12, 1, 50)]
     )
@@ -267,7 +266,7 @@ def test_datetimeTime_21():
     ]
 
 
-def test_datetimeTime_22():
+def test_utc_time_22():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 0, 27), datetime(2011, 1, 1, 12, 4, 12)]
     )
@@ -279,7 +278,7 @@ def test_datetimeTime_22():
     ]
 
 
-def test_datetimeTime_23():
+def test_utc_time_23():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 3, 27), datetime(2011, 1, 1, 12, 21, 12)]
     )
@@ -291,7 +290,7 @@ def test_datetimeTime_23():
     ]
 
 
-def test_datetimeTime_24():
+def test_utc_time_24():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 8, 27), datetime(2011, 1, 1, 13, 4, 12)]
     )
@@ -303,7 +302,7 @@ def test_datetimeTime_24():
     ]
 
 
-def test_datetimeTime_25():
+def test_utc_time_25():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 28, 27), datetime(2011, 1, 1, 14, 4, 12)]
     )
@@ -315,7 +314,7 @@ def test_datetimeTime_25():
     ]
 
 
-def test_datetimeTime_26():
+def test_utc_time_26():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 12, 28, 27), datetime(2011, 1, 1, 16, 34, 12)]
     )
@@ -327,7 +326,7 @@ def test_datetimeTime_26():
     ]
 
 
-def test_datetimeTime_27():
+def test_utc_time_27():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 14, 28, 27), datetime(2011, 1, 2, 1, 34, 12)]
     )
@@ -339,7 +338,7 @@ def test_datetimeTime_27():
     ]
 
 
-def test_datetimeTime_28():
+def test_utc_time_28():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 16, 28, 27), datetime(2011, 1, 2, 14, 34, 12)]
     )
@@ -351,7 +350,7 @@ def test_datetimeTime_28():
     ]
 
 
-def test_datetimeTime_29():
+def test_utc_time_29():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 16, 28, 27), datetime(2011, 1, 3, 21, 34, 12)]
     )
@@ -363,7 +362,7 @@ def test_datetimeTime_29():
     ]
 
 
-def test_datetimeTime_30():
+def test_utc_time_30():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 16, 28, 27), datetime(2011, 1, 5, 21, 34, 12)]
     )
@@ -375,7 +374,7 @@ def test_datetimeTime_30():
     ]
 
 
-def test_datetimeTime_31():
+def test_utc_time_31():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 2, 16, 28, 27), datetime(2011, 1, 9, 21, 34, 12)]
     )
@@ -387,7 +386,7 @@ def test_datetimeTime_31():
     ]
 
 
-def test_datetimeTime_32():
+def test_utc_time_32():
     x = d3.scale_time().set_domain(
         [datetime(2011, 1, 1, 16, 28, 27), datetime(2011, 1, 23, 21, 34, 12)]
     )
@@ -399,7 +398,7 @@ def test_datetimeTime_32():
     ]
 
 
-def test_datetimeTime_33():
+def test_utc_time_33():
     x = d3.scale_time().set_domain([datetime(2011, 1, 18), datetime(2011, 5, 2)])
     assert x.ticks(4) == [
         datetime(2011, 2, 1, 0, 0),
@@ -409,7 +408,7 @@ def test_datetimeTime_33():
     ]
 
 
-def test_datetimeTime_34():
+def test_utc_time_34():
     x = d3.scale_time().set_domain([datetime(2010, 12, 18), datetime(2011, 11, 2)])
     assert x.ticks(4) == [
         datetime(2011, 1, 1, 0, 0),
@@ -419,7 +418,7 @@ def test_datetimeTime_34():
     ]
 
 
-def test_datetimeTime_35():
+def test_utc_time_35():
     x = d3.scale_time().set_domain([datetime(2010, 12, 18), datetime(2014, 3, 2)])
     assert x.ticks(4) == [
         datetime(2011, 1, 1, 0, 0),
@@ -429,7 +428,7 @@ def test_datetimeTime_35():
     ]
 
 
-def test_datetimeTime_36():
+def test_utc_time_36():
     with pytest.raises(ValueError):
         x = d3.scale_time().set_domain([datetime(1, 12, 18), datetime(2014, 3, 2)])
         assert x.ticks(6) == [
@@ -440,60 +439,60 @@ def test_datetimeTime_36():
         ]
 
 
-def test_datetimeTime_37():
+def test_utc_time_37():
     x = d3.scale_time().set_domain([datetime(2014, 3, 2), datetime(2014, 3, 2)])
     assert x.ticks(6) == [datetime(2014, 3, 2)]
 
 
-def test_datetimeTime_38():
+def test_utc_time_38():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 1, 1)) == "2011"
     assert f(datetime(2012, 1, 1)) == "2012"
     assert f(datetime(2013, 1, 1)) == "2013"
 
 
-def test_datetimeTime_39():
+def test_utc_time_39():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 2, 1)) == "February"
     assert f(datetime(2011, 3, 1)) == "March"
     assert f(datetime(2011, 4, 1)) == "April"
 
 
-def test_datetimeTime_40():
+def test_utc_time_40():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 2, 6)) == "Feb 06"
     assert f(datetime(2011, 2, 13)) == "Feb 13"
     assert f(datetime(2011, 2, 20)) == "Feb 20"
 
 
-def test_datetimeTime_41():
+def test_utc_time_41():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 2, 2)) == "Wed 02"
     assert f(datetime(2011, 2, 3)) == "Thu 03"
     assert f(datetime(2011, 2, 4)) == "Fri 04"
 
 
-def test_datetimeTime_42():
+def test_utc_time_42():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 2, 2, 11)) == "11 AM"
     assert f(datetime(2011, 2, 2, 12)) == "12 PM"
     assert f(datetime(2011, 2, 2, 13)) == "01 PM"
 
 
-def test_datetimeTime_43():
+def test_utc_time_43():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 2, 2, 11, 59)) == "11:59"
     assert f(datetime(2011, 2, 2, 12, 1)) == "12:01"
     assert f(datetime(2011, 2, 2, 12, 2)) == "12:02"
 
 
-def test_datetimeTime_44():
+def test_utc_time_44():
     f = d3.scale_time().tick_format()
     assert f(datetime(2011, 2, 2, 12, 1, 9)) == ":09"
     assert f(datetime(2011, 2, 2, 12, 1, 10)) == ":10"
     assert f(datetime(2011, 2, 2, 12, 1, 11)) == ":11"
 
 
-def test_datetimeTime_45():
+def test_utc_time_45():
     f = d3.scale_time().tick_format("%c")
     assert f(datetime(2011, 2, 2, 12)) == "Wed Feb  2 12:00:00 2011"

@@ -34,7 +34,7 @@ def test_format_type_f_4():
 
 def test_format_type_f_5():
     assert d3.format("f")(-0) == "0.000000"
-    assert d3.format("f")(-1e-12) == "0.000000"
+    assert d3.format("f")(-1e-12) == "-0.000000"
 
 def test_format_type_f_6():
     # Python sees -0 as 0

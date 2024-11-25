@@ -97,6 +97,7 @@ from .shape import Line as line
 from .axis import axis_top, axis_left, axis_right, axis_bottom
 from .format import (
     locale_format as format,
+    format_default_locale,
     format_prefix,
     precision_round,
     precision_prefix,
@@ -195,6 +196,7 @@ __all__ = [
     "axis_right",
     "axis_bottom",
     "format",
+    "format_default_locale",
     "format_prefix",
     "precision_round",
     "precision_prefix",

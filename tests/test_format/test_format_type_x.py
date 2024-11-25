@@ -52,7 +52,7 @@ def test_format_type_x_15():
     assert d3.format("X")(-0xeee) == "-EEE"
 
 def test_format_type_x_16():
-    assert d3.format("20x")(0xdeadbeef) == "                        deadbeef"
-    assert d3.format("#20x")(0xdeadbeef) == "                    0xdeadbeef"
+    assert d3.format("20x")(0xdeadbeef) == "            deadbeef"
+    assert d3.format("#20x")(0xdeadbeef) == "          0xdeadbeef"
     assert d3.format("020x")(0xdeadbeef) == "000000000000deadbeef"
     assert d3.format("#020x")(0xdeadbeef) == "0x0000000000deadbeef"

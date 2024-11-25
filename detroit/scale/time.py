@@ -60,7 +60,10 @@ class Calendar(Transformer):
         elif self._day(date) < date:
             return self._format_hour(date)
         elif self._month(date) < date:
-            return self._format_week(date)
+            if self._week(date) < date:
+                return self._format_day(date)
+            else:
+                return self._format_week(date)
         elif self._year(date) < date:
             return self._format_month(date)
         else:

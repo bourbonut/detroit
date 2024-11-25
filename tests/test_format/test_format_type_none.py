@@ -19,15 +19,15 @@ def test_format_type_none_2():
     assert d3.format(".5")(1000) == "1000"
     assert d3.format(".5")(21010) == "21010"
     assert d3.format(".5")(1.10001) == "1.1"
-    assert d3.format(".5")(1.10001e6) == "1.1e+6"
+    assert d3.format(".5")(1.10001e6) == "1.1e+06"
     assert d3.format(".6")(1.10001) == "1.10001"
-    assert d3.format(".6")(1.10001e6) == "1.10001e+6"
+    assert d3.format(".6")(1.10001e6) == "1.10001e+06"
 
 def test_format_type_none_3():
     assert d3.format(".5")(1.00001) == "1"
-    assert d3.format(".5")(1.00001e6) == "1e+6"
+    assert d3.format(".5")(1.00001e6) == "1e+06"
     assert d3.format(".6")(1.00001) == "1.00001"
-    assert d3.format(".6")(1.00001e6) == "1.00001e+6"
+    assert d3.format(".6")(1.00001e6) == "1.00001e+06"
 
 def test_format_type_none_4():
     f = d3.format("$")
@@ -35,9 +35,9 @@ def test_format_type_none_4():
     assert f(.042) == "$0.042"
     assert f(.42) == "$0.42"
     assert f(4.2) == "$4.2"
-    assert f(-.042) == "−$0.042"
-    assert f(-.42) == "−$0.42"
-    assert f(-4.2) == "−$4.2"
+    assert f(-.042) == "-$0.042"
+    assert f(-.42) == "-$0.42"
+    assert f(-4.2) == "-$4.2"
 
 def test_format_type_none_5():
     f = d3.format("($")

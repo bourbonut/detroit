@@ -1,5 +1,4 @@
 from .locale import Locale
-from .format_specifier import format_specifier, FormatSpecifier
 
 locale = Locale({
     "thousands": ",",
@@ -7,9 +6,8 @@ locale = Locale({
     "currency": ["$", ""]
 })
 
-def locale_format(specifier: str):
-    if not isinstance(specifier, FormatSpecifier):
-        specifier = format_specifier(specifier)
-    return locale.format(specifier)
-
+locale_format = locale.format
 format_prefix = locale.format_prefix
+
+def format_default_locale(definition):
+    return Locale(definition)

@@ -7,4 +7,4 @@ def test_format_type_c_1():
     assert d3.format("$c")("☃") == "$☃"
 
 def test_format_type_c_2():
-    assert d3.format_locale({"decimal": "/"}).format("c")(".") == "."
+    assert d3.format_default_locale({"decimal": "/"}).format("c")(".") == "."

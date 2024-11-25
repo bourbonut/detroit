@@ -30,9 +30,12 @@ def normalize(a, b):
         return constant(math.nan if math.isnan(b) else 0.5)
 
 def clamper(a, b):
+    a = a.timestamp() if isinstance(a, datetime) else a
+    b = b.timestamp() if isinstance(b, datetime) else b
     if a > b:
         a, b = b, a
     def f(x):
+        x = x.timestamp() if isinstance(x, datetime) else x
         return max(a, min(b, x))
     return f
 
@@ -106,13 +109,15 @@ class Transformer:
             return self._unknown
         else:
             if not self.output:
-                domain = [self.transform(x) for x in self._domain]
+                domain = [x.timestamp() if isinstance(x, datetime) else x for x in self._domain]
+                domain = [self.transform(x) for x in domain]
                 self.output = self.piecewise(domain, self._range, self._interpolate)
             return self.output(self.transform(self._clamp(x)))
 
     def invert(self, y):
         if not self.input:
-            domain = [self.transform(x) for x in self._domain]
+            domain = [x.timestamp() if isinstance(x, datetime) else x for x in self._domain]
+            domain = [self.transform(x) for x in domain]
             self.input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self.untransform(self.input(y)))
 

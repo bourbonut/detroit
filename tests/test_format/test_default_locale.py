@@ -22,10 +22,10 @@ def test_defaultLocale_1():
 
 def test_defaultLocale_2():
     locale = d3.format_default_locale(frFr)
-    format = locale.format
-    assert format("$,.2f")(12345678.90) == "12.345.678,90 €"
+    format_func = locale.format
+    assert format_func("$,.2f")(12345678.90) == "12.345.678,90 €"
 
 def test_defaultLocale_3():
     locale = d3.format_default_locale(frFr)
-    formatPrefix = locale.formatPrefix
-    assert formatPrefix(",.2", 1e3)(12345678.90) == "12.345,68k"
+    format_prefix = locale.format_prefix
+    assert format_prefix(",.2", 1e3)(12345678.90) == "12.345,68k"
