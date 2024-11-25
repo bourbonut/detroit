@@ -3,15 +3,18 @@ from datetime import datetime
 import math
 import pytest
 
+
 def test_identity_1():
     s = d3.scale_identity()
     assert s.domain == [0, 1]
     assert s.range == [0, 1]
 
+
 def test_identity_2():
     s = d3.scale_identity([1, 2])
     assert s.domain == [1, 2]
     assert s.range == [1, 2]
+
 
 def test_identity_3():
     s = d3.scale_identity().set_domain([1, 2])
@@ -21,9 +24,11 @@ def test_identity_3():
     assert s(2) == 2
     assert s(2.5) == 2.5
 
+
 def test_identity_4():
     s = d3.scale_identity().set_domain([1, 2])
     assert s("2") == "2"
+
 
 def test_identity_5():
     s = d3.scale_identity().set_unknown(-1)
@@ -31,6 +36,7 @@ def test_identity_5():
     assert s(None) == -1
     assert s(math.nan) == -1
     assert s(0.4) == 0.4
+
 
 def test_identity_6():
     s = d3.scale_identity().set_domain([1, 2])
@@ -40,6 +46,7 @@ def test_identity_6():
     assert s.invert(2) == 2
     assert s.invert(2.5) == 2.5
 
+
 def test_identity_7():
     s = d3.scale_identity().set_range(["0", "2"])
     assert s.invert("1") == "1"
@@ -48,9 +55,11 @@ def test_identity_7():
     s.set_range(["#000", "#fff"])
     assert isinstance(s.invert("#999"), str)
 
+
 def test_identity_8():
     s = d3.scale_identity().set_domain([1, 2])
     assert s.invert("2") == "2"
+
 
 def test_identity_9():
     s = d3.scale_identity()
@@ -60,11 +69,13 @@ def test_identity_9():
     s.set_range([-10, 0, 100])
     assert s.domain == [-10, 0, 100]
 
+
 def test_identity_10():
     s = d3.scale_identity()
     assert s.domain == [0, 1]
     assert s.range == [0, 1]
     assert s(0.5) == 0.5
+
 
 def test_identity_11():
     s = d3.scale_identity().set_domain([datetime(1990, 1, 1), datetime(1991, 1, 1)])
@@ -98,10 +109,12 @@ def test_identity_11():
     assert isinstance(s.range[1], int)
     assert s(0.5) == 0.5
 
+
 def test_identity_12():
     s = d3.scale_identity().set_domain({1, 2})
     assert s.domain == [1, 2]
     assert s.range == [1, 2]
+
 
 def test_identity_13():
     s = d3.scale_identity().set_domain([-10, 0, 100])
@@ -115,22 +128,62 @@ def test_identity_13():
     assert s(50) == 50
     assert s(75) == 75
 
+
 def test_identity_14():
     s = d3.scale_identity().set_domain([math.inf, math.nan])
     assert s(42) == 42
     assert s.invert(-42) == -42
 
+
 def test_identity_15():
     s = d3.scale_identity()
     assert list(map(s.tick_format(1), s.ticks(1))) == ["0", "1"]
     assert list(map(s.tick_format(2), s.ticks(2))) == ["0.0", "0.5", "1.0"]
-    assert list(map(s.tick_format(5), s.ticks(5))) == ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"]
-    assert list(map(s.tick_format(10), s.ticks(10))) == ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"]
+    assert list(map(s.tick_format(5), s.ticks(5))) == [
+        "0.0",
+        "0.2",
+        "0.4",
+        "0.6",
+        "0.8",
+        "1.0",
+    ]
+    assert list(map(s.tick_format(10), s.ticks(10))) == [
+        "0.0",
+        "0.1",
+        "0.2",
+        "0.3",
+        "0.4",
+        "0.5",
+        "0.6",
+        "0.7",
+        "0.8",
+        "0.9",
+        "1.0",
+    ]
     s.set_domain([1, 0])
     assert list(map(s.tick_format(1), s.ticks(1))) == ["0", "1"][::-1]
     assert list(map(s.tick_format(2), s.ticks(2))) == ["0.0", "0.5", "1.0"][::-1]
-    assert list(map(s.tick_format(5), s.ticks(5))) == ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"][::-1]
-    assert list(map(s.tick_format(10), s.ticks(10))) == ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"][::-1]
+    assert (
+        list(map(s.tick_format(5), s.ticks(5)))
+        == ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"][::-1]
+    )
+    assert (
+        list(map(s.tick_format(10), s.ticks(10)))
+        == [
+            "0.0",
+            "0.1",
+            "0.2",
+            "0.3",
+            "0.4",
+            "0.5",
+            "0.6",
+            "0.7",
+            "0.8",
+            "0.9",
+            "1.0",
+        ][::-1]
+    )
+
 
 def test_identity_16():
     s = d3.scale_identity().set_domain([0.123456789, 1.23456789])
@@ -143,6 +196,7 @@ def test_identity_16():
     assert s.tick_format(64)(s.ticks(64)[0]) == "0.14"
     assert s.tick_format(128)(s.ticks(128)[0]) == "0.13"
     assert s.tick_format(256)(s.ticks(256)[0]) == "0.125"
+
 
 def test_identity_17():
     s1 = d3.scale_identity()

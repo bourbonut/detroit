@@ -1,5 +1,6 @@
 from .init import init_range
 
+
 class ScaleOrdinal:
     def __init__(self):
         self._index = {}
@@ -54,7 +55,13 @@ class ScaleOrdinal:
         return self._unknown
 
     def copy(self):
-        return ScaleOrdinal().set_domain(self.domain).set_range(self.range).set_unknown(self.unknown)
+        return (
+            ScaleOrdinal()
+            .set_domain(self.domain)
+            .set_range(self.range)
+            .set_unknown(self.unknown)
+        )
+
 
 def scale_ordinal(*args):
     return init_range(ScaleOrdinal(), *args)

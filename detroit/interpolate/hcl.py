@@ -2,6 +2,7 @@ from ..coloration import hcl as color_hcl
 from .color import color, hue
 from collections.abc import Callable
 
+
 class HLCInterpolator:
     def __init__(self, func):
         self.func = func
@@ -22,6 +23,7 @@ class HLCInterpolator:
             return str(start)
 
         return interpolate
+
 
 def interpolate_hcl(a: str, b: str) -> Callable[[float], str]:
     """
@@ -44,6 +46,7 @@ def interpolate_hcl(a: str, b: str) -> Callable[[float], str]:
         Interpolator
     """
     return HLCInterpolator(hue)(a, b)
+
 
 def interpolate_hcl_long(a: str, b: str) -> Callable[[float], str]:
     """

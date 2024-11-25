@@ -9,8 +9,8 @@ from .pow import transform_pow, transform_sqrt
 import math
 from datetime import datetime
 
-class Sequential:
 
+class Sequential:
     def __init__(self, t):
         self._x0 = 0
         self._x1 = 1
@@ -24,13 +24,13 @@ class Sequential:
 
     def __call__(self, x):
         if x is None or (isinstance(x, float) and math.isnan(x)):
-            return self._unknown 
+            return self._unknown
         if self._k10 == 0:
-            x = 0.5 
+            x = 0.5
         else:
             x = (self._transform(x) - self._t0) * self._k10
             if self._clamp:
-                x = max(0, min(1, x)) 
+                x = max(0, min(1, x))
         return self._interpolator(x)
 
     def set_domain(self, domain):
@@ -88,7 +88,12 @@ class Sequential:
 
 
 def copy(source, target):
-    return target.set_domain(source.domain).set_interpolator(source.interpolator).set_clamp(source.clamp).set_unknown(source.unknown)
+    return (
+        target.set_domain(source.domain)
+        .set_interpolator(source.interpolator)
+        .set_clamp(source.clamp)
+        .set_unknown(source.unknown)
+    )
 
 
 class SequentialLinear(Sequential, LinearBase):
@@ -130,8 +135,9 @@ class SequentialLog(Sequential, LogBase):
     def copy(self):
         return copy(self, SequentialLog()).base(self.base)
 
+
 class SequentialSymlog(Sequential):
-    def __init__(self, c = 1):
+    def __init__(self, c=1):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
@@ -144,8 +150,9 @@ class SequentialSymlog(Sequential):
     def copy(self):
         return copy(self, SequentialSymlog()).set_constant(self.constant)
 
+
 class SequentialPow(Sequential, LinearBase):
-    def __init__(self, t = identity):
+    def __init__(self, t=identity):
         super().__init__(t)
         self._exponent = 1
 
@@ -173,6 +180,7 @@ class SequentialPow(Sequential, LinearBase):
 
     def copy(self):
         return copy(self, SequentialPow()).set_exponent(self.exponent)
+
 
 def scale_sequential(*args):
     scale = SequentialLinear()

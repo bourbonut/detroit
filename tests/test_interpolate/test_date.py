@@ -1,6 +1,7 @@
 import detroit as d3
 from datetime import datetime
 
+
 def test_date_1():
     i = d3.interpolate_date(datetime(2000, 1, 1), datetime(2000, 1, 2))
     assert isinstance(i(0.0), datetime)

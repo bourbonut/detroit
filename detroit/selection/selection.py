@@ -8,6 +8,7 @@ from .enter import EnterNode
 from itertools import zip_longest
 from lxml import etree
 
+
 def selector(element, selection, whole=False):
     prefix = "//" if whole else "/"
     if "." in selection:
@@ -17,6 +18,7 @@ def selector(element, selection, whole=False):
         return element.xpath(f"{prefix}{tag}{class_name}")
     return element.xpath(f"{prefix}{selection}")
 
+
 def creator(node, fullname):
     return (
         etree.SubElement(node, fullname["local"], attrs=fullname["space"])
@@ -24,8 +26,8 @@ def creator(node, fullname):
         else etree.SubElement(node, fullname)
     )
 
-class DataDict:
 
+class DataDict:
     def __init__(self, keys=None, items=None):
         self.keys = keys or []
         self.items = items or []
@@ -44,7 +46,11 @@ class DataDict:
         keys_left = list(k1 - k2)
         keys_right = list(k2 - k1)
         keys = common_keys + keys_left + keys_right
-        items = [self[key] for key in common_keys] + [self[key] for key in keys_left] + [other[key] for key in keys_right]
+        items = (
+            [self[key] for key in common_keys]
+            + [self[key] for key in keys_left]
+            + [other[key] for key in keys_right]
+        )
         return DataDict(keys, items)
 
     def get(self, key):
@@ -52,7 +58,12 @@ class DataDict:
             return self[key]
 
     def __str__(self):
-        return "{" + ", ".join(f"{key}:{item}" for key, item in zip(self.keys, self.items)) + "}"
+        return (
+            "{"
+            + ", ".join(f"{key}:{item}" for key, item in zip(self.keys, self.items))
+            + "}"
+        )
+
 
 class Selection:
     def __init__(self, groups, parents, enter=None, exit=None, data=None):
@@ -65,22 +76,28 @@ class Selection:
     def select(self, selection):
         subgroups = [
             selector(node, selection)[:1]
-            for group in self._groups for node in group if node is not None
+            for group in self._groups
+            for node in group
+            if node is not None
         ]
         parents = [
             (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
-            for group in self._groups if group[0] is not None
+            for group in self._groups
+            if group[0] is not None
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
     def select_all(self, selection):
         subgroups = [
             selector(node, selection)
-            for group in self._groups for node in group if node is not None
+            for group in self._groups
+            for node in group
+            if node is not None
         ]
         parents = [
             (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
-            for group in self._groups if group[0] is not None
+            for group in self._groups
+            if group[0] is not None
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
@@ -99,10 +116,12 @@ class Selection:
         )
 
     def merge(self, context):
-        selection = context.selection() if hasattr(context, 'selection') else context
+        selection = context.selection() if hasattr(context, "selection") else context
 
         merges = []
-        for groups0, groups1 in zip_longest(self._groups, selection._groups, fillvalue=[]):
+        for groups0, groups1 in zip_longest(
+            self._groups, selection._groups, fillvalue=[]
+        ):
             merge = []
             for group0, group1 in zip_longest(groups0, groups1, fillvalue=None):
                 node = group0 if group0 is not None else group1
@@ -135,7 +154,8 @@ class Selection:
             subgroups.append(subgroup)
         parents = [
             (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
-            for group in self._groups if group[0] is not None
+            for group in self._groups
+            if group[0] is not None
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
@@ -156,7 +176,7 @@ class Selection:
             self.each(attr_constant(name, value))
         return self
 
-    def style(self, name, value=None): # TODO : update this method
+    def style(self, name, value=None):  # TODO : update this method
         if value is None:
             return style_value(self.nodes[0].get("style"), name)
         for selected in self.nodes:
@@ -196,19 +216,30 @@ class Selection:
             update[j] = update_group = [None] * len(data)
             exit[j] = exit_group = [None] * len(group)
 
-            bind(self._data, parent, group, enter_group, update_group, exit_group, data, key)
+            bind(
+                self._data,
+                parent,
+                group,
+                enter_group,
+                update_group,
+                exit_group,
+                data,
+                key,
+            )
 
             for i0 in range(len(data)):
                 previous = enter_group[i0]
                 if previous:
                     i1 = i0 + 1
-                    while not (update_group[i1] if i1 < len(update_group) else None) and i1 < len(data):
+                    while not (
+                        update_group[i1] if i1 < len(update_group) else None
+                    ) and i1 < len(data):
                         i1 += 1
                     previous._next = update_group[i1] if i1 < len(data) else None
 
         return Selection(update, parents, enter, exit, self._data)
 
-    def order(self): # TODO : test it
+    def order(self):  # TODO : test it
         for group in self._groups:
             next_node = None
             for node in reversed(group):
@@ -230,8 +261,7 @@ class Selection:
                         node = node._parent
                     selection = selector(node, before, True)
                     if selection := [
-                        found for found in selection
-                        if found.getparent() == node
+                        found for found in selection if found.getparent() == node
                     ]:
                         index = node.index(selection[0])
                         created = creator(node, fullname)
@@ -244,6 +274,7 @@ class Selection:
             parent = node.getparent()
             if parent is not None:
                 parent.remove(node)
+
         self.each(remove)
         return self
 
@@ -266,7 +297,9 @@ class Selection:
         return self
 
     def to_string(self, pretty_print=True):
-        return etree.tostring(self._parents[0], pretty_print=pretty_print).decode("utf-8")
+        return etree.tostring(self._parents[0], pretty_print=pretty_print).decode(
+            "utf-8"
+        )
 
     def __str__(self):
         return self.to_string(False)

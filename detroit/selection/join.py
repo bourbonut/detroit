@@ -17,4 +17,3 @@ def join(onenter, onupdate, onexit):
     else:
         onexit(exit)
     return enter and update and enter.merge(update).order() or update
-

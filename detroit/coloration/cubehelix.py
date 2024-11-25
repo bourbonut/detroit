@@ -13,6 +13,7 @@ ED = E * D
 EB = E * B
 BC_DA = B * C - D * A
 
+
 def cubehelix_convert(obj):
     if isinstance(obj, Cubehelix):
         return Cubehelix(obj.h, obj.s, obj.l, obj.opacity)
@@ -31,17 +32,20 @@ def cubehelix_convert(obj):
     h = (math.degrees(math.atan2(k, bl)) - 120) if not math.isnan(s) and s else math.nan
     return Cubehelix(h + 360 if h < 0 else h, s, l, obj.opacity)
 
-@overload
-def cubehelix(specifier: str) -> Cubehelix:
-    ...
 
 @overload
-def cubehelix(h: int | float, s: int | float, l: int | float) -> Cubehelix:
-    ...
+def cubehelix(specifier: str) -> Cubehelix: ...
+
 
 @overload
-def cubehelix(h: int | float, s: int | float, l: int | float, opacity: int | float) -> Cubehelix:
-    ...
+def cubehelix(h: int | float, s: int | float, l: int | float) -> Cubehelix: ...
+
+
+@overload
+def cubehelix(
+    h: int | float, s: int | float, l: int | float, opacity: int | float
+) -> Cubehelix: ...
+
 
 def cubehelix(*args):
     """
@@ -57,6 +61,7 @@ def cubehelix(*args):
         h, s, l, opacity = args
         return Cubehelix(h, s, l, opacity)
 
+
 def lch(*args):
     if len(args) == 1:
         return hcl_convert(args[0])
@@ -67,6 +72,7 @@ def lch(*args):
     elif len(args) == 4:
         l, c, h, opacity = args
         return HCL(h, c, l, opacity)
+
 
 class Cubehelix(Color):
     """
@@ -83,7 +89,10 @@ class Cubehelix(Color):
     opacity : int | float
         Opacity value
     """
-    def __init__(self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1):
+
+    def __init__(
+        self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1
+    ):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
@@ -103,7 +112,7 @@ class Cubehelix(Color):
         Cubehelix
             Brighter Cubehelix
         """
-        k = BRIGHTER if k is None else BRIGHTER ** k
+        k = BRIGHTER if k is None else BRIGHTER**k
         return Cubehelix(self.h, self.s, self.l * k, self.opacity)
 
     def darker(self, k: float | None = None) -> Cubehelix:
@@ -120,7 +129,7 @@ class Cubehelix(Color):
         Cubehelix
             Darker Cubehelix
         """
-        k = DARKER if k is None else DARKER ** k
+        k = DARKER if k is None else DARKER**k
         return Cubehelix(self.h, self.s, self.l * k, self.opacity)
 
     def rgb(self) -> RGB:
@@ -141,5 +150,5 @@ class Cubehelix(Color):
             255 * (l + a * (A * cosh + B * sinh)),
             255 * (l + a * (C * cosh + D * sinh)),
             255 * (l + a * (E * cosh)),
-            self.opacity
+            self.opacity,
         )

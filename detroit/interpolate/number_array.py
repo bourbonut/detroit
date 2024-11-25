@@ -3,6 +3,7 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
+
 def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[T], list[T]]:
     """
     Returns an interpolator between the two arbitrary values a and b.
@@ -30,6 +31,7 @@ def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[T], lis
         return c
 
     return interpolate
+
 
 def is_number_array(x):
     return isinstance(x, list) and all(isinstance(i, (int, float)) for i in x)

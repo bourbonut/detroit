@@ -1,7 +1,7 @@
 from .format_decimal import format_decimal_parts
 
-class FormatPrefixAuto:
 
+class FormatPrefixAuto:
     def __init__(self):
         self.prefix_exponent = 0
 
@@ -22,7 +22,9 @@ class FormatPrefixAuto:
         else:
             return "0." + "0" * (-i) + format_decimal_parts(x, max(0, p + i - 1))[0]
 
+
 prefix_auto = FormatPrefixAuto()
+
 
 def format_prefix_auto(x, p):
     return prefix_auto(x, p)

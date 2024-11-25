@@ -4,6 +4,7 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
+
 def nice(start: T, stop: T, count: int) -> tuple[T, T]:
     """
     Returns a new interval :code:`[niceStart, niceStop]` covering the given
@@ -36,4 +37,3 @@ def nice(start: T, stop: T, count: int) -> tuple[T, T]:
             start = math.ceil(start * step) / step
             stop = math.floor(stop * step) / step
         prestep = step
-

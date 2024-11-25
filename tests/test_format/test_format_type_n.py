@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_format_type_n_1():
     f = d3.format(".12n")
     assert f(0) == "0"
@@ -10,9 +11,10 @@ def test_format_type_n_1():
     assert f(-42) == "-42"
     assert f(-4200000) == "-4,200,000"
     assert f(-42000000) == "-42,000,000"
-    assert f(.0042) == "0.0042"
-    assert f(.42) == "0.42"
+    assert f(0.0042) == "0.0042"
+    assert f(0.42) == "0.42"
     assert f(1e21) == "1e+21"
+
 
 def test_format_type_n_2():
     assert d3.format("01.0n")(0) == "0"

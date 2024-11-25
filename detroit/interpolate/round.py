@@ -3,6 +3,7 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
+
 def interpolate_round(a: T, b: T) -> Callable[[T], T]:
     """
     Returns an interpolator between the two numbers a and b.

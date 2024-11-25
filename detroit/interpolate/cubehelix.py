@@ -2,8 +2,8 @@ from ..coloration import cubehelix as color_cubehelix
 from .color import color, hue
 from collections.abc import Callable
 
-class CubeHelixInterpolator:
 
+class CubeHelixInterpolator:
     def __init__(self, func):
         self.func = func
         self.gamma = 1
@@ -19,7 +19,7 @@ class CubeHelixInterpolator:
         def interpolate(t):
             start.h = h(t)
             start.s = s(t)
-            start.l = l(t ** self.gamma)
+            start.l = l(t**self.gamma)
             start.opacity = opacity(t)
             return str(start)
 
@@ -28,6 +28,7 @@ class CubeHelixInterpolator:
     def set_gamma(self, gamma):
         self.gamma = gamma
         return self
+
 
 interpolate_cubehelix = CubeHelixInterpolator(hue)
 interpolate_cubehelix.__doc__ = """

@@ -98,7 +98,7 @@ def test_utc_time_9():
         datetime(2009, 1, 4),
     ]
     assert x.nice(d3.time_week.every(2)).domain == [
-        datetime(2008, 12, 28), # maybe 2008, 12, 21
+        datetime(2008, 12, 28),  # maybe 2008, 12, 21
         datetime(2009, 1, 4),
     ]
     assert x.nice(d3.time_month.every(3)).domain == [
@@ -154,7 +154,11 @@ def test_utc_time_12():
 
 
 def test_utc_time_13():
-    x = d3.scale_time().set_domain([datetime(2009, 1, 1), datetime(2010, 1, 1)]).set_clamp(True)
+    x = (
+        d3.scale_time()
+        .set_domain([datetime(2009, 1, 1), datetime(2010, 1, 1)])
+        .set_clamp(True)
+    )
     y = x.copy()
     x.set_clamp(False)
     assert y.clamp is True

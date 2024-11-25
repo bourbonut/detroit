@@ -15,4 +15,4 @@ def format_trim(s):
                 break
             if i0 > 0:
                 i0 = 0
-    return s[:i0] + s[i1 + 1:] if i0 > 0 else s
+    return s[:i0] + s[i1 + 1 :] if i0 > 0 else s

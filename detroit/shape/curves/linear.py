@@ -1,11 +1,11 @@
 import math
 
-class LinearCurve:
 
+class LinearCurve:
     def __init__(self, context):
         self._context = context
         self._line = math.nan
-    
+
     def area_start(self):
         self._line = 0
 
@@ -19,7 +19,7 @@ class LinearCurve:
         if not math.isnan(self._line) or (self._line != 0 and self._point == 1):
             self._context.close_path()
         self._line = 1 - self._line
-    
+
     def point(self, x, y):
         if self._point == 0:
             self._point = 1

@@ -5,10 +5,12 @@ from .curves.linear import LinearCurve
 
 from collections.abc import Callable
 
+
 class Line(WithPath):
     """
     Builds a line generator given x and y accessor
     """
+
     def __init__(self, x: Callable | None = None, y: Callable | None = None):
         super().__init__()
         self._defined = constant(True)
@@ -37,11 +39,10 @@ class Line(WithPath):
         data = list(data)
         n = len(data)
         defined0 = False
-        
+
         if self._context is None:
             buffer = self._path()
             self._output = self._curve(buffer)
-
 
         for i in range(n):
             d = data[i]
@@ -62,7 +63,6 @@ class Line(WithPath):
             self._output.line_end()
         if defined0:
             self._output.point(self._x(d, i, data), self._y(d, i, data))
-
 
         if buffer:
             self._output = None

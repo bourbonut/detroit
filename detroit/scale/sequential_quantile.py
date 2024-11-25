@@ -5,15 +5,17 @@ import math
 from bisect import bisect
 from statistics import quantiles
 
-class SequentialQuantile:
 
+class SequentialQuantile:
     def __init__(self):
         self._domain = []
         self._interpolator = identity
 
     def __call__(self, x):
         if x is not None and not (isinstance(x, float) and math.isnan(x)):
-            return self._interpolator((bisect(self.domain, x, 1) - 1) / (len(self.domain) - 1))
+            return self._interpolator(
+                (bisect(self.domain, x, 1) - 1) / (len(self.domain) - 1)
+            )
 
     def set_domain(self, domain):
         self._domain.clear()
@@ -37,10 +39,17 @@ class SequentialQuantile:
 
     @property
     def range(self):
-        return [self._interpolator(i / (len(self.domain) - 1)) for i in range(len(self.domain))]
+        return [
+            self._interpolator(i / (len(self.domain) - 1))
+            for i in range(len(self.domain))
+        ]
 
     def quantiles(self, n):
-        return [self.domain[0]] + quantiles(self.domain, n=n, method="inclusive") + [self.domain[-1]]
+        return (
+            [self.domain[0]]
+            + quantiles(self.domain, n=n, method="inclusive")
+            + [self.domain[-1]]
+        )
 
     def copy(self):
         return SequentialQuantile().set_domain(self.domain)

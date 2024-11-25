@@ -4,17 +4,21 @@ from .linear import LinearBase
 from .number import number
 import math
 
+
 def sign(x):
     return -1 if x < 0 else 1
+
 
 def square(x):
     return sign(x) * x * x
 
+
 def unsquare(x):
     return sign(x) * math.sqrt(abs(x))
 
+
 class ScaleRadial(Transformer, LinearBase):
-    def __init__(self, t = identity, u = identity):
+    def __init__(self, t=identity, u=identity):
         super().__init__(t, u)
         self._range_vals = [0, 1]
         self._round = False
@@ -53,7 +57,14 @@ class ScaleRadial(Transformer, LinearBase):
         return self._round
 
     def copy(self):
-        return ScaleRadial().set_domain(self.domain).set_range(self.range).set_round(self.round).set_clamp(self.clamp).set_unknown(self._unknown)
+        return (
+            ScaleRadial()
+            .set_domain(self.domain)
+            .set_range(self.range)
+            .set_round(self.round)
+            .set_clamp(self.clamp)
+            .set_unknown(self._unknown)
+        )
 
 
 def scale_radial(*args):

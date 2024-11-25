@@ -5,7 +5,7 @@ scheme = [
     "f2f0f7dadaebbcbddc9e9ac8756bb154278f",
     "f2f0f7dadaebbcbddc9e9ac8807dba6a51a34a1486",
     "fcfbfdefedf5dadaebbcbddc9e9ac8807dba6a51a34a1486",
-    "fcfbfdefedf5dadaebbcbddc9e9ac8807dba6a51a354278f3f007d"
+    "fcfbfdefedf5dadaebbcbddc9e9ac8807dba6a51a354278f3f007d",
 ]
 scheme = list(map(colors, scheme))
 Purples = ramp(scheme)

@@ -2,18 +2,23 @@ import re
 from .number import interpolate_number
 from collections.abc import Callable
 
-reA = re.compile(r'[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?')
+reA = re.compile(r"[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?")
 reB = re.compile(reA.pattern)
+
 
 def zero(b):
     def f(*args):
         return b
+
     return f
+
 
 def one(b):
     def f(t):
         return str(b(t))
+
     return f
+
 
 def interpolate_string(a: str, b: str) -> Callable[[float], str]:
     """
@@ -32,7 +37,7 @@ def interpolate_string(a: str, b: str) -> Callable[[float], str]:
         Interpolator
     """
     a, b = str(a), str(b)
-    
+
     bi = 0
     s = []
     q = []
@@ -41,25 +46,30 @@ def interpolate_string(a: str, b: str) -> Callable[[float], str]:
         bm = reB.search(b, bi)
         if bm:
             if bm.start() > bi:
-                s.append(b[bi:bm.start()])
-            
+                s.append(b[bi : bm.start()])
+
             if am.group() == bm.group():
                 s.append(bm.group())
             else:
                 s.append(None)
-                q.append({'i': len(s) - 1, 'x': interpolate_number(float(am.group()), float(bm.group()))})
-            
+                q.append(
+                    {
+                        "i": len(s) - 1,
+                        "x": interpolate_number(float(am.group()), float(bm.group())),
+                    }
+                )
+
             bi = bm.end()
 
     if bi < len(b):
         s.append(b[bi:])
 
     if len(s) < 2:
-        return one(q[0]['x']) if q else zero(b)
-    
+        return one(q[0]["x"]) if q else zero(b)
+
     def interpolator(t):
         for o in q:
-            s[o['i']] = str(o['x'](t)).removesuffix(".0")
-        return ''.join(s)
+            s[o["i"]] = str(o["x"](t)).removesuffix(".0")
+        return "".join(s)
 
     return interpolator

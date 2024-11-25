@@ -15,5 +15,5 @@ format_types = {
     "r": format_rounded,
     "s": format_prefix_auto,
     "X": lambda x: hex(round(x))[2:].upper(),
-    "x": lambda x: hex(round(x))[2:]
+    "x": lambda x: hex(round(x))[2:],
 }

@@ -4,17 +4,23 @@ from .init import init_range
 from collections.abc import Callable
 import math
 
+
 def transform_pow(exponent):
     return lambda x: (-math.pow(-x, exponent) if x < 0 else math.pow(x, exponent))
 
+
 def transform_sqrt(x):
-    return (-math.sqrt(-x) if x < 0 else math.sqrt(x))
+    return -math.sqrt(-x) if x < 0 else math.sqrt(x)
+
 
 def transform_square(x):
-    return (-x * x if x < 0 else x * x)
+    return -x * x if x < 0 else x * x
+
 
 class ScalePow(Transformer, LinearBase):
-    def __init__(self, t: Callable = identity, u: Callable = identity, exponent: float | int = 1):
+    def __init__(
+        self, t: Callable = identity, u: Callable = identity, exponent: float | int = 1
+    ):
         super().__init__(t, u)
         self._exponent = exponent
 
@@ -45,6 +51,7 @@ class ScalePow(Transformer, LinearBase):
 
     def copy(self):
         return copy(self, ScalePow()).set_exponent(self.exponent)
+
 
 def scale_pow() -> ScalePow:
     """

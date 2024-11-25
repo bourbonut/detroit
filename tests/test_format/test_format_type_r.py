@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_format_type_r_1():
     assert d3.format(".2r")(0) == "0.0"
     assert d3.format(".1r")(0.049) == "0.05"
@@ -18,17 +19,18 @@ def test_format_type_r_1():
     assert d3.format(".4r")(123.45) == "123.5"
     assert d3.format(".5r")(123.45) == "123.45"
     assert d3.format(".6r")(123.45) == "123.450"
-    assert d3.format(".1r")(.9) == "0.9"
-    assert d3.format(".1r")(.09) == "0.09"
-    assert d3.format(".1r")(.949) == "0.9"
-    assert d3.format(".1r")(.0949) == "0.09"
-    assert d3.format(".1r")(.0000000129) == "0.00000001"
-    assert d3.format(".2r")(.0000000129) == "0.000000013"
-    assert d3.format(".2r")(.00000000129) == "0.0000000013"
-    assert d3.format(".3r")(.00000000129) == "0.00000000129"
-    assert d3.format(".4r")(.00000000129) == "0.000000001290"
-    assert d3.format(".10r")(.9999999999) == "0.9999999999"
-    assert d3.format(".15r")(.999999999999999) == "0.999999999999999"
+    assert d3.format(".1r")(0.9) == "0.9"
+    assert d3.format(".1r")(0.09) == "0.09"
+    assert d3.format(".1r")(0.949) == "0.9"
+    assert d3.format(".1r")(0.0949) == "0.09"
+    assert d3.format(".1r")(0.0000000129) == "0.00000001"
+    assert d3.format(".2r")(0.0000000129) == "0.000000013"
+    assert d3.format(".2r")(0.00000000129) == "0.0000000013"
+    assert d3.format(".3r")(0.00000000129) == "0.00000000129"
+    assert d3.format(".4r")(0.00000000129) == "0.000000001290"
+    assert d3.format(".10r")(0.9999999999) == "0.9999999999"
+    assert d3.format(".15r")(0.999999999999999) == "0.999999999999999"
+
 
 def test_format_type_r_2():
     f = d3.format(".2r")

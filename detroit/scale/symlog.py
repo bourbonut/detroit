@@ -3,17 +3,21 @@ from .continuous import copy, Transformer
 from .init import init_range
 import math
 
+
 def sign(x):
     return -1 if x < 0 else 1
+
 
 def transform_symlog(c):
     return lambda x: sign(x) * math.log1p(abs(x / c))
 
+
 def transform_symexp(c):
     return lambda x: sign(x) * math.expm1(abs(x)) * c
 
+
 class ScaleSymlog(Transformer, LinearBase):
-    def __init__(self, c = 1):
+    def __init__(self, c=1):
         self._c = c
         super().__init__(transform_symlog(self._c), transform_symexp(self._c))
 
@@ -30,6 +34,7 @@ class ScaleSymlog(Transformer, LinearBase):
 
     def copy(self):
         return copy(self, ScaleSymlog()).set_constant(self.constant)
+
 
 def scale_symlog(*args):
     scale = ScaleSymlog()

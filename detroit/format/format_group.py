@@ -10,7 +10,7 @@ def format_group(grouping, thousands):
             if length + g + 1 > width:
                 g = max(1, width - length)
             i -= g
-            t.append(value[max(0, i):i + g])
+            t.append(value[max(0, i) : i + g])
             length += g + 1
             if length > width:
                 break
@@ -18,4 +18,5 @@ def format_group(grouping, thousands):
             g = grouping[j]
 
         return thousands.join(reversed(t))
+
     return group

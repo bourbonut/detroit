@@ -1,6 +1,7 @@
 from .enter import EnterNode
 from inspect import signature
 
+
 def bind_index(node_data, parent, group, enter, update, exit, data, _):
     for i in range(len(data)):
         node = group[i] if i < len(group) else None
@@ -14,6 +15,7 @@ def bind_index(node_data, parent, group, enter, update, exit, data, _):
         node = group[i] if i < len(group) else None
         if node is not None:
             exit[i] = node
+
 
 def bind_key(node_data, parent, group, enter, update, exit, data, key):
     node_by_key_value = {}

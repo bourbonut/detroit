@@ -4,7 +4,10 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
-def extent(values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | None = None) -> tuple[T, T]:
+
+def extent(
+    values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | None = None
+) -> tuple[T, T]:
     """
     Returns the minimum and maximum value in
     the given iterable using natural order.
@@ -36,7 +39,9 @@ def extent(values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | N
     else:
         for index, value in enumerate(values):
             new_value = accessor(value, index, values)
-            if new_value is not None and (isinstance(new_value, str) or not math.isnan(new_value)):
+            if new_value is not None and (
+                isinstance(new_value, str) or not math.isnan(new_value)
+            ):
                 value = new_value
                 if mini is None:
                     mini = maxi = value
@@ -45,5 +50,4 @@ def extent(values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | N
                         mini = value
                     if maxi < value:
                         maxi = value
-    return [mini, maxi] # TODO: remove brackets and fix tests
-
+    return [mini, maxi]  # TODO: remove brackets and fix tests

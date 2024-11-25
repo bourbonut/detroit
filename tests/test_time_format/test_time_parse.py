@@ -1,8 +1,9 @@
 import detroit as d3
 from datetime import datetime
 
+
 def test_time_parse_string():
-    p = d3.time_parse("%m/%d/%Y, %H:%M:%S");
+    p = d3.time_parse("%m/%d/%Y, %H:%M:%S")
     assert p("1/1/1990, 12:00:00") == datetime(1990, 1, 1, 12, 0)
     assert p("1/2/1990, 12:00:00") == datetime(1990, 1, 2, 12, 0)
     assert p("1/3/1990, 12:00:00") == datetime(1990, 1, 3, 12, 0)

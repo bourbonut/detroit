@@ -12,165 +12,171 @@ RE_P = re.compile(r"\s*([+-]?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?)%\s*")
 RE_HEX = re.compile(r"^#([0-9a-f]{3,8})$")
 RE_RGB_INTEGER = re.compile(rf"^rgb\({RE_I.pattern},{RE_I.pattern},{RE_I.pattern}\)$")
 RE_RGB_PERCENT = re.compile(rf"^rgb\({RE_P.pattern},{RE_P.pattern},{RE_P.pattern}\)$")
-RE_RGBA_INTEGER = re.compile(rf"^rgba\({RE_I.pattern},{RE_I.pattern},{RE_I.pattern},{RE_N.pattern}\)$")
-RE_RGBA_PERCENT = re.compile(rf"^rgba\({RE_P.pattern},{RE_P.pattern},{RE_P.pattern},{RE_N.pattern}\)$")
+RE_RGBA_INTEGER = re.compile(
+    rf"^rgba\({RE_I.pattern},{RE_I.pattern},{RE_I.pattern},{RE_N.pattern}\)$"
+)
+RE_RGBA_PERCENT = re.compile(
+    rf"^rgba\({RE_P.pattern},{RE_P.pattern},{RE_P.pattern},{RE_N.pattern}\)$"
+)
 RE_HSL_PERCENT = re.compile(rf"^hsl\({RE_N.pattern},{RE_P.pattern},{RE_P.pattern}\)$")
-RE_HSLA_PERCENT = re.compile(rf"^hsla\({RE_N.pattern},{RE_P.pattern},{RE_P.pattern},{RE_N.pattern}\)$")
+RE_HSLA_PERCENT = re.compile(
+    rf"^hsla\({RE_N.pattern},{RE_P.pattern},{RE_P.pattern},{RE_N.pattern}\)$"
+)
 
 
 NAMED = {
-    "aliceblue": 0xf0f8ff,
-    "antiquewhite": 0xfaebd7,
-    "aqua": 0x00ffff,
-    "aquamarine": 0x7fffd4,
-    "azure": 0xf0ffff,
-    "beige": 0xf5f5dc,
-    "bisque": 0xffe4c4,
+    "aliceblue": 0xF0F8FF,
+    "antiquewhite": 0xFAEBD7,
+    "aqua": 0x00FFFF,
+    "aquamarine": 0x7FFFD4,
+    "azure": 0xF0FFFF,
+    "beige": 0xF5F5DC,
+    "bisque": 0xFFE4C4,
     "black": 0x000000,
-    "blanchedalmond": 0xffebcd,
-    "blue": 0x0000ff,
-    "blueviolet": 0x8a2be2,
-    "brown": 0xa52a2a,
-    "burlywood": 0xdeb887,
-    "cadetblue": 0x5f9ea0,
-    "chartreuse": 0x7fff00,
-    "chocolate": 0xd2691e,
-    "coral": 0xff7f50,
-    "cornflowerblue": 0x6495ed,
-    "cornsilk": 0xfff8dc,
-    "crimson": 0xdc143c,
-    "cyan": 0x00ffff,
-    "darkblue": 0x00008b,
-    "darkcyan": 0x008b8b,
-    "darkgoldenrod": 0xb8860b,
-    "darkgray": 0xa9a9a9,
+    "blanchedalmond": 0xFFEBCD,
+    "blue": 0x0000FF,
+    "blueviolet": 0x8A2BE2,
+    "brown": 0xA52A2A,
+    "burlywood": 0xDEB887,
+    "cadetblue": 0x5F9EA0,
+    "chartreuse": 0x7FFF00,
+    "chocolate": 0xD2691E,
+    "coral": 0xFF7F50,
+    "cornflowerblue": 0x6495ED,
+    "cornsilk": 0xFFF8DC,
+    "crimson": 0xDC143C,
+    "cyan": 0x00FFFF,
+    "darkblue": 0x00008B,
+    "darkcyan": 0x008B8B,
+    "darkgoldenrod": 0xB8860B,
+    "darkgray": 0xA9A9A9,
     "darkgreen": 0x006400,
-    "darkgrey": 0xa9a9a9,
-    "darkkhaki": 0xbdb76b,
-    "darkmagenta": 0x8b008b,
-    "darkolivegreen": 0x556b2f,
-    "darkorange": 0xff8c00,
-    "darkorchid": 0x9932cc,
-    "darkred": 0x8b0000,
-    "darksalmon": 0xe9967a,
-    "darkseagreen": 0x8fbc8f,
-    "darkslateblue": 0x483d8b,
-    "darkslategray": 0x2f4f4f,
-    "darkslategrey": 0x2f4f4f,
-    "darkturquoise": 0x00ced1,
-    "darkviolet": 0x9400d3,
-    "deeppink": 0xff1493,
-    "deepskyblue": 0x00bfff,
+    "darkgrey": 0xA9A9A9,
+    "darkkhaki": 0xBDB76B,
+    "darkmagenta": 0x8B008B,
+    "darkolivegreen": 0x556B2F,
+    "darkorange": 0xFF8C00,
+    "darkorchid": 0x9932CC,
+    "darkred": 0x8B0000,
+    "darksalmon": 0xE9967A,
+    "darkseagreen": 0x8FBC8F,
+    "darkslateblue": 0x483D8B,
+    "darkslategray": 0x2F4F4F,
+    "darkslategrey": 0x2F4F4F,
+    "darkturquoise": 0x00CED1,
+    "darkviolet": 0x9400D3,
+    "deeppink": 0xFF1493,
+    "deepskyblue": 0x00BFFF,
     "dimgray": 0x696969,
     "dimgrey": 0x696969,
-    "dodgerblue": 0x1e90ff,
-    "firebrick": 0xb22222,
-    "floralwhite": 0xfffaf0,
-    "forestgreen": 0x228b22,
-    "fuchsia": 0xff00ff,
-    "gainsboro": 0xdcdcdc,
-    "ghostwhite": 0xf8f8ff,
-    "gold": 0xffd700,
-    "goldenrod": 0xdaa520,
+    "dodgerblue": 0x1E90FF,
+    "firebrick": 0xB22222,
+    "floralwhite": 0xFFFAF0,
+    "forestgreen": 0x228B22,
+    "fuchsia": 0xFF00FF,
+    "gainsboro": 0xDCDCDC,
+    "ghostwhite": 0xF8F8FF,
+    "gold": 0xFFD700,
+    "goldenrod": 0xDAA520,
     "gray": 0x808080,
     "green": 0x008000,
-    "greenyellow": 0xadff2f,
+    "greenyellow": 0xADFF2F,
     "grey": 0x808080,
-    "honeydew": 0xf0fff0,
-    "hotpink": 0xff69b4,
-    "indianred": 0xcd5c5c,
-    "indigo": 0x4b0082,
-    "ivory": 0xfffff0,
-    "khaki": 0xf0e68c,
-    "lavender": 0xe6e6fa,
-    "lavenderblush": 0xfff0f5,
-    "lawngreen": 0x7cfc00,
-    "lemonchiffon": 0xfffacd,
-    "lightblue": 0xadd8e6,
-    "lightcoral": 0xf08080,
-    "lightcyan": 0xe0ffff,
-    "lightgoldenrodyellow": 0xfafad2,
-    "lightgray": 0xd3d3d3,
-    "lightgreen": 0x90ee90,
-    "lightgrey": 0xd3d3d3,
-    "lightpink": 0xffb6c1,
-    "lightsalmon": 0xffa07a,
-    "lightseagreen": 0x20b2aa,
-    "lightskyblue": 0x87cefa,
+    "honeydew": 0xF0FFF0,
+    "hotpink": 0xFF69B4,
+    "indianred": 0xCD5C5C,
+    "indigo": 0x4B0082,
+    "ivory": 0xFFFFF0,
+    "khaki": 0xF0E68C,
+    "lavender": 0xE6E6FA,
+    "lavenderblush": 0xFFF0F5,
+    "lawngreen": 0x7CFC00,
+    "lemonchiffon": 0xFFFACD,
+    "lightblue": 0xADD8E6,
+    "lightcoral": 0xF08080,
+    "lightcyan": 0xE0FFFF,
+    "lightgoldenrodyellow": 0xFAFAD2,
+    "lightgray": 0xD3D3D3,
+    "lightgreen": 0x90EE90,
+    "lightgrey": 0xD3D3D3,
+    "lightpink": 0xFFB6C1,
+    "lightsalmon": 0xFFA07A,
+    "lightseagreen": 0x20B2AA,
+    "lightskyblue": 0x87CEFA,
     "lightslategray": 0x778899,
     "lightslategrey": 0x778899,
-    "lightsteelblue": 0xb0c4de,
-    "lightyellow": 0xffffe0,
-    "lime": 0x00ff00,
-    "limegreen": 0x32cd32,
-    "linen": 0xfaf0e6,
-    "magenta": 0xff00ff,
+    "lightsteelblue": 0xB0C4DE,
+    "lightyellow": 0xFFFFE0,
+    "lime": 0x00FF00,
+    "limegreen": 0x32CD32,
+    "linen": 0xFAF0E6,
+    "magenta": 0xFF00FF,
     "maroon": 0x800000,
-    "mediumaquamarine": 0x66cdaa,
-    "mediumblue": 0x0000cd,
-    "mediumorchid": 0xba55d3,
-    "mediumpurple": 0x9370db,
-    "mediumseagreen": 0x3cb371,
-    "mediumslateblue": 0x7b68ee,
-    "mediumspringgreen": 0x00fa9a,
-    "mediumturquoise": 0x48d1cc,
-    "mediumvioletred": 0xc71585,
+    "mediumaquamarine": 0x66CDAA,
+    "mediumblue": 0x0000CD,
+    "mediumorchid": 0xBA55D3,
+    "mediumpurple": 0x9370DB,
+    "mediumseagreen": 0x3CB371,
+    "mediumslateblue": 0x7B68EE,
+    "mediumspringgreen": 0x00FA9A,
+    "mediumturquoise": 0x48D1CC,
+    "mediumvioletred": 0xC71585,
     "midnightblue": 0x191970,
-    "mintcream": 0xf5fffa,
-    "mistyrose": 0xffe4e1,
-    "moccasin": 0xffe4b5,
-    "navajowhite": 0xffdead,
+    "mintcream": 0xF5FFFA,
+    "mistyrose": 0xFFE4E1,
+    "moccasin": 0xFFE4B5,
+    "navajowhite": 0xFFDEAD,
     "navy": 0x000080,
-    "oldlace": 0xfdf5e6,
+    "oldlace": 0xFDF5E6,
     "olive": 0x808000,
-    "olivedrab": 0x6b8e23,
-    "orange": 0xffa500,
-    "orangered": 0xff4500,
-    "orchid": 0xda70d6,
-    "palegoldenrod": 0xeee8aa,
-    "palegreen": 0x98fb98,
-    "paleturquoise": 0xafeeee,
-    "palevioletred": 0xdb7093,
-    "papayawhip": 0xffefd5,
-    "peachpuff": 0xffdab9,
-    "peru": 0xcd853f,
-    "pink": 0xffc0cb,
-    "plum": 0xdda0dd,
-    "powderblue": 0xb0e0e6,
+    "olivedrab": 0x6B8E23,
+    "orange": 0xFFA500,
+    "orangered": 0xFF4500,
+    "orchid": 0xDA70D6,
+    "palegoldenrod": 0xEEE8AA,
+    "palegreen": 0x98FB98,
+    "paleturquoise": 0xAFEEEE,
+    "palevioletred": 0xDB7093,
+    "papayawhip": 0xFFEFD5,
+    "peachpuff": 0xFFDAB9,
+    "peru": 0xCD853F,
+    "pink": 0xFFC0CB,
+    "plum": 0xDDA0DD,
+    "powderblue": 0xB0E0E6,
     "purple": 0x800080,
     "rebeccapurple": 0x663399,
-    "red": 0xff0000,
-    "rosybrown": 0xbc8f8f,
-    "royalblue": 0x4169e1,
-    "saddlebrown": 0x8b4513,
-    "salmon": 0xfa8072,
-    "sandybrown": 0xf4a460,
-    "seagreen": 0x2e8b57,
-    "seashell": 0xfff5ee,
-    "sienna": 0xa0522d,
-    "silver": 0xc0c0c0,
-    "skyblue": 0x87ceeb,
-    "slateblue": 0x6a5acd,
+    "red": 0xFF0000,
+    "rosybrown": 0xBC8F8F,
+    "royalblue": 0x4169E1,
+    "saddlebrown": 0x8B4513,
+    "salmon": 0xFA8072,
+    "sandybrown": 0xF4A460,
+    "seagreen": 0x2E8B57,
+    "seashell": 0xFFF5EE,
+    "sienna": 0xA0522D,
+    "silver": 0xC0C0C0,
+    "skyblue": 0x87CEEB,
+    "slateblue": 0x6A5ACD,
     "slategray": 0x708090,
     "slategrey": 0x708090,
-    "snow": 0xfffafa,
-    "springgreen": 0x00ff7f,
-    "steelblue": 0x4682b4,
-    "tan": 0xd2b48c,
+    "snow": 0xFFFAFA,
+    "springgreen": 0x00FF7F,
+    "steelblue": 0x4682B4,
+    "tan": 0xD2B48C,
     "teal": 0x008080,
-    "thistle": 0xd8bfd8,
-    "tomato": 0xff6347,
-    "turquoise": 0x40e0d0,
-    "violet": 0xee82ee,
-    "wheat": 0xf5deb3,
-    "white": 0xffffff,
-    "whitesmoke": 0xf5f5f5,
-    "yellow": 0xffff00,
-    "yellowgreen": 0x9acd32
+    "thistle": 0xD8BFD8,
+    "tomato": 0xFF6347,
+    "turquoise": 0x40E0D0,
+    "violet": 0xEE82EE,
+    "wheat": 0xF5DEB3,
+    "white": 0xFFFFFF,
+    "whitesmoke": 0xF5F5F5,
+    "yellow": 0xFFFF00,
+    "yellowgreen": 0x9ACD32,
 }
 
-class Color:
 
+class Color:
     def format_hex(self):
         return self.rgb().format_hex()
 
@@ -185,6 +191,7 @@ class Color:
 
     def __str__(self):
         return self.format_rgb()
+
 
 def color(format: str) -> RGB | HSL | None:
     """
@@ -211,35 +218,71 @@ def color(format: str) -> RGB | HSL | None:
         if length == 6:
             return rgbn(m)  # #ff0000
         elif length == 3:
-            return RGB((m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1)  # #f00
+            return RGB(
+                (m >> 8 & 0xF) | (m >> 4 & 0xF0),
+                (m >> 4 & 0xF) | (m & 0xF0),
+                ((m & 0xF) << 4) | (m & 0xF),
+                1,
+            )  # #f00
         elif length == 8:
-            return rgba(m >> 24 & 0xff, m >> 16 & 0xff, m >> 8 & 0xff, (m & 0xff) / 0xff)  # #ff000000
+            return rgba(
+                m >> 24 & 0xFF, m >> 16 & 0xFF, m >> 8 & 0xFF, (m & 0xFF) / 0xFF
+            )  # #ff000000
         elif length == 4:
-            return rgba((m >> 12 & 0xf) | (m >> 8 & 0xf0), (m >> 8 & 0xf) | (m >> 4 & 0xf0), (m >> 4 & 0xf) | (m & 0xf0), (((m & 0xf) << 4) | (m & 0xf)) / 0xff)  # #f000
+            return rgba(
+                (m >> 12 & 0xF) | (m >> 8 & 0xF0),
+                (m >> 8 & 0xF) | (m >> 4 & 0xF0),
+                (m >> 4 & 0xF) | (m & 0xF0),
+                (((m & 0xF) << 4) | (m & 0xF)) / 0xFF,
+            )  # #f000
         return None  # invalid hex
     elif m := RE_RGB_INTEGER.match(format):
-        return RGB(int(m.group(1)), int(m.group(2)), int(m.group(3)), 1)  # rgb(255, 0, 0)
+        return RGB(
+            int(m.group(1)), int(m.group(2)), int(m.group(3)), 1
+        )  # rgb(255, 0, 0)
     elif m := RE_RGB_PERCENT.match(format):
-        return RGB(float(m.group(1)) * 255 / 100, float(m.group(2)) * 255 / 100, float(m.group(3)) * 255 / 100, 1)  # rgb(100%, 0%, 0%)
+        return RGB(
+            float(m.group(1)) * 255 / 100,
+            float(m.group(2)) * 255 / 100,
+            float(m.group(3)) * 255 / 100,
+            1,
+        )  # rgb(100%, 0%, 0%)
     elif m := RE_RGBA_INTEGER.match(format):
-        return rgba(int(m.group(1)), int(m.group(2)), int(m.group(3)), float(m.group(4)))  # rgba(255, 0, 0, 1)
+        return rgba(
+            int(m.group(1)), int(m.group(2)), int(m.group(3)), float(m.group(4))
+        )  # rgba(255, 0, 0, 1)
     elif m := RE_RGBA_PERCENT.match(format):
-        return rgba(float(m.group(1)) * 255 / 100, float(m.group(2)) * 255 / 100, float(m.group(3)) * 255 / 100, float(m.group(4)))  # rgb(100%, 0%, 0%, 1)
+        return rgba(
+            float(m.group(1)) * 255 / 100,
+            float(m.group(2)) * 255 / 100,
+            float(m.group(3)) * 255 / 100,
+            float(m.group(4)),
+        )  # rgb(100%, 0%, 0%, 1)
     elif m := RE_HSL_PERCENT.match(format):
-        return hsla(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, 1)  # hsl(120, 50%, 50%)
+        return hsla(
+            float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, 1
+        )  # hsl(120, 50%, 50%)
     elif m := RE_HSLA_PERCENT.match(format):
-        return hsla(float(m.group(1)), float(m.group(2)) / 100, float(m.group(3)) / 100, float(m.group(4)))  # hsla(120, 50%, 50%, 1)
+        return hsla(
+            float(m.group(1)),
+            float(m.group(2)) / 100,
+            float(m.group(3)) / 100,
+            float(m.group(4)),
+        )  # hsla(120, 50%, 50%, 1)
     elif format in NAMED:
         return rgbn(NAMED[format])
     return None
 
+
 def rgbn(n):
-    return RGB(n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff, 1)
+    return RGB(n >> 16 & 0xFF, n >> 8 & 0xFF, n & 0xFF, 1)
+
 
 def rgba(r, g, b, a):
     if a <= 0:
         r = g = b = math.nan
     return RGB(r, g, b, a)
+
 
 def rgb_convert(obj):
     if not isinstance(obj, (Color, RGB, HSL)):
@@ -249,17 +292,20 @@ def rgb_convert(obj):
     obj = obj.rgb()
     return RGB(obj.r, obj.g, obj.b, obj.opacity)
 
-@overload
-def rgb(specifier: str) -> RGB:
-    ...
 
 @overload
-def rgb(r: int | float, g: int | float, b: int | float) -> RGB:
-    ...
+def rgb(specifier: str) -> RGB: ...
+
 
 @overload
-def rgb(r: int | float, g: int | float, b: int | float, opacity: int | float) -> RGB:
-    ...
+def rgb(r: int | float, g: int | float, b: int | float) -> RGB: ...
+
+
+@overload
+def rgb(
+    r: int | float, g: int | float, b: int | float, opacity: int | float
+) -> RGB: ...
+
 
 def rgb(*args):
     """
@@ -274,6 +320,7 @@ def rgb(*args):
     elif len(args) == 4:
         r, g, b, opacity = args
         return RGB(r, g, b, opacity)
+
 
 class RGB(Color):
     """
@@ -290,7 +337,10 @@ class RGB(Color):
     opacity : int | float
         Opacity value
     """
-    def __init__(self, r: int | float, g: int | float, b: int | float, opacity: int | float = 1):
+
+    def __init__(
+        self, r: int | float, g: int | float, b: int | float, opacity: int | float = 1
+    ):
         self.r = float(r)
         self.g = float(g)
         self.b = float(b)
@@ -314,7 +364,7 @@ class RGB(Color):
         RGB
             Brighter RGB
         """
-        k = BRIGHTER if k is None else BRIGHTER ** k
+        k = BRIGHTER if k is None else BRIGHTER**k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
     def darker(self, k: float | None = None) -> RGB:
@@ -335,7 +385,7 @@ class RGB(Color):
         RGB
             Darker RGB
         """
-        k = DARKER if k is None else DARKER ** k
+        k = DARKER if k is None else DARKER**k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
     def rgb(self) -> RGB:
@@ -374,7 +424,12 @@ class RGB(Color):
         bool
             Is displayable
         """
-        return (-0.5 <= self.r < 255.5) and (-0.5 <= self.g < 255.5) and (-0.5 <= self.b < 255.5) and (0 <= self.opacity <= 1)
+        return (
+            (-0.5 <= self.r < 255.5)
+            and (-0.5 <= self.g < 255.5)
+            and (-0.5 <= self.b < 255.5)
+            and (0 <= self.opacity <= 1)
+        )
 
     def format_hex(self) -> str:
         """
@@ -399,7 +454,7 @@ class RGB(Color):
         -------
         str
             Hex 8 color representation
-      """
+        """
         return f"#{hex(self.r)}{hex(self.g)}{hex(self.b)}{hex((1 if math.isnan(self.opacity) else self.opacity) * 255)}"
 
     def format_rgb(self) -> str:
@@ -417,15 +472,19 @@ class RGB(Color):
         a = clampa(self.opacity)
         return f"{'rgb(' if a == 1 else 'rgba('}{clampi(self.r)}, {clampi(self.g)}, {clampi(self.b)}{')' if a == 1 else f', {a})'}"
 
+
 def clampa(opacity):
     return 1 if math.isnan(opacity) else max(0, min(1, opacity))
+
 
 def clampi(value):
     return 0 if math.isnan(value) else max(0, min(255, round(value) or 0))
 
+
 def hex(value):
     value = clampi(value)
     return f"{'0' if value < 16 else ''}{value:x}"
+
 
 def hsla(h, s, l, a):
     if a <= 0:
@@ -435,6 +494,7 @@ def hsla(h, s, l, a):
     elif s <= 0:
         h = math.nan
     return HSL(h, s, l, a)
+
 
 def hsl_convert(obj):
     if isinstance(obj, HSL):
@@ -467,17 +527,20 @@ def hsl_convert(obj):
         s = 0 if 0 < l < 1 else h
     return HSL(h, s, l, obj.opacity)
 
-@overload
-def hsl(specifier: str) -> HSL:
-    ...
 
 @overload
-def hsl(h: int | float, s: int | float, l: int | float) -> HSL:
-    ...
+def hsl(specifier: str) -> HSL: ...
+
 
 @overload
-def hsl(h: int | float, s: int | float, l: int | float, opacity: int | float) -> HSL:
-    ...
+def hsl(h: int | float, s: int | float, l: int | float) -> HSL: ...
+
+
+@overload
+def hsl(
+    h: int | float, s: int | float, l: int | float, opacity: int | float
+) -> HSL: ...
+
 
 def hsl(*args):
     """
@@ -492,6 +555,7 @@ def hsl(*args):
     elif len(args) == 4:
         h, l, s, opacity = args
         return HSL(h, l, s, opacity)
+
 
 class HSL(Color):
     """
@@ -508,7 +572,10 @@ class HSL(Color):
     opacity : int | float
         Opacity value
     """
-    def __init__(self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1):
+
+    def __init__(
+        self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1
+    ):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
@@ -532,7 +599,7 @@ class HSL(Color):
         HSL
             Brighter HSL
         """
-        k = BRIGHTER if k is None else BRIGHTER ** k
+        k = BRIGHTER if k is None else BRIGHTER**k
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
     def darker(self, k: float | None = None) -> HSL:
@@ -553,7 +620,7 @@ class HSL(Color):
         HSL
             Darker HSL
         """
-        k = DARKER if k is None else DARKER ** k
+        k = DARKER if k is None else DARKER**k
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
     def rgb(self) -> RGB:
@@ -574,7 +641,7 @@ class HSL(Color):
             hsl2rgb(h - 240 if h >= 240 else h + 120, m1, m2),
             hsl2rgb(h, m1, m2),
             hsl2rgb(h + 240 if h < 120 else h - 120, m1, m2),
-            self.opacity
+            self.opacity,
         )
 
     def clamp(self) -> HSL:
@@ -600,7 +667,11 @@ class HSL(Color):
         bool
             Is displayable
         """
-        return (0 <= self.s <= 1 or math.isnan(self.s)) and (0 <= self.l <= 1) and (0 <= self.opacity <= 1)
+        return (
+            (0 <= self.s <= 1 or math.isnan(self.s))
+            and (0 <= self.l <= 1)
+            and (0 <= self.opacity <= 1)
+        )
 
     def format_hsl(self) -> str:
         a = clampa(self.opacity)
@@ -609,12 +680,15 @@ class HSL(Color):
         l = str(clampt(self.l) * 100).removesuffix(".0")
         return f"{'hsl(' if a == 1 else 'hsla('}{h}, {s}%, {l}%{')' if a == 1 else f', {a})'}"
 
+
 def clamph(value):
     value = (value or 0) % 360
     return value + 360 if value < 0 else value
 
+
 def clampt(value):
     return max(0, min(1, value or 0))
+
 
 def hsl2rgb(h, m1, m2):
     if h < 60:

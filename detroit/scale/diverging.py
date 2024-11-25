@@ -10,8 +10,8 @@ from .pow import transform_sqrt, transform_pow
 import math
 from datetime import datetime
 
-class Diverging:
 
+class Diverging:
     def __init__(self, t):
         self.transform = t
         self._x0 = 0
@@ -77,7 +77,9 @@ class Diverging:
         self._r0 = float(range_vals[0])
         self._r1 = float(range_vals[1])
         self._r2 = float(range_vals[2])
-        self._interpolator = piecewise(interpolate_round, [self._r0, self._r1, self._r2])
+        self._interpolator = piecewise(
+            interpolate_round, [self._r0, self._r1, self._r2]
+        )
         return self
 
     @property
@@ -91,6 +93,7 @@ class Diverging:
     @property
     def unknown(self):
         return self._unknown
+
 
 class DivergingLinear(Diverging, LinearBase):
     def __init__(self):
@@ -131,8 +134,9 @@ class DivergingLog(Diverging, LogBase):
     def copy(self):
         return copy(self, DivergingLog()).base(self.base)
 
+
 class DivergingSymlog(Diverging):
-    def __init__(self, c = 1):
+    def __init__(self, c=1):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
@@ -145,8 +149,9 @@ class DivergingSymlog(Diverging):
     def copy(self):
         return copy(self, DivergingSymlog()).set_constant(self.constant)
 
+
 class DivergingPow(Diverging, LinearBase):
-    def __init__(self, t = identity):
+    def __init__(self, t=identity):
         super().__init__(t)
         self._exponent = 1
 

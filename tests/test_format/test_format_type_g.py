@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_format_type_g_1():
     assert d3.format(".1g")(0.049) == "0.05"
     assert d3.format(".1g")(0.49) == "0.5"
@@ -12,6 +13,7 @@ def test_format_type_g_1():
     assert d3.format(".5g")(100) == "100"
     assert d3.format(".5g")(100.2) == "100.2"
     assert d3.format(".2g")(0.002) == "0.002"
+
 
 def test_format_type_g_2():
     f = d3.format(",.12g")

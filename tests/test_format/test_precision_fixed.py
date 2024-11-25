@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_precisionFixed_1():
     assert d3.precision_fixed(8.9) == 0
     assert d3.precision_fixed(1.1) == 0

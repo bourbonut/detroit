@@ -3,6 +3,7 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
+
 def interpolate_discrete(range_: list[T]) -> Callable[[float], T]:
     """
     Returns a discrete interpolator for the given array of values.

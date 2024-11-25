@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_format_trim_1():
     f = d3.format("~r")
     assert f(1) == "1"
@@ -16,6 +17,7 @@ def test_format_trim_1():
     assert f(0.1111119) == "0.111112"
     assert f(0.11111119) == "0.111111"
 
+
 def test_format_trim_2():
     f = d3.format("~e")
     assert f(0) == "0e+00"
@@ -26,6 +28,7 @@ def test_format_trim_2():
     assert f(-42) == "-4.2e+01"
     assert f(42000000000) == "4.2e+10"
     assert f(0.00000000042) == "4.2e-10"
+
 
 def test_format_trim_3():
     f = d3.format(".4~e")
@@ -41,6 +44,7 @@ def test_format_trim_3():
     assert f(-12345000000) == "-1.2345e+10"
     assert f(-12340000000) == "-1.234e+10"
     assert f(-12300000000) == "-1.23e+10"
+
 
 def test_format_trim_4():
     f = d3.format("~s")
@@ -66,6 +70,7 @@ def test_format_trim_4():
     assert f(1e12) == "1T"
     assert f(1e15) == "1P"
 
+
 def test_format_trim_5():
     f = d3.format("~%")
     assert f(0) == "0%"
@@ -73,6 +78,7 @@ def test_format_trim_5():
     assert f(0.01) == "1%"
     assert f(0.001) == "0.1%"
     assert f(0.0001) == "0.01%"
+
 
 def test_format_trim_6():
     f = d3.format(",~g")

@@ -1,5 +1,6 @@
 from .exponent import exponent
 
+
 def precision_round(step, max_val):
     step = abs(step)
     max_val = abs(max_val) - step

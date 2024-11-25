@@ -7,7 +7,6 @@ from typing import overload
 
 
 class LinearBase:
-
     def ticks(self, count=None):
         d = self.domain
         return ticks(d[0], d[-1], count if count is not None else 10)
@@ -56,21 +55,23 @@ class LinearBase:
 
         return self
 
+
 class ScaleLinear(Transformer, LinearBase):
     def copy(self):
         return copy(self, ScaleLinear())
 
-@overload
-def scale_linear() -> ScaleLinear:
-    ...
 
 @overload
-def scale_linear(range_vals: list) -> ScaleLinear:
-    ...
+def scale_linear() -> ScaleLinear: ...
+
 
 @overload
-def scale_linear(domain: list, range_vals: list) -> ScaleLinear:
-    ...
+def scale_linear(range_vals: list) -> ScaleLinear: ...
+
+
+@overload
+def scale_linear(domain: list, range_vals: list) -> ScaleLinear: ...
+
 
 def scale_linear(*args):
     """

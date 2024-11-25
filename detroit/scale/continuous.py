@@ -1,12 +1,18 @@
 from bisect import bisect
-from ..interpolate import interpolate as interpolate_value, interpolate_number, interpolate_round
+from ..interpolate import (
+    interpolate as interpolate_value,
+    interpolate_number,
+    interpolate_round,
+)
 from .constant import constant
 from .number import number
 import math
 from datetime import datetime
 
+
 def identity(x):
     return x
+
 
 def normalize(a, b):
     if isinstance(a, datetime):
@@ -19,25 +25,31 @@ def normalize(a, b):
         b = float(b)
     b = b - a
     if not math.isnan(b) and b:
+
         def f(x):
             if isinstance(x, datetime):
                 x = x.timestamp()
             elif isinstance(x, str):
                 x = float(x)
             return (x - a) / b
+
         return f
     else:
         return constant(math.nan if math.isnan(b) else 0.5)
+
 
 def clamper(a, b):
     a = a.timestamp() if isinstance(a, datetime) else a
     b = b.timestamp() if isinstance(b, datetime) else b
     if a > b:
         a, b = b, a
+
     def f(x):
         x = x.timestamp() if isinstance(x, datetime) else x
         return max(a, min(b, x))
+
     return f
+
 
 class BiMap:
     def __init__(self, domain, range_vals, interpolate):
@@ -83,8 +95,9 @@ def copy(source, target):
         .set_unknown(source.unknown)
     )
 
+
 class Transformer:
-    def __init__(self, t = identity, u = identity):
+    def __init__(self, t=identity, u=identity):
         self.transform = t
         self.untransform = u
         self._domain = [0, 1]
@@ -109,14 +122,19 @@ class Transformer:
             return self._unknown
         else:
             if not self.output:
-                domain = [x.timestamp() if isinstance(x, datetime) else x for x in self._domain]
+                domain = [
+                    x.timestamp() if isinstance(x, datetime) else x
+                    for x in self._domain
+                ]
                 domain = [self.transform(x) for x in domain]
                 self.output = self.piecewise(domain, self._range, self._interpolate)
             return self.output(self.transform(self._clamp(x)))
 
     def invert(self, y):
         if not self.input:
-            domain = [x.timestamp() if isinstance(x, datetime) else x for x in self._domain]
+            domain = [
+                x.timestamp() if isinstance(x, datetime) else x for x in self._domain
+            ]
             domain = [self.transform(x) for x in domain]
             self.input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self.untransform(self.input(y)))

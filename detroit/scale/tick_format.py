@@ -1,6 +1,14 @@
 from ..array import tick_step
-from ..format import locale_format, format_prefix, format_specifier, precision_fixed, precision_prefix, precision_round
+from ..format import (
+    locale_format,
+    format_prefix,
+    format_specifier,
+    precision_fixed,
+    precision_prefix,
+    precision_round,
+)
 import math
+
 
 def tick_format(start, stop, count, specifier=None):
     step = tick_step(start, stop, count)
@@ -9,14 +17,20 @@ def tick_format(start, stop, count, specifier=None):
 
     if specifier.type == "s":
         value = max(abs(start), abs(stop))
-        if specifier.precision is None and not math.isnan(precision := precision_prefix(step, value)):
+        if specifier.precision is None and not math.isnan(
+            precision := precision_prefix(step, value)
+        ):
             specifier.precision = precision
         return format_prefix(specifier, value)
     elif specifier.type in ("", "e", "g", "p", "r"):
-        if specifier.precision is None and not math.isnan(precision := precision_round(step, max(abs(start), abs(stop)))):
+        if specifier.precision is None and not math.isnan(
+            precision := precision_round(step, max(abs(start), abs(stop)))
+        ):
             specifier.precision = precision - (specifier.type == "e")
     elif specifier.type in ("f", "%"):
-        if specifier.precision is None and not math.isnan(precision := precision_fixed(step)):
+        if specifier.precision is None and not math.isnan(
+            precision := precision_fixed(step)
+        ):
             specifier.precision = precision - (specifier.type == "%") * 2
 
     return locale_format(specifier)

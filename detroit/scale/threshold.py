@@ -2,6 +2,7 @@ from bisect import bisect
 from .init import init_range
 import math
 
+
 class ScaleThreshold:
     def __init__(self):
         self._domain = [0.5]
@@ -10,7 +11,7 @@ class ScaleThreshold:
         self._n = 1
 
     def __call__(self, x=None):
-        if x is not None and not(isinstance(x, float) and math.isnan(x)):
+        if x is not None and not (isinstance(x, float) and math.isnan(x)):
             return self._range_vals[bisect(self._domain, x, 0, self._n)]
         else:
             return self._unknown
@@ -52,7 +53,12 @@ class ScaleThreshold:
         return self._unknown
 
     def copy(self):
-        return ScaleThreshold().set_domain(self.domain).set_range(self.range_vals).set_unknown(self.unknown)
+        return (
+            ScaleThreshold()
+            .set_domain(self.domain)
+            .set_range(self.range_vals)
+            .set_unknown(self.unknown)
+        )
 
 
 def scale_threshold(*args):

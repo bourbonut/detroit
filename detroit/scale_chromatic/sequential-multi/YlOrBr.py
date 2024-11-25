@@ -5,7 +5,7 @@ scheme = [
     "ffffd4fee391fec44ffe9929d95f0e993404",
     "ffffd4fee391fec44ffe9929ec7014cc4c028c2d04",
     "ffffe5fff7bcfee391fec44ffe9929ec7014cc4c028c2d04",
-    "ffffe5fff7bcfee391fec44ffe9929ec7014cc4c02993404662506"
+    "ffffe5fff7bcfee391fec44ffe9929ec7014cc4c02993404662506",
 ]
 scheme = list(map(colors, scheme))
 YlOrBr = ramp(scheme)

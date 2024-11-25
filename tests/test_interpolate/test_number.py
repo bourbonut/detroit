@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_number_1():
     i = d3.interpolate_number(10, 42)
     assert i(0.0) == 10.0
@@ -16,7 +17,7 @@ def test_number_1():
 
 
 def test_number_2():
-    a = 2e+42
+    a = 2e42
     b = 335
     assert d3.interpolate_number(a, b)(1) == b
     assert d3.interpolate_number(a, b)(0) == a

@@ -86,7 +86,9 @@ def test_time_week_range():
 
 
 def test_time_week_every():
-    assert d3.time_week.every(2).range(datetime(2008, 12, 3), datetime(2009, 2, 5), 2) == [
+    assert d3.time_week.every(2).range(
+        datetime(2008, 12, 3), datetime(2009, 2, 5), 2
+    ) == [
         datetime(2008, 12, 7),
         datetime(2008, 12, 21),
         datetime(2009, 1, 4),

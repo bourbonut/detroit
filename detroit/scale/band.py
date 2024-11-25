@@ -1,6 +1,7 @@
 from .init import init_range
 from .ordinal import ScaleOrdinal
 
+
 class ScaleBand(ScaleOrdinal):
     def __init__(self):
         super().__init__()
@@ -19,7 +20,9 @@ class ScaleBand(ScaleOrdinal):
         reverse = self._r1 < self._r0
         start = self._r1 if reverse else self._r0
         stop = self._r0 if reverse else self._r1
-        self._step = (stop - start) / max(1, n - self._padding_inner + self._padding_outer * 2)
+        self._step = (stop - start) / max(
+            1, n - self._padding_inner + self._padding_outer * 2
+        )
         if self._round:
             self._step = int(self._step)
         start += (stop - start - self._step * (n - self._padding_inner)) * self._align
@@ -101,7 +104,15 @@ class ScaleBand(ScaleOrdinal):
         return self._align
 
     def copy(self):
-        return ScaleBand().set_domain(self._domain).set_range([self._r0, self._r1]).set_round(self._round).set_padding_inner(self._padding_inner).set_padding_outer(self._padding_outer).set_align(self._align)
+        return (
+            ScaleBand()
+            .set_domain(self._domain)
+            .set_range([self._r0, self._r1])
+            .set_round(self._round)
+            .set_padding_inner(self._padding_inner)
+            .set_padding_outer(self._padding_outer)
+            .set_align(self._align)
+        )
 
 
 def scale_band(*args):
@@ -112,6 +123,7 @@ def scale_band(*args):
         domain, range_vals = args
         return init_range(scale, domain=domain, range_vals=range_vals)
     return init_range(scale)
+
 
 def pointish(scale):
     copy = scale.copy

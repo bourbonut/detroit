@@ -6,6 +6,7 @@ def init_range(obj, domain=None, range_vals=None):
     else:
         return obj.set_range(range_vals).set_domain(domain)
 
+
 def init_interpolator(obj, domain=None, interpolator=None):
     if domain is None and interpolator is None:
         return obj

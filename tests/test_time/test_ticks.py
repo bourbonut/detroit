@@ -2,6 +2,7 @@ import detroit as d3
 from datetime import datetime
 import pytest
 
+
 def test_time_ticks_test_1():
     assert d3.time_ticks(
         datetime(2011, 1, 1, 12, 1, 0), datetime(2011, 1, 1, 12, 4, 4), d3.time_minute

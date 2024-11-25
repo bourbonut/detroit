@@ -1,6 +1,7 @@
 from ..path import Path
 import math
 
+
 class WithPath:
     def __init__(self):
         self._digits = 3

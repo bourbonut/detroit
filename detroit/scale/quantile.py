@@ -3,8 +3,8 @@ from .init import init_range
 import math
 from statistics import quantiles
 
+
 class ScaleQuantile:
-    
     def __init__(self):
         self._domain = []
         self._range_vals = []
@@ -25,10 +25,14 @@ class ScaleQuantile:
         if y not in self._range_vals:
             return [math.nan, math.nan]
         i = self._range_vals.index(y)
-        return [None, None] if i < 0 else [
-            self._thresholds[i - 1] if i > 0 else self._domain[0],
-            self._thresholds[i] if i < len(self._thresholds) else self._domain[-1]
-        ]
+        return (
+            [None, None]
+            if i < 0
+            else [
+                self._thresholds[i - 1] if i > 0 else self._domain[0],
+                self._thresholds[i] if i < len(self._thresholds) else self._domain[-1],
+            ]
+        )
 
     def domain(self, *args):
         if args:
@@ -58,7 +62,12 @@ class ScaleQuantile:
         return self._thresholds.copy()
 
     def copy(self):
-        return ScaleQuantile().domain(self._domain).range(self._range_vals).unknown(self._unknown)
+        return (
+            ScaleQuantile()
+            .domain(self._domain)
+            .range(self._range_vals)
+            .unknown(self._unknown)
+        )
 
 
 def scale_quantile(*args):

@@ -4,8 +4,8 @@ from collections.abc import Callable
 EPSILON = 1e-12
 SQRT2 = sqrt(2)
 
-class Base:
 
+class Base:
     def __init__(self, rho, p0, p1):
         ux0, uy0, w0 = p0
         ux1, uy1, w1 = p1
@@ -20,8 +20,8 @@ class Base:
         self.dy = dy
         self.d2 = dx * dx + dy * dy
 
-class SingularZoomRhoInterpolator(Base):
 
+class SingularZoomRhoInterpolator(Base):
     def __init__(self, rho, rho2, rho4, p0, p1):
         super().__init__(rho, p0, p1)
         w0 = self.w0
@@ -36,8 +36,8 @@ class SingularZoomRhoInterpolator(Base):
             self.w0 * exp(self.rho * t * self.s),
         ]
 
-class GeneralZoomRhoInterpolator(Base):
 
+class GeneralZoomRhoInterpolator(Base):
     def __init__(self, rho, rho2, rho4, p0, p1):
         super().__init__(rho, p0, p1)
         d2 = self.d2
@@ -61,8 +61,9 @@ class GeneralZoomRhoInterpolator(Base):
         return [
             self.ux0 + u * self.dx,
             self.uy0 + u * self.dy,
-            self.w0 * cosh(self.r0) / cosh(self.rho * t * self.s + self.r0)
+            self.w0 * cosh(self.r0) / cosh(self.rho * t * self.s + self.r0),
         ]
+
 
 class ZoomRho:
     """
@@ -96,13 +97,14 @@ class ZoomRho:
             Interpolator
         """
         d = dist(a[:-1], b[:-1]) ** 2
-        interpolator = SingularZoomRhoInterpolator if d < EPSILON else GeneralZoomRhoInterpolator
+        interpolator = (
+            SingularZoomRhoInterpolator if d < EPSILON else GeneralZoomRhoInterpolator
+        )
         return interpolator(self.rho, self.rho2, self.rho4, a, b)
-
 
     def set_rho(self, new_rho):
         new_rho = max(1e-3, float(new_rho))
-        return ZoomRho(new_rho, new_rho * new_rho, new_rho ** 4)
+        return ZoomRho(new_rho, new_rho * new_rho, new_rho**4)
 
 
 interpolate_zoom = ZoomRho(SQRT2, 2, 4)

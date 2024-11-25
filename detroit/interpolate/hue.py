@@ -2,6 +2,7 @@ from .color import hue
 import math
 from collections.abc import Callable
 
+
 def interpolate_hue(a: int | float, b: int | float) -> Callable[[float], float]:
     """
     Returns an interpolator between the two hue angles a and b.
@@ -22,7 +23,9 @@ def interpolate_hue(a: int | float, b: int | float) -> Callable[[float], float]:
         Interpolator
     """
     i = hue(float(a), float(b))
+
     def interpolate(t):
         x = i(t)
         return x - 360 * math.floor(x / 360)
+
     return interpolate

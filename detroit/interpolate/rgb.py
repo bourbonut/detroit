@@ -5,6 +5,7 @@ from .color import gamma, color as nogamma
 
 from collections.abc import Callable
 
+
 class RGBGammaInterpolator:
     def __init__(self, y):
         self.color = gamma(y)
@@ -34,21 +35,23 @@ class RGBGammaInterpolator:
         g = self.color(start.g, end.g)
         b = self.color(start.b, end.b)
         opacity = nogamma(start.opacity, end.opacity)
-        
+
         def interpolate(t):
             start.r = r(t)
             start.g = g(t)
             start.b = b(t)
             start.opacity = opacity(t)
             return str(start)
-        
+
         return interpolate
 
     def set_gamma(self, y):
         self.color = gamma(y)
         return self
 
+
 interpolate_rgb = RGBGammaInterpolator(1)
+
 
 class RGBSplineInterpolator:
     def __init__(self, spline):
@@ -59,28 +62,29 @@ class RGBSplineInterpolator:
         r = [0] * n
         g = [0] * n
         b = [0] * n
-        
+
         for i, color in enumerate(colors):
             color = color_rgb(color)
             r[i] = color.r or 0
             g[i] = color.g or 0
             b[i] = color.b or 0
-        
+
         r_spline = self.spline(r)
         g_spline = self.spline(g)
         b_spline = self.spline(b)
-        
+
         color = color_rgb()
         color.opacity = 1
-        
+
         def interpolate(t):
             color.r = r_spline(t)
             color.g = g_spline(t)
             color.b = b_spline(t)
             return str(color)
-        
+
         return interpolate
-    
+
+
 def interpolate_rgb_basis(a: str, b: str) -> Callable[[float], str]:
     """
     Returns a uniform nonrational B-spline interpolator through the specified
@@ -102,6 +106,7 @@ def interpolate_rgb_basis(a: str, b: str) -> Callable[[float], str]:
         Interpolator
     """
     return RGBSplineInterpolator(basis)(a, b)
+
 
 def interpolate_rgb_basis_closed(a: str, b: str) -> Callable[[float], str]:
     """

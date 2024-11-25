@@ -1,6 +1,7 @@
 from .parse import parseCss, parseSvg
 from ..number import number
 
+
 def interpolateTransform(parse, pxComma, pxParen, degParen):
     def pop(s):
         return s.pop() + " " if s else ""
@@ -8,8 +9,12 @@ def interpolateTransform(parse, pxComma, pxParen, degParen):
     def translate(xa, ya, xb, yb, s, q):
         if xa != xb or ya != yb:
             s.extend(["translate(", None, pxComma, None, pxParen])
-            q.extend([{"i": len(s) - 4, "x": number(xa, xb)},
-                      {"i": len(s) - 2, "x": number(ya, yb)}])
+            q.extend(
+                [
+                    {"i": len(s) - 4, "x": number(xa, xb)},
+                    {"i": len(s) - 2, "x": number(ya, yb)},
+                ]
+            )
         elif xb or yb:
             s.append(f"translate({xb}{pxComma}{yb}{pxParen}")
 
@@ -34,8 +39,12 @@ def interpolateTransform(parse, pxComma, pxParen, degParen):
     def scale(xa, ya, xb, yb, s, q):
         if xa != xb or ya != yb:
             s.extend([pop(s) + "scale(", None, ",", None, ")"])
-            q.extend([{"i": len(s) - 4, "x": number(xa, xb)},
-                      {"i": len(s) - 2, "x": number(ya, yb)}])
+            q.extend(
+                [
+                    {"i": len(s) - 4, "x": number(xa, xb)},
+                    {"i": len(s) - 2, "x": number(ya, yb)},
+                ]
+            )
         elif xb != 1 or yb != 1:
             s.append(f"{pop(s)}scale({xb},{yb})")
 
@@ -44,20 +53,22 @@ def interpolateTransform(parse, pxComma, pxParen, degParen):
         q = []
         a = parse(a)
         b = parse(b)
-        translate(a["translateX"], a["translateY"], b["translateX"], b["translateY"], s, q)
+        translate(
+            a["translateX"], a["translateY"], b["translateX"], b["translateY"], s, q
+        )
         rotate(a["rotate"], b["rotate"], s, q)
         skewX(a["skewX"], b["skewX"], s, q)
         scale(a["scaleX"], a["scaleY"], b["scaleX"], b["scaleY"], s, q)
-        
+
         def interpolate(t):
             for o in q:
                 s[o["i"]] = o["x"](t)
             return "".join(s)
-        
+
         return interpolate
 
     return interpolator
 
+
 interpolateTransformCss = interpolateTransform(parseCss, "px, ", "px)", "deg)")
 interpolateTransformSvg = interpolateTransform(parseSvg, ", ", ")", ")")
-

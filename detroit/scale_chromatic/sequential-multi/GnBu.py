@@ -5,7 +5,7 @@ scheme = [
     "f0f9e8ccebc5a8ddb57bccc443a2ca0868ac",
     "f0f9e8ccebc5a8ddb57bccc44eb3d32b8cbe08589e",
     "f7fcf0e0f3dbccebc5a8ddb57bccc44eb3d32b8cbe08589e",
-    "f7fcf0e0f3dbccebc5a8ddb57bccc44eb3d32b8cbe0868ac084081"
+    "f7fcf0e0f3dbccebc5a8ddb57bccc44eb3d32b8cbe0868ac084081",
 ]
 scheme = list(map(colors, scheme))
 GnBu = ramp(scheme)

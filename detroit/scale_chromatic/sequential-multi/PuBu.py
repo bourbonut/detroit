@@ -5,7 +5,7 @@ scheme = [
     "f1eef6d0d1e6a6bddb74a9cf2b8cbe045a8d",
     "f1eef6d0d1e6a6bddb74a9cf3690c00570b0034e7b",
     "fff7fbece7f2d0d1e6a6bddb74a9cf3690c00570b0034e7b",
-    "fff7fbece7f2d0d1e6a6bddb74a9cf3690c00570b0045a8d023858"
+    "fff7fbece7f2d0d1e6a6bddb74a9cf3690c00570b0045a8d023858",
 ]
 scheme = list(map(colors, scheme))
 PuBu = ramp(scheme)

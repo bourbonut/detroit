@@ -3,6 +3,7 @@ from .linear import LinearBase
 from .init import init_range
 import math
 
+
 class ScaleQuantize(LinearBase):
     def __init__(self):
         self._x0 = 0
@@ -59,7 +60,12 @@ class ScaleQuantize(LinearBase):
         return self._domain.copy()
 
     def copy(self):
-        return ScaleQuantize().domain([self._x0, self._x1]).range(self._range_vals).unknown(self._unknown)
+        return (
+            ScaleQuantize()
+            .domain([self._x0, self._x1])
+            .range(self._range_vals)
+            .unknown(self._unknown)
+        )
 
 
 def scale_quantize() -> ScaleQuantize:

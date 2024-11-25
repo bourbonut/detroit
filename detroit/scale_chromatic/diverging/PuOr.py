@@ -7,7 +7,7 @@ scheme = [
     "5427888073acb2abd2d8daebfee0b6fdb863e08214b35806",
     "5427888073acb2abd2d8daebf7f7f7fee0b6fdb863e08214b35806",
     "2d004b5427888073acb2abd2d8daebfee0b6fdb863e08214b358067f3b08",
-    "2d004b5427888073acb2abd2d8daebf7f7f7fee0b6fdb863e08214b358067f3b08"
+    "2d004b5427888073acb2abd2d8daebf7f7f7fee0b6fdb863e08214b358067f3b08",
 ]
 scheme = list(map(colors, scheme))
 PuOr = ramp(scheme)

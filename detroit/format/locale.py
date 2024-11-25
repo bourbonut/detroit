@@ -10,7 +10,26 @@ from .identity import identity
 from inspect import signature
 import math
 
-prefixes = ["y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"]
+prefixes = [
+    "y",
+    "z",
+    "a",
+    "f",
+    "p",
+    "n",
+    "µ",
+    "m",
+    "",
+    "k",
+    "M",
+    "G",
+    "T",
+    "P",
+    "E",
+    "Z",
+    "Y",
+]
+
 
 class Locale:
     def __init__(self, locale_def):
@@ -22,10 +41,14 @@ class Locale:
         self.currency_prefix = locale_def.get("currency", ["", ""])[0]
         self.currency_suffix = locale_def.get("currency", ["", ""])[1]
         self.decimal = locale_def.get("decimal", ".")
-        self.numerals = format_numerals(list(map(str, locale_def['numerals']))) if "numerals" in locale_def else identity
+        self.numerals = (
+            format_numerals(list(map(str, locale_def["numerals"])))
+            if "numerals" in locale_def
+            else identity
+        )
         self.percent = locale_def.get("percent", "%")
         self.minus = locale_def.get("minus", "-")
-        self.nan = locale_def.get('nan', "NaN")
+        self.nan = locale_def.get("nan", "NaN")
 
     def format(self, specifier):
         if not isinstance(specifier, FormatSpecifier):
@@ -55,12 +78,20 @@ class Locale:
             fill = "0"
             align = "="
 
-        prefix = (self.currency_prefix if symbol == "$" 
-                 else "0" + type_.lower() if symbol == "#" and type_.lower() in "box" 
-                 else "")
-        suffix = (self.currency_suffix if symbol == "$" 
-                 else self.percent if type_ in "%p" 
-                 else "")
+        prefix = (
+            self.currency_prefix
+            if symbol == "$"
+            else "0" + type_.lower()
+            if symbol == "#" and type_.lower() in "box"
+            else ""
+        )
+        suffix = (
+            self.currency_suffix
+            if symbol == "$"
+            else self.percent
+            if type_ in "%p"
+            else ""
+        )
 
         format_type = format_types[type_]
         nargs = len(signature(format_type).parameters)
@@ -74,7 +105,6 @@ class Locale:
             precision = max(0, min(20, precision))
 
         class Format:
-
             def __init__(self, prefix, suffix, group, numerals, minus, decimal):
                 self.prefix = prefix
                 self.suffix = suffix
@@ -125,7 +155,9 @@ class Locale:
                         for i, c in enumerate(value):
                             if not c.isdigit():
                                 if c == ".":
-                                    value_suffix = self.decimal + value[i + 1:] + value_suffix
+                                    value_suffix = (
+                                        self.decimal + value[i + 1 :] + value_suffix
+                                    )
                                 else:
                                     value_suffix = value[i:] + value_suffix
                                 value = value[:i]
@@ -138,7 +170,10 @@ class Locale:
                 padding = fill * (width - length) if width and length < width else ""
 
                 if comma and zero:
-                    value = self.group(padding + value, width - len(value_suffix) if len(padding) else math.inf)
+                    value = self.group(
+                        padding + value,
+                        width - len(value_suffix) if len(padding) else math.inf,
+                    )
                     padding = ""
 
                 if align == "<":
@@ -147,7 +182,13 @@ class Locale:
                     value = value_prefix + padding + value + value_suffix
                 elif align == "^":
                     length = len(padding) >> 1
-                    value = padding[:length] + value_prefix + value + value_suffix + padding[length:]
+                    value = (
+                        padding[:length]
+                        + value_prefix
+                        + value
+                        + value_suffix
+                        + padding[length:]
+                    )
                 else:
                     value = padding + value_prefix + value + value_suffix
 
@@ -156,7 +197,9 @@ class Locale:
             def __str__(self):
                 return str(specifier)
 
-        return Format(prefix, suffix, self.group, self.numerals, self.minus, self.decimal)
+        return Format(
+            prefix, suffix, self.group, self.numerals, self.minus, self.decimal
+        )
 
     def format_prefix(self, specifier, value):
         if not isinstance(specifier, FormatSpecifier):
@@ -164,10 +207,10 @@ class Locale:
         specifier.type = "f"
         f = self.format(specifier)
         e = max(-8, min(8, exponent(value) // 3)) * 3
-        k = 10 ** -e
+        k = 10**-e
         prefix = prefixes[8 + e // 3]
-        
+
         def format_with_prefix(value):
             return f(k * value) + prefix
-        
+
         return format_with_prefix

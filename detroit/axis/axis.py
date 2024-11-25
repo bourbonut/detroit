@@ -4,16 +4,21 @@ BOTTOM = 3
 LEFT = 4
 EPSILON = 1e-6
 
+
 def translate_x(x):
     return f"translate({x}, 0)"
+
 
 def translate_y(y):
     return f"translate(0, {y})"
 
+
 def number(scale):
     def f(d):
         return float(scale(d))
+
     return f
+
 
 def center(scale, offset):
     offset = max(0, scale.bandwidth() - offset * 2) / 2
@@ -21,11 +26,12 @@ def center(scale, offset):
         offset = round(offset)
     return lambda d: float(scale(d)) + offset
 
+
 def entering(context):
-    return not hasattr(context, '__axis')
+    return not hasattr(context, "__axis")
+
 
 class Axis:
-
     def __init__(self, orient: int, scale):
         self._scale = scale
         self._orient = orient
@@ -37,7 +43,7 @@ class Axis:
         self._tick_padding = 3
         self._offset = 0.5
         self._k = -1 if orient in [TOP, LEFT] else 1
-        self._x = 'x' if orient in [LEFT, RIGHT] else 'y'
+        self._x = "x" if orient in [LEFT, RIGHT] else "y"
         self._transform = translate_x if orient in [TOP, BOTTOM] else translate_y
 
     def __call__(self, context):
@@ -47,8 +53,8 @@ class Axis:
         """
         if self._tick_values is not None:
             values = self._tick_values
-        elif hasattr(self._scale, 'ticks'):
-            values = self._scale.ticks(*self._tick_arguments) 
+        elif hasattr(self._scale, "ticks"):
+            values = self._scale.ticks(*self._tick_arguments)
         else:
             values = self._scale.domain()
 
@@ -57,6 +63,7 @@ class Axis:
         elif hasattr(self._scale, "tick_format"):
             format_func = self._tick_format
         else:
+
             def format_func(d):
                 return d
 
@@ -65,12 +72,12 @@ class Axis:
         range0 = float(range_values[0]) + self._offset
         range1 = float(range_values[-1]) + self._offset
 
-        if hasattr(self._scale, 'bandwidth'):
+        if hasattr(self._scale, "bandwidth"):
             position = center(self._scale.copy(), self._offset)
         else:
             position = number(self._scale.copy())
-        
-        selection = context.selection() if hasattr(context, 'selection') else context
+
+        selection = context.selection() if hasattr(context, "selection") else context
         path = selection.select_all(".domain").data([None])
         tick = selection.select_all(".tick").data(values, self._scale).order()
         tick_exit = tick.exit()
@@ -79,24 +86,32 @@ class Axis:
         text = tick.select("text")
 
         path = path.merge(
-            path.enter().insert("path", ".tick")
-                        .attr("class", "domain")
-                        .attr("stroke", "currentColor")
+            path.enter()
+            .insert("path", ".tick")
+            .attr("class", "domain")
+            .attr("stroke", "currentColor")
         )
 
         tick = tick.merge(tick_enter)
 
         line = line.merge(
             tick_enter.append("line")
-                      .attr("stroke", "currentColor")
-                      .attr(f"{self._x}2", self._k * self._tick_size_inner)
+            .attr("stroke", "currentColor")
+            .attr(f"{self._x}2", self._k * self._tick_size_inner)
         )
 
         text = text.merge(
             tick_enter.append("text")
-                      .attr("fill", "currentColor")
-                      .attr(self._x, self._k * spacing)
-                      .attr("dy", "0em" if self._orient == TOP else "0.71em" if self._orient == BOTTOM else "0.32em")
+            .attr("fill", "currentColor")
+            .attr(self._x, self._k * spacing)
+            .attr(
+                "dy",
+                "0em"
+                if self._orient == TOP
+                else "0.71em"
+                if self._orient == BOTTOM
+                else "0.32em",
+            )
         )
 
         # TODO : transition implementation
@@ -126,15 +141,20 @@ class Axis:
 
         if self._orient == LEFT or self._orient == RIGHT:
             if self._tick_size_outer:
-                path.attr("d", f"M{self._k * self._tick_size_outer},{range0}H{self._offset}V{range1}H{self._k * self._tick_size_outer}")
+                path.attr(
+                    "d",
+                    f"M{self._k * self._tick_size_outer},{range0}H{self._offset}V{range1}H{self._k * self._tick_size_outer}",
+                )
             else:
                 path.attr("d", f"M{self._offset},{range0}V{range1}")
         else:
             if self._tick_size_outer:
-                path.attr("d", f"M{range0},{self._k * self._tick_size_outer}V{self._offset}H{range1}V{self._k * self._tick_size_outer}")
+                path.attr(
+                    "d",
+                    f"M{range0},{self._k * self._tick_size_outer}V{self._offset}H{range1}V{self._k * self._tick_size_outer}",
+                )
             else:
                 path.attr("d", f"M{self._offset},{range0}H{range1}")
-
 
         def transform(d, *args):
             return self._transform(position(d) + self._offset)
@@ -146,10 +166,17 @@ class Axis:
         text.attr(self._x, self._k * spacing).text(format_func)
 
         (
-            selection.attr("fill", "none") # .filter(entering(context))
-                .attr("font-size", 10)
-                .attr("font-family", "sans-serif")
-                .attr("text-anchor", "start" if self._orient == RIGHT else "end" if self._orient == LEFT else "middle")
+            selection.attr("fill", "none")  # .filter(entering(context))
+            .attr("font-size", 10)
+            .attr("font-family", "sans-serif")
+            .attr(
+                "text-anchor",
+                "start"
+                if self._orient == RIGHT
+                else "end"
+                if self._orient == LEFT
+                else "middle",
+            )
         )
 
     def scale(self, scale=None):
@@ -213,6 +240,7 @@ class Axis:
             return self
         return self._offset
 
+
 def axis_top(scale):
     """
     Builds a new top-oriented axis generator for the given scale,
@@ -220,6 +248,7 @@ def axis_top(scale):
     In this orientation, ticks are drawn above the horizontal domain path.
     """
     return Axis(TOP, scale)
+
 
 def axis_right(scale):
     """
@@ -229,6 +258,7 @@ def axis_right(scale):
     """
     return Axis(RIGHT, scale)
 
+
 def axis_bottom(scale):
     """
     Builds a new bottom-oriented axis generator for the given scale,
@@ -236,6 +266,7 @@ def axis_bottom(scale):
     In this orientation, ticks are drawn above the horizontal domain path.
     """
     return Axis(BOTTOM, scale)
+
 
 def axis_left(scale):
     """

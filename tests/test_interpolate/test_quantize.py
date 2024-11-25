@@ -1,6 +1,7 @@
 import detroit as d3
 from detroit.interpolate.quantize import quantize
 
+
 def test_quantize_1():
     assert quantize(d3.interpolate_number(0, 1), 5) == [
         0 / 4,

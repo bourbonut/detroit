@@ -6,30 +6,36 @@ from .init import init_range
 from datetime import datetime
 import math
 
+
 def transform_log(x):
     if isinstance(x, datetime):
         x = x.timestamp()
     return math.log(x)
+
 
 def transform_exp(x):
     if isinstance(x, datetime):
         x = x.timestamp()
     return math.exp(x)
 
+
 def transform_logn(x):
     if isinstance(x, datetime):
         x = x.timestamp()
     return -math.log(-x)
+
 
 def transform_expn(x):
     if isinstance(x, datetime):
         x = x.timestamp()
     return -math.exp(-x)
 
+
 def pow10(x):
     if isinstance(x, datetime):
         x = x.timestamp()
-    return 10 ** x if math.isfinite(x) else 0 if x < 0 else x
+    return 10**x if math.isfinite(x) else 0 if x < 0 else x
+
 
 def powp(base):
     if base == 10:
@@ -38,6 +44,7 @@ def powp(base):
         return math.exp
     else:
         return lambda x: math.pow(base, x)
+
 
 def logp(base):
     if base == math.e:
@@ -49,10 +56,13 @@ def logp(base):
     else:
         return lambda x: math.log(x, base)
 
+
 def reflect(f):
     def local_reflect(x):
         return -f(-x)
+
     return local_reflect
+
 
 class LogBase:
     def __init__(self):
@@ -118,22 +128,27 @@ class LogBase:
             specifier = "s" if self._base == 10 else ","
         if not callable(specifier):
             specifier_obj = format_specifier(specifier)
-            if not (self._base % 1) and specifier_obj is not None and specifier_obj.precision is None:
+            if (
+                not (self._base % 1)
+                and specifier_obj is not None
+                and specifier_obj.precision is None
+            ):
                 specifier_obj.trim = True
             specifier = locale_format(specifier_obj or specifier)
         if math.isinf(count):
             return specifier
         k = max(1, self._base * count / len(self.ticks()))
+
         def f(d):
             i = d / self._pows(round(self._logs(d)))
             if i * self._base < self._base - 0.5:
                 i *= self._base
             return specifier(d) if i <= k else ""
+
         return f
 
     def nice(self):
         class Interval:
-
             @staticmethod
             def floor(x):
                 if x == 0:
@@ -147,6 +162,7 @@ class LogBase:
                 return self._pows(math.ceil(self._logs(x)))
 
         return self.set_domain(nice(self.domain, Interval))
+
 
 class ScaleLog(Transformer, LogBase):
     def __init__(self):
@@ -177,6 +193,7 @@ class ScaleLog(Transformer, LogBase):
 
     def copy(self):
         return copy(self, ScaleLog()).set_base(self.base)
+
 
 def scale_log():
     scale = ScaleLog().set_domain([1, 10])

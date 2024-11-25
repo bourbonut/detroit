@@ -2,6 +2,7 @@ from .namespace import namespace
 from .selection import Selection
 from lxml import etree
 
+
 def create(name: str) -> Selection:
     """
     Given the specified element name, returns a single-element selection

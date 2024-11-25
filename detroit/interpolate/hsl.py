@@ -2,6 +2,7 @@ from ..coloration import hsl as color_hsl
 from .color import color, hue
 from collections.abc import Callable
 
+
 class HSLInterpolator:
     def __init__(self, func):
         self.func = func
@@ -22,6 +23,7 @@ class HSLInterpolator:
             return str(start)
 
         return interpolate
+
 
 def interpolate_hsl(a: str, b: str) -> Callable[[float], str]:
     """
@@ -44,6 +46,7 @@ def interpolate_hsl(a: str, b: str) -> Callable[[float], str]:
         Interpolator
     """
     return HSLInterpolator(hue)(a, b)
+
 
 def interpolate_hsl_long(a: str, b: str) -> Callable[[float], str]:
     """

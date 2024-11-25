@@ -9,6 +9,7 @@ from .number_array import interpolate_number_array, is_number_array
 from datetime import datetime
 from collections.abc import Callable
 
+
 def interpolate_object(a, b) -> Callable:
     """
     Returns an interpolator between the two objects a and b.
@@ -39,6 +40,7 @@ def interpolate_object(a, b) -> Callable:
 
     return local_interpolate
 
+
 def interpolate_array(a: list, b: list) -> Callable:
     """
     Returns an interpolator between the two arrays a and b.
@@ -57,6 +59,7 @@ def interpolate_array(a: list, b: list) -> Callable:
     """
     return interpolate_number_array(a, b) if is_number_array(b) else generic_array(a, b)
 
+
 def generic_array(a, b):
     nb = len(b) if b else 0
     na = min(nb, len(a)) if a else 0
@@ -69,6 +72,7 @@ def generic_array(a, b):
         return c
 
     return local_interpolate
+
 
 def interpolate(a, b):
     """

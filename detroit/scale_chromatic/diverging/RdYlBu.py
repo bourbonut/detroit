@@ -7,7 +7,7 @@ scheme = [
     "d73027f46d43fdae61fee090e0f3f8abd9e974add14575b4",
     "d73027f46d43fdae61fee090ffffbfe0f3f8abd9e974add14575b4",
     "a50026d73027f46d43fdae61fee090e0f3f8abd9e974add14575b4313695",
-    "a50026d73027f46d43fdae61fee090ffffbfe0f3f8abd9e974add14575b4313695"
+    "a50026d73027f46d43fdae61fee090ffffbfe0f3f8abd9e974add14575b4313695",
 ]
 scheme = list(map(colors, scheme))
 RdYlBu = ramp(scheme)

@@ -10,21 +10,27 @@ from inspect import signature
 from collections.abc import Iterable, Callable
 from typing import Any
 
+
 def identity(x, *args):
     return x
+
 
 def constant(*obj):
     if len(obj) == 1:
         obj = obj[0]
+
     def wrapper(*args):
         return obj
+
     return wrapper
+
 
 class Bin:
     """
     Bin quantitative values into consecutive, non-overlapping
     intervals, as in histograms
     """
+
     def __init__(self):
         self._list = []
         self.x0 = None
@@ -46,16 +52,14 @@ class Bin:
         return str(self)
 
     def __eq__(self, bin):
-        return (
-            self._list == bin._list and
-            self.x0 == self.x0 and
-            self.x1 == self.x1
-        )
+        return self._list == bin._list and self.x0 == self.x0 and self.x1 == self.x1
+
 
 class bin:
     """
     bin generator with the default settings
     """
+
     def __init__(self):
         self._value = identity
         self._domain = extent

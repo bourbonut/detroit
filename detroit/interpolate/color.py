@@ -1,18 +1,24 @@
 from .constant import constant
 import math
 
+
 def linear(a, d):
     def f(t):
         return a + t * d
+
     return f
 
+
 def exponential(a, b, y):
-    a = a ** y
-    b = b ** y - a
+    a = a**y
+    b = b**y - a
     y = 1 / y
+
     def f(t):
         return (a + t * b) ** y
+
     return f
+
 
 def hue(a, b):
     d = b - a
@@ -24,14 +30,24 @@ def hue(a, b):
     else:
         return constant(b if math.isnan(a) else a)
 
+
 def gamma(y):
-    if round(y) == 1.:
+    if round(y) == 1.0:
         return color
+
     def f(a, b):
         d = b - a
-        return exponential(a, b, y) if not math.isnan(d) and d else constant(math.isnan(a) and b or a)
+        return (
+            exponential(a, b, y)
+            if not math.isnan(d) and d
+            else constant(math.isnan(a) and b or a)
+        )
+
     return f
+
 
 def color(a, b):
     d = b - a
-    return linear(a, d) if not math.isnan(d) and d else constant(b if math.isnan(a) else a)
+    return (
+        linear(a, d) if not math.isnan(d) and d else constant(b if math.isnan(a) else a)
+    )

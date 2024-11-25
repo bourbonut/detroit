@@ -1,5 +1,6 @@
 from .object_to_value import interpolate as interpolate_value
 
+
 def piecewise(interpolate, values=None):
     if values is None:
         values = interpolate
