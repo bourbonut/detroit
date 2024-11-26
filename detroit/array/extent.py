@@ -5,6 +5,7 @@ from typing import TypeVar
 T = TypeVar("T")
 
 
+# TODO : use min and max instead of doing manually
 def extent(
     values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | None = None
 ) -> tuple[T, T]:

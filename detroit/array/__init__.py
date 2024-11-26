@@ -4,10 +4,10 @@ from .nice import nice
 from .ticks import tick_increment, tick_step, ticks
 
 __all__ = [
+    "bin",
+    "extent",
+    "nice",
     "tick_increment",
     "tick_step",
     "ticks",
-    "nice",
-    "extent",
-    "bin",
 ]

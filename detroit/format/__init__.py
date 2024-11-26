@@ -5,11 +5,11 @@ from .precision_prefix import precision_prefix
 from .precision_round import precision_round
 
 __all__ = [
-    "locale_format",
     "format_default_locale",
     "format_prefix",
-    "precision_round",
-    "precision_prefix",
-    "precision_fixed",
     "format_specifier",
+    "locale_format",
+    "precision_fixed",
+    "precision_prefix",
+    "precision_round",
 ]

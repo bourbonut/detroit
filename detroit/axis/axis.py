@@ -1,3 +1,11 @@
+from __future__ import annotations
+from ..scale.continuous import Transformer
+from ..scale.sequential import Sequential
+from ..scale.diverging import Diverging
+from ..selection.selection import Selection
+from typing import Type, Literal
+from collections.abc import Callable
+
 TOP = 1
 RIGHT = 2
 BOTTOM = 3
@@ -16,7 +24,6 @@ def translate_y(y):
 def number(scale):
     def f(d):
         return float(scale(d))
-
     return f
 
 
@@ -27,12 +34,23 @@ def center(scale, offset):
     return lambda d: float(scale(d)) + offset
 
 
-def entering(context):
-    return not hasattr(context, "__axis")
+# def entering(context):
+#     return not hasattr(context, "__axis")
 
 
 class Axis:
-    def __init__(self, orient: int, scale):
+    """
+    Builds a new oriented axis generator for the given scale,
+    with empty tick arguments, a tick size of 6 and padding of 3.
+
+    Parameters
+    ----------
+    orient : Literal[1, 2, 3, 4]
+        Orientation
+    scale : Type[Transformer | Sequential | Diverging]
+        Scaler
+    """
+    def __init__(self, orient: Literal[1, 2, 3, 4], scale: Type[Transformer | Sequential | Diverging]):
         self._scale = scale
         self._orient = orient
         self._tick_arguments = []
@@ -46,10 +64,26 @@ class Axis:
         self._x = "x" if orient in [LEFT, RIGHT] else "y"
         self._transform = translate_x if orient in [TOP, BOTTOM] else translate_y
 
-    def __call__(self, context):
+    def __call__(self, context: Selection):
         """
         Render the axis to the given context, which may be either a selection
         of SVG containers (either SVG or G elements) or a corresponding transition.
+        
+        Parameters
+        ----------
+        context : Selection
+            Context
+
+        Examples
+        --------
+
+        >>> svg.append("g")
+        ...     .attr("transform", f"translate(0, {height - margin.bottom})")
+        ...     .call(d3.axis_bottom(x))
+
+        Notes
+        -----
+        Transitions are not yet implemented
         """
         if self._tick_values is not None:
             values = self._tick_values
@@ -179,99 +213,355 @@ class Axis:
             )
         )
 
-    def scale(self, scale=None):
-        if scale is not None:
-            self._scale = scale
-            return self
-        return self._scale
+    def set_scale(self, scale: Type[Transformer | Sequential | Diverging]) -> Axis:
+        """
+        Sets scale value
 
-    def ticks(self, ticks=None):
-        if ticks is not None:
-            self._tick_arguments = [ticks]
-        else:
-            self._tick_arguments = []
+        Parameters
+        ----------
+        scale : Type[Transformer | Sequential | Diverging]
+            New scale
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> x_axis = d3.axis_bottom().scale(x)
+        """
+        self._scale = scale
         return self
 
-    def tick_arguments(self, tick_arguments=None):
-        if tick_arguments is not None:
-            self._tick_arguments = tick_arguments
-            return self
+    @property
+    def scale(self) -> Type[Transformer | Sequential | Diverging]:
+        return self._scale
+
+    def set_ticks(self, *ticks: int | str | Callable) -> Axis:
+        """
+        Tick values will be passed to :code:`scale.ticks` and
+        :code:`scale.tick_format` when :code:`Axis.__call__` is called
+
+        Parameters
+        ----------
+        *ticks : int | str | Callable
+            It depends on :code:`scale` type. Most of the time, it is the
+            *count* for the number of ticks and optional format specifier
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        To generate twenty ticks with SI-prefix formatting on a linear scale :
+
+        >>> axis.set_ticks(20, "s")
+
+        To generate ticks every fifteen minutes with a time scale :
+
+        >>> axis.set_ticks(d3.time_minute.every(15))
+
+        Note the similarities with :code:`set_tick_arguments` :
+
+        >>> axis.set_ticks(10) # same as axis.set_tick_arguments([10])
+        """
+        self._tick_arguments = list(ticks)
+        return self
+
+    def set_tick_arguments(self, tick_arguments: list[int | str | Callable]) -> Axis:
+        """
+        Tick arguments will be passed to :code:`scale.ticks` and
+        :code:`scale.tick_format` when :code:`Axis.__call__` is called
+
+        Parameters
+        ----------
+        tick_arguments : list[int | str | Callable]
+            It depends on :code:`scale` type. Most of the time, it is the
+            *count* for the number of ticks and optional format specifier
+
+        Returns
+        -------
+            Itself
+
+        Examples
+        --------
+
+        To generate twenty ticks with SI-prefix formatting on a linear scale :
+
+        >>> axis.set_tick_arguments([20, "s"])
+
+        To generate ticks every fifteen minutes with a time scale :
+
+        >>> axis.set_tick_arguments([d3.time_minute.every(15)])
+        """
+        self._tick_arguments = list(tick_arguments)
+        return self
+
+    @property
+    def tick_arguments(self) -> list[int | str | Callable]:
         return self._tick_arguments.copy()
 
-    def tick_values(self, tick_values=None):
-        if tick_values is not None:
-            self._tick_values = tick_values
-            return self
+    def set_tick_values(self, tick_values: list[int | float]) -> Axis:
+        """
+        Ticks values are used for ticks rather than the scale’s
+        automatic tick generator.
+
+        Parameters
+        ----------
+        tick_values : list[int | float]
+            Tick values
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> axis = d3.axis_bottom(x).set_tick_values([1, 2, 3, 5, 8, 13, 21])
+        """
+        self._tick_values = tick_values
+        return self
+
+    @property
+    def tick_values(self) -> list[int | float]:
         return self._tick_values
 
-    def tick_format(self, tick_format=None):
-        if tick_format is not None:
-            self._tick_format = tick_format
-            return self
+    def set_tick_format(self, tick_format: Callable) -> Axis:
+        """
+        Sets the tick format function and returns the axis.
+
+        Parameters
+        ----------
+        tick_format : Callable
+            Tick formatter
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        For example, to display integers with comma-grouping for thousands :
+
+        >>> axis.set_tick_format(d3.format(",.0f"))
+        """
+        self._tick_format = tick_format
+        return self
+
+    @property
+    def tick_format(self) -> Callable:
         return self._tick_format
 
-    def tick_size(self, tick_size=None):
-        if tick_size is not None:
-            self._tick_size_inner = self._tick_size_outer = tick_size
-            return self
+    def set_tick_size(self, tick_size: int) -> Axis:
+        """
+        Sets the inner and outer tick size to the specified
+        value and returns the axis.
+
+        Parameters
+        ----------
+        tick_size : int
+            Tick size
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> d3.axis_bottom().set_tick_size(0)
+        """
+        self._tick_size_inner = self._tick_size_outer = tick_size
+        return self
+
+    def set_tick_size_inner(self, tick_size_inner: int) -> Axis:
+        """
+        Sets the inner tick size to the specified value and
+        returns the axis.
+
+        Parameters
+        ----------
+        tick_size_inner : int
+            Inner tick size
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> d3.axis_bottom().set_tick_size_inner(0)
+        """
+        self._tick_size_inner = tick_size_inner
+        return self
+
+    @property
+    def tick_size_inner(self) -> int:
         return self._tick_size_inner
 
-    def tick_size_inner(self, tick_size_inner=None):
-        if tick_size_inner is not None:
-            self._tick_size_inner = tick_size_inner
-            return self
-        return self._tick_size_inner
+    def set_tick_size_outer(self, tick_size_outer: int) -> Axis:
+        """
+        Sets the outer tick size to the specified value and
+        returns the axis.
 
-    def tick_size_outer(self, tick_size_outer=None):
-        if tick_size_outer is not None:
-            self._tick_size_outer = tick_size_outer
-            return self
+        Parameters
+        ----------
+        tick_size_outer : int
+            Outer tick size
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> d3.axis_bottom().set_tick_size_outer(0)
+        """
+        self._tick_size_outer = tick_size_outer
+        return self
+
+    @property
+    def tick_size_outer(self) -> Axis:
         return self._tick_size_outer
 
-    def tick_padding(self, tick_padding=None):
-        if tick_padding is not None:
-            self._tick_padding = tick_padding
-            return self
+    def set_tick_padding(self, tick_padding: int) -> Axis:
+        """
+        Sets the padding to the specified value in pixels.
+
+        Parameters
+        ----------
+        tick_padding : int
+            Tick padding in pixels
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> d3.axis_bottom().set_tick_padding(0)
+        """
+        self._tick_padding = tick_padding
+        return self
+
+    @property
+    def tick_padding(self) -> Axis:
         return self._tick_padding
 
-    def offset(self, offset=None):
-        if offset is not None:
-            self._offset = offset
-            return self
+    def set_offset(self, offset: int | float) -> Axis:
+        """
+        Sets the pixel offset to the specified value in pixels.
+
+        Parameters
+        ----------
+        offset : int | float
+            Pixel offset
+
+        Returns
+        -------
+        Axis
+            Itself
+
+        Examples
+        --------
+
+        >>> d3.axis_bottom().set_offset(0)
+        """
+        self._offset = offset
+        return self
+
+    @property
+    def offset(self) -> int | float:
         return self._offset
 
 
-def axis_top(scale):
+def axis_top(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     """
     Builds a new top-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
     In this orientation, ticks are drawn above the horizontal domain path.
+
+    Parameters
+    ----------
+    scale : Type[Transformer | Sequential | Diverging]
+        Scaler
+
+    Returns
+    -------
+    Axis
+        Axis
     """
     return Axis(TOP, scale)
 
 
-def axis_right(scale):
+def axis_right(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     """
     Builds a new right-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
     In this orientation, ticks are drawn above the vertical domain path.
+
+    Parameters
+    ----------
+    scale : Type[Transformer | Sequential | Diverging]
+        Scaler
+
+    Returns
+    -------
+    Axis
+        Axis
     """
     return Axis(RIGHT, scale)
 
 
-def axis_bottom(scale):
+def axis_bottom(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     """
     Builds a new bottom-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
     In this orientation, ticks are drawn above the horizontal domain path.
+
+    Parameters
+    ----------
+    scale : Type[Transformer | Sequential | Diverging]
+        Scaler
+
+    Returns
+    -------
+    Axis
+        Axis
     """
     return Axis(BOTTOM, scale)
 
 
-def axis_left(scale):
+def axis_left(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     """
     Builds a new left-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
     In this orientation, ticks are drawn above the vertical domain path.
+
+    Parameters
+    ----------
+    scale : Type[Transformer | Sequential | Diverging]
+        Scaler
+
+    Returns
+    -------
+    Axis
+        Axis
     """
     return Axis(LEFT, scale)

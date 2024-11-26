@@ -58,7 +58,7 @@ class Bin:
 
 class bin:
     """
-    bin generator with the default settings
+    Bin generator with the default settings
     """
 
     def __init__(self):

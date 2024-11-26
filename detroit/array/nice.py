@@ -8,9 +8,10 @@ T = TypeVar("T")
 
 def nice(start: T, stop: T, count: int) -> tuple[T, T]:
     """
-    Returns a new interval :code:`[niceStart, niceStop]` covering the given
-    interval :code:`[start, stop]` and where :code:`niceStart` and :code:`niceStop`
-    are guaranteed to align with the corresponding :code:`tick_step`
+    Returns a new interval :code:`[nice_start, nice_stop]` covering
+    the given interval :code:`[start, stop]` and where :code:`nice_start` and
+    :code:`nice_stop` are guaranteed to align with the corresponding
+    :code:`tick_step`.
 
     Parameters
     ----------
