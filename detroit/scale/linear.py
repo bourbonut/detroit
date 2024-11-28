@@ -13,7 +13,7 @@ class LinearBase:
     def ticks(self, count: int | None = None) -> list[int | float]:
         """
         Returns approximately count representative values
-        from the scale’s domain.
+        from the scale's domain.
 
         Parameters
         ----------

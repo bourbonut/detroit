@@ -190,7 +190,7 @@ class Transformer(Generic[T]):
 
     def set_domain(self, domain: list[int | float]) -> Transformer:
         """
-        Sets the scale’s domain to the specified array of numbers
+        Sets the scale's domain to the specified array of numbers
 
         Parameters
         ----------
@@ -211,7 +211,7 @@ class Transformer(Generic[T]):
 
     def set_range(self, range_vals: list[T]) -> Transformer:
         """
-        Sets the scale’s range to the specified array of values
+        Sets the scale's range to the specified array of values
 
         Parameters
         ----------
@@ -232,7 +232,7 @@ class Transformer(Generic[T]):
 
     def set_range_round(self, range_vals: list[T]) -> Transformer:
         """
-        Sets the scale’s range to the specified array of values
+        Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
 
         Parameters
@@ -272,7 +272,7 @@ class Transformer(Generic[T]):
 
     def set_interpolate(self, interpolate: Callable[[T, T], T]) -> Transformer:
         """
-        Sets the scale’s range interpolator factory.
+        Sets the scale's range interpolator factory.
 
         Parameters
         ----------
