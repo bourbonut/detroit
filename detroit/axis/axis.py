@@ -90,19 +90,18 @@ class Axis:
         elif hasattr(self._scale, "ticks"):
             values = self._scale.ticks(*self._tick_arguments)
         else:
-            values = self._scale.domain()
+            values = self._scale.domain
 
         if self._tick_format is not None:
             format_func = self._tick_format
         elif hasattr(self._scale, "tick_format"):
-            format_func = self._tick_format
+            format_func = self._scale.tick_format()
         else:
-
             def format_func(d):
                 return d
 
         spacing = max(self._tick_size_inner, 0) + self._tick_padding
-        range_values = self._scale.range()
+        range_values = self._scale.range
         range0 = float(range_values[0]) + self._offset
         range1 = float(range_values[-1]) + self._offset
 
