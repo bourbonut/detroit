@@ -1,3 +1,4 @@
+from __future__ import annotations
 import math
 from datetime import datetime
 
@@ -9,9 +10,13 @@ from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .symlog import transform_symlog
 
+from collections.abc import Callable
+from typing import overload, TypeVar, Any
+
+T = TypeVar("T")
 
 class Sequential:
-    def __init__(self, t):
+    def __init__(self, t: Callable):
         self._x0 = 0
         self._x1 = 1
         self._transform = t
@@ -22,7 +27,7 @@ class Sequential:
         self._clamp = False
         self._unknown = None
 
-    def __call__(self, x):
+    def __call__(self, x: int | float) -> T:
         if x is None or (isinstance(x, float) and math.isnan(x)):
             return self._unknown
         if self._k10 == 0:
@@ -33,7 +38,7 @@ class Sequential:
                 x = max(0, min(1, x))
         return self._interpolator(x)
 
-    def set_domain(self, domain):
+    def set_domain(self, domain: list[int | float]) -> Sequential:
         self._x0, self._x1 = map(float, list(domain)[:2])
         self._t0 = self._transform(self._x0)
         self._t1 = self._transform(self._x1)
@@ -41,49 +46,49 @@ class Sequential:
         return self
 
     @property
-    def domain(self):
+    def domain(self) -> list[int | float]:
         return [self._x0, self._x1]
 
-    def set_clamp(self, clamp):
+    def set_clamp(self, clamp: bool) -> Sequential:
         self._clamp = bool(clamp)
         return self
 
     @property
-    def clamp(self):
+    def clamp(self) -> bool:
         return self._clamp
 
-    def set_interpolator(self, interpolator):
+    def set_interpolator(self, interpolator: Callable) -> Sequential:
         self._interpolator = interpolator
         return self
 
     @property
-    def interpolator(self):
+    def interpolator(self) -> Callable:
         return self._interpolator
 
-    def set_range(self, range_vals):
+    def set_range(self, range_vals: list[T]) -> Sequential:
         self._r0, self._r1 = list(range_vals)[:2]
         self._interpolator = interpolate(self._r0, self._r1)
         return self
 
     @property
-    def range(self):
+    def range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
-    def range_round(self, range_vals):
+    def set_range_round(self, range_vals: list[T]) -> Sequential:
         self._r0, self._r1 = range_vals
         self._interpolator = interpolate_round(self._r0, self._r1)
         return self
 
     @property
-    def set_range_round(self):
+    def range_round(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
-    def set_unknown(self, *args):
-        self._unknown = args[0]
+    def set_unknown(self, unknown: Any) -> Sequential:
+        self._unknown = unknown
         return self
 
     @property
-    def unknown(self):
+    def unknown(self) -> Any:
         return self._unknown
 
 
@@ -182,7 +187,40 @@ class SequentialPow(Sequential, LinearBase):
         return copy(self, SequentialPow()).set_exponent(self.exponent)
 
 
+@overload
+def scale_sequential() -> SequentialLinear: ...
+
+
+@overload
+def scale_sequential(interpolator: Callable) -> SequentialLinear: ...
+
+
+@overload
+def scale_sequential(domain: list[int | float], interpolator: Callable) -> SequentialLinear: ...
+
+
 def scale_sequential(*args):
+    """
+    Builds a new sequential scale with the specified
+    domain and interpolator function or array.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Domain
+    interpolator : Callable
+        Interpolator
+
+    Returns
+    -------
+    SequentialLinear
+        Sequential object
+
+    Examples
+    --------
+
+    >>> d3.scale_sequential([0, 100], d3.interpolate_blues)
+    """
     scale = SequentialLinear()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -191,8 +229,39 @@ def scale_sequential(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_sequential_log() -> SequentialLog: ...
+
+
+@overload
+def scale_sequential_log(interpolator: Callable) -> SequentialLog: ...
+
+
+@overload
+def scale_sequential_log(domain: list[int | float], interpolator: Callable) -> SequentialLog: ...
 
 def scale_sequential_log(*args):
+    """
+    Builds a new sequential scale with a logarithmic
+    transform, analogous to a log scale.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Domain
+    interpolator : Callable
+        Interpolator
+
+    Returns
+    -------
+    SequentialLog
+        Sequential object
+
+    Examples
+    --------
+
+    >>> d3.scale_sequential_log([0, 100], d3.interpolate_blues)
+    """
     scale = SequentialLog()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -201,8 +270,39 @@ def scale_sequential_log(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_sequential_symlog() -> SequentialSymlog: ...
+
+
+@overload
+def scale_sequential_symlog(interpolator: Callable) -> SequentialSymlog: ...
+
+
+@overload
+def scale_sequential_symlog(domain: list[int | float], interpolator: Callable) -> SequentialSymlog: ...
 
 def scale_sequential_symlog(*args):
+    """
+    Builds a new sequential scale with a symmetric
+    logarithmic transform, analogous to a symlog scale.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Domain
+    interpolator : Callable
+        Interpolator
+
+    Returns
+    -------
+    SequentialSymlog
+        Sequential object
+
+    Examples
+    --------
+
+    >>> d3.scale_sequential_symlog([0, 100], d3.interpolate_blues)
+    """
     scale = SequentialSymlog()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -211,8 +311,40 @@ def scale_sequential_symlog(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_sequential_pow() -> SequentialPow: ...
+
+
+@overload
+def scale_sequential_pow(interpolator: Callable) -> SequentialPow: ...
+
+
+@overload
+def scale_sequential_pow(domain: list[int | float], interpolator: Callable) -> SequentialPow: ...
 
 def scale_sequential_pow(*args):
+    """
+    Builds a new sequential scale with an exponential
+    transform, analogous to a power scale.
+
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Domain
+    interpolator : Callable
+        Interpolator
+
+    Returns
+    -------
+    SequentialSymlog
+        Sequential object
+
+    Examples
+    --------
+
+    >>> d3.scale_sequential_pow([0, 100], d3.interpolate_blues)
+    """
     scale = SequentialPow()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -221,6 +353,38 @@ def scale_sequential_pow(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_sequential_sqrt() -> SequentialPow: ...
+
+
+@overload
+def scale_sequential_sqrt(interpolator: Callable) -> SequentialPow: ...
+
+
+@overload
+def scale_sequential_sqrt(domain: list[int | float], interpolator: Callable) -> SequentialPow: ...
 
 def scale_sequential_sqrt(*args):
+    """
+    Builds a new sequential scale with a square-root
+    transform, analogous to a sqrt scale
+
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Domain
+    interpolator : Callable
+        Interpolator
+
+    Returns
+    -------
+    SequentialSymlog
+        Sequential object
+
+    Examples
+    --------
+
+    >>> d3.scale_sequential_sqrt([0, 100], d3.interpolate_blues)
+    """
     return scale_sequential_pow(*args).set_exponent(0.5)

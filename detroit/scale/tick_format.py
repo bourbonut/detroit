@@ -10,8 +10,29 @@ from ..format import (
     precision_round,
 )
 
+from collections.abc import Callable
+from typing import TypeVar
 
-def tick_format(start, stop, count, specifier=None):
+T = TypeVar("T")
+
+def tick_format(start: T, stop: T, count: int, specifier: str | None = None) -> Callable[[T], str]:
+    """
+    Returns a number format function suitable for displaying a tick value,
+    automatically computing the appropriate precision based on the fixed
+    interval between tick values, as determined by d3.tickStep.
+
+    Parameters
+    ----------
+    start : T
+        Start value
+    stop : T
+        Stop value
+    count : int
+        Count value
+    specifier : str | None
+        Specifier allows a custom format where the precision of the format
+        is automatically set by the scale as appropriate for the tick interval.
+    """
     step = tick_step(start, stop, count)
     precision = None
     specifier = format_specifier(specifier if specifier is not None else ",f")
