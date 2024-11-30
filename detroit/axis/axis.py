@@ -28,8 +28,8 @@ def number(scale):
 
 
 def center(scale, offset):
-    offset = max(0, scale.bandwidth() - offset * 2) / 2
-    if scale.round():
+    offset = max(0, scale.bandwidth - offset * 2) / 2
+    if scale.round:
         offset = round(offset)
     return lambda d: float(scale(d)) + offset
 

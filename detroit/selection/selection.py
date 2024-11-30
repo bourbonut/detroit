@@ -12,6 +12,8 @@ from .text import text_constant, text_function
 
 
 def selector(element, selection, whole=False):
+    if selection is None:
+        return element
     prefix = "//" if whole else "/"
     if "." in selection:
         tag, class_name = selection.split(".")
@@ -75,7 +77,7 @@ class Selection:
         self._exit = exit
         self._data = data or {}
 
-    def select(self, selection):
+    def select(self, selection=None):
         subgroups = [
             selector(node, selection)[:1]
             for group in self._groups
@@ -89,7 +91,7 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def select_all(self, selection):
+    def select_all(self, selection=None):
         subgroups = [
             selector(node, selection)
             for group in self._groups
@@ -141,6 +143,8 @@ class Selection:
         for group in self._groups:
             subgroup = []
             for node in group:
+                if node is None:
+                    continue
                 if isinstance(node, EnterNode):
                     enter_node = node
                     node = enter_node._parent
@@ -253,6 +257,36 @@ class Selection:
                         parent.insert(index, node)
                     next_node = node
         return self
+
+    def join(self, onenter, onupdate=None, onexit=None):
+        enter = self.enter()
+        update = self
+        exit = self.exit()
+
+        # Enter
+        if callable(onenter):
+            enter = onenter(enter)
+            if enter:
+                enter = enter.selection()
+        else:
+            enter = enter.append(onenter)
+
+        # Update
+        if onupdate is not None:
+            update = onupdate(update)
+            if update:
+                update = update.selection()
+
+        # Exit
+        if onexit is None:
+            exit.remove()
+        else:
+            onexit(exit)
+
+        if enter and update:
+            return enter.merge(update).order()
+        else:
+            return update
 
     def insert(self, name, before):
         fullname = namespace(name)

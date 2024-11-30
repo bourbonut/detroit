@@ -34,15 +34,12 @@ svg = (
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox", [0, 0, width, height])
-    .attr("style", "max-width: 100% height: auto;")
+    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
 )
-
-# Append a path for the area (under the axes).
-svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("d", line(aapl.iter_rows()))
 
 # Add the x-axis.
 svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").call(
-    d3.axis_bottom(x).set_ticks(width / 80)
+    d3.axis_bottom(x).set_ticks(width / 80) # .set_tick_size_outer(0)
 )
 
 # Add the y-axis, remove the domain line, add grid lines and a label.
@@ -69,6 +66,9 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
         )
     )
 )
+
+# Append a path for the area (under the axes).
+svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 1.5).attr("d", line(aapl.iter_rows()))
 
 with open("area.svg", "w") as file:
     file.write(str(svg))

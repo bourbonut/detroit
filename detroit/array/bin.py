@@ -37,6 +37,9 @@ class Bin:
         self.x0 = None
         self.x1 = None
 
+    def __len__(self):
+        return len(self._list)
+
     def __getitem__(self, key):
         return self._list[key]
 
