@@ -281,7 +281,8 @@ class Selection:
         return self
 
     def call(self, func, *args):
-        return func(self, *args)
+        func(self, *args)
+        return self
 
     def node(self):
         return next(iter(self))
