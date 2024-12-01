@@ -11,7 +11,7 @@ API
    format
    interpolate
    path
-   scale
+   scale/index
    selection
    shape
    time

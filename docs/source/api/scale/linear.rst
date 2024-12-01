@@ -1,5 +1,5 @@
-Scale
-=====
+Linear scales
+=============
 
 .. autofunction:: detroit.scale_linear
 
@@ -30,7 +30,4 @@ Scale
    .. automethod:: tick_format
    .. automethod:: nice
 
-.. autofunction:: detroit.scale_time
-.. autofunction:: detroit.scale_pow
-.. autofunction:: detroit.scale_sqrt
-.. autofunction:: detroit.scale_quantize
+.. autofunction:: detroit.tick_format
