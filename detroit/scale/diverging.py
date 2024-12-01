@@ -118,7 +118,6 @@ class Diverging:
 class DivergingLinear(Diverging, LinearBase):
     def __init__(self):
         Diverging.__init__(self, identity)
-        LogBase.__init__(self)
 
     def copy(self):
         return copy(self, DivergingLinear())

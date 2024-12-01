@@ -104,7 +104,6 @@ def copy(source, target):
 class SequentialLinear(Sequential, LinearBase):
     def __init__(self):
         Sequential.__init__(self, identity)
-        LogBase.__init__(self)
 
     def copy(self):
         return copy(self, SequentialLinear())
