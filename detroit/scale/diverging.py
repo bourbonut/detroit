@@ -48,6 +48,19 @@ class Diverging:
         self._unknown = None
 
     def __call__(self, x: int | float) -> T:
+        """
+        Given a value from the domain, returns the corresponding value from the range.
+
+        Parameters
+        ----------
+        x : int | float
+            Input value
+
+        Returns
+        -------
+        T
+            Corresponding value from the range
+        """
         if isinstance(x, float) and math.isnan(x):
             return self._unknown
         else:
@@ -57,6 +70,19 @@ class Diverging:
             return self._interpolator(max(0, min(1, x)) if self._clamp else x)
 
     def set_domain(self, domain: list[int | float]) -> Diverging:
+        """
+        Sets the scale's domain to the specified array of numbers
+
+        Parameters
+        ----------
+        domain : list[int | float]
+            Domain
+
+        Returns
+        -------
+        Diverging
+            Itself
+        """
         self._x0, self._x1, self._x2 = map(float, list(domain)[:3])
         self._t0 = self.transform(self._x0)
         self._t1 = self.transform(self._x1)
@@ -71,6 +97,19 @@ class Diverging:
         return [self._x0, self._x1, self._x2]
 
     def set_clamp(self, clamp: bool) -> Diverging:
+        """
+        Enables or disables clamping accordingly.
+
+        Parameters
+        ----------
+        clamp : bool
+            Clamp value
+
+        Returns
+        -------
+        Diverging
+            Itself
+        """
         self._clamp = bool(clamp)
         return self
 
@@ -79,6 +118,19 @@ class Diverging:
         return self._clamp
 
     def set_interpolator(self, interpolator: Callable) -> Diverging:
+        """
+        Sets the scale’s interpolator to the specified function.
+
+        Parameters
+        ----------
+        interpolator : Callable
+            Interpolator function
+
+        Returns
+        -------
+        Diverging
+            Itself
+        """
         self._interpolator = interpolator
         return self
 
@@ -87,6 +139,20 @@ class Diverging:
         return self._interpolator
 
     def set_range(self, range_vals: list[T]) -> Diverging:
+        """
+        The given two-element array is converted
+        to an interpolator function using interpolate
+
+        Parameters
+        ----------
+        range_vals : list[T]
+            Two values
+
+        Returns
+        -------
+        Diverging
+            Itself
+        """
         self._r0 = float(range_vals[0])
         self._r1 = float(range_vals[1])
         self._r2 = float(range_vals[2])
@@ -94,6 +160,20 @@ class Diverging:
         return self
 
     def set_range_round(self, range_vals: list[T]) -> Diverging:
+        """
+        Sets the scale's range to the specified array of values
+        and sets scale's interpolator to :code:`interpolate_round`.
+
+        Parameters
+        ----------
+        range_vals : list[T]
+            Range values
+
+        Returns
+        -------
+        Diverging
+            Itself
+        """
         self._r0 = float(range_vals[0])
         self._r1 = float(range_vals[1])
         self._r2 = float(range_vals[2])
@@ -107,6 +187,20 @@ class Diverging:
         return [self._interpolator(0), self._interpolator(0.5), self._interpolator(1)]
 
     def set_unknown(self, unknown: Any) -> Diverging:
+        """
+        Sets the output value of the scale for undefined
+        or NaN input values.
+
+        Parameters
+        ----------
+        unknown : Any
+            Unknown value
+
+        Returns
+        -------
+        Diverging
+            Itself
+        """
         self._unknown = unknown
         return self
 
@@ -144,7 +238,20 @@ class DivergingLog(Diverging, LogBase):
             self.transform = transform_log
         return self
 
-    def set_domain(self, domain):
+    def set_domain(self, domain: list[int | float]) -> DivergingLog:
+        """
+        Sets the scale's domain to the specified array of numbers
+
+        Parameters
+        ----------
+        domain : list[int | float]
+            Domain
+
+        Returns
+        -------
+        DivergingLog
+            Itself
+        """
         self._x0, self._x1, self._x2 = map(float, list(domain)[:3])
         self._rescale()
         super().set_domain(domain)
@@ -155,11 +262,24 @@ class DivergingLog(Diverging, LogBase):
 
 
 class DivergingSymlog(Diverging):
-    def __init__(self, c=1):
+    def __init__(self, c: int | float = 1):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
-    def set_constant(self, c):
+    def set_constant(self, c: int | float) -> DivergingSymlog:
+        """
+        Sets the symlog constant to the specified number and returns this scale.
+
+        Parameters
+        ----------
+        c : int | float
+            Constant value
+
+        Returns
+        -------
+        DivergingSymlog
+            Itself
+        """
         self._c = float(c)
         self.transform = transform_symlog(self._c)
         self.rescale()
@@ -170,7 +290,7 @@ class DivergingSymlog(Diverging):
 
 
 class DivergingPow(Diverging, LinearBase):
-    def __init__(self, t=identity):
+    def __init__(self, t: Callable = identity):
         super().__init__(t)
         self._exponent = 1
 
@@ -188,7 +308,20 @@ class DivergingPow(Diverging, LinearBase):
             self.rescale()
             return self
 
-    def set_exponent(self, exponent):
+    def set_exponent(self, exponent: int | float) -> DivergingPow:
+        """
+        Sets the scale's exponent value.
+
+        Parameters
+        ----------
+        exponent : int | float
+            Exponent value
+
+        Returns
+        -------
+        DivergingPow
+            Itself
+        """
         self._exponent = float(exponent)
         return self._rescale()
 
