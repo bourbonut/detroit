@@ -39,7 +39,7 @@ class FormatSpecifier:
         return "".join(parts)
 
 
-def format_specifier(specifier):
+def format_specifier(specifier: str) -> FormatSpecifier:
     match = FORMAT_RE.match(specifier)
     if not match:
         raise ValueError(f"invalid format: {specifier}")
