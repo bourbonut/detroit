@@ -8,11 +8,11 @@ from detroit.shape.curves.linear import LinearCurve
 
 def test_line_1():
     l = d3.line()
-    assert l.x()([42, 34]) == 42
-    assert l.y()([42, 34]) == 34
-    assert l.defined()([42, 34]) is True
-    assert l.curve() == LinearCurve
-    assert l.context() is None
+    assert l.fx([42, 34]) == 42
+    assert l.fy([42, 34]) == 34
+    assert l.accessor_defined([42, 34]) is True
+    assert l.fcurve == LinearCurve
+    assert l.own_context is None
     assert str(l([[0, 1], [2, 3], [4, 5]])) == "M0,1L2,3L4,5"
 
 
@@ -23,10 +23,10 @@ def test_line_2():
     def y(*args):
         return
 
-    assert d3.line(x).x() == x
-    assert d3.line(x, y).y() == y
-    assert d3.line(3, 2).x()("aa") == 3
-    assert d3.line(3, 2).y()("aa") == 2
+    assert d3.line(x).fx == x
+    assert d3.line(x, y).fy == y
+    assert d3.line(3, 2).fx("aa") == 3
+    assert d3.line(3, 2).fy("aa") == 2
 
 
 def test_line_3():

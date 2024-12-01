@@ -13,11 +13,37 @@ from .second import time_second
 from .week import time_sunday, time_week
 from .year import time_year
 
+from collections.abc import Callable
+
 
 class Ticker:
-    """ """
+    """
+    Tick generator
 
-    def __init__(self, year, month, week, day, hour, minute):
+    Parameters
+    ----------
+    year : Callable
+        Year interval function
+    month : Callable
+        Month interval function
+    week : Callable
+        Week interval function
+    day : Callable
+        Day interval function
+    hour : Callable
+        Hour interval function
+    minute : Callable
+        Minute interval function
+    """
+    def __init__(
+        self,
+        year: Callable,
+        month: Callable,
+        week: Callable,
+        day: Callable,
+        hour: Callable,
+        minute: Callable,
+    ):
         self.tick_intervals = [
             (time_second, 1, timedelta(seconds=1)),
             (time_second, 5, timedelta(seconds=5)),

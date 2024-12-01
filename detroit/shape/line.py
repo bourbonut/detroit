@@ -1,15 +1,31 @@
-from collections.abc import Callable
+from __future__ import annotations
+from collections.abc import Callable, Iterable
 
 from .constant import constant
 from .curves.linear import LinearCurve
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
+from ..selection.selection import Selection
 
 
 class Line(WithPath):
     """
-    Builds a line generator given x and y accessor
+    The line generator produces a spline or polyline as in a line chart.
+    Lines also appear in many other visualization types, such as the links
+    in hierarchical edge bundling.
+
+    Parameters
+    ----------
+    x : Callable | None
+        x accessor function for data points
+    y : Callable | None
+        y accessor function for data points
+
+    Returns
+    -------
+    Line
+        New line generator
     """
 
     def __init__(self, x: Callable | None = None, y: Callable | None = None):
@@ -33,9 +49,24 @@ class Line(WithPath):
         else:
             self._y = constant(y)
 
-    def __call__(self, data: list):
+    def __call__(self, data: Iterable) -> str | None:
         """
         Generate a line for the given list of data
+
+        Parameters
+        ----------
+        data : Iterable
+            Data values
+
+        Returns
+        -------
+        str | None
+            Generated line if the line is not associated to a context
+
+        Examples
+        --------
+        
+        >>> svg.append("path").attr("d", line(data)).attr("stroke", "currentColor")
         """
         data = list(data)
         n = len(data)
@@ -69,73 +100,139 @@ class Line(WithPath):
             self._output = None
             return str(buffer) or None
 
-    def x(self, *args):
+    def x(self, x: Callable | int | float | None) -> Line:
         """
-        Set x accessor
+        Sets x accessor function
+
+        Parameters
+        ----------
+        x : Callable | int | float | None
+            x accessor function
+
+        Returns
+        -------
+        Line
+            Itself
         """
-        if args:
-            x = args[0]
-            if x is None:
-                self._x = point_x
-            elif callable(x):
-                self._x = x
-            else:
-                self._x = constant(x)
-            return self
+        if x is None:
+            self._x = point_x
+        elif callable(x):
+            self._x = x
+        else:
+            self._x = constant(x)
+        return self
+
+    @property
+    def fx(self):
         return self._x
 
-    def y(self, *args):
+    def y(self, y: Callable | int | float | None) -> Line:
         """
-        Set y accessor
+        Sets y accessor function
+
+        Parameters
+        ----------
+        y : Callable | int | float | None
+            y accessor function
+
+        Returns
+        -------
+        Line
+            Itself
         """
-        if args:
-            y = args[0]
-            if y is None:
-                self._y = point_y
-            elif callable(y):
-                self._y = y
-            else:
-                self._y = constant(y)
-            return self
+        if y is None:
+            self._y = point_y
+        elif callable(y):
+            self._y = y
+        else:
+            self._y = constant(y)
+        return self
+
+    @property
+    def fy(self):
         return self._y
 
-    def defined(self, *args):
+    def defined(self, defined: Callable | int | float | None) -> Line:
         """
-        Set defined accessor
+        Sets defined accessor
+
+        When a line is generated, the defined accessor will be invoked
+        for each element in the input data array, being passed the element
+        :code:`d`, the index :code:`i`, and the array :code:`data` as three
+        arguments. If the given element is defined (i.e., if the defined accessor
+        returns a truthy value for this element), the x and y accessors will
+        subsequently be evaluated and the point will be added to the current
+        line segment. Otherwise, the element will be skipped, the current line
+        segment will be ended, and a new line segment will be generated for the
+        next defined point.
+
+        Parameters
+        ----------
+        defined : Callable | int | float | None
+            defined accessor function
+
+        Returns
+        -------
+        Line
+            Itself
         """
-        if args:
-            defined = args[0]
-            if defined is None:
-                self._defined = defined
-            elif callable(defined):
-                self._defined = defined
-            else:
-                self._defined = constant(bool(defined))
-            return self
+        if defined is None:
+            self._defined = defined
+        elif callable(defined):
+            self._defined = defined
+        else:
+            self._defined = constant(bool(defined))
+        return self
+
+    @property
+    def accessor_defined(self):
         return self._defined
 
-    def curve(self, *args):
+    def curve(self, curve: Callable | None) -> Line:
         """
-        Set curve factory
+        Sets curve factory.
+
+        Parameters
+        ----------
+        curve : Callable | None
+            Curve factory function
+
+        Returns
+        -------
+        Line
+            Itself
         """
-        if args:
-            self._curve = args[0]
-            if self._context is not None:
-                self._output = self._curve(self._context)
-            return self
+        self._curve = curve
+        if self._context is not None:
+            self._output = self._curve(self._context)
+        return self
+
+    @property
+    def fcurve(self):
         return self._curve
 
-    def context(self, *args):
+    def context(self, context: Selection | None) -> Line:
         """
-        Set line context
+        Sets the context.
+
+        Parameters
+        ----------
+        context : Selection | None
+            Selection
+
+        Returns
+        -------
+        Line
+            Itself
         """
-        if args:
-            context = args[0]
-            if context is None:
-                self._context = None
-                self._output = None
-            else:
-                self._context = context
-                self._output = self._curve(self._context)
-            return self
+        if context is None:
+            self._context = None
+            self._output = None
+        else:
+            self._context = context
+            self._output = self._curve(self._context)
+        return self
+
+    @property
+    def own_context(self):
         return self._context

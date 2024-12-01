@@ -17,3 +17,18 @@ Time
 .. autofunction:: detroit.time_friday
 .. autofunction:: detroit.time_saturday
 .. autofunction:: detroit.time_ticks
+
+.. autoclass:: detroit.time.interval.TimeInterval
+
+   .. automethod:: __call__
+   .. automethod:: interval
+   .. automethod:: every
+   .. automethod:: ceil
+   .. automethod:: round
+   .. automethod:: range
+   .. automethod:: filter
+
+.. autoclass:: detroit.time.ticks.Ticker
+
+   .. automethod:: ticks
+   .. automethod:: tick_interval

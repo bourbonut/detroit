@@ -15,6 +15,11 @@ class Path:
     ----------
     digits : int | None
         Number of digits to round
+
+    Returns
+    -------
+    Path
+        New path serializer
     """
 
     def __init__(self, digits: int | None = None):
