@@ -1,3 +1,4 @@
+from __future__ import annotations
 import math
 from datetime import datetime
 
@@ -10,9 +11,28 @@ from .pow import transform_pow, transform_sqrt
 from .sequential import copy
 from .symlog import transform_symlog
 
+from collections.abc import Callable
+from typing import overload, TypeVar, Any
+
+T = TypeVar("T")
 
 class Diverging:
-    def __init__(self, t):
+    """
+    Diverging scales are similar to linear scales in that they map
+    a continuous, numeric input domain to a continuous output range.
+    Unlike linear scales, the input domain and output range of a diverging
+    scale always have exactly three elements, and the output range is
+    typically specified as an interpolator rather than an array of values.
+    Diverging scales are typically used for a color encoding; see also
+    d3-scale-chromatic. These scales do not expose invert and interpolate
+    methods. There are also log, pow, and symlog variants of diverging scales.
+
+    Parameters
+    ----------
+    t : Callable
+        Transform function
+    """
+    def __init__(self, t: Callable):
         self.transform = t
         self._x0 = 0
         self._x1 = 0.5
@@ -27,7 +47,7 @@ class Diverging:
         self._clamp = False
         self._unknown = None
 
-    def __call__(self, x):
+    def __call__(self, x: int | float) -> T:
         if isinstance(x, float) and math.isnan(x):
             return self._unknown
         else:
@@ -36,7 +56,7 @@ class Diverging:
             x = 0.5 + (x - self._t1) * k
             return self._interpolator(max(0, min(1, x)) if self._clamp else x)
 
-    def set_domain(self, domain):
+    def set_domain(self, domain: list[int | float]) -> Diverging:
         self._x0, self._x1, self._x2 = map(float, list(domain)[:3])
         self._t0 = self.transform(self._x0)
         self._t1 = self.transform(self._x1)
@@ -47,33 +67,33 @@ class Diverging:
         return self
 
     @property
-    def domain(self):
+    def domain(self) -> list[int | float]:
         return [self._x0, self._x1, self._x2]
 
-    def set_clamp(self, clamp):
+    def set_clamp(self, clamp: bool) -> Diverging:
         self._clamp = bool(clamp)
         return self
 
     @property
-    def clamp(self):
+    def clamp(self) -> bool:
         return self._clamp
 
-    def set_interpolator(self, interpolator):
+    def set_interpolator(self, interpolator: Callable) -> Diverging:
         self._interpolator = interpolator
         return self
 
     @property
-    def interpolator(self):
+    def interpolator(self) -> Callable:
         return self._interpolator
 
-    def set_range(self, range_vals):
+    def set_range(self, range_vals: list[T]) -> Diverging:
         self._r0 = float(range_vals[0])
         self._r1 = float(range_vals[1])
         self._r2 = float(range_vals[2])
         self._interpolator = piecewise(interpolate, [self._r0, self._r1, self._r2])
         return self
 
-    def set_range_round(self, range_vals):
+    def set_range_round(self, range_vals: list[T]) -> Diverging:
         self._r0 = float(range_vals[0])
         self._r1 = float(range_vals[1])
         self._r2 = float(range_vals[2])
@@ -83,15 +103,15 @@ class Diverging:
         return self
 
     @property
-    def range(self):
+    def range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(0.5), self._interpolator(1)]
 
-    def set_unknown(self, unknown):
+    def set_unknown(self, unknown: Any) -> Diverging:
         self._unknown = unknown
         return self
 
     @property
-    def unknown(self):
+    def unknown(self) -> Any:
         return self._unknown
 
 
@@ -180,8 +200,40 @@ class DivergingPow(Diverging, LinearBase):
     def copy(self):
         return copy(self, DivergingPow()).set_exponent(self.exponent)
 
+@overload
+def scale_diverging() -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging(interpolator: Callable) -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+
 
 def scale_diverging(*args):
+    """
+    Builds a new diverging scale with the specified
+    domain and interpolator function or array.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Array of numbers
+    interpolator : Callable
+        Interpolator function
+
+    Returns
+    -------
+    DivergingLinear
+        Diverging object
+
+    Examples
+    --------
+
+    >>> d3.scale_diverging([-1, 0, 1], d3.interpolate_RdBu)
+    """
     scale = DivergingLinear()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -190,8 +242,40 @@ def scale_diverging(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_diverging_log() -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_log(interpolator: Callable) -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_log(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+
 
 def scale_diverging_log(*args):
+    """
+    Builds a new diverging scale with a logarithmic
+    transform, analogous to a log scale.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Array of numbers
+    interpolator : Callable
+        Interpolator function
+
+    Returns
+    -------
+    DivergingLog
+        Diverging object
+
+    Examples
+    --------
+
+    >>> d3.scale_diverging_log([1, 10, 100], d3.interpolate_RdBu)
+    """
     scale = DivergingLog()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -200,8 +284,40 @@ def scale_diverging_log(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_diverging_symlog() -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_symlog(interpolator: Callable) -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_symlog(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+
 
 def scale_diverging_symlog(*args):
+    """
+    Builds a new diverging scale with a symmetric
+    logarithmic transform, analogous to a symlog scale.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Array of numbers
+    interpolator : Callable
+        Interpolator function
+
+    Returns
+    -------
+    DivergingSymlog
+        Diverging object
+
+    Examples
+    --------
+
+    >>> d3.scale_diverging_symlog([1, 10, 100], d3.interpolate_RdBu)
+    """
     scale = DivergingSymlog()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -210,8 +326,41 @@ def scale_diverging_symlog(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_diverging_pow() -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_pow(interpolator: Callable) -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_pow(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+
 
 def scale_diverging_pow(*args):
+    """
+    Builds a new diverging scale with an exponential
+    transform, analogous to a power scale.
+
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Array of numbers
+    interpolator : Callable
+        Interpolator function
+
+    Returns
+    -------
+    DivergingPow
+        Diverging object
+
+    Examples
+    --------
+
+    >>> d3.scale_diverging_pow([0, 1, 10], d3.interpolate_RdBu)
+    """
     scale = DivergingPow()
     if len(args) == 1:
         return init_interpolator(scale, interpolator=args[0])
@@ -220,6 +369,39 @@ def scale_diverging_pow(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+@overload
+def scale_diverging_sqrt() -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_sqrt(interpolator: Callable) -> DivergingLinear: ...
+
+
+@overload
+def scale_diverging_sqrt(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+
+
 
 def scale_diverging_sqrt(*args):
+    """
+    Builds a new diverging scale with a square-root
+    transform, analogous to a sqrt scale.
+
+    Parameters
+    ----------
+    domain : list[int | float]
+        Array of numbers
+    interpolator : Callable
+        Interpolator function
+
+    Returns
+    -------
+    DivergingSqrt
+        Diverging object
+
+    Examples
+    --------
+
+    >>> d3.scale_diverging_sqrt([0, 1, 10], d3.interpolate_RdBu)
+    """
     return scale_diverging_pow(*args).exponent(0.5)

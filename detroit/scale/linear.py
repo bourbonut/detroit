@@ -150,7 +150,7 @@ def scale_linear(*args):
     ----------
     domain : list[int | float]
         Array of numbers
-    range_vals : list[int | float]
+    range_vals : list[T]
         Array of values
 
     Returns

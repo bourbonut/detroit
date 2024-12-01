@@ -337,7 +337,7 @@ def scale_sequential_pow(*args):
 
     Returns
     -------
-    SequentialSymlog
+    SequentialPow
         Sequential object
 
     Examples
@@ -379,7 +379,7 @@ def scale_sequential_sqrt(*args):
 
     Returns
     -------
-    SequentialSymlog
+    SequentialSqrt
         Sequential object
 
     Examples
