@@ -258,19 +258,53 @@ class HCL(Color):
         Opacity value
     """
 
-    def __init__(self, h, c, l, opacity):
+    def __init__(self, h: int | float, c: int | float, l: int | float, opacity: int | float):
         self.h = float(h)
         self.c = float(c)
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k=None):
+    def brighter(self, k: float | None = None) -> HCL:
+        """
+        Returns a brighter copy of this color.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        HCL
+            Brighter HCL
+        """
         return HCL(self.h, self.c, self.l + K * (1 if k is None else k), self.opacity)
 
-    def darker(self, k=None):
+    def darker(self, k: float | None = None) -> HCL:
+        """
+        Returns a darker copy of this color.
+
+        Parameters
+        ----------
+        k : float | None
+            Brightness coefficient
+
+        Returns
+        -------
+        HCL
+            Brighter HCL
+        """
         return HCL(self.h, self.c, self.l - K * (1 if k is None else k), self.opacity)
 
-    def rgb(self):
+    def rgb(self) -> RGB:
+        """
+        Returns the RGB equivalent of this color
+
+        Returns
+        -------
+        RGB
+            RGB color format
+        """
         return hcl2lab(self).rgb()
 
 

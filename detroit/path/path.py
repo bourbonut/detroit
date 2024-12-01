@@ -9,7 +9,7 @@ TAU_EPSILON = TAU - EPSILON
 
 class Path:
     """
-    Build a path serializer
+    Builds a path serializer
 
     Parameters
     ----------

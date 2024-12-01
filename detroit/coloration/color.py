@@ -178,16 +178,16 @@ NAMED = {
 
 
 class Color:
-    def format_hex(self):
+    def format_hex(self) -> str:
         return self.rgb().format_hex()
 
-    def format_hex_8(self):
+    def format_hex_8(self) -> str:
         return self.rgb().format_hex_8()
 
-    def format_hsl(self):
+    def format_hsl(self) -> str:
         return hsl_convert(self).format_hsl()
 
-    def format_rgb(self):
+    def format_rgb(self) -> str:
         return self.rgb().format_rgb()
 
     def __str__(self):
