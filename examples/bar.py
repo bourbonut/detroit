@@ -55,6 +55,10 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     d3.axis_bottom(x).set_tick_size_outer(0)
 )
 
+# svg.select_all("path.domain").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+
 # Add the y-axis and label, and remove the domain line.
 (
     svg.append("g")
