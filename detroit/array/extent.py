@@ -1,5 +1,6 @@
 import math
 from collections.abc import Callable, Iterable
+from inspect import signature
 from typing import TypeVar
 
 T = TypeVar("T")
@@ -38,8 +39,10 @@ def extent(
                     if maxi < value:
                         maxi = value
     else:
+        nargs = len(signature(accessor).parameters)
         for index, value in enumerate(values):
-            new_value = accessor(value, index, values)
+            args = [value, index, values][:nargs]
+            new_value = accessor(*args)
             if new_value is not None and (
                 isinstance(new_value, str) or not math.isnan(new_value)
             ):

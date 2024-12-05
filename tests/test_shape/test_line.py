@@ -34,12 +34,12 @@ def test_line_3():
     actual_x = []
     actual_y = []
 
-    def fx(*args):
-        actual_x.append(list(args))
+    def fx(d, i, data):
+        actual_x.append([d, i, data])
         return 0
 
-    def fy(*args):
-        actual_y.append(list(args))
+    def fy(d, i, data):
+        actual_y.append([d, i, data])
         return 0
 
     d3.line().x(fx).y(fy)(data)

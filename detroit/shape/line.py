@@ -1,5 +1,6 @@
 from __future__ import annotations
 from collections.abc import Callable, Iterable
+from inspect import signature
 
 from .constant import constant
 from .curves.linear import LinearCurve
@@ -76,6 +77,8 @@ class Line(WithPath):
             buffer = self._path()
             self._output = self._curve(buffer)
 
+        xnargs = len(signature(self._x).parameters)
+        ynargs = len(signature(self._y).parameters)
         for i in range(n):
             d = data[i]
             if i == n or self._defined(d, i, data) != defined0:
@@ -85,7 +88,9 @@ class Line(WithPath):
                 else:
                     self._output.line_end()
             if defined0:
-                self._output.point(self._x(d, i, data), self._y(d, i, data))
+                xargs = [d, i, data][:xnargs]
+                yargs = [d, i, data][:ynargs]
+                self._output.point(self._x(*xargs), self._y(*yargs))
 
         i += 1
         defined0 = not defined0
@@ -94,7 +99,9 @@ class Line(WithPath):
         else:
             self._output.line_end()
         if defined0:
-            self._output.point(self._x(d, i, data), self._y(d, i, data))
+            xargs = [d, i, data][:xnargs]
+            yargs = [d, i, data][:ynargs]
+            self._output.point(self._x(xargs), self._y(yargs))
 
         if buffer:
             self._output = None
