@@ -11,16 +11,15 @@ from .style import style_value
 from .text import text_constant, text_function
 
 
-def selector(element, selection, whole=False):
+def selector(element, selection):
     if selection is None:
         return element
-    prefix = "//" if whole else "/"
     if "." in selection:
         tag, class_name = selection.split(".")
         tag = tag or "*"
         class_name = f"[@class='{class_name}']" if class_name else ""
-        return element.xpath(f"{prefix}{tag}{class_name}")
-    return element.xpath(f"{prefix}{selection}")
+        return element.xpath(f"./*/{tag}{class_name}") + element.xpath(f"./{tag}{class_name}")
+    return element.xpath(f"./*/{selection}") + element.xpath(f"./{selection}")
 
 
 def creator(node, fullname):
@@ -238,7 +237,7 @@ class Selection:
                 if previous:
                     i1 = i0 + 1
                     while not (
-                        update_group[i1] if i1 < len(update_group) else None
+                        i1 < len(update_group) and update_group[i1] is not None
                     ) and i1 < len(data):
                         i1 += 1
                     previous._next = update_group[i1] if i1 < len(data) else None
@@ -295,7 +294,7 @@ class Selection:
                 if node is not None:
                     if isinstance(node, EnterNode):
                         node = node._parent
-                    selection = selector(node, before, True)
+                    selection = selector(node, before)
                     if selection := [
                         found for found in selection if found.getparent() == node
                     ]:
