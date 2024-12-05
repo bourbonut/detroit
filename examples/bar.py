@@ -33,7 +33,7 @@ svg = (
     d3.create("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("viewBox", [0, 0, width, height])
+    .attr("viewBox", f"0, 0, {width}, {height}")
     .attr("style", "max-width: 100%; height: auto;")
 )
 
@@ -55,15 +55,11 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     d3.axis_bottom(x).set_tick_size_outer(0)
 )
 
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
-
 # Add the y-axis and label, and remove the domain line.
 (
     svg.append("g")
     .attr("transform", f"translate({margin.left}, 0)")
-    .call(d3.axis_left(y).set_tick_format(lambda y: str(ceil(y * 100))))
+    .call(d3.axis_left(y).set_tick_format(lambda y: str(int(y * 100))))
     .call(lambda g: g.select(".domain").remove())
     .call(
         lambda g: g.append("text")
@@ -74,6 +70,10 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
         .text("↑ Frequency (%)")
     )
 )
+
+# svg.select_all("path.domain").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
 
 with open("bar.svg", "w") as file:
     file.write(str(svg))
