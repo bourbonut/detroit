@@ -1,6 +1,5 @@
 import detroit as d3
 import polars as pl
-from copy import copy
 from collections import namedtuple
 
 URL = "https://static.observableusercontent.com/files/de259092d525c13bd10926eaf7add45b15f2771a8b39bc541a5bba1e0206add4880eb1d876be8df469328a85243b7d813a91feb8cc4966de582dc02e5f8609b7?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27aapl.csv"
@@ -26,20 +25,20 @@ x = d3.scale_time(
 y = d3.scale_linear([0, aapl["close"].max()], [height - margin.bottom, margin.top])
 
 # Declare the area generator.
-line = d3.line().x(lambda d, i, data: x(d[0].timestamp())).y(lambda d, i, data: y(d[1]))
+line = d3.line().x(lambda d: x(d[0].timestamp())).y(lambda d: y(d[1]))
 
 # Create the SVG container.
 svg = (
     d3.create("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("viewBox", [0, 0, width, height])
+    .attr("viewBox", f"0 0 {width} {height}")
     .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
 )
 
 # Add the x-axis.
 svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").call(
-    d3.axis_bottom(x).set_ticks(width / 80) # .set_tick_size_outer(0)
+    d3.axis_bottom(x).set_ticks(width / 80).set_tick_size_outer(0)
 )
 
 # Add the y-axis, remove the domain line, add grid lines and a label.
@@ -48,12 +47,11 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     .attr("transform", f"translate({margin.left}, 0)")
     .call(d3.axis_left(y).set_ticks(height / 40))
     .call(lambda g: g.select(".domain").remove())
-    .call(
-        lambda g: (
-            copy(g.select_all(".tick line"))
-            .attr("x2", width - margin.left - margin.right)
-            .attr("stroke-opacity", 0.1)
-        )
+    .call(lambda g: g.select_all(".tick")
+        .select_all("line")
+        .clone()
+        .attr("x2", width - margin.left - margin.right)
+        .attr("stroke-opacity", 0.1)
     )
     .call(
         lambda g: (
@@ -70,5 +68,5 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
 # Append a path for the area (under the axes).
 svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 1.5).attr("d", line(aapl.iter_rows()))
 
-with open("area.svg", "w") as file:
+with open("line.svg", "w") as file:
     file.write(str(svg))

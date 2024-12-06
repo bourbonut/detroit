@@ -1,7 +1,6 @@
 import detroit as d3
 import polars as pl
 from collections import namedtuple
-from copy import copy
 
 URL = "https://static.observableusercontent.com/files/53c407ee531bab128477148c9e28c49dd06bf83a93ae317e58dbb9fc819db0d4f6c4fb9646fa2fe20faad76addee20cfc360eab2362eeaec3340a5e4655b9996?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27cars-2.csv"
 Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
@@ -45,8 +44,12 @@ y = (
 )
 
 # Create the SVG container.
-svg = d3.create("svg").attr("viewBox", [0, 0, width, height])
-# .property("value", [])
+svg = (
+    d3.create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", f"0 0 {width} {height}")
+)
 
 # Append the axes.
 (
@@ -71,7 +74,7 @@ svg = d3.create("svg").attr("viewBox", [0, 0, width, height])
     .call(d3.axis_left(y))
     .call(lambda g: g.select(".domain").remove())
     .call(
-        lambda g: copy(g.select(".tick:last-of-type text"))
+        lambda g: g.select(".tick:last-of-type").select("text").clone()
         .attr("x", 4)
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
