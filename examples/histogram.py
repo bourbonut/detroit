@@ -12,7 +12,7 @@ height = 500
 margin = Margin(20, 20, 30, 40)
 
 # Bin the data.
-bins = d3.bin().thresholds(40).value(lambda d, i, data: d[3])(unemployment.iter_rows())
+bins = d3.bin().thresholds(40).value(lambda d: d[3])(unemployment.iter_rows())
 
 # Declare the x (horizontal position) scale.
 x = (
@@ -24,7 +24,7 @@ x = (
 # Declare the y (vertical position) scale.
 y = (
     d3.scale_linear()
-    .set_domain([0, max(map(lambda d: len(d), bins))])
+    .set_domain([0, max(map(len, bins))])
     .set_range([height - margin.bottom, margin.top])
 )
 
@@ -33,7 +33,7 @@ svg = (
     d3.create("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("viewBox", [0, 0, width, height])
+    .attr("viewBox", f"0, 0, {width}, {height}")
     .attr("style", "max-width: 100%; height: auto;")
 )
 
@@ -44,10 +44,10 @@ svg = (
     .select_all()
     .data(bins)
     .join("rect")
-    .attr("x", lambda d, i, data: x(d.x0) + 1)
-    .attr("width", lambda d, i, data: x(d.x1) - x(d.x0) - 1)
-    .attr("y", lambda d, i, data: y(len(d)))
-    .attr("height", lambda d, i, data: y(0) - y(len(d)))
+    .attr("x", lambda d: x(d.x0) + 1)
+    .attr("width", lambda d: x(d.x1) - x(d.x0) - 1)
+    .attr("y", lambda d: y(len(d)))
+    .attr("height", lambda d: y(0) - y(len(d)))
 )
 
 # Add the x-axis and label.
