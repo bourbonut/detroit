@@ -7,7 +7,7 @@ from .bind import bind_index, bind_key
 from .constant import constant
 from .enter import EnterNode
 from .namespace import namespace
-from .style import style_value
+from .style import style_value, style_function, style_constant
 from .text import text_constant, text_function
 
 
@@ -181,12 +181,13 @@ class Selection:
             self.each(attr_constant(name, value))
         return self
 
-    def style(self, name, value=None):  # TODO : update this method
+    def style(self, name, value=None):
         if value is None:
-            return style_value(self.nodes[0].get("style"), name)
-        for selected in self.nodes:
-            current_value = selected.get("style", "")
-            selected.set("style", f"{current_value}{name}:{value};")
+            return style_value(self.nodes.get(name).get("style"), name)
+        elif callable(value):
+            self.each(style_function(name, value))
+        else:
+            self.each(style_constant(name, value))
         return self
 
     def text(self, value=None):
