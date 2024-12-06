@@ -187,7 +187,7 @@ class Axis:
                     f"M{range0},{self._k * self._tick_size_outer}V{self._offset}H{range1}V{self._k * self._tick_size_outer}",
                 )
             else:
-                path.attr("d", f"M{self._offset},{range0}H{range1}")
+                path.attr("d", f"M{range0},{self._offset}H{range1}")
 
         def transform(d, *args):
             return self._transform(position(d) + self._offset)
