@@ -4,6 +4,7 @@ from lxml import etree
 
 from .attr import attr_constant, attr_function
 from .bind import bind_index, bind_key
+from .clone import clone
 from .constant import constant
 from .enter import EnterNode
 from .namespace import namespace
@@ -14,12 +15,18 @@ from .text import text_constant, text_function
 def selector(element, selection):
     if selection is None:
         return element
+    order = ""
+    if ":" in selection:
+        selection, order = selection.split(":")
+        if order != "last-of-type":
+            raise ValueError("Only 'last-of-type' is implemented currently.")
+        order = "[last()]"
     if "." in selection:
         tag, class_name = selection.split(".")
         tag = tag or "*"
         class_name = f"[@class='{class_name}']" if class_name else ""
-        return element.xpath(f"./*/{tag}{class_name}") + element.xpath(f"./{tag}{class_name}")
-    return element.xpath(f"./*/{selection}") + element.xpath(f"./{selection}")
+        return element.xpath(f"./*/{tag}{order}{class_name}") + element.xpath(f"./{tag}{order}{class_name}")
+    return element.xpath(f"./*/{selection}{order}") + element.xpath(f"./{selection}{order}")
 
 
 def creator(node, fullname):
@@ -28,44 +35,6 @@ def creator(node, fullname):
         if isinstance(fullname, dict)
         else etree.SubElement(node, fullname)
     )
-
-
-class DataDict:
-    def __init__(self, keys=None, items=None):
-        self.keys = keys or []
-        self.items = items or []
-
-    def __getitem__(self, key):
-        return self.items[self.keys.index(key)]
-
-    def __setitem__(self, key, item):
-        self.keys.append(key)
-        self.items.append(item)
-
-    def __or__(self, other):
-        k1 = set(self.keys)
-        k2 = set(other.keys)
-        common_keys = list(k1 & k2)
-        keys_left = list(k1 - k2)
-        keys_right = list(k2 - k1)
-        keys = common_keys + keys_left + keys_right
-        items = (
-            [self[key] for key in common_keys]
-            + [self[key] for key in keys_left]
-            + [other[key] for key in keys_right]
-        )
-        return DataDict(keys, items)
-
-    def get(self, key):
-        if key in self.keys:
-            return self[key]
-
-    def __str__(self):
-        return (
-            "{"
-            + ", ".join(f"{key}:{item}" for key, item in zip(self.keys, self.items))
-            + "}"
-        )
 
 
 class Selection:
@@ -317,6 +286,15 @@ class Selection:
     def call(self, func, *args):
         func(self, *args)
         return self
+
+    def clone(self):
+        subgroups = [
+            clone(node)
+            for group in self._groups
+            for node in group
+            if node is not None
+        ]
+        return Selection(subgroups, self._parents, data=self._data)
 
     def node(self):
         return next(iter(self))
