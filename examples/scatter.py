@@ -95,5 +95,11 @@ svg = (
     .attr("r", 3)
 )
 
+# For white axis and text
+# svg.select_all("path.domain").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+
 with open("scatter.svg", "w") as file:
     file.write(str(svg))
