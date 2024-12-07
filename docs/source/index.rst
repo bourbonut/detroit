@@ -15,4 +15,8 @@ Installation
    :maxdepth: 2
    :caption: Contents:
 
+   line
+   scatter
+   bar
+   histogram
    api/index

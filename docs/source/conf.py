@@ -39,9 +39,9 @@ html_theme_options = {
     "dark_logo": "dark-logo.svg",
 }
 
-html_css_files = [
-    'css/style.css',
-]
+# html_css_files = [
+#     'css/style.css',
+# ]
 
 html_title = f"Detroit v{release}"
 
