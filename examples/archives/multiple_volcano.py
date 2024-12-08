@@ -1,5 +1,6 @@
-from detroit import Script, d3, svg, Data, js, render, save
 import json
+
+from detroit import Data, Script, d3, js, render, save, svg
 
 # https://observablehq.com/@d3/volcano-contours/2
 values = json.load(open("volcano.json", "r"))

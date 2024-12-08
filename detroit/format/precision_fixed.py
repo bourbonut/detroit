@@ -11,7 +11,7 @@ def precision_fixed(step: int | float) -> int:
     Parameters
     ----------
     step : int | float
-        
+
 
     Returns
     -------

@@ -1,9 +1,12 @@
 from __future__ import annotations
+
+from typing import TypeVar, overload
+
 from .init import init_range
 from .ordinal import ScaleOrdinal
-from typing import overload, TypeVar
 
 T = TypeVar("T")
+
 
 class ScaleBand(ScaleOrdinal):
     """
@@ -12,6 +15,7 @@ class ScaleBand(ScaleOrdinal):
     Band scales are typically used for bar charts with an band or categorical
     dimension.
     """
+
     def __init__(self):
         super().__init__()
         self._r0 = 0
@@ -158,7 +162,7 @@ class ScaleBand(ScaleOrdinal):
     def set_padding_inner(self, padding_inner: int | float) -> ScaleBand:
         """
         Sets the inner padding to the specified number which must
-        be less than or equal to 1 
+        be less than or equal to 1
 
         Parameters
         ----------
@@ -232,6 +236,7 @@ class ScaleBand(ScaleOrdinal):
             .set_align(self._align)
         )
 
+
 @overload
 def scale_band() -> ScaleBand: ...
 
@@ -243,11 +248,12 @@ def scale_band(range_vals: list[int | float]) -> ScaleBand: ...
 @overload
 def scale_band(domain: list[T], range_vals: list[int | float]) -> ScaleBand: ...
 
+
 def scale_band(*args):
     """
     Builds a new band scale with the specified domain
     and range, no padding, no rounding and center alignment
-        
+
     Parameters
     ----------
     domain : list[T]
@@ -273,6 +279,7 @@ def scale_band(*args):
         return init_range(scale, domain=domain, range_vals=range_vals)
     return init_range(scale)
 
+
 @overload
 def scale_point() -> ScaleBand: ...
 
@@ -284,11 +291,12 @@ def scale_point(range_vals: list[int | float]) -> ScaleBand: ...
 @overload
 def scale_point(domain: list[T], range_vals: list[int | float]) -> ScaleBand: ...
 
+
 def scale_point(*args):
     """
     Builds a new point scale with the specified domain and
     range, no padding, no rounding and center alignment
-        
+
     Parameters
     ----------
     domain : list[T]

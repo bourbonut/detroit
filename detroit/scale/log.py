@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import math
 from datetime import datetime
+from typing import overload
 
 from ..array import ticks
 from ..format import format_specifier, locale_format
@@ -8,7 +10,6 @@ from .continuous import Transformer, copy
 from .init import init_range
 from .nice import nice
 
-from typing import overload
 
 def transform_log(x):
     if isinstance(x, datetime):
@@ -75,6 +76,7 @@ class LogBase:
     range value y can be expressed as a function of the domain value x:
     :math:`y = m \\cdot \\log(x) + b`.
     """
+
     def __init__(self):
         self._base = 10
         self._logs = None
@@ -110,7 +112,7 @@ class LogBase:
         count : int | None
             Count. If specified, the scale may return more or fewer
             values depending on the domain
-            
+
         Returns
         -------
         ScaleLog
@@ -158,7 +160,9 @@ class LogBase:
             z = list(map(self._pows, ticks(i, j, min(j - i, n))))
         return z[::-1] if r else z
 
-    def tick_format(self, count: int | None = None, specifier: str | None = None) -> ScaleLog:
+    def tick_format(
+        self, count: int | None = None, specifier: str | None = None
+    ) -> ScaleLog:
         """
         Like :code:`ScaleLinear.tick_format`, but customized for a log scale.
         The specified count typically has the same value as the count
@@ -213,6 +217,7 @@ class LogBase:
         ScaleLog
             Itself
         """
+
         class Interval:
             @staticmethod
             def floor(x):
@@ -258,6 +263,7 @@ class ScaleLog(Transformer, LogBase):
 
     def copy(self):
         return copy(self, ScaleLog()).set_base(self.base)
+
 
 @overload
 def scale_log() -> ScaleLog: ...

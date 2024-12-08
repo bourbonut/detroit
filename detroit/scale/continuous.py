@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 import math
 from bisect import bisect
+from collections.abc import Callable
 from datetime import datetime
 from typing import Any, Generic, TypeVar
-from collections.abc import Callable
 
 from ..interpolate import (
     interpolate as interpolate_value,
@@ -16,6 +17,7 @@ from .constant import constant
 from .number import number
 
 T = TypeVar("T")
+
 
 def identity(x):
     return x
@@ -114,6 +116,7 @@ class Transformer(Generic[T]):
     u : Callable[[T], int | float]
         Untransform function
     """
+
     def __init__(
         self,
         t: Callable[[int | float], T] = identity,

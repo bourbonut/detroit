@@ -1,4 +1,5 @@
 from bisect import bisect_right
+from collections.abc import Callable
 from datetime import datetime, timedelta
 
 from ..array import tick_step
@@ -12,8 +13,6 @@ from .month import time_month
 from .second import time_second
 from .week import time_sunday, time_week
 from .year import time_year
-
-from collections.abc import Callable
 
 
 class Ticker:
@@ -35,6 +34,7 @@ class Ticker:
     minute : Callable
         Minute interval function
     """
+
     def __init__(
         self,
         year: Callable,

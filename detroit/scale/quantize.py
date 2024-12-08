@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import math
 from bisect import bisect
+from typing import Any, TypeVar, overload
 
 from .init import init_range
 from .linear import LinearBase
 
-from typing import overload, TypeVar, Any
-
 T = TypeVar("T")
+
 
 class ScaleQuantize(LinearBase):
     def __init__(self):
@@ -146,6 +147,7 @@ class ScaleQuantize(LinearBase):
             .range(self._range_vals)
             .unknown(self._unknown)
         )
+
 
 @overload
 def scale_quantize() -> ScaleQuantize: ...

@@ -119,7 +119,11 @@ def test_quantile_13():
 def test_quantile_14():
     a = "a"
     b = "b"
-    s = d3.scale_quantile().set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20]).set_range([a, b])
+    s = (
+        d3.scale_quantile()
+        .set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20])
+        .set_range([a, b])
+    )
     assert s.invert_extent(a) == [3, 9]
     assert s.invert_extent(b) == [9, 20]
 

@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 import math
 from bisect import bisect
+from typing import Any, TypeVar, overload
 
 from .init import init_range
 
-from typing import overload, TypeVar, Any
-
 T = TypeVar("T")
+
 
 class ScaleThreshold:
     """
@@ -16,6 +17,7 @@ class ScaleThreshold:
     slices based on a set of threshold values. See this choropleth for
     an example.
     """
+
     def __init__(self):
         self._domain = [0.5]
         self._range_vals = [0, 1]
@@ -30,7 +32,7 @@ class ScaleThreshold:
         Parameters
         ----------
         x : int | float | None
-            Input value    
+            Input value
 
         Returns
         -------
@@ -140,6 +142,7 @@ class ScaleThreshold:
             .set_unknown(self.unknown)
         )
 
+
 @overload
 def scale_threshold() -> ScaleThreshold: ...
 
@@ -149,7 +152,9 @@ def scale_threshold(range_vals: list[T]) -> ScaleThreshold: ...
 
 
 @overload
-def scale_threshold(domain: list[int | float], range_vals: list[T]) -> ScaleThreshold: ...
+def scale_threshold(
+    domain: list[int | float], range_vals: list[T]
+) -> ScaleThreshold: ...
 
 
 def scale_threshold(*args):

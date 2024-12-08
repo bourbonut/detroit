@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 import math
+from collections.abc import Callable
 from datetime import datetime
+from typing import Any, TypeVar, overload
 
 from ..interpolate import interpolate, interpolate_round, piecewise
 from .continuous import identity
@@ -11,10 +14,8 @@ from .pow import transform_pow, transform_sqrt
 from .sequential import copy
 from .symlog import transform_symlog
 
-from collections.abc import Callable
-from typing import overload, TypeVar, Any
-
 T = TypeVar("T")
+
 
 class Diverging:
     """
@@ -32,6 +33,7 @@ class Diverging:
     t : Callable
         Transform function
     """
+
     def __init__(self, t: Callable):
         self.transform = t
         self._x0 = 0
@@ -332,6 +334,7 @@ class DivergingPow(Diverging, LinearBase):
     def copy(self):
         return copy(self, DivergingPow()).set_exponent(self.exponent)
 
+
 @overload
 def scale_diverging() -> DivergingLinear: ...
 
@@ -341,7 +344,9 @@ def scale_diverging(interpolator: Callable) -> DivergingLinear: ...
 
 
 @overload
-def scale_diverging(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+def scale_diverging(
+    domain: list[int | float], interpolator: Callable
+) -> DivergingLinear: ...
 
 
 def scale_diverging(*args):
@@ -374,6 +379,7 @@ def scale_diverging(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_diverging_log() -> DivergingLinear: ...
 
@@ -383,7 +389,9 @@ def scale_diverging_log(interpolator: Callable) -> DivergingLinear: ...
 
 
 @overload
-def scale_diverging_log(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+def scale_diverging_log(
+    domain: list[int | float], interpolator: Callable
+) -> DivergingLinear: ...
 
 
 def scale_diverging_log(*args):
@@ -416,6 +424,7 @@ def scale_diverging_log(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_diverging_symlog() -> DivergingLinear: ...
 
@@ -425,7 +434,9 @@ def scale_diverging_symlog(interpolator: Callable) -> DivergingLinear: ...
 
 
 @overload
-def scale_diverging_symlog(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+def scale_diverging_symlog(
+    domain: list[int | float], interpolator: Callable
+) -> DivergingLinear: ...
 
 
 def scale_diverging_symlog(*args):
@@ -458,6 +469,7 @@ def scale_diverging_symlog(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_diverging_pow() -> DivergingLinear: ...
 
@@ -467,7 +479,9 @@ def scale_diverging_pow(interpolator: Callable) -> DivergingLinear: ...
 
 
 @overload
-def scale_diverging_pow(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
+def scale_diverging_pow(
+    domain: list[int | float], interpolator: Callable
+) -> DivergingLinear: ...
 
 
 def scale_diverging_pow(*args):
@@ -501,6 +515,7 @@ def scale_diverging_pow(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_diverging_sqrt() -> DivergingLinear: ...
 
@@ -510,8 +525,9 @@ def scale_diverging_sqrt(interpolator: Callable) -> DivergingLinear: ...
 
 
 @overload
-def scale_diverging_sqrt(domain: list[int | float], interpolator: Callable) -> DivergingLinear: ...
-
+def scale_diverging_sqrt(
+    domain: list[int | float], interpolator: Callable
+) -> DivergingLinear: ...
 
 
 def scale_diverging_sqrt(*args):

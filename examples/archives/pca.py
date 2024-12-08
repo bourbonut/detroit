@@ -15,19 +15,30 @@ components = pca.fit_transform(X_scaled)
 df = pl.DataFrame(components, schema=["Component 1", "Component 2"])
 df = df.insert_column(2, pl.Series("digit", mnsit.target))
 
-plot = Plot.plot({
-  "style": {"backgroundColor": "#161b22", "color": "#e6edf3"},
-  "symbol": {"legend": js("true")},
-  "color": {"scheme": "rainbow"},
-  "marks": [
-      Plot.dot(js("data"), {
-          "x": "Component 1",
-          "y": "Component 2",
-          "stroke": "digit",
-          "symbol": "digit"
-      })
-  ]
-})
+plot = Plot.plot(
+    {
+        "style": {"backgroundColor": "#161b22", "color": "#e6edf3"},
+        "symbol": {"legend": js("true")},
+        "color": {"scheme": "rainbow"},
+        "marks": [
+            Plot.dot(
+                js("data"),
+                {
+                    "x": "Component 1",
+                    "y": "Component 2",
+                    "stroke": "digit",
+                    "symbol": "digit",
+                },
+            )
+        ],
+    }
+)
 
 # render(df, plot, style={"body": {"background": "#161b22", "color": "#e6edf3"}})
-save(df, plot, "quick.png", style={"body": {"background": "#161b22", "color": "#e6edf3"}}, scale_factor=2)
+save(
+    df,
+    plot,
+    "quick.png",
+    style={"body": {"background": "#161b22", "color": "#e6edf3"}},
+    scale_factor=2,
+)

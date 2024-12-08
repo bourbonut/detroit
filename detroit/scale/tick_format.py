@@ -1,4 +1,6 @@
 import math
+from collections.abc import Callable
+from typing import TypeVar
 
 from ..array import tick_step
 from ..format import (
@@ -10,12 +12,12 @@ from ..format import (
     precision_round,
 )
 
-from collections.abc import Callable
-from typing import TypeVar
-
 T = TypeVar("T")
 
-def tick_format(start: T, stop: T, count: int, specifier: str | None = None) -> Callable[[T], str]:
+
+def tick_format(
+    start: T, stop: T, count: int, specifier: str | None = None
+) -> Callable[[T], str]:
     """
     Returns a number format function suitable for displaying a tick value,
     automatically computing the appropriate precision based on the fixed

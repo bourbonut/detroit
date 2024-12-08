@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import math
+from typing import TypeVar, overload
 
 from .continuous import Transformer, copy
 from .init import init_range
 from .linear import LinearBase
 
-from typing import overload, TypeVar
-
 T = TypeVar("T")
+
 
 def sign(x):
     return -1 if x < 0 else 1
@@ -52,6 +53,7 @@ class ScaleSymlog(Transformer, LinearBase):
 
     def copy(self):
         return copy(self, ScaleSymlog()).set_constant(self.constant)
+
 
 @overload
 def scale_symlog() -> ScaleSymlog: ...

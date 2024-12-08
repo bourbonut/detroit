@@ -1,4 +1,5 @@
 import math
+from collections.abc import Callable
 from inspect import signature
 
 from .exponent import exponent
@@ -9,8 +10,6 @@ from .format_specifier import FormatSpecifier, format_specifier
 from .format_trim import format_trim
 from .format_types import format_types
 from .identity import identity
-
-from collections.abc import Callable
 
 prefixes = [
     "y",
@@ -306,7 +305,9 @@ class Locale:
             prefix, suffix, self.group, self.numerals, self.minus, self.decimal
         )
 
-    def format_prefix(self, specifier: str, value: int | float) -> Callable[[int | float], str]:
+    def format_prefix(
+        self, specifier: str, value: int | float
+    ) -> Callable[[int | float], str]:
         """
         Equivalent to :code:`d3.format`, except the returned function will
         convert values to the units of the appropriate SI prefix for the

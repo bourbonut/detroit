@@ -1,5 +1,6 @@
 from copy import copy
 
+
 def clone(node):
     clone = copy(node)
     parent = node.getparent()

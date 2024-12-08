@@ -67,12 +67,24 @@ def test_quantize_7():
 
 def test_quantize_8():
     s = d3.scale_quantize()
-    assert math.isclose(s.set_range(frange(0, 1.001, 0.001))(1 / 3), 0.333, rel_tol=1e-6)
-    assert math.isclose(s.set_range(frange(0, 1.010, 0.010))(1 / 3), 0.330, rel_tol=1e-6)
-    assert math.isclose(s.set_range(frange(0, 1.100, 0.100))(1 / 3), 0.300, rel_tol=1e-6)
-    assert math.isclose(s.set_range(frange(0, 1.200, 0.200))(1 / 3), 0.200, rel_tol=1e-6)
-    assert math.isclose(s.set_range(frange(0, 1.250, 0.250))(1 / 3), 0.250, rel_tol=1e-6)
-    assert math.isclose(s.set_range(frange(0, 1.500, 0.500))(1 / 3), 0.500, rel_tol=1e-6)
+    assert math.isclose(
+        s.set_range(frange(0, 1.001, 0.001))(1 / 3), 0.333, rel_tol=1e-6
+    )
+    assert math.isclose(
+        s.set_range(frange(0, 1.010, 0.010))(1 / 3), 0.330, rel_tol=1e-6
+    )
+    assert math.isclose(
+        s.set_range(frange(0, 1.100, 0.100))(1 / 3), 0.300, rel_tol=1e-6
+    )
+    assert math.isclose(
+        s.set_range(frange(0, 1.200, 0.200))(1 / 3), 0.200, rel_tol=1e-6
+    )
+    assert math.isclose(
+        s.set_range(frange(0, 1.250, 0.250))(1 / 3), 0.250, rel_tol=1e-6
+    )
+    assert math.isclose(
+        s.set_range(frange(0, 1.500, 0.500))(1 / 3), 0.500, rel_tol=1e-6
+    )
     assert math.isclose(s.set_range(frange(0, 1))(1 / 3), 0, rel_tol=1e-6)
 
 

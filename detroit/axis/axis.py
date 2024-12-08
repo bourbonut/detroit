@@ -1,10 +1,12 @@
 from __future__ import annotations
-from ..scale.continuous import Transformer
-from ..scale.sequential import Sequential
-from ..scale.diverging import Diverging
-from ..selection.selection import Selection
-from typing import Type, Literal
+
 from collections.abc import Callable
+from typing import Literal, Type
+
+from ..scale.continuous import Transformer
+from ..scale.diverging import Diverging
+from ..scale.sequential import Sequential
+from ..selection.selection import Selection
 
 TOP = 1
 RIGHT = 2
@@ -24,6 +26,7 @@ def translate_y(y):
 def number(scale):
     def f(d):
         return float(scale(d))
+
     return f
 
 
@@ -50,7 +53,12 @@ class Axis:
     scale : Type[Transformer | Sequential | Diverging]
         Scaler
     """
-    def __init__(self, orient: Literal[1, 2, 3, 4], scale: Type[Transformer | Sequential | Diverging]):
+
+    def __init__(
+        self,
+        orient: Literal[1, 2, 3, 4],
+        scale: Type[Transformer | Sequential | Diverging],
+    ):
         self._scale = scale
         self._orient = orient
         self._tick_arguments = []
@@ -68,7 +76,7 @@ class Axis:
         """
         Render the axis to the given context, which may be either a selection
         of SVG containers (either SVG or G elements) or a corresponding transition.
-        
+
         Parameters
         ----------
         context : Selection
@@ -97,6 +105,7 @@ class Axis:
         elif hasattr(self._scale, "tick_format"):
             format_func = self._scale.tick_format()
         else:
+
             def format_func(d):
                 return d
 

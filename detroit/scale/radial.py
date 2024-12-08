@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import math
+from collections.abc import Callable
+from typing import overload
 
 from .continuous import Transformer, identity
 from .init import init_range
 from .linear import LinearBase
 from .number import number
 
-from collections.abc import Callable
-from typing import overload
 
 def sign(x):
     return -1 if x < 0 else 1
@@ -37,6 +38,7 @@ class ScaleRadial(Transformer, LinearBase):
     u : Callable
         Untranform function
     """
+
     def __init__(self, t: Callable = identity, u: Callable = identity):
         super().__init__(t, u)
         self._range_vals = [0, 1]
@@ -153,6 +155,7 @@ class ScaleRadial(Transformer, LinearBase):
             .set_unknown(self._unknown)
         )
 
+
 @overload
 def scale_radial() -> ScaleRadial: ...
 
@@ -162,7 +165,9 @@ def scale_radial(range_vals: list[int | float]) -> ScaleRadial: ...
 
 
 @overload
-def scale_radial(domain: list[int | float], range_vals: list[int | float]) -> ScaleRadial: ...
+def scale_radial(
+    domain: list[int | float], range_vals: list[int | float]
+) -> ScaleRadial: ...
 
 
 def scale_radial(*args):

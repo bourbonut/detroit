@@ -1,6 +1,8 @@
-import detroit as d3
-import polars as pl
 from collections import namedtuple
+
+import polars as pl
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/53c407ee531bab128477148c9e28c49dd06bf83a93ae317e58dbb9fc819db0d4f6c4fb9646fa2fe20faad76addee20cfc360eab2362eeaec3340a5e4655b9996?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27cars-2.csv"
 Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
@@ -74,7 +76,9 @@ svg = (
     .call(d3.axis_left(y))
     .call(lambda g: g.select(".domain").remove())
     .call(
-        lambda g: g.select(".tick:last-of-type").select("text").clone()
+        lambda g: g.select(".tick:last-of-type")
+        .select("text")
+        .clone()
         .attr("x", 4)
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")

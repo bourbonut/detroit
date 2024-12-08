@@ -1,6 +1,8 @@
-import detroit as d3
-import polars as pl
 from collections import namedtuple
+
+import polars as pl
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/de259092d525c13bd10926eaf7add45b15f2771a8b39bc541a5bba1e0206add4880eb1d876be8df469328a85243b7d813a91feb8cc4966de582dc02e5f8609b7?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27aapl.csv"
 
@@ -47,7 +49,8 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     .attr("transform", f"translate({margin.left}, 0)")
     .call(d3.axis_left(y).set_ticks(height / 40))
     .call(lambda g: g.select(".domain").remove())
-    .call(lambda g: g.select_all(".tick")
+    .call(
+        lambda g: g.select_all(".tick")
         .select_all("line")
         .clone()
         .attr("x2", width - margin.left - margin.right)
@@ -66,7 +69,9 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
 )
 
 # Append a path for the area (under the axes).
-svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 1.5).attr("d", line(aapl.iter_rows()))
+svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr(
+    "stroke-width", 1.5
+).attr("d", line(aapl.iter_rows()))
 
 # For white axis and text
 # svg.select_all("path.domain").attr("stroke", "white")

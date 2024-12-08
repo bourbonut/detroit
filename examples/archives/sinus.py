@@ -1,10 +1,17 @@
-from math import sin, pi
-
-from detroit import Script, d3, svg, function
-from detroit import js, Data, arrange # useful classes to simplify js syntax 
-from detroit import websocket_render # function to render and update values
-from detroit.ui import websocket_save
 from collections import namedtuple
+from math import pi, sin
+
+from detroit import (  # useful classes to simplify js syntax
+    Data,
+    Script,
+    arrange,
+    d3,
+    function,
+    js,
+    svg,
+    websocket_render,  # function to render and update values
+)
+from detroit.ui import websocket_save
 
 Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
 
@@ -41,29 +48,30 @@ y = script("y", d3.scaleLinear().domain([-1, 1]).range([height, -1]).nice())
 
 script(svg.append("g").call(d3.axisLeft(y)))
 
-line = script("line",
+line = script(
+    "line",
     svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", "deepskyblue")
-    .attr("d", d3.line()
-      .x(function("d").inline("x(d.x)"))
-      .y(function("d").inline("y(d.y)"))
-    )
+    .attr(
+        "d",
+        d3.line().x(function("d").inline("x(d.x)")).y(function("d").inline("y(d.y)")),
+    ),
 )
 
 update = function("data", "xmax", name="update")
 update(x.domain([0, js("xmax")]).nice())
 update(svg.selectAll("g.xaxis").call(d3.axisBottom(x)))
 update(
-    line.datum(data)
-      .attr("d", d3.line()
-      .x(function("d").inline("x(d.x)"))
-      .y(function("d").inline("y(d.y)"))
+    line.datum(data).attr(
+        "d",
+        d3.line().x(function("d").inline("x(d.x)")).y(function("d").inline("y(d.y)")),
     )
 )
 
 script(update)
+
 
 def generator():
     s = 1000
@@ -75,6 +83,7 @@ def generator():
         xv.append(xmax)
         yv.append(sin(istep * (s + i)))
         yield {"values": arrange([xv, yv]), "xmax": xmax}
+
 
 websocket_render(generator, script, event=update.call("values", "xmax"), init_data=data)
 # websocket_save(generator, script, event=js("update(received_data.values, received_data.xmax);"), init_data=data)

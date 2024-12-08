@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 import math
 from typing import Any, TypeVar
 
 from .linear import LinearBase
 
 T = TypeVar("T")
+
 
 class Identity(LinearBase):
     """

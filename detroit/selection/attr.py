@@ -1,7 +1,9 @@
 from inspect import signature
 
+
 def attr_function(name, value):
     nargs = len(signature(value).parameters)
+
     def callback(node, data, i, group):
         args = [data, i, group][:nargs]
         node.set(name, str(value(*args)))

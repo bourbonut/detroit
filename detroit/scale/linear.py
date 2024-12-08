@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 import math
-from typing import overload, Callable, TypeVar
+from typing import Callable, TypeVar, overload
 
 from ..array import tick_increment, ticks
 from .continuous import Transformer, copy
@@ -8,6 +9,7 @@ from .init import init_range
 from .tick_format import tick_format
 
 T = TypeVar("T")
+
 
 class LinearBase:
     def ticks(self, count: int | None = None) -> list[int | float]:
@@ -33,9 +35,7 @@ class LinearBase:
         return ticks(d[0], d[-1], count if count is not None else 10)
 
     def tick_format(
-        self,
-        count: int | None = None,
-        specifier: str | None = None
+        self, count: int | None = None, specifier: str | None = None
     ) -> Callable[[int | float], str]:
         """
         Returns a number format function suitable for displaying
@@ -69,7 +69,7 @@ class LinearBase:
         count : int | None
             Count argument allows greater control over the step size
             used to extend the bounds, guaranteeing that the returned
-            ticks will exactly cover the domain    
+            ticks will exactly cover the domain
 
         Returns
         -------
@@ -125,6 +125,7 @@ class ScaleLinear(Transformer, LinearBase):
     proportional differences. Each range value y can be expressed as a function
     of the domain value x: :math:`y = m \\cdot x + b`.
     """
+
     def copy(self):
         return copy(self, ScaleLinear())
 

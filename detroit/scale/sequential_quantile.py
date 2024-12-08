@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import math
 from bisect import bisect
+from collections.abc import Callable
 from statistics import quantiles
+from typing import overload
 
 from .continuous import identity
 from .init import init_interpolator
 
-from collections.abc import Callable
-from typing import overload
 
 class SequentialQuantile:
     def __init__(self):
@@ -117,6 +118,7 @@ class SequentialQuantile:
 
     def copy(self):
         return SequentialQuantile().set_domain(self.domain)
+
 
 @overload
 def scale_sequential_quantile() -> SequentialQuantile: ...

@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from inspect import signature
 
+from ..selection.selection import Selection
 from .constant import constant
 from .curves.linear import LinearCurve
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
-from ..selection.selection import Selection
 
 
 class Line(WithPath):
@@ -66,7 +67,7 @@ class Line(WithPath):
 
         Examples
         --------
-        
+
         >>> svg.append("path").attr("d", line(data)).attr("stroke", "currentColor")
         """
         data = list(data)

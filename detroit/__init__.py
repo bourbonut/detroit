@@ -20,10 +20,12 @@ from .coloration import (
 from .format import (
     format_default_locale,
     format_prefix,
-    locale_format as format,
     precision_fixed,
     precision_prefix,
     precision_round,
+)
+from .format import (
+    locale_format as format,
 )
 from .interpolate import (
     interpolate,

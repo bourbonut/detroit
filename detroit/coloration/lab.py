@@ -258,7 +258,9 @@ class HCL(Color):
         Opacity value
     """
 
-    def __init__(self, h: int | float, c: int | float, l: int | float, opacity: int | float):
+    def __init__(
+        self, h: int | float, c: int | float, l: int | float, opacity: int | float
+    ):
         self.h = float(h)
         self.c = float(c)
         self.l = float(l)

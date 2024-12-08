@@ -1,6 +1,8 @@
 from __future__ import annotations
+
+from typing import Any, TypeVar, overload
+
 from .init import init_range
-from typing import overload, Any, TypeVar
 
 U = TypeVar("U")
 V = TypeVar("V")
@@ -12,6 +14,7 @@ class ScaleOrdinal:
     For example, an ordinal scale might map a set of named categories to a set
     of colors, or determine the horizontal positions of columns in a column chart.
     """
+
     def __init__(self):
         self._index = {}
         self._domain = []
@@ -124,6 +127,7 @@ class ScaleOrdinal:
             .set_range(self.range)
             .set_unknown(self.unknown)
         )
+
 
 @overload
 def scale_ordinal() -> ScaleOrdinal: ...

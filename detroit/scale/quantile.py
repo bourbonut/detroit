@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import math
 from bisect import bisect
 from statistics import quantiles
+from typing import Any, TypeVar, overload
 
 from .init import init_range
 
-from typing import overload, TypeVar, Any
-
 T = TypeVar("T")
+
 
 class ScaleQuantile:
     """
@@ -19,6 +20,7 @@ class ScaleQuantile:
     computed from the domain. To compute the quantiles, the domain is sorted,
     and treated as a population of discrete values; see quantile.
     """
+
     def __init__(self):
         self._domain = []
         self._range_vals = []
@@ -157,6 +159,7 @@ class ScaleQuantile:
             .range(self._range_vals)
             .unknown(self._unknown)
         )
+
 
 @overload
 def scale_quantile() -> ScaleQuantile: ...

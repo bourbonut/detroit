@@ -1,7 +1,9 @@
 from inspect import signature
 
+
 def style_function(name, value):
-    nargs = len(signature(value).parameters)   
+    nargs = len(signature(value).parameters)
+
     def callback(node, data, i, group):
         args = [data, i, group][:nargs]
         current_value = node.get("style", "")
@@ -10,12 +12,14 @@ def style_function(name, value):
 
     return callback
 
+
 def style_constant(name, value):
     def callback(node, data, i, group):
         current_value = node.get("style", "")
         node.set("style", f"{current_value}{name}:{value};")
 
     return callback
+
 
 def style_value(style, name):
     if style.endswith(";"):

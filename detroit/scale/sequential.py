@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 import math
+from collections.abc import Callable
 from datetime import datetime
+from typing import Any, TypeVar, overload
 
 from ..interpolate import interpolate, interpolate_round
 from .continuous import identity
@@ -10,10 +13,8 @@ from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .symlog import transform_symlog
 
-from collections.abc import Callable
-from typing import overload, TypeVar, Any
-
 T = TypeVar("T")
+
 
 class Sequential:
     def __init__(self, t: Callable):
@@ -328,7 +329,9 @@ def scale_sequential(interpolator: Callable) -> SequentialLinear: ...
 
 
 @overload
-def scale_sequential(domain: list[int | float], interpolator: Callable) -> SequentialLinear: ...
+def scale_sequential(
+    domain: list[int | float], interpolator: Callable
+) -> SequentialLinear: ...
 
 
 def scale_sequential(*args):
@@ -361,6 +364,7 @@ def scale_sequential(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_sequential_log() -> SequentialLog: ...
 
@@ -370,7 +374,10 @@ def scale_sequential_log(interpolator: Callable) -> SequentialLog: ...
 
 
 @overload
-def scale_sequential_log(domain: list[int | float], interpolator: Callable) -> SequentialLog: ...
+def scale_sequential_log(
+    domain: list[int | float], interpolator: Callable
+) -> SequentialLog: ...
+
 
 def scale_sequential_log(*args):
     """
@@ -402,6 +409,7 @@ def scale_sequential_log(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_sequential_symlog() -> SequentialSymlog: ...
 
@@ -411,7 +419,10 @@ def scale_sequential_symlog(interpolator: Callable) -> SequentialSymlog: ...
 
 
 @overload
-def scale_sequential_symlog(domain: list[int | float], interpolator: Callable) -> SequentialSymlog: ...
+def scale_sequential_symlog(
+    domain: list[int | float], interpolator: Callable
+) -> SequentialSymlog: ...
+
 
 def scale_sequential_symlog(*args):
     """
@@ -443,6 +454,7 @@ def scale_sequential_symlog(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_sequential_pow() -> SequentialPow: ...
 
@@ -452,7 +464,10 @@ def scale_sequential_pow(interpolator: Callable) -> SequentialPow: ...
 
 
 @overload
-def scale_sequential_pow(domain: list[int | float], interpolator: Callable) -> SequentialPow: ...
+def scale_sequential_pow(
+    domain: list[int | float], interpolator: Callable
+) -> SequentialPow: ...
+
 
 def scale_sequential_pow(*args):
     """
@@ -485,6 +500,7 @@ def scale_sequential_pow(*args):
         return init_interpolator(scale, domain=domain, interpolator=interpolator)
     return init_interpolator(scale)
 
+
 @overload
 def scale_sequential_sqrt() -> SequentialPow: ...
 
@@ -494,7 +510,10 @@ def scale_sequential_sqrt(interpolator: Callable) -> SequentialPow: ...
 
 
 @overload
-def scale_sequential_sqrt(domain: list[int | float], interpolator: Callable) -> SequentialPow: ...
+def scale_sequential_sqrt(
+    domain: list[int | float], interpolator: Callable
+) -> SequentialPow: ...
+
 
 def scale_sequential_sqrt(*args):
     """

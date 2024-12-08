@@ -1,5 +1,8 @@
 from __future__ import annotations
+
+from collections.abc import Callable
 from datetime import datetime
+from typing import TypeVar, overload
 
 from ..time import (
     time_day,
@@ -16,9 +19,6 @@ from ..time_format import time_format
 from .continuous import Transformer, copy, identity
 from .init import init_range
 from .nice import nice
-
-from collections.abc import Callable
-from typing import overload, TypeVar
 
 T = TypeVar("T")
 
@@ -59,6 +59,7 @@ class Calendar(Transformer):
     second : Callable
         Second time function
     """
+
     def __init__(
         self,
         ticks: Callable,
@@ -214,6 +215,7 @@ class Calendar(Transformer):
             ),
         )
 
+
 @overload
 def scale_time() -> Calendar: ...
 
@@ -246,7 +248,7 @@ def scale_time(*args) -> Calendar:
 
     Examples
     --------
-    
+
     >>> from datetime import datetime
     >>> d3.scale_time([datetime(2000, 1, 1), datetime(2000, 1, 2)], [0, 960])
     """

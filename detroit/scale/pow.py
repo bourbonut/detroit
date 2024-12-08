@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 import math
 from collections.abc import Callable
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
 from .continuous import Transformer, copy, identity
 from .init import init_range
 from .linear import LinearBase
 
 T = TypeVar("T")
+
 
 def transform_pow(exponent):
     return lambda x: (-math.pow(-x, exponent) if x < 0 else math.pow(x, exponent))
@@ -40,6 +42,7 @@ class ScalePow(Transformer, LinearBase):
     exponent : float | int
         Exponent
     """
+
     def __init__(
         self, t: Callable = identity, u: Callable = identity, exponent: float | int = 1
     ):
@@ -87,6 +90,7 @@ class ScalePow(Transformer, LinearBase):
     def copy(self):
         return copy(self, ScalePow()).set_exponent(self.exponent)
 
+
 @overload
 def scale_pow() -> ScalePow: ...
 
@@ -97,6 +101,7 @@ def scale_pow(range_vals: list[T]) -> ScalePow: ...
 
 @overload
 def scale_pow(domain: list[int | float], range_vals: list[T]) -> ScalePow: ...
+
 
 def scale_pow(*args) -> ScalePow:
     """
@@ -117,6 +122,7 @@ def scale_pow(*args) -> ScalePow:
         return init_range(scale, domain=domain, range_vals=range_vals)
     return init_range(scale)
 
+
 @overload
 def scale_sqrt() -> ScalePow: ...
 
@@ -127,6 +133,7 @@ def scale_sqrt(range_vals: list[T]) -> ScalePow: ...
 
 @overload
 def scale_sqrt(domain: list[int | float], range_vals: list[T]) -> ScalePow: ...
+
 
 def scale_sqrt(*args) -> ScalePow:
     """

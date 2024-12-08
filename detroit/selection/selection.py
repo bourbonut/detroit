@@ -1,5 +1,8 @@
 from __future__ import annotations
+
+from collections.abc import Callable, Iterator
 from itertools import zip_longest
+from typing import Any, Protocol, TypeAlias, overload
 
 from lxml import etree
 
@@ -9,14 +12,12 @@ from .clone import clone
 from .constant import constant
 from .enter import EnterNode
 from .namespace import namespace
-from .style import style_value, style_function, style_constant
+from .style import style_constant, style_function, style_value
 from .text import text_constant, text_function
 
-from collections.abc import Callable, Iterator
-from typing import TypeAlias, Any, Protocol, overload
+Data: TypeAlias = Any
+Value: TypeAlias = Any
 
-Data : TypeAlias = Any
-Value : TypeAlias = Any
 
 class Accessor(Protocol):
     @overload
@@ -44,8 +45,12 @@ def selector(element: etree.Element, selection: str | None = None):
         tag, class_name = selection.split(".")
         tag = tag or "*"
         class_name = f"[@class='{class_name}']" if class_name else ""
-        return element.xpath(f"./*/{tag}{order}{class_name}") + element.xpath(f"./{tag}{order}{class_name}")
-    return element.xpath(f"./*/{selection}{order}") + element.xpath(f"./{selection}{order}")
+        return element.xpath(f"./*/{tag}{order}{class_name}") + element.xpath(
+            f"./{tag}{order}{class_name}"
+        )
+    return element.xpath(f"./*/{selection}{order}") + element.xpath(
+        f"./{selection}{order}"
+    )
 
 
 def creator(node: etree.Element, fullname: dict | None = None):
@@ -83,7 +88,7 @@ class Selection:
         List of parents related to groups.
     enter : list[EnterNode] | None = None
         List of placeholder nodes for each datum that had no corresponding
-        DOM element in the selection. 
+        DOM element in the selection.
     exit : list[etree.Element] = None
         List of existing DOM elements in the selection for which no new datum was found.
     data : dict[etree.Element, Data] | None = None
@@ -104,6 +109,7 @@ class Selection:
     ...     .attr("height", 460)
     ... )
     """
+
     def __init__(
         self,
         groups: list[list[etree.Element]],
@@ -321,7 +327,9 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def each(self, callback: Callable[[etree.Element, Data, int, list[etree.Element]], None]):
+    def each(
+        self, callback: Callable[[etree.Element, Data, int, list[etree.Element]], None]
+    ):
         """
         Invokes the specified function for each selected element,
         in order, being passed the current DOM element (nodes[i]),
@@ -541,7 +549,12 @@ class Selection:
                     next_node = node
         return self
 
-    def join(self, onenter: Callable | Selection, onupdate: Callable | None = None, onexit: Callable | None = None):
+    def join(
+        self,
+        onenter: Callable | Selection,
+        onupdate: Callable | None = None,
+        onexit: Callable | None = None,
+    ):
         """
         Appends, removes and reorders elements as necessary to match
         the data that was previously bound by selection.data, returning
@@ -636,6 +649,7 @@ class Selection:
         Selection
             Itself with removed elements
         """
+
         def remove(node, data, i, group):
             parent = node.getparent()
             if parent is not None:
@@ -694,10 +708,7 @@ class Selection:
             Clone of itself
         """
         subgroups = [
-            clone(node)
-            for group in self._groups
-            for node in group
-            if node is not None
+            clone(node) for group in self._groups for node in group if node is not None
         ]
         return Selection(subgroups, self._parents, data=self._data)
 
@@ -786,6 +797,7 @@ class Selection:
         str
             String
         """
+
         def node_repr(node):
             if node is None:
                 return str(node)
