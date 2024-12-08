@@ -1,3 +1,4 @@
+from __future__ import annotations
 from itertools import zip_longest
 
 from lxml import etree
@@ -11,8 +12,26 @@ from .namespace import namespace
 from .style import style_value, style_function, style_constant
 from .text import text_constant, text_function
 
+from collections.abc import Callable, Iterator
+from typing import TypeAlias, Any, Protocol, overload
 
-def selector(element, selection):
+Data : TypeAlias = Any
+Value : TypeAlias = Any
+
+class Accessor(Protocol):
+    @overload
+    def __call__(self, d: Data) -> Value: ...
+
+    @overload
+    def __call__(self, d: Data, i: int) -> Value: ...
+
+    @overload
+    def __call__(self, d: Data, i: int, group: list[etree.Element]) -> Value: ...
+
+    def __call__(self, *args) -> Value: ...
+
+
+def selector(element: etree.Element, selection: str | None = None):
     if selection is None:
         return element
     order = ""
@@ -29,7 +48,7 @@ def selector(element, selection):
     return element.xpath(f"./*/{selection}{order}") + element.xpath(f"./{selection}{order}")
 
 
-def creator(node, fullname):
+def creator(node: etree.Element, fullname: dict | None = None):
     return (
         etree.SubElement(node, fullname["local"], attrs=fullname["space"])
         if isinstance(fullname, dict)
@@ -38,14 +57,92 @@ def creator(node, fullname):
 
 
 class Selection:
-    def __init__(self, groups, parents, enter=None, exit=None, data=None):
+    """
+    A selection is a set of elements from the DOM.
+    Typically these elements are identified by selectors such
+    as .fancy for elements with the class fancy, or div to
+    select DIV elements.
+
+    Selection methods come in two forms, :code:`select` and :code:`select_all`:
+    the former selects only the first matching element, while the latter selects
+    all matching elements in document order. The top-level selection methods,
+    d3.select and d3.select_all, query the entire document; the subselection
+    methods, selection.select and selection.select_all, restrict selection to
+    descendants of the selected elements.
+
+    By convention, selection methods that return the current selection such
+    as selection.attr use four spaces of indent, while methods that return
+    a new selection use only two. This helps reveal changes of context by
+    making them stick out of the chain:
+
+    Parameters
+    ----------
+    groups : list[list[etree.Element]]
+        List of groups of selected nodes given its parent.
+    parents : list[etree.Element]
+        List of parents related to groups.
+    enter : list[EnterNode] | None = None
+        List of placeholder nodes for each datum that had no corresponding
+        DOM element in the selection. 
+    exit : list[etree.Element] = None
+        List of existing DOM elements in the selection for which no new datum was found.
+    data : dict[etree.Element, Data] | None = None
+        Association between nodes and its data
+
+    Examples
+    --------
+
+    >>> (
+    ...     d3.create("body")
+    ...     .append("svg")
+    ...     .attr("width", 960)
+    ...     .attr("height", 500)
+    ...     .append("g")
+    ...     .attr("transform", "translate(20, 20)")
+    ...     .append("rect")
+    ...     .attr("width", 920)
+    ...     .attr("height", 460)
+    ... )
+    """
+    def __init__(
+        self,
+        groups: list[list[etree.Element]],
+        parents: list[etree.Element],
+        enter: list[EnterNode] | None = None,
+        exit: list[etree.Element] = None,
+        data: dict[etree.Element, Data] | None = None,
+    ):
         self._groups = groups
         self._parents = parents
         self._enter = enter
         self._exit = exit
         self._data = data or {}
 
-    def select(self, selection=None):
+    def select(self, selection: str | None = None) -> Selection:
+        """
+        Selects the first element that matches the specified :code:`selection` string
+
+        Parameters
+        ----------
+        selection : str | None
+            Selection string
+
+        Returns
+        -------
+        Selection
+            Selection of first element
+
+        Examples
+        --------
+
+        >>> d3.select("g.ticks")
+
+        Notes
+        -----
+
+        Supported strings are :code:`<tag_name>.<class_name>` or `.<class_name>` or `<tag_name>`.
+        To get element in reverse order, you can use `<tag_name>:last-of-type`.
+        """
         subgroups = [
             selector(node, selection)[:1]
             for group in self._groups
@@ -59,7 +156,31 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def select_all(self, selection=None):
+    def select_all(self, selection: str | None = None) -> Selection:
+        """
+        Selects all elements that match the specified :code:`selection` string
+
+        Parameters
+        ----------
+        selection : str | None
+            Selection string
+
+        Returns
+        -------
+        Selection
+            Selection of all matched elements
+
+        Examples
+        --------
+
+        >>> d3.select_all("g.ticks")
+
+        Notes
+        -----
+
+        Supported strings are :code:`<tag_name>.<class_name>` or `.<class_name>` or `<tag_name>`.
+        To get element in reverse order, you can use `<tag_name>:last-of-type`.
+        """
         subgroups = [
             selector(node, selection)
             for group in self._groups
@@ -73,21 +194,62 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def enter(self):
+    def enter(self) -> Selection:
+        """
+        Returns the enter selection: placeholder nodes for each datum
+        that had no corresponding DOM element in the selection.
+
+        Returns
+        -------
+        Selection
+            Enter selection
+        """
         return Selection(
             self._enter or [[None] * len(group) for group in self._groups],
             self._parents,
             data=self._data,
         )
 
-    def exit(self):
+    def exit(self) -> Selection:
+        """
+        Returns the exit selection: existing DOM elements in the
+        selection for which no new datum was found.
+        (The exit selection is empty for selections not returned
+        by selection.data.)
+
+
+        Returns
+        -------
+        Selection
+            Exit selection
+        """
         return Selection(
             self._exit or [[None] * len(group) for group in self._groups],
             self._parents,
             data=self._data,
         )
 
-    def merge(self, context):
+    def merge(self, context: Selection) -> Selection:
+        """
+        Returns a new selection merging this selection with the
+        specified other selection or transition. The returned
+        selection has the same number of groups and the same parents
+        as this selection. Any missing (None) elements in this
+        selection are filled with the corresponding element, if
+        present (not null), from the specified selection. (If the
+        other selection has additional groups or parents, they are
+        ignored.)
+
+        Parameters
+        ----------
+        context : Selection
+            Selection
+
+        Returns
+        -------
+        Selection
+            Merged selection
+        """
         selection = context.selection() if hasattr(context, "selection") else context
 
         merges = []
@@ -105,7 +267,33 @@ class Selection:
 
         return Selection(merges, self._parents, data=self._data | selection._data)
 
-    def append(self, name):
+    def append(self, name: str) -> Selection:
+        """
+        If the specified name is a string, appends a new element
+        of this type (tag name) as the last child of each selected
+        element, or before the next following sibling in the update
+        selection if this is an enter selection. The latter behavior
+        for enter selections allows you to insert elements into the
+        DOM in an order consistent with the new bound data; however,
+        note that selection.order may still be required if updating
+        elements change order (i.e., if the order of new data is
+        inconsistent with old data).
+
+        Parameters
+        ----------
+        name : str
+            Tag name
+
+        Returns
+        -------
+        Selection
+            Selection
+
+        Examples
+        --------
+
+        >>> svg.select_all("g").append("path")
+        """
         fullname = namespace(name)
         subgroups = []
         for group in self._groups:
@@ -133,7 +321,18 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def each(self, callback):
+    def each(self, callback: Callable[[etree.Element, Data, int, list[etree.Element]], None]):
+        """
+        Invokes the specified function for each selected element,
+        in order, being passed the current DOM element (nodes[i]),
+        the current datum (d), the current index (i), and the
+        current group (nodes).
+
+        Parameters
+        ----------
+        callback : Callable[[etree.Element, Data, int, list[etree.Element]], None]
+            Function to call which takes as argument: node, data, index and group
+        """
         for group in self._groups:
             for i, node in enumerate(group):
                 if node is not None:
@@ -141,7 +340,32 @@ class Selection:
                         node = node._parent
                     callback(node, self._data.get(node), i, group)
 
-    def attr(self, name, value=None):
+    def attr(self, name: str, value: Accessor | str | None = None) -> Selection:
+        """
+        If a value is specified, sets the attribute with the specified name
+        to the specified value on the selected elements and returns this selection.
+
+        If the value is a function, it is evaluated for each selected element,
+        in order, being passed the current datum (d), the current index (i),
+        and the current group (nodes).
+
+        Parameters
+        ----------
+        name : str
+            Name of the attribute
+        value : Accessor | str | None
+            Value
+
+        Returns
+        -------
+        Selection
+            Itself
+
+        Examples
+        --------
+
+        >>> selection.attr("color", "red")
+        """
         if value is None:
             return self.node().get(name)
         elif callable(value):
@@ -150,7 +374,32 @@ class Selection:
             self.each(attr_constant(name, value))
         return self
 
-    def style(self, name, value=None):
+    def style(self, name: str, value: Accessor | str | None = None) -> Selection:
+        """
+        If a value is specified, sets the style with the specified name
+        to the specified value on the selected elements and returns this selection.
+
+        If the value is a function, it is evaluated for each selected element,
+        in order, being passed the current datum (d), the current index (i),
+        and the current group (nodes).
+
+        Parameters
+        ----------
+        name : str
+            Name of the style
+        value : Accessor | str | None
+            Value constant or function
+
+        Returns
+        -------
+        Selection
+            Itself
+
+        Examples
+        --------
+
+        >>> selection.style("color", "red")
+        """
         if value is None:
             return style_value(self.nodes.get(name).get("style"), name)
         elif callable(value):
@@ -159,7 +408,28 @@ class Selection:
             self.each(style_constant(name, value))
         return self
 
-    def text(self, value=None):
+    def text(self, value: Accessor | str | None = None) -> Selection:
+        """
+        If the value is a constant, then all elements are given the same
+        text content; otherwise, if the value is a function, it is evaluated
+        for each selected element, in order, being passed the current
+        datum (d), the current index (i), and the current group (nodes).
+
+        Parameters
+        ----------
+        value : Accessor | str | None
+            Value constant or function
+
+        Returns
+        -------
+        Selection
+            Itself
+
+        Examples
+        --------
+
+        >>> selection.text("Hello, world!")
+        """
         if value is None:
             return self.node().get("text")
         elif callable(value):
@@ -168,11 +438,46 @@ class Selection:
             self.each(text_constant(value))
         return self
 
-    def datum(self, value):
+    def datum(self, value: Data) -> Selection:
+        """
+        Sets the bound data for the first selected node.
+
+        Parameters
+        ----------
+        value : Data
+            Value
+
+        Returns
+        -------
+        Selection
+            Itself
+        """
         self._data[self.node()] = value
         return self
 
-    def data(self, values, key=None):
+    def data(self, values: list[Data], key: Accessor | None = None) -> Selection:
+        """
+        Binds the specified list of data with the selected elements,
+        returning a new selection that represents the update selection:
+        the elements successfully bound to data. Also defines the enter
+        and exit selections on the returned selection, which can be used
+        to add or remove elements to correspond to the new data. The
+        specified data is an array of arbitrary values (e.g., numbers or
+        objects), or a function that returns an array of values for each
+        group.
+
+        Parameters
+        ----------
+        values : list[Data]
+            List of data to bind
+        key : Accessor | None
+            Optional accessor which returns a key value
+
+        Returns
+        -------
+        Selection
+            Itself
+        """
         bind = bind_key if key else bind_index
         parents = self._parents
         groups = self._groups
@@ -214,7 +519,16 @@ class Selection:
 
         return Selection(update, parents, enter, exit, self._data)
 
-    def order(self):  # TODO : test it
+    def order(self) -> Selection:
+        """
+        Re-inserts elements into the document such that the document order
+        of each group matches the selection order.
+
+        Returns
+        -------
+        Selection
+            Itself
+        """
         for group in self._groups:
             next_node = None
             for node in reversed(group):
@@ -227,7 +541,27 @@ class Selection:
                     next_node = node
         return self
 
-    def join(self, onenter, onupdate=None, onexit=None):
+    def join(self, onenter: Callable | Selection, onupdate: Callable | None = None, onexit: Callable | None = None):
+        """
+        Appends, removes and reorders elements as necessary to match
+        the data that was previously bound by selection.data, returning
+        the merged enter and update selection. This method is a convenient
+        alternative to the explicit general update pattern, replacing
+        selection.enter, selection.exit, selection.append, selection.remove, and selection.order.
+
+        Parameters
+        ----------
+        onenter : Callable | Selection
+            Enter selection or function
+        onupdate : Callable | None
+            Function
+        onexit : Callable | None
+            Function
+
+        Returns
+        -------
+            Selection with joined elements
+        """
         enter = self.enter()
         update = self
         exit = self.exit()
@@ -257,7 +591,24 @@ class Selection:
         else:
             return update
 
-    def insert(self, name, before):
+    def insert(self, name: str, before: etree.Element) -> Selection:
+        """
+        If the specified name is a string, inserts a new element
+        of this type (tag name) before the first element matching
+        the specified before selector for each selected element.
+
+        Parameters
+        ----------
+        name : str
+            Tag name
+        before : etree.Element
+            Node element
+
+        Returns
+        -------
+        Selection
+            Itself with inserted element
+        """
         fullname = namespace(name)
         for group in self._groups:
             for i, node in enumerate(group):
@@ -274,7 +625,17 @@ class Selection:
                         group[i] = created
         return self
 
-    def remove(self):
+    def remove(self) -> Selection:
+        """
+        Removes the selected elements from the document. Returns this
+        selection (the removed elements) which are now detached from
+        the DOM.
+
+        Returns
+        -------
+        Selection
+            Itself with removed elements
+        """
         def remove(node, data, i, group):
             parent = node.getparent()
             if parent is not None:
@@ -283,11 +644,55 @@ class Selection:
         self.each(remove)
         return self
 
-    def call(self, func, *args):
+    def call(self, func: Callable[[Selection, ...], Any], *args: Data) -> Selection:
+        """
+        Invokes the specified function exactly once, passing in
+        this selection along with any optional arguments. Returns
+        this selection.
+
+        Parameters
+        ----------
+        func : Callable[[Selection, ...], Any]
+            Function to call
+        args : Data
+            Arguments for the function to call
+
+        Returns
+        -------
+        Selection
+            Itself
+
+        Examples
+        --------
+
+        This is equivalent to invoking the function
+        by hand but facilitates method chaining. For example, to set
+        several styles in a reusable function:
+
+        >>> def name(selection, first, last):
+        ...     selection.attr("first-name", first).attr("last-name", last)
+
+        Now say:
+        >>> d3.select_all("div").call(name, "John", "Snow")
+
+        This is roughly equivalent to:
+
+        >>> name(d3.select_all("div"), "John", "Snow")
+        """
         func(self, *args)
         return self
 
-    def clone(self):
+    def clone(self) -> Selection:
+        """
+        Inserts clones of the selected elements immediately following
+        the selected elements and returns a selection of the newly
+        added clones.
+
+        Returns
+        -------
+        Selection
+            Clone of itself
+        """
         subgroups = [
             clone(node)
             for group in self._groups
@@ -296,30 +701,91 @@ class Selection:
         ]
         return Selection(subgroups, self._parents, data=self._data)
 
-    def node(self):
+    def node(self) -> etree.Element:
+        """
+        Returns the first (non-None) element in this selection.
+
+        Returns
+        -------
+        etree.Element
+            Node
+        """
         return next(iter(self))
 
-    def nodes(self):
+    def nodes(self) -> list[etree.Element]:
+        """
+        Returns a list of all (non-None) elements in this selection.
+
+        Returns
+        -------
+        list[etree.Element]
+            List of nodes
+        """
         return list(self)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[etree.Element]:
+        """
+        Make the selection as an iterator
+
+        Returns
+        -------
+        Iterator[etree.Element]
+            Iterator of non-None nodes
+        """
         for group in self._groups:
             for node in group:
                 if node is not None:
                     yield node
 
-    def selection(self):
+    def selection(self) -> Selection:
+        """
+        Returns the selection
+
+        Returns
+        -------
+        Selection
+            Itself
+        """
         return self
 
-    def to_string(self, pretty_print=True):
+    def to_string(self, pretty_print: bool = True) -> str:
+        """
+        Convert selection to string
+
+        Parameters
+        ----------
+        pretty_print : bool
+            :code:`True` to prettify output
+
+        Returns
+        -------
+        str
+            String
+        """
         return etree.tostring(self._parents[0], pretty_print=pretty_print).decode(
             "utf-8"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Returns the SVG content
+
+        Returns
+        -------
+        str
+            String
+        """
         return self.to_string(False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Represents the selection
+
+        Returns
+        -------
+        str
+            String
+        """
         def node_repr(node):
             if node is None:
                 return str(node)
