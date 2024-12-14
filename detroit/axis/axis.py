@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from inspect import signature
 from typing import Literal, Type
 
 from ..scale.continuous import Transformer
@@ -96,14 +97,18 @@ class Axis:
         if self._tick_values is not None:
             values = self._tick_values
         elif hasattr(self._scale, "ticks"):
-            values = self._scale.ticks(*self._tick_arguments)
+            nargs = len(signature(self._scale.ticks).parameters)
+            args = self._tick_arguments[:nargs]
+            values = self._scale.ticks(*args)
         else:
             values = self._scale.domain
 
         if self._tick_format is not None:
             format_func = self._tick_format
         elif hasattr(self._scale, "tick_format"):
-            format_func = self._scale.tick_format()
+            nargs = len(signature(self._scale.tick_format).parameters)
+            args = self._tick_arguments[:nargs]
+            format_func = self._scale.tick_format(*args)
         else:
 
             def format_func(d):
