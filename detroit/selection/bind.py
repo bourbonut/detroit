@@ -12,7 +12,7 @@ def bind_index(node_data, parent, group, enter, update, exit, data, _):
         else:
             enter[i] = EnterNode(parent, data[i])
 
-    for i in range(i + 1, len(group)):
+    for i in range(len(data), len(group)):
         node = group[i] if i < len(group) else None
         if node is not None:
             exit[i] = node
