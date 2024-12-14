@@ -237,13 +237,13 @@ def test_time_ticks_test_21():
 
 
 def test_time_ticks_test_22():
-    with pytest.raises(ValueError):
-        assert d3.time_ticks(datetime(1, 12, 18), datetime(2014, 3, 2), 6) == [
-            datetime(500, 1, 1, 0, 0),
-            datetime(1000, 1, 1, 0, 0),
-            datetime(1500, 1, 1, 0, 0),
-            datetime(2000, 1, 1, 0, 0),
-        ]
+    # OverflowError : if all values (year, month, day, ...) are minimized
+    # Thus datetime(1, 12, 18) raises an overflow error
+    assert d3.time_ticks(datetime(501, 12, 18), datetime(2014, 3, 2), 4) == [
+        datetime(1000, 1, 1, 0, 0),
+        datetime(1500, 1, 1, 0, 0),
+        datetime(2000, 1, 1, 0, 0),
+    ]
 
 
 def test_time_ticks_test_23():

@@ -118,16 +118,13 @@ class Ticker:
         """
         target = abs(stop - start) / count
         i = bisect_right([step for _, _, step in self.tick_intervals], target)
-        if i == len(self.tick_intervals) - 1:
+        if i == len(self.tick_intervals):
             return time_year.every(
-                max(
-                    tick_step(
-                        start.timestamp() / duration_year,
-                        stop.timestamp() / duration_year,
-                        count,
-                    ),
-                    1,
-                )
+                tick_step(
+                    start.timestamp() / duration_year,
+                    stop.timestamp() / duration_year,
+                    count,
+                ) * 1000
             )
         if i == 0:
             return time_millisecond.every(
