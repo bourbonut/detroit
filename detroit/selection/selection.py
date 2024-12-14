@@ -515,10 +515,11 @@ class Selection:
                 key,
             )
 
+            i1 = 0
             for i0 in range(len(data)):
-                previous = enter_group[i0]
-                if previous:
-                    i1 = i0 + 1
+                if previous := enter_group[i0]:
+                    if i0 >= i1:
+                        i1 = i0 + 1
                     while not (
                         i1 < len(update_group) and update_group[i1] is not None
                     ) and i1 < len(data):
