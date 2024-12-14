@@ -14,7 +14,14 @@
 
 `detroit` is Python implentation of [d3js](https://d3js.org/).
 
-- [Documentation](https://detroit.readthedocs.io/en/latest/) (not updated)
+- [Documentation](https://detroit.readthedocs.io/en/latest/)
+- [Examples](https://github.com/bourbonut/detroit/tree/main/examples)
+
+<p align="center">
+    <img style="width: 70%;" src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/figures/hertz_russel.png"></img>
+    <br />
+    <a href="https://github.com/bourbonut/detroit/blob/main/examples/hertz_russel.py">Source code</a>
+</p>
 
 # Installation
 
@@ -26,8 +33,8 @@ pip install git+https://github.com/bourbonut/detroit.git
 
 | Package Name    | Yes / No | Tests OK | Notes                         |
 |-----------------|----------|----------|-------------------------------|
-| array           | Yes      | Yes      |                               |
-| axis            | Yes      | No       | TODO: tests                   |
+| array           | Yes      | Yes      |  Not all functions supported  |
+| axis            | Yes      | Yes      |                               |
 | brush           | No       | -        |                               |
 | chord           | No       | -        |                               |
 | color           | Yes      | Yes      |                               |
@@ -39,7 +46,7 @@ pip install git+https://github.com/bourbonut/detroit.git
 | ease            | No       | -        |                               |
 | fetch           | No       | -        | use `import requests`         |
 | force           | No       | -        |                               |
-| format          | Yes      | Yes      | Only `d3.format`              |
+| format          | Yes      | Yes      |                               |
 | geo             | No       | -        |                               |
 | hierarchy       | No       | -        |                               |
 | interpolate     | Yes      | Yes      | interpolate CSS not supported |
@@ -48,7 +55,7 @@ pip install git+https://github.com/bourbonut/detroit.git
 | quadtree        | No       | -        |                               |
 | random          | No       | -        | Use `import random`           |
 | scale           | Yes      | Yes      | Mostly `test_linear`          |
-| scale-chromatic | Yes      | No       | TODO: tests                   |
+| scale-chromatic | No       | No       | TODO: tests                   |
 | selection       | Yes      | No       | TODO: tests                   |
 | shape           | Yes      | Yes      | Missing most of shapes        |
 | time            | Yes      | Yes      |                               |
