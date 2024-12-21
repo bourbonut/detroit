@@ -19,13 +19,13 @@ For instance :
 .. code:: javascript
 
    // d3js
-   d3.scaleLinear.domain([0, 10]).range([0, 920])
+   d3.scaleLinear().domain([0, 10]).range([0, 920])
 
 
 .. code:: python
 
    # detroit
-   d3.scale_linear.set_domain([0, 10]).set_range([0, 920])
+   d3.scale_linear().set_domain([0, 10]).set_range([0, 920])
 
 * :code:`scaleLinear` becomes :code:`scale_linear`
 * :code:`domain` becomes :code:`set_domain`
@@ -35,7 +35,7 @@ If you need to access the value of :code:`domain` for instance, you can use the 
 
 .. code:: python
 
-   >>> x = d3.scale_linear.set_domain([0, 10]).set_range([0, 920])
+   >>> x = d3.scale_linear().set_domain([0, 10]).set_range([0, 920])
    >>> x.domain
    [0, 10]
    >>> x.range

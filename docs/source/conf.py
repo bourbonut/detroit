@@ -6,10 +6,12 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import detroit
+
 project = 'detroit'
 copyright = '2024, bourbonut'
 author = 'bourbonut'
-release = "2.0.0"
+release = detroit.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

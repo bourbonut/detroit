@@ -12,6 +12,7 @@ API
    interpolate
    path
    scale/index
+   scale_chromatic/index
    selection
    shape
    time
