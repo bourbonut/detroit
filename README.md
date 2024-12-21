@@ -42,9 +42,9 @@ pip install detroit
 | delaunay        | No       | -        |                               |
 | dispatch        | No       | -        |                               |
 | drag            | No       | -        |                               |
-| dsv             | No       | -        | use `import pandas / polars`  |
+| dsv             | -        | -        | use `import pandas / polars`  |
 | ease            | No       | -        |                               |
-| fetch           | No       | -        | use `import requests`         |
+| fetch           | -        | -        | use `import requests`         |
 | force           | No       | -        |                               |
 | format          | Yes      | Yes      |                               |
 | geo             | No       | -        |                               |
@@ -53,9 +53,9 @@ pip install detroit
 | path            | Yes      | Yes      |                               |
 | polygone        | No       | -        |                               |
 | quadtree        | No       | -        |                               |
-| random          | No       | -        | Use `import random`           |
+| random          | -        | -        | Use `import random`           |
 | scale           | Yes      | Yes      | Mostly `test_linear`          |
-| scale-chromatic | No       | No       | TODO: tests                   |
+| scale-chromatic | Yes      | Yes      | See all schemes in `examples` |
 | selection       | Yes      | No       | TODO: tests                   |
 | shape           | Yes      | Yes      | Missing most of shapes        |
 | time            | Yes      | Yes      |                               |
