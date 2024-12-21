@@ -1,8 +1,8 @@
 from collections.abc import Callable
 
 from ..coloration import rgb as color_rgb
-from .basis import basis
-from .basis_closed import basis_closed
+from .basis import interpolate_basis
+from .basis_closed import interpolate_basis_closed
 from .color import color as nogamma
 from .color import gamma
 
@@ -16,7 +16,7 @@ class RGBGammaInterpolator:
         Returns an RGB color space interpolator between the two colors a and b
         with a configurable gamma. If the gamma is not specified, it defaults to
         1.0. The colors a and b need not be in RGB; they will be converted to RGB
-        using d3.rgb. The return value of the interpolator is an RGB string.
+        using :code:`d3.rgb`. The return value of the interpolator is an RGB string.
 
         Parameters
         ----------
@@ -74,8 +74,7 @@ class RGBSplineInterpolator:
         g_spline = self.spline(g)
         b_spline = self.spline(b)
 
-        color = color_rgb()
-        color.opacity = 1
+        color = color_rgb(0, 0, 0, 1)
 
         def interpolate(t):
             color.r = r_spline(t)
@@ -86,48 +85,44 @@ class RGBSplineInterpolator:
         return interpolate
 
 
-def interpolate_rgb_basis(a: str, b: str) -> Callable[[float], str]:
+def interpolate_rgb_basis(colors: list[str]) -> Callable[[float], str]:
     """
     Returns a uniform nonrational B-spline interpolator through the specified
     array of colors, which are converted to RGB color space. Implicit control
     points are generated such that the interpolator returns colors[0] at t = 0
     and colors[-1] at t = 1. Opacity interpolation is not currently supported.
-    See also d3.interpolateBasis, and see d3-scale-chromatic for examples.
+    See also d3.interpolate_basis, and see scale_chromatic for examples.
 
     Parameters
     ----------
-    a : str
-        Color string a
-    b : str
-        Color string b
+    colors : list[str]
+         List of colors to interpolate
 
     Returns
     -------
     Callable[[float], str]
         Interpolator
     """
-    return RGBSplineInterpolator(basis)(a, b)
+    return RGBSplineInterpolator(interpolate_basis)(colors)
 
 
-def interpolate_rgb_basis_closed(a: str, b: str) -> Callable[[float], str]:
+def interpolate_rgb_basis_closed(colors: list[str]) -> Callable[[float], str]:
     """
     Returns a uniform nonrational B-spline interpolator through the specified
     array of colors, which are converted to RGB color space. The control points
     are implicitly repeated such that the resulting spline has cyclical :math:`C^2`
     continuity when repeated around t in [0,1]; this is useful, for example, to
     create cyclical color scales. Opacity interpolation is not currently supported.
-    See also d3.interpolateBasisClosed, and see d3-scale-chromatic for examples.
+    See also d3.interpolate_basis_closed, and see scale_chromatic for examples.
 
     Parameters
     ----------
-    a : str
-        Color string a
-    b : str
-        Color string b
+    colors : list[str]
+         List of colors to interpolate
 
     Returns
     -------
     Callable[[float], str]
         Interpolator
     """
-    return RGBSplineInterpolator(basis_closed)(a, b)
+    return RGBSplineInterpolator(interpolate_basis_closed)(colors)

@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 def basis(t1, v0, v1, v2, v3):
     t2 = t1 * t1
     t3 = t2 * t1
@@ -9,7 +11,25 @@ def basis(t1, v0, v1, v2, v3):
     ) / 6
 
 
-def basis_interpolator(values):
+def interpolate_basis(values: list[float]) -> Callable[[float], float]:
+    """
+    Returns a uniform nonrational B-spline interpolator
+    through the specified array of values, which must be numbers.
+
+    Implicit control points are generated such that the interpolator
+    returns :code:`values[0]` at :math:`t = 0`
+    and :code:`values[-1]` at :math:`t = 1`.
+
+    Parameters
+    ----------
+    values : list[float]
+        List of inputs
+
+    Returns
+    -------
+    Callable[[float], float]
+        Interpolator function
+    """
     n = len(values) - 1
 
     def interpolate(t):

@@ -1,7 +1,26 @@
 from .basis import basis
+from collections.abc import Callable
 
 
-def basis_closed(values):
+def interpolate_basis_closed(values: list[float]) -> Callable[[float], float]:
+    """
+    Returns a uniform nonrational B-spline interpolator through
+    the specified array of values, which must be numbers.
+
+    The control points are implicitly repeated such that the resulting
+    one-dimensional spline has cyclical :math:`C^2` continuity when repeated
+    around :math:`t` in :math:`[0, 1]`.
+
+    Parameters
+    ----------
+    values : list[float]
+        List of inputs
+
+    Returns
+    -------
+    Callable[[float], float]
+        Interpolator function
+    """
     n = len(values)
 
     def interpolate(t):

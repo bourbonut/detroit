@@ -1,3 +1,5 @@
+from .basis import interpolate_basis
+from .basis_closed import interpolate_basis_closed
 from .cubehelix import interpolate_cubehelix, interpolate_cubehelix_long
 from .date import interpolate_date
 from .discrete import interpolate_discrete
@@ -17,6 +19,8 @@ from .zoom import interpolate_zoom
 __all__ = [
     "interpolate",
     "interpolate_array",
+    "interpolate_basis",
+    "interpolate_basis_closed",
     "interpolate_cubehelix",
     "interpolate_cubehelix_long",
     "interpolate_date",

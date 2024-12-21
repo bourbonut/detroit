@@ -10,15 +10,15 @@ def init_range(obj, domain=None, range_vals=None):
 def init_interpolator(obj, domain=None, interpolator=None):
     if domain is None and interpolator is None:
         return obj
-    elif domain is not None:
-        obj.set_domain(domain)
-        if callable(domain):
-            obj.set_interpolator(domain)
-        else:
-            obj.set_range(domain)
-    else:
+    elif domain is None:
         if callable(interpolator):
             obj.set_interpolator(interpolator)
         else:
             obj.set_range(interpolator)
+    else:
+        obj.set_domain(domain)
+        if callable(interpolator):
+            obj.set_interpolator(interpolator)
+        else:
+            obj.set_range(domain)
     return obj
