@@ -40,7 +40,7 @@ from .sequential_multi.yl_gn_bu import SCHEME_YLGNBU, interpolate_ylgnbu
 from .sequential_multi.yl_or_br import SCHEME_YLORBR, interpolate_ylorbr
 from .sequential_multi.yl_or_rd import SCHEME_YLORRD, interpolate_ylorrd
 from .sequential_multi.cividis import interpolate_cividis
-from .sequential_multi.rainbow import interpolate_rainbow
+from .sequential_multi.rainbow import interpolate_rainbow, interpolate_warm, interpolate_cool
 from .sequential_multi.sinebow import interpolate_sinebow
 from .sequential_multi.turbo import interpolate_turbo
 from .sequential_multi.viridis import (
@@ -96,6 +96,7 @@ __all__ = [
     "interpolate_bugn",
     "interpolate_bupu",
     "interpolate_cividis",
+    "interpolate_cool",
     "interpolate_gnbu",
     "interpolate_greens",
     "interpolate_greys",
@@ -120,6 +121,7 @@ __all__ = [
     "interpolate_spectral",
     "interpolate_turbo",
     "interpolate_viridis",
+    "interpolate_warm",
     "interpolate_ylgn",
     "interpolate_ylgnbu",
     "interpolate_ylorbr",
