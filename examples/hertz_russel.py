@@ -108,7 +108,9 @@ svg = (
 (
     svg.append("g")
     .attr("transform", f"translate({margin.left}, 0)")
-    .call(d3.axis_left(d3.scale_log(map(lambda m: 10 ** (4.83 - m), y.domain), y.range)))
+    .call(
+        d3.axis_left(d3.scale_log(map(lambda m: 10 ** (4.83 - m), y.domain), y.range))
+    )
 )
 
 (

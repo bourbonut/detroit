@@ -25,11 +25,12 @@ archigos = (
 
 Row = make_dataclass(
     "Row",
-    archigos.columns + [
+    archigos.columns
+    + [
         ("row_no", int, field(default=0)),
         ("lane", str, field(default="")),
-        ("lane_no", int, field(default=0))
-    ]
+        ("lane_no", int, field(default=0)),
+    ],
 )
 
 data = list(starmap(Row, archigos.iter_rows()))
@@ -46,25 +47,29 @@ x_domain = None
 x_padding = 5
 round_radius = 4
 
+
 def color(d):
     return d
+
 
 def title(d):
     return f"{d.countryname} - {d.leader} - {d3.time_format('%Y')(d.startdate)} to {d3.time_format('%Y')(d.enddate)}"
 
-def assign_rows(data, monotonic = False):
+
+def assign_rows(data, monotonic=False):
     # Algorithm used to assign bars to lanes.
     slots = []
+
     def find_slot(slots, bar_start, bar_end):
-        # Add some padding to bars to leave space between them  
+        # Add some padding to bars to leave space between them
         # Do comparisons in pixel space for cleaner padding.
         bar_start_px = round(d3.scale_time()(bar_start))
         bar_end_padded_px = round(d3.scale_time()(bar_end) + x_padding)
-          
+
         for i in range(len(slots)):
-            if ((slots[i][1] <= bar_start_px) and not monotonic):
-              slots[i][1] = bar_end_padded_px
-              return slots[i][0]
+            if (slots[i][1] <= bar_start_px) and not monotonic:
+                slots[i][1] = bar_end_padded_px
+                return slots[i][0]
 
         # Otherwise add a new slot and return that.
         slots.append([len(slots), bar_end_padded_px])
@@ -76,7 +81,8 @@ def assign_rows(data, monotonic = False):
 
     return list(map(update, sorted(data, key=lambda item: item.startdate)))
 
-def assign_lanes(data, monotonic = False):
+
+def assign_lanes(data, monotonic=False):
     # Assign rows, but grouped by some keys so that bars are arranged in groups belonging to the same lane.
     groups = {}
     for row in data:
@@ -98,27 +104,37 @@ def assign_lanes(data, monotonic = False):
 
     return new_data
 
-svg = d3.create('svg').attr('class','gantt').attr('width', width).attr('height', height)
 
-axis_group = svg.append('g').attr('class','gantt_group-axis').attr('transform', f"translate(0, {margin.top})")
-bars_group = svg.append('g').attr('class','gantt_group-bars')
-lanes_group = svg.append('g').attr('class','gantt__group-lanes')
-reference_lines_group = svg.append('g').attr('class','gantt_group-reference-lines')
+svg = (
+    d3.create("svg").attr("class", "gantt").attr("width", width).attr("height", height)
+)
+
+axis_group = (
+    svg.append("g")
+    .attr("class", "gantt_group-axis")
+    .attr("transform", f"translate(0, {margin.top})")
+)
+bars_group = svg.append("g").attr("class", "gantt_group-bars")
+lanes_group = svg.append("g").attr("class", "gantt__group-lanes")
+reference_lines_group = svg.append("g").attr("class", "gantt_group-reference-lines")
 
 x = d3.scale_time().set_range(
     [
-        margin.left + (margin.lane_gutter if show_lane_labels == 'left' else 0), 
-        width - margin.right  - (margin.lane_gutter if show_lane_labels == 'right' else 0)
+        margin.left + (margin.lane_gutter if show_lane_labels == "left" else 0),
+        width
+        - margin.right
+        - (margin.lane_gutter if show_lane_labels == "right" else 0),
     ]
 )
 y = d3.scale_band().set_padding(0.2).set_round(True)
 
+
 def update_reference_lines(reference_lines):
     def enter_func(enter):
-        g = enter.append('g').attr('transform', lambda d: f"translate({x(d.start)}, 0)")
+        g = enter.append("g").attr("transform", lambda d: f"translate({x(d.start)}, 0)")
         (
             g.append("path")
-            .attr("d", d3.line()([[0, margin.top],[0, height - margin.bottom]]))
+            .attr("d", d3.line()([[0, margin.top], [0, height - margin.bottom]]))
             .attr("stroke", lambda d: d.color or "darkgrey")
             .attr("stroke-dasharray", "10,5")
         )
@@ -135,14 +151,14 @@ def update_reference_lines(reference_lines):
         return g
 
     def update_func(update):
-        update.attr('transform', lambda d: f"translate({x(d.start)}, 0)")
+        update.attr("transform", lambda d: f"translate({x(d.start)}, 0)")
         (
-            update.select('path')
-            .attr("d", d3.line()([[0, margin.top],[0, height - margin.bottom]]))
+            update.select("path")
+            .attr("d", d3.line()([[0, margin.top], [0, height - margin.bottom]]))
             .attr("stroke", lambda d: d.color or "darkgrey")
         )
         (
-            update.select('text')
+            update.select("text")
             .text(lambda d: d.label or "")
             .attr("y", height - margin.bottom + 10)
             .attr("fill", lambda d: d.color or "darkgrey")
@@ -153,9 +169,10 @@ def update_reference_lines(reference_lines):
         exit.remove()
 
     # Update reference lines
-    reference_lines_group.select_all('g').data(reference_lines).join(
+    reference_lines_group.select_all("g").data(reference_lines).join(
         enter_func, update_func, exit_func
     )
+
 
 def update_bars(new_data, height=height, duration=0):
     # Persist data|
@@ -176,7 +193,7 @@ def update_bars(new_data, height=height, duration=0):
     # Calculate the height of our chart if not specified exactly.
     if fixed_row_height:
         height = (height * n_rows) + margin.top + margin.bottom
-        svg.attr('height', height)
+        svg.attr("height", height)
     else:
         height = (height - margin.top - margin.bottom) / n_rows
 
@@ -188,42 +205,42 @@ def update_bars(new_data, height=height, duration=0):
         return max(round(x(d.enddate) - x(d.startdate) - shrink), 0)
 
     def enter_func(enter):
-        g = enter.append('g')
+        g = enter.append("g")
         # It looks nice if we start in the correct y position and scale out
-        ( 
-            g.attr('transform', lambda d: f"translate({width / 2}, {y(d.row_no)})")
+        (
+            g.attr("transform", lambda d: f"translate({width / 2}, {y(d.row_no)})")
             # .transition()
             # .ease(d3.easeExpOut)
             # .duration(duration)
-            .attr('transform', lambda d: f"translate({x(start(d))}, {y(d.row_no)})")
+            .attr("transform", lambda d: f"translate({x(start(d))}, {y(d.row_no)})")
         )
         (
-            g.append('rect')
-            .attr('height', y.bandwidth)
-            .attr('rx', round_radius)
-            .attr('fill', color)
-            .attr('stroke', 'white')
-            .attr('stroke-width', 1)
+            g.append("rect")
+            .attr("height", y.bandwidth)
+            .attr("rx", round_radius)
+            .attr("fill", color)
+            .attr("stroke", "white")
+            .attr("stroke-width", 1)
             # .transition()
             # .duration(duration)
-            .attr('width', lambda d: bar_length(d, 0))
+            .attr("width", lambda d: bar_length(d, 0))
         )
 
-        g.append('title').text(title)
+        g.append("title").text(title)
         # Add a clipping path for text
         # slugify = lambda text: str(text).lower().split([^a-z0-9]).filter(d => d).join('-')
         (
-            g.append('clipPath')
+            g.append("clipPath")
             # .attr('id', lambda d, i: f"barclip-{slugify(d.obsid)}")
-            .append('rect') 
-            .attr('width', lambda d, i: bar_length(d, i, 4))
-            .attr('height', y.bandwidth)
-            .attr('rx', round_radius)
+            .append("rect")
+            .attr("width", lambda d, i: bar_length(d, i, 4))
+            .attr("height", y.bandwidth)
+            .attr("rx", round_radius)
         )
         (
-            g.append('text')
-            .attr('x', max(round_radius * 0.75, 5))
-            .attr('y', y.bandwidth / 2)
+            g.append("text")
+            .attr("x", max(round_radius * 0.75, 5))
+            .attr("y", y.bandwidth / 2)
             .attr("dominant-baseline", "middle")
             .attr("font-size", min([y.bandwidth * 0.6, 16]))
             .attr("fill", "white")
@@ -235,29 +252,32 @@ def update_bars(new_data, height=height, duration=0):
 
     def update_func(update):
         (
-            update.attr('transform', lambda d: f"translate({x(d.start)}, {y(d.row_no)})")
+            update.attr(
+                "transform", lambda d: f"translate({x(d.start)}, {y(d.row_no)})"
+            )
             # .transition()
             # .duration(duration)
         )
         (
-            update.select('rect')
+            update.select("rect")
             # .transition()
             # .duration(duration)
-            .attr('fill', color)
-            .attr('width', lambda d: bar_length(d))
-            .attr('height', y.bandwidth)
+            .attr("fill", color)
+            .attr("width", lambda d: bar_length(d))
+            .attr("height", y.bandwidth)
         )
-        update.select('title').text(title)
+        update.select("title").text(title)
         (
-          update.select('clipPath').select('rect')
+            update.select("clipPath")
+            .select("rect")
             # .transition()
             # .duration(duration)
-            .attr('width', lambda d, i: bar_length(d, i, 4))
-            .attr('height', y.bandwidth)
+            .attr("width", lambda d, i: bar_length(d, i, 4))
+            .attr("height", y.bandwidth)
         )
         (
-          update.select('text')
-            .attr('y', y.bandwidth / 2)
+            update.select("text")
+            .attr("y", y.bandwidth / 2)
             .attr("font-size", min([y.bandwidth * 0.6, 16]))
             # .attr('visibility', lambda d: 'visible' if barLength(d) >= label_min_width else 'hidden') # Hide labels on short bars
             .text(lambda d: d.leader)
@@ -268,7 +288,9 @@ def update_bars(new_data, height=height, duration=0):
         exit.remove()
 
     # Update bars
-    bars_group.select_all('g').data(data, lambda d, i: i).join(enter_func, update_func, exit_func)
+    bars_group.select_all("g").data(data, lambda d, i: i).join(
+        enter_func, update_func, exit_func
+    )
 
     # Draw axis
     (
@@ -279,6 +301,7 @@ def update_bars(new_data, height=height, duration=0):
 
     # IndexError: list index out of range
     # update_reference_lines(reference_lines)
+
 
 update_bars(data)
 

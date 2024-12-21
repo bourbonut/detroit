@@ -83,7 +83,9 @@ svg = (
 
 # Append the dots
 
-color = d3.scale_sequential([df["digit"].min(), df["digit"].max()], d3.interpolate_rainbow)
+color = d3.scale_sequential(
+    [df["digit"].min(), df["digit"].max()], d3.interpolate_rainbow
+)
 
 (
     svg.append("g")
@@ -100,16 +102,11 @@ color = d3.scale_sequential([df["digit"].min(), df["digit"].max()], d3.interpola
 # Legend
 
 labels = df["digit"].unique().sort()
-nb_columns = labels.len() # number of labels
-offset = 40 # Space between legend labels
-radius = 3 # circle radius
+nb_columns = labels.len()  # number of labels
+offset = 40  # Space between legend labels
+radius = 3  # circle radius
 
-legend = (
-    svg.select_all("legend")
-    .data(labels.to_list())
-    .enter()
-    .append("g")
-)
+legend = svg.select_all("legend").data(labels.to_list()).enter().append("g")
 
 (
     legend.append("circle")
