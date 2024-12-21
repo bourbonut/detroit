@@ -12,7 +12,7 @@ from .categorical.observable10 import SCHEME_OBSERVABLE_10
 
 from .diverging.br_bg import SCHEME_BRBG, interpolate_brbg
 from .diverging.pi_yg import SCHEME_PIYG, interpolate_piyg
-from .diverging.pr_gn import SCHEME_PRGN, intepolate_prgn
+from .diverging.pr_gn import SCHEME_PRGN, interpolate_prgn
 from .diverging.pu_or import SCHEME_PUOR, interpolate_puor
 from .diverging.rd_bu import SCHEME_RDBU, interpolate_rdbu
 from .diverging.rd_gy import SCHEME_RDGY, interpolate_rdgy
@@ -35,11 +35,12 @@ from .sequential_multi.pu_bu import SCHEME_PUBU, interpolate_pubu
 from .sequential_multi.pu_rd import SCHEME_PURD, interpolate_purd
 from .sequential_multi.rd_pu import SCHEME_RDPU, interpolate_rdpu
 from .sequential_multi.yl_gn import SCHEME_YLGN, interpolate_ylgn
-from .sequential_multi.pu_bu_gn import SCHEME_PUBUGN, interpoalate_pubugn
+from .sequential_multi.pu_bu_gn import SCHEME_PUBUGN, interpolate_pubugn
 from .sequential_multi.yl_gn_bu import SCHEME_YLGNBU, interpolate_ylgnbu
 from .sequential_multi.yl_or_br import SCHEME_YLORBR, interpolate_ylorbr
 from .sequential_multi.yl_or_rd import SCHEME_YLORRD, interpolate_ylorrd
 from .sequential_multi.cividis import interpolate_cividis
+from .sequential_multi.cubehelix import interpolate_cubehelix_default
 from .sequential_multi.rainbow import interpolate_rainbow, interpolate_warm, interpolate_cool
 from .sequential_multi.sinebow import interpolate_sinebow
 from .sequential_multi.turbo import interpolate_turbo
@@ -89,14 +90,13 @@ __all__ = [
     "SCHEME_YLGNBU",
     "SCHEME_YLORBR",
     "SCHEME_YLORRD",
-    "intepolate_prgn",
-    "interpoalate_pubugn",
     "interpolate_blues",
     "interpolate_brbg",
     "interpolate_bugn",
     "interpolate_bupu",
     "interpolate_cividis",
     "interpolate_cool",
+    "interpolate_cubehelix_default",
     "interpolate_gnbu",
     "interpolate_greens",
     "interpolate_greys",
@@ -106,7 +106,9 @@ __all__ = [
     "interpolate_orrd",
     "interpolate_piyg",
     "interpolate_plasma",
+    "interpolate_prgn",
     "interpolate_pubu",
+    "interpolate_pubugn",
     "interpolate_puor",
     "interpolate_purd",
     "interpolate_purples",

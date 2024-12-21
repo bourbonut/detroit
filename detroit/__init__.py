@@ -1,3 +1,5 @@
+import importlib.metadata
+
 from .array import (
     bin,
     extent,
@@ -159,14 +161,13 @@ from .scale_chromatic import (
     SCHEME_YLGNBU,
     SCHEME_YLORBR,
     SCHEME_YLORRD,
-    intepolate_prgn,
-    interpoalate_pubugn,
     interpolate_blues,
     interpolate_brbg,
     interpolate_bugn,
     interpolate_bupu,
     interpolate_cividis,
     interpolate_cool,
+    interpolate_cubehelix_default,
     interpolate_gnbu,
     interpolate_greens,
     interpolate_greys,
@@ -176,7 +177,9 @@ from .scale_chromatic import (
     interpolate_orrd,
     interpolate_piyg,
     interpolate_plasma,
+    interpolate_prgn,
     interpolate_pubu,
+    interpolate_pubugn,
     interpolate_puor,
     interpolate_purd,
     interpolate_purples,
@@ -197,6 +200,8 @@ from .scale_chromatic import (
     interpolate_ylorbr,
     interpolate_ylorrd,
 )
+
+__version__ = importlib.metadata.version(__package__)
 
 __all__ = [
     "SCHEME_ACCENT",
@@ -252,8 +257,6 @@ __all__ = [
     "gray",
     "hcl",
     "hsl",
-    "intepolate_prgn",
-    "interpoalate_pubugn",
     "interpolate",
     "interpolate_array",
     "interpolate_basis",
@@ -265,6 +268,7 @@ __all__ = [
     "interpolate_cividis",
     "interpolate_cool",
     "interpolate_cubehelix",
+    "interpolate_cubehelix_default",
     "interpolate_cubehelix_long",
     "interpolate_date",
     "interpolate_discrete",
@@ -286,7 +290,9 @@ __all__ = [
     "interpolate_orrd",
     "interpolate_piyg",
     "interpolate_plasma",
+    "interpolate_prgn",
     "interpolate_pubu",
+    "interpolate_pubugn",
     "interpolate_puor",
     "interpolate_purd",
     "interpolate_purples",

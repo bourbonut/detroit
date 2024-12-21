@@ -11,4 +11,4 @@ scheme = [
     "fff7fbece2f0d0d1e6a6bddb67a9cf3690c002818a016c59014636",
 ]
 SCHEME_PUBUGN = list(map(colors, scheme))
-interpoalate_pubugn = ramp(SCHEME_PUBUGN)
+interpolate_pubugn = ramp(SCHEME_PUBUGN)
