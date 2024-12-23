@@ -93,7 +93,25 @@ from .scale import (
 
 from .selection import create
 
-from .shape import Line as line
+from .shape import (
+    SYMBOLS_FILL,
+    SYMBOLS_STROKE,
+    Line as line,
+    Symbol as symbol,
+    symbol_asterisk,
+    symbol_circle,
+    symbol_cross,
+    symbol_diamond,
+    symbol_diamond2,
+    symbol_plus,
+    symbol_square,
+    symbol_square2,
+    symbol_star,
+    symbol_times,
+    symbol_triangle,
+    symbol_triangle2,
+    symbol_wye,
+)
 
 from .time import (
     time_day,
@@ -242,6 +260,8 @@ __all__ = [
     "SCHEME_YLGNBU",
     "SCHEME_YLORBR",
     "SCHEME_YLORRD",
+    "SYMBOLS_FILL",
+    "SYMBOLS_STROKE",
     "axis_bottom",
     "axis_left",
     "axis_right",
@@ -354,6 +374,20 @@ __all__ = [
     "scale_symlog",
     "scale_threshold",
     "scale_time",
+    "symbol",
+    "symbol_asterisk",
+    "symbol_circle",
+    "symbol_cross",
+    "symbol_diamond",
+    "symbol_diamond2",
+    "symbol_plus",
+    "symbol_square",
+    "symbol_square2",
+    "symbol_star",
+    "symbol_times",
+    "symbol_triangle",
+    "symbol_triangle2",
+    "symbol_wye",
     "tick_format",
     "tick_increment",
     "tick_step",

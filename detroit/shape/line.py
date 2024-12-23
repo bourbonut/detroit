@@ -74,6 +74,7 @@ class Line(WithPath):
         n = len(data)
         defined0 = False
 
+        buffer = None
         if self._context is None:
             buffer = self._path()
             self._output = self._curve(buffer)
