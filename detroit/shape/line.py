@@ -109,13 +109,13 @@ class Line(WithPath):
             self._output = None
             return str(buffer) or None
 
-    def x(self, x: Callable | int | float | None) -> Line:
+    def x(self, x: Callable | int | float) -> Line:
         """
         Sets x accessor function
 
         Parameters
         ----------
-        x : Callable | int | float | None
+        x : Callable | int | float
             x accessor function
 
         Returns
@@ -123,9 +123,7 @@ class Line(WithPath):
         Line
             Itself
         """
-        if x is None:
-            self._x = point_x
-        elif callable(x):
+        if callable(x):
             self._x = x
         else:
             self._x = constant(x)
@@ -135,13 +133,13 @@ class Line(WithPath):
     def fx(self):
         return self._x
 
-    def y(self, y: Callable | int | float | None) -> Line:
+    def y(self, y: Callable | int | float) -> Line:
         """
         Sets y accessor function
 
         Parameters
         ----------
-        y : Callable | int | float | None
+        y : Callable | int | float
             y accessor function
 
         Returns
@@ -149,9 +147,7 @@ class Line(WithPath):
         Line
             Itself
         """
-        if y is None:
-            self._y = point_y
-        elif callable(y):
+        if callable(y):
             self._y = y
         else:
             self._y = constant(y)
@@ -161,7 +157,7 @@ class Line(WithPath):
     def fy(self):
         return self._y
 
-    def defined(self, defined: Callable | int | float | None) -> Line:
+    def defined(self, defined: Callable | int | float) -> Line:
         """
         Sets defined accessor
 
@@ -177,7 +173,7 @@ class Line(WithPath):
 
         Parameters
         ----------
-        defined : Callable | int | float | None
+        defined : Callable | int | float
             defined accessor function
 
         Returns
@@ -197,7 +193,7 @@ class Line(WithPath):
     def accessor_defined(self):
         return self._defined
 
-    def curve(self, curve: Callable | None) -> Line:
+    def curve(self, curve: Callable | None = None) -> Line:
         """
         Sets curve factory.
 
@@ -220,7 +216,7 @@ class Line(WithPath):
     def fcurve(self):
         return self._curve
 
-    def context(self, context: Selection | None) -> Line:
+    def context(self, context: Selection | None = None) -> Line:
         """
         Sets the context.
 
