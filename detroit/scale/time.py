@@ -154,7 +154,7 @@ class Calendar(Transformer):
         d = self.domain
         return self._ticks(d[0], d[-1], count if count is not None else 10)
 
-    def tick_format(self, specifier: str | None = None) -> Callable[[datetime], str]:
+    def tick_format(self, _: int, specifier: str | None = None) -> Callable[[datetime], str]:
         """
         Returns a number format function suitable for displaying
         a tick value, automatically computing the appropriate

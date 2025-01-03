@@ -94,9 +94,10 @@ from .scale import (
 from .selection import create
 
 from .shape import (
+    Area as area,
+    Line as line,
     SYMBOLS_FILL,
     SYMBOLS_STROKE,
-    Line as line,
     Symbol as symbol,
     symbol_asterisk,
     symbol_circle,
@@ -262,6 +263,7 @@ __all__ = [
     "SCHEME_YLORRD",
     "SYMBOLS_FILL",
     "SYMBOLS_STROKE",
+    "area",
     "axis_bottom",
     "axis_left",
     "axis_right",

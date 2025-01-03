@@ -25,7 +25,7 @@ x = d3.scale_time(
 # # Declare the y (vertical position) scale.
 y = d3.scale_linear([0, aapl["close"].max()], [height - margin.bottom, margin.top])
 
-# Declare the area generator.
+# Declare the line generator.
 line = d3.line().x(lambda d: x(d[0].timestamp())).y(lambda d: y(d[1]))
 
 # Create the SVG container.
