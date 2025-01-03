@@ -12,8 +12,35 @@ from .point import x as point_x
 from .point import y as point_y
 
 class Area(WithPath):
+    """
+    The area generator produces an area defined by a topline and a baseline as in
+    an area chart. Typically, the two lines share the same x-values (x0 = x1),
+    differing only in y-value (y0 and y1); most commonly, y0 is defined as a
+    constant representing zero (the y scale’s output for zero). The topline
+    is defined by x1 and y1 and is rendered first; the baseline is defined by
+    x0 and y0 and is rendered second with the points in reverse order. With a
+    curveLinear curve, this produces a clockwise polygon. See also radial areas.
 
-    def __init__(self, x0, y0, y1):
+    Parameters
+    ----------
+    x0 : Callable | None
+        x0 accessor function for data points
+    y0 : Callable | None
+        y0 accessor function for data points
+    y1 : Callable | None
+        y1 accessor function for data points
+
+    Returns
+    -------
+    Area
+        New area generator
+    """
+    def __init__(
+        self,
+        x0: Callable | None = None,
+        y0: Callable | None = None,
+        y1: Callable | None = None,
+    ):
         super().__init__()
         self._x1 = None
         self._defined = constant(True)
@@ -75,9 +102,9 @@ class Area(WithPath):
 
         j = 0
         x0nargs = len(signature(self._x0).parameters)
-        x1nargs = len(signature(self._x1).parameters)
+        x1nargs = len(signature(self._x1).parameters) if self._x1 is not None else 0
         y0nargs = len(signature(self._y0).parameters)
-        y1nargs = len(signature(self._y1).parameters)
+        y1nargs = len(signature(self._y1).parameters) if self._y1 is not None else 0
         for i in range(n):
             d = data[i]
             args = [d, i, data]
@@ -95,13 +122,34 @@ class Area(WithPath):
                     self._output.line_end()
                     self._output.area_end()
 
-                if defined0:
-                    x0z[i] = self._x0(*args[:x0nargs])
-                    y0z[i] = self._y0(*args[:y0nargs])
-                    self._output.point(
-                        self._x1(*args[:x1nargs]) if self._x1 else x0z[i],
-                        self._y1(*args[:y1nargs]) if self._y1 else y0z[i],
-                    )
+            if defined0:
+                x0z[i] = self._x0(*args[:x0nargs])
+                y0z[i] = self._y0(*args[:y0nargs])
+                self._output.point(
+                    self._x1(*args[:x1nargs]) if self._x1 else x0z[i],
+                    self._y1(*args[:y1nargs]) if self._y1 else y0z[i],
+                )
+
+        i += 1
+        defined0 = not defined0
+        if defined0:
+            j = i
+            self._output.area_start()
+            self._output.line_start()
+        else:
+            self._output.line_end()
+            self._output.line_start()
+            for k in range(i - 1, j - 1, -1):
+                self._output.point(x0z[k], y0z[k])
+            self._output.line_end()
+            self._output.area_end()
+        if defined0:
+            x0z[i] = self._x0(*args[:x0nargs])
+            y0z[i] = self._y0(*args[:y0nargs])
+            self._output.point(
+                self._x1(*args[:x1nargs]) if self._x1 else x0z[i],
+                self._y1(*args[:y1nargs]) if self._y1 else y0z[i],
+            )
 
         if buffer:
             self._output = None

@@ -1,3 +1,4 @@
+from .area import Area
 from .line import Line
 from .symbol import Symbol, SYMBOLS_FILL, SYMBOLS_STROKE
 from .symbols import (
@@ -17,9 +18,10 @@ from .symbols import (
 )
 
 __all__ = [
+    "Area",
+    "Line",
     "SYMBOLS_FILL",
     "SYMBOLS_STROKE",
-    "Line",
     "Symbol",
     "symbol_asterisk",
     "symbol_circle",
