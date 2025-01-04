@@ -72,6 +72,8 @@ class Line(WithPath):
         """
         data = list(data)
         n = len(data)
+        if n == 0:
+            return None
         defined0 = False
 
         buffer = None
@@ -81,9 +83,9 @@ class Line(WithPath):
 
         xnargs = len(signature(self._x).parameters)
         ynargs = len(signature(self._y).parameters)
-        for i in range(n):
-            d = data[i]
-            if i == n or self._defined(d, i, data) != defined0:
+        for i in range(n + 1):
+            d = data[i] if i < n else None
+            if not(i < n and self._defined(d, i, data) == defined0):
                 defined0 = not defined0
                 if defined0:
                     self._output.line_start()
@@ -93,17 +95,6 @@ class Line(WithPath):
                 xargs = [d, i, data][:xnargs]
                 yargs = [d, i, data][:ynargs]
                 self._output.point(self._x(*xargs), self._y(*yargs))
-
-        i += 1
-        defined0 = not defined0
-        if defined0:
-            self._output.line_start()
-        else:
-            self._output.line_end()
-        if defined0:
-            xargs = [d, i, data][:xnargs]
-            yargs = [d, i, data][:ynargs]
-            self._output.point(self._x(xargs), self._y(yargs))
 
         if buffer:
             self._output = None

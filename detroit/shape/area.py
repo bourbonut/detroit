@@ -90,6 +90,8 @@ class Area(WithPath):
         """
         data = list(data)
         n = len(data)
+        if n == 0:
+            return None
         defined0 = False
 
         x0z = [0] * n
@@ -105,10 +107,9 @@ class Area(WithPath):
         x1nargs = len(signature(self._x1).parameters) if self._x1 is not None else 0
         y0nargs = len(signature(self._y0).parameters)
         y1nargs = len(signature(self._y1).parameters) if self._y1 is not None else 0
-        for i in range(n):
-            d = data[i]
-            args = [d, i, data]
-            if i == n or self._defined(d, i, data) != defined0:
+        for i in range(n + 1):
+            d = data[i] if i < n else None
+            if not(i < n and self._defined(d, i, data) == defined0):
                 defined0 = not defined0
                 if defined0:
                     j = i
@@ -123,33 +124,13 @@ class Area(WithPath):
                     self._output.area_end()
 
             if defined0:
+                args = [d, i, data]
                 x0z[i] = self._x0(*args[:x0nargs])
                 y0z[i] = self._y0(*args[:y0nargs])
                 self._output.point(
                     self._x1(*args[:x1nargs]) if self._x1 else x0z[i],
                     self._y1(*args[:y1nargs]) if self._y1 else y0z[i],
                 )
-
-        i += 1
-        defined0 = not defined0
-        if defined0:
-            j = i
-            self._output.area_start()
-            self._output.line_start()
-        else:
-            self._output.line_end()
-            self._output.line_start()
-            for k in range(i - 1, j - 1, -1):
-                self._output.point(x0z[k], y0z[k])
-            self._output.line_end()
-            self._output.area_end()
-        if defined0:
-            x0z[i] = self._x0(*args[:x0nargs])
-            y0z[i] = self._y0(*args[:y0nargs])
-            self._output.point(
-                self._x1(*args[:x1nargs]) if self._x1 else x0z[i],
-                self._y1(*args[:y1nargs]) if self._y1 else y0z[i],
-            )
 
         if buffer:
             self._output = None
