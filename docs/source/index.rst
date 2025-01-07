@@ -48,6 +48,7 @@ Table of Content
    :maxdepth: 2
 
    line
+   area
    scatter
    bar
    histogram

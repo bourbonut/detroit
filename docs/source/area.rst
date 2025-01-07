@@ -1,11 +1,11 @@
-Line chart
+Area chart
 ==========
 
-.. image:: figures/light-line.svg
+.. image:: figures/light-area.svg
    :align: center
    :class: only-light
 
-.. image:: figures/dark-line.svg
+.. image:: figures/dark-area.svg
    :align: center
    :class: only-dark
 
@@ -66,7 +66,7 @@ Line chart
    y = d3.scale_linear([0, aapl["close"].max()], [height - margin.bottom, margin.top])
 
    # Declare the area generator.
-   line = d3.line().x(lambda d: x(d[0].timestamp())).y(lambda d: y(d[1]))
+   area = d3.area().x(lambda d: x(d[0].timestamp())).y0(y(0)).y1(lambda d: y(d[1]))
 
    # Create the SVG container.
    svg = (
@@ -74,8 +74,11 @@ Line chart
        .attr("width", width)
        .attr("height", height)
        .attr("viewBox", f"0 0 {width} {height}")
-       .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+       .attr("style", "max-width: 100%; height: auto;")
    )
+
+   # Append a path for the area (under the axes).
+   svg.append("path").attr("fill", "steelblue").attr("d", area(aapl.iter_rows()))
 
    # Add the x-axis.
    svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").call(
@@ -88,7 +91,8 @@ Line chart
        .attr("transform", f"translate({margin.left}, 0)")
        .call(d3.axis_left(y).set_ticks(height / 40))
        .call(lambda g: g.select(".domain").remove())
-       .call(lambda g: g.select_all(".tick")
+       .call(
+           lambda g: g.select_all(".tick")
            .select_all("line")
            .clone()
            .attr("x2", width - margin.left - margin.right)
@@ -106,12 +110,9 @@ Line chart
        )
    )
 
-   # Append a path for the line.
-   svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 1.5).attr("d", line(aapl.iter_rows()))
-
 3. Save your chart
 
 .. code:: python
 
-   with open("line.svg", "w") as file:
+   with open("area.svg", "w") as file:
        file.write(str(svg))

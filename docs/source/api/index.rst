@@ -14,6 +14,6 @@ API
    scale/index
    scale_chromatic/index
    selection
-   shape
+   shape/index
    time
    time_format
