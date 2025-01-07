@@ -136,7 +136,15 @@ class Area(WithPath):
             self._output = None
             return str(buffer) or None
 
-    def area_line(self):
+    def area_line(self) -> Line:
+        """
+        Returns a new line generator from the definition of the area.
+
+        Returns
+        -------
+        Line
+            Line generator based on the area parameters
+        """
         return Line().defined(self._defined).curve(self._curve).context(self._context)
 
     def x(self, x: Callable | int | float) -> Area:
