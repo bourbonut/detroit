@@ -499,5 +499,5 @@ def test_utc_time_44():
 
 
 def test_utc_time_45():
-    f = d3.scale_time().tick_format("%c")
+    f = d3.scale_time().tick_format(10, "%c")
     assert f(datetime(2011, 2, 2, 12)) == "Wed Feb  2 12:00:00 2011"
