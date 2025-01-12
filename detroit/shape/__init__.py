@@ -1,5 +1,6 @@
 from .area import Area
 from .line import Line
+from .pie import Pie
 from .symbol import Symbol, SYMBOLS_FILL, SYMBOLS_STROKE
 from .symbols import (
     symbol_asterisk,
@@ -20,6 +21,7 @@ from .symbols import (
 __all__ = [
     "Area",
     "Line",
+    "Pie",
     "SYMBOLS_FILL",
     "SYMBOLS_STROKE",
     "Symbol",

@@ -96,6 +96,7 @@ from .selection import create
 from .shape import (
     Area as area,
     Line as line,
+    Pie as pie,
     SYMBOLS_FILL,
     SYMBOLS_STROKE,
     Symbol as symbol,
@@ -347,6 +348,7 @@ __all__ = [
     "line",
     "nice",
     "path",
+    "pie",
     "precision_fixed",
     "precision_prefix",
     "precision_round",
