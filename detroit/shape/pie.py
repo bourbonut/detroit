@@ -1,5 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, asdict
+from inspect import signature
 from math import pi
 from typing import Any
 from collections.abc import Iterable, Callable
@@ -28,7 +29,7 @@ class Pie:
     """
     def __init__(self):
         self._value = identity
-        self._sort_values = lambda x: sorted(x, key=lambda x: -x)
+        self._sort_values = lambda x: -x
         self._sort = None
         self._start_angle = constant(0)
         self._end_angle = constant(2 * pi)
@@ -72,17 +73,28 @@ class Pie:
         """
         data = list(data)
         n = len(data)
+
+        nargs_sa = len(signature(self._start_angle).parameters)
+        nargs_ea = len(signature(self._end_angle).parameters)
+        nargs_pa = len(signature(self._pad_angle).parameters)
+        nargs_v = len(signature(self._value).parameters)
+
+        args_sa = args[:nargs_sa]
+        args_ea = args[:nargs_ea]
+        args_pa = args[:nargs_pa]
+
         sum = 0
         index = [None] * n
         arcs = [None] * n
-        a0 = self._start_angle(*args)
-        da = min(2 * pi, max(-2 * pi, self._end_angle(*args) - a0))
-        p = min(abs(da) / n, self._pad_angle(*args))
+        a0 = self._start_angle(*args_sa)
+        da = min(2 * pi, max(-2 * pi, self._end_angle(*args_ea) - a0))
+        p = min(abs(da) / n, self._pad_angle(*args_pa))
         pa = p * (-1 if da < 0 else 1)
 
         for i in range(n):
             d = data[i]
-            v = self._value(d, i, data)
+            args = [d, i, data][:nargs_v]
+            v = self._value(*args)
             index[i] = i
             arcs[i] = v
             if v > 0:
@@ -95,12 +107,12 @@ class Pie:
 
 
         k = (da - n * pa) / sum if sum else 0
-        a0 = None
         for i in range(n):
             j = index[i]
             v = arcs[j]
             a1 = a0 + (v * k if v > 0 else 0) + pa
             arcs[j] = asdict(Arc(data[j], i, v, a0, a1, p))
+            a0 = a1
 
         return arcs
 
