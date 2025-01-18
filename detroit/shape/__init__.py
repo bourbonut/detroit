@@ -1,3 +1,4 @@
+from .arc import Arc
 from .area import Area
 from .line import Line
 from .pie import Pie
@@ -19,6 +20,7 @@ from .symbols import (
 )
 
 __all__ = [
+    "Arc",
     "Area",
     "Line",
     "Pie",
