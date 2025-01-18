@@ -253,7 +253,7 @@ class Path:
         cw = 1 ^ bool(ccw)
         da = a0 - a1 if ccw else a1 - a0
 
-        # Is this path empty? Move to (x0,y0).
+        # Is this path empty? Move to (x0, y0).
         if self._x1 is None:
             t1, t2 = self._round(x0, y0)
             self._string += f"M{t1},{t2}"
@@ -263,11 +263,11 @@ class Path:
             t1, t2 = self._round(x0, y0)
             self._string += f"L{t1},{t2}"
 
-        # Is this arc empty? We’re done.
+        # Is this arc empty? We're done.
         if not r:
             return
 
-        # Does the angle go the wrong way? Flip the direction.
+        # Does the angle go the wrong way ? Flip the direction.
         if da < 0:
             new_da = da % TAU
             da = new_da if new_da else new_da + TAU

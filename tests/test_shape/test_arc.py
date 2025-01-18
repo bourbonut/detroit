@@ -164,7 +164,7 @@ def test_arc_10():
         actual["args"] = args[1]
         return 0
 
-    d3.arc().set_outer_radius(test_function)()({}, [42])
+    d3.arc().set_outer_radius(test_function)({}, [42])
     assert actual == expected
 
 
@@ -537,7 +537,7 @@ def test_arc_31():
 def test_arc_32():
     a = d3.arc().set_inner_radius(0).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(pi / 2)()
+        a.set_start_angle(0).set_end_angle(pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,1,5.263158,-99.861400A100,100,0,0,1,99.861400,-5.263158A5,5,0,0,1,94.868330,0L0,0Z"
     )
     assert (
@@ -553,7 +553,7 @@ def test_arc_32():
 def test_arc_33():
     a = d3.arc().set_inner_radius(0).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(-pi / 2)()
+        a.set_start_angle(0).set_end_angle(-pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,0,-5.263158,-99.861400A100,100,0,0,0,-99.861400,-5.263158A5,5,0,0,0,-94.868330,0L0,0Z"
     )
     assert (
@@ -569,7 +569,7 @@ def test_arc_33():
 def test_arc_34():
     a = d3.arc().set_inner_radius(0).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(3 * pi / 2)()
+        a.set_start_angle(0).set_end_angle(3 * pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,1,5.263158,-99.861400A100,100,0,1,1,-99.861400,5.263158A5,5,0,0,1,-94.868330,0L0,0Z"
     )
     assert (
@@ -585,7 +585,7 @@ def test_arc_34():
 def test_arc_35():
     a = d3.arc().set_inner_radius(0).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(-3 * pi / 2)()
+        a.set_start_angle(0).set_end_angle(-3 * pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,0,-5.263158,-99.861400A100,100,0,1,0,99.861400,5.263158A5,5,0,0,0,94.868330,0L0,0Z"
     )
     assert (
@@ -601,7 +601,7 @@ def test_arc_35():
 def test_arc_36():
     a = d3.arc().set_inner_radius(50).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(pi / 2)()
+        a.set_start_angle(0).set_end_angle(pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,1,5.263158,-99.861400A100,100,0,0,1,99.861400,-5.263158A5,5,0,0,1,94.868330,0L54.772256,0A5,5,0,0,1,49.792960,-4.545455A50,50,0,0,0,4.545455,-49.792960A5,5,0,0,1,0,-54.772256Z"
     )
     assert (
@@ -617,7 +617,7 @@ def test_arc_36():
 def test_arc_37():
     a = d3.arc().set_inner_radius(50).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(-pi / 2)()
+        a.set_start_angle(0).set_end_angle(-pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,0,-5.263158,-99.861400A100,100,0,0,0,-99.861400,-5.263158A5,5,0,0,0,-94.868330,0L-54.772256,0A5,5,0,0,0,-49.792960,-4.545455A50,50,0,0,1,-4.545455,-49.792960A5,5,0,0,0,0,-54.772256Z"
     )
     assert (
@@ -633,7 +633,7 @@ def test_arc_37():
 def test_arc_38():
     a = d3.arc().set_inner_radius(50).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(3 * pi / 2)()
+        a.set_start_angle(0).set_end_angle(3 * pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,1,5.263158,-99.861400A100,100,0,1,1,-99.861400,5.263158A5,5,0,0,1,-94.868330,0L-54.772256,0A5,5,0,0,1,-49.792960,4.545455A50,50,0,1,0,4.545455,-49.792960A5,5,0,0,1,0,-54.772256Z"
     )
     assert (
@@ -649,7 +649,7 @@ def test_arc_38():
 def test_arc_39():
     a = d3.arc().set_inner_radius(50).set_outer_radius(100).set_corner_radius(5)
     assert (
-        a.set_start_angle(0).set_end_angle(-3 * pi / 2)()
+        a.set_start_angle(0).set_end_angle(-3 * pi / 2).digits(6)()
         == "M0,-94.868330A5,5,0,0,0,-5.263158,-99.861400A100,100,0,1,0,99.861400,5.263158A5,5,0,0,0,94.868330,0L54.772256,0A5,5,0,0,0,49.792960,4.545455A50,50,0,1,1,-4.545455,-49.792960A5,5,0,0,0,0,-54.772256Z"
     )
     assert (
@@ -665,7 +665,7 @@ def test_arc_39():
 def test_arc_40():
     a = d3.arc().set_corner_radius(inf).set_start_angle(0).set_end_angle(pi / 2)
     assert (
-        a.set_inner_radius(90).set_outer_radius(100)()
+        a.set_inner_radius(90).set_outer_radius(100).digits(6)()
         == "M0,-94.868330A5,5,0,0,1,5.263158,-99.861400A100,100,0,0,1,99.861400,-5.263158A5,5,0,0,1,94.868330,0L94.868330,0A5,5,0,0,1,89.875260,-4.736842A90,90,0,0,0,4.736842,-89.875260A5,5,0,0,1,0,-94.868330Z"
     )
     assert (
@@ -677,7 +677,7 @@ def test_arc_40():
 def test_arc_41():
     a = d3.arc().set_corner_radius(inf).set_start_angle(0).set_end_angle(pi / 2)
     assert (
-        a.set_inner_radius(10).set_outer_radius(100)()
+        a.set_inner_radius(10).set_outer_radius(100).digits(6)()
         == "M0,-41.421356A41.421356,41.421356,0,1,1,41.421356,0L24.142136,0A24.142136,24.142136,0,0,1,0,-24.142136Z"
     )
     assert (
@@ -733,6 +733,7 @@ def test_arc_45():
         .set_start_angle(0)
         .set_end_angle(pi / 2)
         .set_pad_angle(0.1)
+        .digits(6)
     )
     assert a() == "M4.997917,-99.875026A100,100,0,0,1,99.875026,-4.997917L0,0Z"
 
@@ -745,6 +746,7 @@ def test_arc_46():
         .set_start_angle(0)
         .set_end_angle(pi / 2)
         .set_pad_angle(0.1)
+        .digits(6)
     )
     assert (
         a()
@@ -760,6 +762,7 @@ def test_arc_47():
         .set_start_angle(0)
         .set_end_angle(pi / 2)
         .set_pad_angle(0.2)
+        .digits(6)
     )
     assert (
         a()
@@ -776,6 +779,7 @@ def test_arc_48():
         .set_end_angle(pi / 2)
         .set_pad_angle(0.1)
         .set_corner_radius(10)
+        .digits(6)
     )
     assert (
         a()
@@ -792,6 +796,7 @@ def test_arc_49():
         .set_end_angle(pi / 2)
         .set_pad_angle(0.1)
         .set_corner_radius(10)
+        .digits(6)
     )
     assert (
         a()
@@ -808,6 +813,7 @@ def test_arc_50():
         .set_end_angle(pi / 2)
         .set_pad_angle(0.2)
         .set_corner_radius(10)
+        .digits(6)
     )
     assert (
         a()

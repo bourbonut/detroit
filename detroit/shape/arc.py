@@ -2,7 +2,7 @@ from __future__ import annotations
 from ..selection.selection import Selection
 from .constant import constant
 from .path import WithPath
-from math import atan2, sqrt, pi, asin, cos, sin, acos
+from math import atan2, sqrt, pi, asin, cos, sin, acos, nan
 from collections.abc import Callable
 from typing import Any
 
@@ -25,7 +25,7 @@ def arc_end_angle(d, *args):
     return d.get("end_angle", 0)
 
 
-def arc_pad_angle(d, *args):
+def arc_pad_angle(d={}, *args):
     return d.get("pad_angle", 0)
 
 
@@ -41,45 +41,44 @@ def intersect(x0, y0, x1, y1, x2, y2, x3, y3):
     return x0 + t * x10, y0 + t * y10
 
 
-def corner_tangents(x0, y0, x1, y1, r1, rc, cw):
-    x01 = x0 - x1
-    y01 = y0 - y1
-    lo = ((rc if cw else -rc) / sqrt(x01 * x01 + y01 * y01),)
-    ox = lo * y01
-    oy = -lo * x01
-    x11 = x0 + ox
-    y11 = y0 + oy
-    x10 = x1 + ox
-    y10 = y1 + oy
-    x00 = ((x11 + x10) / 2,)
-    y00 = ((y11 + y10) / 2,)
-    dx = x10 - x11
-    dy = y10 - y11
-    d2 = dx * dx + dy * dy
-    r = r1 - rc
-    D = x11 * y10 - x10 * y11
-    d = (-1 if dy < 0 else 1) * sqrt(max(0, r * r * d2 - D * D))
-    cx0 = (D * dy - dx * d) / d2
-    cy0 = (-D * dx - dy * d) / d2
-    cx1 = (D * dy + dx * d) / d2
-    cy1 = (-D * dx + dy * d) / d2
-    dx0 = cx0 - x00
-    dy0 = cy0 - y00
-    dx1 = cx1 - x00
-    dy1 = cy1 - y00
+class CornerTangents:
+    def __init__(self, x0, y0, x1, y1, r1, rc, cw):
+        x01 = x0 - x1
+        y01 = y0 - y1
+        lo = (rc if cw else -rc) / sqrt(x01 * x01 + y01 * y01)
+        ox = lo * y01
+        oy = -lo * x01
+        x11 = x0 + ox
+        y11 = y0 + oy
+        x10 = x1 + ox
+        y10 = y1 + oy
+        x00 = (x11 + x10) / 2
+        y00 = (y11 + y10) / 2
+        dx = x10 - x11
+        dy = y10 - y11
+        d2 = dx * dx + dy * dy
+        r = r1 - rc
+        D = x11 * y10 - x10 * y11
+        d = (-1 if dy < 0 else 1) * sqrt(max(0, r * r * d2 - D * D))
+        cx0 = (D * dy - dx * d) / d2
+        cy0 = (-D * dx - dy * d) / d2
+        cx1 = (D * dy + dx * d) / d2
+        cy1 = (-D * dx + dy * d) / d2
+        dx0 = cx0 - x00
+        dy0 = cy0 - y00
+        dx1 = cx1 - x00
+        dy1 = cy1 - y00
 
-    if dx0 * dx0 + dy0 * dy0 > dx1 * dx1 + dy1 * dy1:
-        cx0 = cx1
-        cy0 = cy1
+        if dx0 * dx0 + dy0 * dy0 > dx1 * dx1 + dy1 * dy1:
+            cx0 = cx1
+            cy0 = cy1
 
-    return {
-        "cx": cx0,
-        "cy": cy0,
-        "x01": -ox,
-        "y01": -oy,
-        "x11": cx0 * (r1 / r - 1),
-        "y11": cy0 * (r1 / r - 1),
-    }
+        self.cx = cx0
+        self.cy = cy0
+        self.x01 = -ox
+        self.y01 = -oy
+        self.x11 = cx0 * (r1 / r - 1)
+        self.y11 = cy0 * (r1 / r - 1)
 
 
 class Arc(WithPath):
@@ -169,13 +168,15 @@ class Arc(WithPath):
             ap = self._pad_angle(*args) / 2
             rp = (
                 self._pad_radius(*args) if self._pad_radius else sqrt(r0 * r0 + r1 * r1)
-            )  # ap > EPSILON ?
+                if ap > EPSILON else 0
+            )
             rc = min(abs(r1 - r0) / 2, self._corner_radius(*args))
             rc0 = rc
             rc1 = rc
 
             if rp > EPSILON:
-                p0 = asin(rp / r0 * sin(ap))
+                tmp = rp / r0 * sin(ap) if r0 != 0 else nan
+                p0 = asin(tmp) if 0 <= tmp <= 1 else nan
                 p1 = asin(rp / r1 * sin(ap))
 
                 da0 -= p0 * 2
@@ -229,8 +230,8 @@ class Arc(WithPath):
             if da1 <= EPSILON:
                 self._context.move_to(x01, y01)
             elif rc1 > EPSILON:
-                t0 = corner_tangents(x00, y00, x01, y01, r1, rc1, cw)
-                t1 = corner_tangents(x11, y11, x10, y10, r1, rc1, cw)
+                t0 = CornerTangents(x00, y00, x01, y01, r1, rc1, cw)
+                t1 = CornerTangents(x11, y11, x10, y10, r1, rc1, cw)
                 self._context.move_to(t0.cx + t0.x01, t0.cy + t0.y01)
 
                 if rc1 < rc:
@@ -274,8 +275,8 @@ class Arc(WithPath):
             if r0 <= EPSILON or da0 <= EPSILON:
                 self._context.line_to(x10, y10)
             elif rc0 > EPSILON:
-                t0 = corner_tangents(x10, y10, x11, y11, r0, -rc0, cw)
-                t1 = corner_tangents(x01, y01, x00, y00, r0, -rc0, cw)
+                t0 = CornerTangents(x10, y10, x11, y11, r0, -rc0, cw)
+                t1 = CornerTangents(x01, y01, x00, y00, r0, -rc0, cw)
 
                 self._context.line_to(t0.cx + t0.x01, t0.cy + t0.y01)
 
