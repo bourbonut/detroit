@@ -53,4 +53,5 @@ Table of Content
    bar
    histogram
    pie
+   complex_charts/index
    api/index
