@@ -52,4 +52,5 @@ Table of Content
    scatter
    bar
    histogram
+   pie
    api/index
