@@ -25,6 +25,7 @@ color = (
     .set_range(
         d3.quantize(
             lambda t: d3.interpolate_spectral(t * 0.8 + 0.1), data.height
+            # lambda t: d3.interpolate_inferno(t * 0.8 + 0.1), data.height # for white text
         )[::-1]
     )
 )
@@ -59,7 +60,7 @@ svg = (
     .select_all()
     .data(pie(data.iter_rows()))
     .join("g")
-    # .attr("fill", "white") # white text
+    # .attr("fill", "white") # uncomment this for white text
     .attr("transform", lambda d: f"translate({arc.centroid(d)[0]}, {arc.centroid(d)[1]})")
     .call(
         lambda g: (
@@ -83,5 +84,5 @@ svg = (
     )
 )
 
-# with open("donut.svg", "w") as file:
-#     file.write(str(svg))
+with open("donut.svg", "w") as file:
+    file.write(str(svg))
