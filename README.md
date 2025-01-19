@@ -57,7 +57,7 @@ pip install detroit
 | scale           | Yes      | Yes      | Mostly `test_linear`          |
 | scale-chromatic | Yes      | Yes      | See all schemes in `examples` |
 | selection       | Yes      | No       | TODO: tests                   |
-| shape           | Yes      | Yes      | Missing most of shapes        |
+| shape           | Yes      | Yes      | Missing some of shapes        |
 | time            | Yes      | Yes      |                               |
 | time-format     | Yes      | Yes      |                               |
 | timer           | No       | -        |                               |
