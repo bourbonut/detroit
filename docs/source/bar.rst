@@ -13,6 +13,7 @@ Bar chart
 
 .. code:: python
 
+   # Source : https://observablehq.com/@d3/bar-chart/2
    import detroit as d3
    import polars as pl # for data manipulation
    from collections import namedtuple

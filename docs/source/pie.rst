@@ -13,6 +13,7 @@ Pie chart
 
 .. code:: python
 
+   # Source : https://observablehq.com/@d3/donut-chart/2
    from collections import namedtuple
    import polars as pl # for data manipulation
    import detroit as d3

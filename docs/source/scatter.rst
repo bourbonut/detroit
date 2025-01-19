@@ -13,6 +13,7 @@ Scatter chart
 
 .. code:: python
 
+   # Source : https://observablehq.com/@d3/brushable-scatterplot
    import detroit as d3
    import polars as pl # for data manipulation
    from collections import namedtuple

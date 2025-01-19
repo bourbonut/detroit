@@ -13,6 +13,7 @@ Line chart
 
 .. code:: python
 
+   # Source : https://observablehq.com/@d3/line-chart/2
    import detroit as d3
    import polars as pl # for data manipulation
    from collections import namedtuple

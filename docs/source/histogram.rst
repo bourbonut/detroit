@@ -13,6 +13,7 @@ Histogram chart
 
 .. code:: python
 
+   # Source : https://observablehq.com/@d3/histogram/2
    import detroit as d3
    import polars as pl # for data manipulation
    from collections import namedtuple
