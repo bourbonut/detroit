@@ -5,18 +5,20 @@ import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/bee673b386dd058ab8d2cf353acbedc6aa01ebd1e6f63e2a9ab1b4273c7e6efd1eeea526345e4be7f0012d5db3ec743ef39ad9e6a043c196670bf9658cb02e79?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27population-by-age.csv"
 
-Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
-
 data = pl.read_csv(URL)
 
+# Declare the chart dimensions.
 width = 500
 height = min(width, 500)
 radius = min(width, height) / 2
 
+# Declare the arc generator with its dimensions.
 arc = d3.arc().set_inner_radius(radius * 0.67).set_outer_radius(radius - 1)
 
+# Declare pie generator with its dimensions.
 pie = d3.pie().pad_angle(1 / radius).sort(None).value(lambda d: d[1])
 
+# Declare color scale.
 color = (
     d3.scale_ordinal()
     .set_domain(data["name"].to_list())
@@ -27,6 +29,7 @@ color = (
     )
 )
 
+# Create the SVG container.
 svg = (
     d3.create("svg")
     .attr("width", width)
@@ -35,6 +38,7 @@ svg = (
     .attr("style", "max-width: 100% height: auto;")
 )
 
+# Generate pies and add arcs to the chart.
 (
     svg.append("g")
     .select_all()
@@ -46,6 +50,7 @@ svg = (
     .text(lambda d: f"{d['data'][0]}: {d['data'][1]}")
 )
 
+# Generate pies and add text on them.
 (
     svg.append("g")
     .attr("font-family", "sans-serif")
@@ -78,5 +83,5 @@ svg = (
     )
 )
 
-with open("donut.svg", "w") as file:
-    file.write(str(svg))
+# with open("donut.svg", "w") as file:
+#     file.write(str(svg))
