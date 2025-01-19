@@ -48,7 +48,7 @@ Area chart
    └─────────────────────┴────────┘
 
 
-2. Make the line chart
+2. Make the area chart
 
 .. code:: python
 
