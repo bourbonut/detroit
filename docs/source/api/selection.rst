@@ -5,27 +5,28 @@ Selection
 
 .. autoclass:: detroit.selection.selection.Selection
 
-   .. automethod:: select
-   .. automethod:: select_all
-   .. automethod:: attr
-   .. automethod:: style
-   .. automethod:: text
    .. automethod:: append
-   .. automethod:: insert
-   .. automethod:: remove
+   .. automethod:: attr
+   .. automethod:: call
+   .. automethod:: clone
    .. automethod:: data
    .. automethod:: datum
-   .. automethod:: call
    .. automethod:: each
    .. automethod:: enter
    .. automethod:: exit
+   .. automethod:: filter
+   .. automethod:: insert
    .. automethod:: join
    .. automethod:: merge
-   .. automethod:: order
-   .. automethod:: clone
    .. automethod:: node
    .. automethod:: nodes
+   .. automethod:: order
+   .. automethod:: remove
+   .. automethod:: select
+   .. automethod:: select_all
    .. automethod:: selection
+   .. automethod:: style
+   .. automethod:: text
    .. automethod:: to_string
 
 .. autoclass:: detroit.selection.selection.Accessor
