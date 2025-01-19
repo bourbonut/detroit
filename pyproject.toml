@@ -1,7 +1,7 @@
 [project]
 name = "detroit"
 description = "detroit is wrapper for Python of d3js and Observable Plot."
-version = "2.1.0"
+version = "2.2.0"
 readme = "README.md"
 authors = [
   { name = "Benjamin BOURBON", email = "ben.bourbon06@gmail.com"},
