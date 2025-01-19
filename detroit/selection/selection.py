@@ -12,6 +12,7 @@ from .clone import clone
 from .constant import constant
 from .enter import EnterNode
 from .namespace import namespace
+from .matcher import matcher
 from .style import style_constant, style_function, style_value
 from .text import text_constant, text_function
 
@@ -272,6 +273,43 @@ class Selection:
             merges.append(self._groups[j])
 
         return Selection(merges, self._parents, data=self._data | selection._data)
+
+    def filter(self, match: Accessor | int | float | str) -> Selection:
+        """
+        Filters the selection, returning a new selection that contains
+        only the elements for which the specified filter is true.
+
+        Parameters
+        ----------
+        match : Accessor | int | float | str
+            Constant to match or accessor which returns a boolean
+
+        Returns
+        -------
+        Selection
+            Filtered selection
+
+        Examples
+        --------
+        For example, to filter a selection of table rows to contain only even rows:
+
+        >>> even = d3.select_all("tr").filter(lambda d, i: i % 2 == 0)
+        """
+        matches, nargs = matcher(match)
+        subgroups = []
+        for group in self._groups:
+            subgroup = []
+            for i, node in enumerate(group):
+                if node is None:
+                    continue
+                if isinstance(node, EnterNode):
+                    node = node._parent
+                args = [self._data.get(node), i, group][:nargs]
+                if matches(*args):
+                    subgroup.append(node)
+            subgroups.append(subgroup)
+        return Selection(subgroups, self._parents, data=self._data)
+
 
     def append(self, name: str) -> Selection:
         """

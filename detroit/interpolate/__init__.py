@@ -11,6 +11,7 @@ from .number import interpolate_number
 from .number_array import interpolate_number_array
 from .object_to_value import interpolate, interpolate_array, interpolate_object
 from .piecewise import piecewise
+from .quantize import quantize
 from .rgb import interpolate_rgb, interpolate_rgb_basis, interpolate_rgb_basis_closed
 from .round import interpolate_round
 from .string import interpolate_string
@@ -41,4 +42,5 @@ __all__ = [
     "interpolate_string",
     "interpolate_zoom",
     "piecewise",
+    "quantize",
 ]

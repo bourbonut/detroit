@@ -58,6 +58,8 @@ from .interpolate import (
     interpolate_round,
     interpolate_string,
     interpolate_zoom,
+    piecewise,
+    quantize,
 )
 
 from .path import Path as path
@@ -351,9 +353,11 @@ __all__ = [
     "nice",
     "path",
     "pie",
+    "piecewise",
     "precision_fixed",
     "precision_prefix",
     "precision_round",
+    "quantize",
     "rgb",
     "scale_band",
     "scale_diverging",
