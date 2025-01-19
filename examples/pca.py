@@ -32,7 +32,7 @@ x = (
     .set_range([margin.left, width - margin.right])
 )
 
-# Create the horizontal y scale
+# Create the vertical y scale
 y = (
     d3.scale_linear()
     .set_domain([df["Component 2"].min(), df["Component 2"].max()])
@@ -123,9 +123,15 @@ legend = svg.select_all("legend").data(labels.to_list()).enter().append("g")
     .attr("x", lambda _, i: i * offset + margin.left)
     .attr("y", 30)
     .text(lambda d: str(d))
-    .style("fill", "black")
+    .style("fill", "black") # change "black" to "white" for white text
     .style("font-size", 15)
 )
+
+# For white axis and text
+# svg.select_all("path.domain").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
 with open("pca.svg", "w") as file:
     file.write(str(svg))

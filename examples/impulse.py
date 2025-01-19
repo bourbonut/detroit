@@ -6,6 +6,7 @@ import detroit as d3
 
 Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
 
+# Arbitrary parameters for second order system.
 K = 1
 omega_0 = 2
 e0 = 1
@@ -42,10 +43,12 @@ data = {
 }
 
 
+# Specify the chart's dimensions.
 margin = Margin(10, 30, 30, 60)
-width = 460 - margin.left - margin.right
-height = 300 - margin.top - margin.bottom
+width = 960 - margin.left - margin.right
+height = 800 - margin.top - margin.bottom
 
+# Create the SVG container.
 svg = (
     d3.create("svg")
     .attr("width", width + margin.left + margin.right)
@@ -53,6 +56,8 @@ svg = (
     .append("g")
     .attr("transform", f"translate({margin.left}, {margin.top})")
 )
+
+# Create the horizontal x scale.
 x = (
     d3.scale_linear()
     .set_domain(d3.extent(data["allvalues"][0]["values"], lambda d: d["x"]))
@@ -64,19 +69,21 @@ svg.append("g").attr("transform", f"translate(0, {height})").call(
     d3.axis_bottom(x).set_tick_format(d3.format(".0f"))
 )
 
+# Create the vertical y scale.
 ymax = max(data["allvalues"][-1]["values"], key=lambda d: d["y"])["y"]
 
 y = d3.scale_linear().set_domain([-ymax, ymax]).set_range([height, -1]).nice()
 
+svg.append("g").call(d3.axis_left(y).set_tick_format(d3.format(".1f")))
+
+# Create the color scale given zeta values.
 color = (
     d3.scale_linear()
     .set_domain([max(data["allzeta"]), min(data["allzeta"])])
     .set_range(["gold", "deepskyblue"])
 )
 
-svg.append("g").call(d3.axis_left(y).set_tick_format(d3.format(".1f")))
-
-
+# Append the pathes for the lines.
 (
     svg.select_all(".line")
     .data(data["allvalues"])
@@ -91,6 +98,12 @@ svg.append("g").call(d3.axis_left(y).set_tick_format(d3.format(".1f")))
         .y(lambda d2: y(d2["y"]))(d["values"]),
     )
 )
+
+# For white axis and text
+svg.select_all("path.domain").attr("stroke", "white")
+svg.select_all("g.tick").select_all("line").attr("stroke", "white")
+svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
 with open("impulse.svg", "w") as file:
     file.write(str(svg))
