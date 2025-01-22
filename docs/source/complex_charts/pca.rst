@@ -121,7 +121,9 @@ Principal Component Analysis on MNIST dataset
        )
    )
 
-   # Append the dots
+   # Append the symbols
+
+   symbol_type = d3.scale_ordinal(df["digit"].unique().sort().to_list(), d3.SYMBOLS_STROKE)
 
    color = d3.scale_sequential(
        [df["digit"].min(), df["digit"].max()], d3.interpolate_rainbow
@@ -133,10 +135,11 @@ Principal Component Analysis on MNIST dataset
        .attr("stroke-width", 1.5)
        .select_all("circle")
        .data(df.iter_rows())
-       .join("circle")
+       .join("g")
        .attr("transform", lambda d: f"translate({x(d[0])}, {y(d[1])})")
+       .append("path")
+       .attr("d", lambda d: d3.symbol(symbol_type(d[2]))())
        .attr("stroke", lambda d: color(d[2]))
-       .attr("r", 3)
    )
 
    # Legend
@@ -144,15 +147,15 @@ Principal Component Analysis on MNIST dataset
    labels = df["digit"].unique().sort()
    nb_columns = labels.len()  # number of labels
    offset = 40  # Space between legend labels
-   radius = 3  # circle radius
+   symbol_size = 3
 
    legend = svg.select_all("legend").data(labels.to_list()).enter().append("g")
 
    (
-       legend.append("circle")
-       .attr("cx", lambda _, i: i * offset + margin.left - radius * 3)
-       .attr("cy", 30 - radius * 1.5)
-       .attr("r", radius)
+       legend.append("g")
+       .attr("transform", lambda _, i: f"translate({i * offset + margin.left - symbol_size * 4}, {30 - symbol_size * 1.5})")
+       .append("path")
+       .attr("d", lambda d: d3.symbol(symbol_type(d))())
        .style("stroke-width", 1.5)
        .style("stroke", lambda d: color(d))
        .style("fill", "none")
