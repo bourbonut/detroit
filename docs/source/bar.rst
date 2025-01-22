@@ -73,7 +73,7 @@ Bar chart
        d3.create("svg")
        .attr("width", width)
        .attr("height", height)
-       .attr("viewBox", f"0, 0, {width}, {height}")
+       .attr("viewBox", f"0 0 {width} {height}")
        .attr("style", "max-width: 100%; height: auto;")
    )
 
