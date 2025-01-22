@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
   { name = "Benjamin BOURBON", email = "ben.bourbon06@gmail.com"},
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
   "lxml",
 ]
