@@ -67,7 +67,7 @@ Principal Component Analysis on MNIST dataset
    # Create the horizontal x scale
    x = (
        d3.scale_linear()
-       .set_domain([df["Component 1"].min(), df["Component 2"].max()])
+       .set_domain([df["Component 1"].min(), df["Component 1"].max()])
        .nice()
        .set_range([margin.left, width - margin.right])
    )
