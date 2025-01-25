@@ -94,7 +94,7 @@ color = d3.scale_sequential(
     svg.append("g")
     .attr("fill", "none")
     .attr("stroke-width", 1.5)
-    .select_all("circle")
+    .select_all("symbol")
     .data(df.iter_rows())
     .join("g")
     .attr("transform", lambda d: f"translate({x(d[0])}, {y(d[1])})")
