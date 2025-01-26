@@ -68,9 +68,13 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
 )
 
 # Append a path for the area (under the axes).
-svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr(
-    "stroke-width", 1.5
-).attr("d", line(aapl.iter_rows()))
+(
+    svg.append("path")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("d", line(aapl.iter_rows()))
+)
 
 # For white axis and text
 # svg.select_all("path.domain").attr("stroke", "white")

@@ -108,7 +108,13 @@ Line chart
    )
 
    # Append a path for the line.
-   svg.append("path").attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 1.5).attr("d", line(aapl.iter_rows()))
+   (
+       svg.append("path")
+       .attr("fill", "none")
+       .attr("stroke", "steelblue")
+       .attr("stroke-width", 1.5)
+       .attr("d", line(aapl.iter_rows()))
+   )
 
 3. Save your chart
 
