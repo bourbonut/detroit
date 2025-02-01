@@ -22,14 +22,14 @@ Principal Component Analysis on MNIST dataset
    from sklearn.preprocessing import StandardScaler # To normalize data
 
    # Prepare data
-   mnsit = load_digits() # load data
+   mnist = load_digits() # load data
    scaler = StandardScaler() # initialize scaler
-   X_scaled = scaler.fit_transform(mnsit.data) # update scaler and normalize data
+   X_scaled = scaler.fit_transform(mnist.data) # update scaler and normalize data
    pca = PCA(n_components=2) # initialize PCA decomposition
    components = pca.fit_transform(X_scaled) # update PCA and transform data
 
    df = pl.DataFrame(components, schema=["Component 1", "Component 2"])
-   df = df.insert_column(2, pl.Series("digit", mnsit.target)) # add digit as "Z-axis" for color
+   df = df.insert_column(2, pl.Series("digit", mnist.target)) # add digit as "Z-axis" for color
 
 .. code::
 

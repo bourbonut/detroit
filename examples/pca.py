@@ -8,14 +8,14 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # Prepare data
-mnsit = load_digits()
+mnist = load_digits()
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(mnsit.data)
+X_scaled = scaler.fit_transform(mnist.data)
 pca = PCA(n_components=2)
 components = pca.fit_transform(X_scaled)
 
 df = pl.DataFrame(components, schema=["Component 1", "Component 2"])
-df = df.insert_column(2, pl.Series("digit", mnsit.target))
+df = df.insert_column(2, pl.Series("digit", mnist.target))
 
 # Specify the chart's dimensions
 width = 928
