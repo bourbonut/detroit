@@ -8,7 +8,7 @@
         <img src='https://readthedocs.org/projects/detroit/badge/?version=latest' alt='Documentation Status' />
     </a>
     <a href="https://opensource.org/licenses/ISC">
-        <img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="BSD-3-Clause">
+        <img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="Licence ISC">
     </a>
 </p>
 
