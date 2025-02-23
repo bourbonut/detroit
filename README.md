@@ -7,8 +7,8 @@
     <a href='https://detroit.readthedocs.io/en/latest/?badge=latest'>
         <img src='https://readthedocs.org/projects/detroit/badge/?version=latest' alt='Documentation Status' />
     </a>
-    <a href="https://img.shields.io/badge/license-MIT-red.svg?style=flat">
-        <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="BSD-3-Clause">
+    <a href="https://opensource.org/licenses/ISC">
+        <img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="BSD-3-Clause">
     </a>
 </p>
 
