@@ -11,10 +11,8 @@ dependencies = [
   "lxml",
 ]
 classifiers = [
-  "License :: OSI Approved :: BSD License",
-  "Programming Language :: JavaScript",
+  "License :: OSI Approved :: ISC License (ISCL)",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -26,6 +24,3 @@ license = {file = "LICENSE"}
 Homepage="https://github.com/bourbonut/detroit"
 Repository="https://github.com/bourbonut/detroit"
 Documentation="https://detroit.readthedocs.io/en/latest/"
-
-[project.optional-dependencies]
-jupyter = ["notebook", "nest_asyncio"]
