@@ -1,8 +1,6 @@
 import math
 from datetime import datetime
-
 import pytest
-
 import detroit as d3
 
 
@@ -12,11 +10,11 @@ def round_epsilon(x):
 
 def test_pow_1():
     s = d3.scale_pow()
-    assert s.domain == [0, 1]
-    assert s.range == [0, 1]
-    assert s.clamp is False
-    assert s.exponent == 1
-    assert s.interpolate({"array": ["red"]}, {"array": ["blue"]})(0.5) == {
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [0, 1]
+    assert s.get_clamp() is False
+    assert s.get_exponent() == 1
+    assert s.get_interpolate()({"array": ["red"]}, {"array": ["blue"]})(0.5) == {
         "array": ["rgb(128, 0, 128)"]
     }
 
@@ -66,7 +64,7 @@ def test_pow_5():
 
 def test_pow_6():
     s = d3.scale_pow().set_domain([1, 2])
-    assert s.domain == [1, 2]
+    assert s.get_domain() == [1, 2]
     assert s(0.5) == -0.5
     assert s(1.0) == 0.0
     assert s(1.5) == 0.5
@@ -81,7 +79,7 @@ def test_pow_6():
 
 def test_pow_7():
     s = d3.scale_pow().set_domain([-10, 0, 100]).set_range(["red", "white", "green"])
-    assert s.domain == [-10, 0, 100]
+    assert s.get_domain() == [-10, 0, 100]
     assert s(-5) == "rgb(255, 128, 128)"
     assert s(50) == "rgb(128, 192, 128)"
     assert s(75) == "rgb(64, 160, 64)"
@@ -127,66 +125,66 @@ def test_pow_12():
     assert math.isclose(x(1), 0, rel_tol=1e-6)
     assert math.isclose(x(1.5), 0.5425821, rel_tol=1e-6)
     assert math.isclose(x(2), 1, rel_tol=1e-6)
-    assert x.exponent == 0.5
+    assert x.get_exponent() == 0.5
     x.set_exponent(2).set_domain([1, 2])
     assert math.isclose(x(1), 0, rel_tol=1e-6)
     assert math.isclose(x(1.5), 0.41666667, rel_tol=1e-6)
     assert math.isclose(x(2), 1, rel_tol=1e-6)
-    assert x.exponent == 2
+    assert x.get_exponent() == 2
     x.set_exponent(-1).set_domain([1, 2])
     assert math.isclose(x(1), 0, rel_tol=1e-6)
     assert math.isclose(x(1.5), 0.6666667, rel_tol=1e-6)
     assert math.isclose(x(2), 1, rel_tol=1e-6)
-    assert x.exponent == -1
+    assert x.get_exponent() == -1
 
 
 def test_pow_13():
     x = d3.scale_pow().set_domain([1, 2]).set_range([3, 4])
     x.set_exponent(0.5)
-    assert x.domain == [1, 2]
-    assert x.range == [3, 4]
+    assert x.get_domain() == [1, 2]
+    assert x.get_range() == [3, 4]
     x.set_exponent(2)
-    assert x.domain == [1, 2]
-    assert x.range == [3, 4]
+    assert x.get_domain() == [1, 2]
+    assert x.get_range() == [3, 4]
     x.set_exponent(-1)
-    assert x.domain == [1, 2]
-    assert x.range == [3, 4]
+    assert x.get_domain() == [1, 2]
+    assert x.get_range() == [3, 4]
 
 
 def test_pow_14():
-    assert d3.scale_pow().set_domain([]).domain == []
-    assert d3.scale_pow().set_domain([1, 0]).domain == [1, 0]
-    assert d3.scale_pow().set_domain([1, 2, 3]).domain == [1, 2, 3]
+    assert d3.scale_pow().set_domain([]).get_domain() == []
+    assert d3.scale_pow().set_domain([1, 0]).get_domain() == [1, 0]
+    assert d3.scale_pow().set_domain([1, 2, 3]).get_domain() == [1, 2, 3]
 
 
 def test_pow_15():
     assert d3.scale_pow().set_domain(
         [datetime(1990, 1, 1), datetime(1991, 1, 1)]
-    ).domain == [datetime(1990, 1, 1), datetime(1991, 1, 1)]
-    assert d3.scale_pow().set_domain(["0.0", "1.0"]).domain == [0, 1]
-    assert d3.scale_pow().set_domain([0, 1]).domain == [0, 1]
+    ).get_domain() == [datetime(1990, 1, 1), datetime(1991, 1, 1)]
+    assert d3.scale_pow().set_domain(["0.0", "1.0"]).get_domain() == [0, 1]
+    assert d3.scale_pow().set_domain([0, 1]).get_domain() == [0, 1]
 
 
 def test_pow_16():
     d = [1, 2]
     s = d3.scale_pow().set_domain(d)
-    assert s.domain == [1, 2]
+    assert s.get_domain() == [1, 2]
     d.append(3)
-    assert s.domain == [1, 2]
+    assert s.get_domain() == [1, 2]
     assert d == [1, 2, 3]
 
 
 def test_pow_17():
     s = d3.scale_pow()
-    d = s.domain
+    d = s.get_domain()
     assert d == [0, 1]
     d.append(3)
-    assert s.domain == [0, 1]
+    assert s.get_domain() == [0, 1]
 
 
 def test_pow_18():
     s = d3.scale_pow().set_range(["0px", "2px"])
-    assert s.range == ["0px", "2px"]
+    assert s.get_range() == ["0px", "2px"]
     assert s(0.5) == "1px"
 
 
@@ -218,18 +216,18 @@ def test_pow_20():
 def test_pow_21():
     r = [1, 2]
     s = d3.scale_pow().set_range(r)
-    assert s.range == [1, 2]
+    assert s.get_range() == [1, 2]
     r.append(3)
-    assert s.range == [1, 2]
+    assert s.get_range() == [1, 2]
     assert r == [1, 2, 3]
 
 
 def test_pow_22():
     s = d3.scale_pow()
-    r = s.range
+    r = s.get_range()
     assert r == [0, 1]
     r.append(3)
-    assert s.range == [0, 1]
+    assert s.get_range() == [0, 1]
 
 
 def test_pow_23():
@@ -237,7 +235,7 @@ def test_pow_23():
 
 
 def test_pow_24():
-    assert d3.scale_pow().clamp is False
+    assert d3.scale_pow().get_clamp() is False
     assert d3.scale_pow().set_range([10, 20])(2) == 30
     assert d3.scale_pow().set_range([10, 20])(-1) == 0
     assert d3.scale_pow().set_range([10, 20]).invert(30) == 2
@@ -255,10 +253,10 @@ def test_pow_26():
 
 
 def test_pow_27():
-    assert d3.scale_pow().set_clamp("True").clamp is True
-    assert d3.scale_pow().set_clamp(1).clamp is True
-    assert d3.scale_pow().set_clamp("").clamp is False
-    assert d3.scale_pow().set_clamp(0).clamp is False
+    assert d3.scale_pow().set_clamp("True").get_clamp() is True
+    assert d3.scale_pow().set_clamp(1).get_clamp() is True
+    assert d3.scale_pow().set_clamp("").get_clamp() is False
+    assert d3.scale_pow().set_clamp(0).get_clamp() is False
 
 
 def test_pow_28():
@@ -274,43 +272,43 @@ def test_pow_28():
         .set_range(["a", "b"])
         .set_interpolate(interpolate)
     )
-    assert s.interpolate == interpolate
+    assert s.get_interpolate() == interpolate
     assert s(15) == ["a", "b", 0.5]
 
 
 def test_pow_29():
-    assert d3.scale_pow().set_domain([0, 0.96]).nice().domain == [0, 1]
-    assert d3.scale_pow().set_domain([0, 96]).nice().domain == [0, 100]
+    assert d3.scale_pow().set_domain([0, 0.96]).nice().get_domain() == [0, 1]
+    assert d3.scale_pow().set_domain([0, 96]).nice().get_domain() == [0, 100]
 
 
 def test_pow_30():
-    assert d3.scale_pow().set_domain([0, 0.96]).nice(10).domain == [0, 1]
-    assert d3.scale_pow().set_domain([0, 96]).nice(10).domain == [0, 100]
-    assert d3.scale_pow().set_domain([0.96, 0]).nice(10).domain == [1, 0]
-    assert d3.scale_pow().set_domain([96, 0]).nice(10).domain == [100, 0]
-    assert d3.scale_pow().set_domain([0, -0.96]).nice(10).domain == [0, -1]
-    assert d3.scale_pow().set_domain([0, -96]).nice(10).domain == [0, -100]
-    assert d3.scale_pow().set_domain([-0.96, 0]).nice(10).domain == [-1, 0]
-    assert d3.scale_pow().set_domain([-96, 0]).nice(10).domain == [-100, 0]
+    assert d3.scale_pow().set_domain([0, 0.96]).nice(10).get_domain() == [0, 1]
+    assert d3.scale_pow().set_domain([0, 96]).nice(10).get_domain() == [0, 100]
+    assert d3.scale_pow().set_domain([0.96, 0]).nice(10).get_domain() == [1, 0]
+    assert d3.scale_pow().set_domain([96, 0]).nice(10).get_domain() == [100, 0]
+    assert d3.scale_pow().set_domain([0, -0.96]).nice(10).get_domain() == [0, -1]
+    assert d3.scale_pow().set_domain([0, -96]).nice(10).get_domain() == [0, -100]
+    assert d3.scale_pow().set_domain([-0.96, 0]).nice(10).get_domain() == [-1, 0]
+    assert d3.scale_pow().set_domain([-96, 0]).nice(10).get_domain() == [-100, 0]
 
 
 def test_pow_31():
-    assert d3.scale_pow().set_domain([1.1, 10.9]).nice(10).domain == [1, 11]
-    assert d3.scale_pow().set_domain([10.9, 1.1]).nice(10).domain == [11, 1]
-    assert d3.scale_pow().set_domain([0.7, 11.001]).nice(10).domain == [0, 12]
-    assert d3.scale_pow().set_domain([123.1, 6.7]).nice(10).domain == [130, 0]
-    assert d3.scale_pow().set_domain([0, 0.49]).nice(10).domain == [0, 0.5]
+    assert d3.scale_pow().set_domain([1.1, 10.9]).nice(10).get_domain() == [1, 11]
+    assert d3.scale_pow().set_domain([10.9, 1.1]).nice(10).get_domain() == [11, 1]
+    assert d3.scale_pow().set_domain([0.7, 11.001]).nice(10).get_domain() == [0, 12]
+    assert d3.scale_pow().set_domain([123.1, 6.7]).nice(10).get_domain() == [130, 0]
+    assert d3.scale_pow().set_domain([0, 0.49]).nice(10).get_domain() == [0, 0.5]
 
 
 def test_pow_32():
-    assert d3.scale_pow().set_domain([1.1, 1, 2, 3, 10.9]).nice(10).domain == [
+    assert d3.scale_pow().set_domain([1.1, 1, 2, 3, 10.9]).nice(10).get_domain() == [
         1,
         1,
         2,
         3,
         11,
     ]
-    assert d3.scale_pow().set_domain([123.1, 1, 2, 3, -0.9]).nice(10).domain == [
+    assert d3.scale_pow().set_domain([123.1, 1, 2, 3, -0.9]).nice(10).get_domain() == [
         130,
         1,
         2,
@@ -320,9 +318,9 @@ def test_pow_32():
 
 
 def test_pow_33():
-    assert d3.scale_pow().set_domain([12, 87]).nice(5).domain == [0, 100]
-    assert d3.scale_pow().set_domain([12, 87]).nice(10).domain == [10, 90]
-    assert d3.scale_pow().set_domain([12, 87]).nice(100).domain == [12, 87]
+    assert d3.scale_pow().set_domain([12, 87]).nice(5).get_domain() == [0, 100]
+    assert d3.scale_pow().set_domain([12, 87]).nice(10).get_domain() == [10, 90]
+    assert d3.scale_pow().set_domain([12, 87]).nice(100).get_domain() == [12, 87]
 
 
 def test_pow_34():
@@ -546,18 +544,18 @@ def test_pow_44():
     x = d3.scale_pow()
     y = x.copy()
     x.set_domain([1, 2])
-    assert y.domain == [0, 1]
+    assert y.get_domain() == [0, 1]
     assert x(1) == 0
     assert y(1) == 1
     y.set_domain([2, 3])
     assert x(2) == 1
     assert y(2) == 0
-    assert x.domain == [1, 2]
-    assert y.domain == [2, 3]
+    assert x.get_domain() == [1, 2]
+    assert y.get_domain() == [2, 3]
     y2 = x.set_domain([1, 1.9]).copy()
     x.nice(5)
-    assert x.domain == [1, 2]
-    assert y2.domain == [1, 1.9]
+    assert x.get_domain() == [1, 2]
+    assert y2.get_domain() == [1, 1.9]
 
 
 def test_pow_45():
@@ -566,18 +564,18 @@ def test_pow_45():
     x.set_range([1, 2])
     assert x.invert(1) == 0
     assert y.invert(1) == 1
-    assert y.range == [0, 1]
+    assert y.get_range() == [0, 1]
     y.set_range([2, 3])
     assert x.invert(2) == 1
     assert y.invert(2) == 0
-    assert x.range == [1, 2]
-    assert y.range == [2, 3]
+    assert x.get_range() == [1, 2]
+    assert y.get_range() == [2, 3]
 
 
 def test_pow_46():
     x = d3.scale_pow().set_range(["red", "blue"])
     y = x.copy()
-    i0 = x.interpolate
+    i0 = x.get_interpolate()
 
     def i1(a, b):
         def f(*args):
@@ -586,7 +584,7 @@ def test_pow_46():
         return f
 
     x.set_interpolate(i1)
-    assert y.interpolate == i0
+    assert y.get_interpolate() == i0
     assert x(0.5) == "blue"
     assert y(0.5) == "rgb(128, 0, 128)"
 
@@ -597,11 +595,11 @@ def test_pow_47():
     x.set_clamp(False)
     assert x(2) == 2
     assert y(2) == 1
-    assert y.clamp is True
+    assert y.get_clamp() is True
     y.set_clamp(False)
     assert x(2) == 2
     assert y(2) == 2
-    assert x.clamp is False
+    assert x.get_clamp() is False
 
 
 def test_pow_48():
@@ -612,6 +610,6 @@ def test_pow_48():
 
 def test_pow_49():
     s = d3.scale_sqrt()
-    assert s.exponent == 0.5
+    assert s.get_exponent() == 0.5
     assert math.isclose(s(0.5), math.sqrt(0.5), rel_tol=1e-6)
     assert math.isclose(s.invert(math.sqrt(0.5)), 0.5, rel_tol=1e-6)

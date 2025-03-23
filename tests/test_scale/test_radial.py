@@ -1,29 +1,27 @@
 import math
-
 import pytest
-
 import detroit as d3
 
 
 def test_radial_1():
     s = d3.scale_radial()
-    assert s.domain == [0, 1]
-    assert s.range == [0, 1]
-    assert s.clamp is False
-    assert s.round is False
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [0, 1]
+    assert s.get_clamp() is False
+    assert s.get_round() is False
 
 
 def test_radial_2():
     s = d3.scale_radial([100, 200])
-    assert s.domain == [0, 1]
-    assert s.range == [100, 200]
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [100, 200]
     assert s(0.5) == 158.11388300841898
 
 
 def test_radial_3():
     s = d3.scale_radial([1, 2], [10, 20])
-    assert s.domain == [1, 2]
-    assert s.range == [10, 20]
+    assert s.get_domain() == [1, 2]
+    assert s.get_range() == [10, 20]
     assert s(1.5) == 15.811388300841896
 
 
@@ -70,7 +68,7 @@ def test_radial_7():
 
 def test_radial_8():
     s = d3.scale_radial().set_domain([1, 2])
-    assert s.domain == [1, 2]
+    assert s.get_domain() == [1, 2]
     assert s(0.5) == -0.7071067811865476
     assert s(1.0) == 0.0
     assert s(1.5) == 0.7071067811865476

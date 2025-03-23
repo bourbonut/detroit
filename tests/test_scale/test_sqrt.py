@@ -1,15 +1,14 @@
 import math
-
 import detroit as d3
 
 
 def test_sqrt_1():
     s = d3.scale_sqrt()
-    assert s.domain == [0, 1]
-    assert s.range == [0, 1]
-    assert s.clamp is False
-    assert s.exponent == 0.5
-    assert s.interpolate({"array": ["red"]}, {"array": ["blue"]})(0.5) == {
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [0, 1]
+    assert s.get_clamp() is False
+    assert s.get_exponent() == 0.5
+    assert s.get_interpolate()({"array": ["red"]}, {"array": ["blue"]})(0.5) == {
         "array": ["rgb(128, 0, 128)"]
     }
 

@@ -5,8 +5,8 @@ import detroit as d3
 
 def test_threshold_1():
     x = d3.scale_threshold()
-    assert x.domain == [0.5]
-    assert x.range == [0, 1]
+    assert x.get_domain() == [0.5]
+    assert x.get_range() == [0, 1]
     assert x(0.50) == 1
     assert x(0.49) == 0
 
@@ -31,8 +31,8 @@ def test_threshold_3():
 
 def test_threshold_4():
     x = d3.scale_threshold().set_domain(["10", "2"]).set_range([0, 1, 2])
-    assert x.domain[0] == "10"
-    assert x.domain[1] == "2"
+    assert x.get_domain()[0] == "10"
+    assert x.get_domain()[1] == "2"
     assert x("0") == 0
     assert x("12") == 1
     assert x("3") == 2
@@ -40,7 +40,7 @@ def test_threshold_4():
 
 def test_threshold_5():
     x = d3.scale_threshold().set_domain({"10", "2"}).set_range([0, 1, 2])
-    assert sorted(x.domain) == sorted(["10", "2"])
+    assert sorted(x.get_domain()) == sorted(["10", "2"])
 
 
 def test_threshold_6():
@@ -58,7 +58,7 @@ def test_threshold_6():
 
 def test_threshold_7():
     x = d3.scale_threshold().set_domain(["10", "2"]).set_range({0, 1, 2})
-    assert x.range == [0, 1, 2]
+    assert x.get_range() == [0, 1, 2]
 
 
 def test_threshold_8():

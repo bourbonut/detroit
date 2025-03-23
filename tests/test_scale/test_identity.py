@@ -8,14 +8,14 @@ import detroit as d3
 
 def test_identity_1():
     s = d3.scale_identity()
-    assert s.domain == [0, 1]
-    assert s.range == [0, 1]
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [0, 1]
 
 
 def test_identity_2():
     s = d3.scale_identity([1, 2])
-    assert s.domain == [1, 2]
-    assert s.range == [1, 2]
+    assert s.get_domain() == [1, 2]
+    assert s.get_range() == [1, 2]
 
 
 def test_identity_3():
@@ -65,67 +65,67 @@ def test_identity_8():
 
 def test_identity_9():
     s = d3.scale_identity()
-    assert s.domain == s.range
+    assert s.get_domain() == s.get_range()
     s.set_domain([-10, 0, 100])
-    assert s.range == [-10, 0, 100]
+    assert s.get_range() == [-10, 0, 100]
     s.set_range([-10, 0, 100])
-    assert s.domain == [-10, 0, 100]
+    assert s.get_domain() == [-10, 0, 100]
 
 
 def test_identity_10():
     s = d3.scale_identity()
-    assert s.domain == [0, 1]
-    assert s.range == [0, 1]
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [0, 1]
     assert s(0.5) == 0.5
 
 
 def test_identity_11():
     s = d3.scale_identity().set_domain([datetime(1990, 1, 1), datetime(1991, 1, 1)])
-    assert isinstance(s.domain[0], datetime)
-    assert isinstance(s.domain[1], datetime)
-    assert s.domain[0] == datetime(1990, 1, 1)
-    assert s.domain[1] == datetime(1991, 1, 1)
+    assert isinstance(s.get_domain()[0], datetime)
+    assert isinstance(s.get_domain()[1], datetime)
+    assert s.get_domain()[0] == datetime(1990, 1, 1)
+    assert s.get_domain()[1] == datetime(1991, 1, 1)
     assert isinstance(s(datetime(1989, 10, 20)), datetime)
     assert s(datetime(1989, 10, 20)) == datetime(1989, 10, 20)
     s.set_domain(["0", "1"])
-    assert isinstance(s.domain[0], str)
-    assert isinstance(s.domain[1], str)
+    assert isinstance(s.get_domain()[0], str)
+    assert isinstance(s.get_domain()[1], str)
     assert s(0.5) == 0.5
     s.set_domain([0, 1])
-    assert isinstance(s.domain[0], int)
-    assert isinstance(s.domain[1], int)
+    assert isinstance(s.get_domain()[0], int)
+    assert isinstance(s.get_domain()[1], int)
     assert s(0.5) == 0.5
     s.set_range([datetime(1990, 1, 1), datetime(1991, 1, 1)])
-    assert isinstance(s.range[0], datetime)
-    assert isinstance(s.range[1], datetime)
-    assert s.range[0] == datetime(1990, 1, 1)
-    assert s.range[1] == datetime(1991, 1, 1)
+    assert isinstance(s.get_range()[0], datetime)
+    assert isinstance(s.get_range()[1], datetime)
+    assert s.get_range()[0] == datetime(1990, 1, 1)
+    assert s.get_range()[1] == datetime(1991, 1, 1)
     assert isinstance(s(datetime(1989, 10, 20)), datetime)
     assert s(datetime(1989, 10, 20)) == datetime(1989, 10, 20)
     s.set_range(["0", "1"])
-    assert isinstance(s.range[0], str)
-    assert isinstance(s.range[1], str)
+    assert isinstance(s.get_range()[0], str)
+    assert isinstance(s.get_range()[1], str)
     assert s(0.5) == 0.5
     s.set_range([0, 1])
-    assert isinstance(s.range[0], int)
-    assert isinstance(s.range[1], int)
+    assert isinstance(s.get_range()[0], int)
+    assert isinstance(s.get_range()[1], int)
     assert s(0.5) == 0.5
 
 
 def test_identity_12():
     s = d3.scale_identity().set_domain({1, 2})
-    assert s.domain == [1, 2]
-    assert s.range == [1, 2]
+    assert s.get_domain() == [1, 2]
+    assert s.get_range() == [1, 2]
 
 
 def test_identity_13():
     s = d3.scale_identity().set_domain([-10, 0, 100])
-    assert s.domain == [-10, 0, 100]
+    assert s.get_domain() == [-10, 0, 100]
     assert s(-5) == -5
     assert s(50) == 50
     assert s(75) == 75
     s.set_range([-10, 0, 100])
-    assert s.range == [-10, 0, 100]
+    assert s.get_range() == [-10, 0, 100]
     assert s(-5) == -5
     assert s(50) == 50
     assert s(75) == 75
@@ -205,13 +205,13 @@ def test_identity_17():
     s2 = s1.copy()
     s3 = s1.copy()
     s1.set_domain([1, 2])
-    assert s2.domain == [0, 1]
+    assert s2.get_domain() == [0, 1]
     s2.set_domain([2, 3])
-    assert s1.domain == [1, 2]
-    assert s2.domain == [2, 3]
+    assert s1.get_domain() == [1, 2]
+    assert s2.get_domain() == [2, 3]
     s4 = s3.copy()
     s3.set_range([1, 2])
-    assert s4.range == [0, 1]
+    assert s4.get_range() == [0, 1]
     s4.set_range([2, 3])
-    assert s3.range == [1, 2]
-    assert s4.range == [2, 3]
+    assert s3.get_range() == [1, 2]
+    assert s4.get_range() == [2, 3]

@@ -1,20 +1,18 @@
 import math
 from datetime import datetime
 from functools import partial
-
 import pytest
-
 import detroit as d3
 
 
 def test_log_1():
     x = d3.scale_log()
-    assert x.domain == [1, 10]
-    assert x.range == [0, 1]
-    assert x.clamp is False
-    assert x.base == 10
-    assert x.interpolate == d3.interpolate
-    assert x.interpolate({"array": ["red"]}, {"array": ["blue"]})(0.5), {
+    assert x.get_domain() == [1, 10]
+    assert x.get_range() == [0, 1]
+    assert x.get_clamp() is False
+    assert x.get_base() == 10
+    assert x.get_interpolate() == d3.interpolate
+    assert x.get_interpolate()({"array": ["red"]}, {"array": ["blue"]})(0.5), {
         "array": ["rgb(128, 0, 128)"]
     }
     assert math.isclose(x(5), 0.69897, rel_tol=1e-6)
@@ -25,8 +23,8 @@ def test_log_1():
 
 def test_log_2():
     x = d3.scale_log().set_domain([datetime(1990, 1, 1), datetime(1991, 1, 1)])
-    assert isinstance(x.domain[0], datetime)
-    assert isinstance(x.domain[1], datetime)
+    assert isinstance(x.get_domain()[0], datetime)
+    assert isinstance(x.get_domain()[1], datetime)
     assert math.isclose(x(datetime(1989, 10, 20)), -0.2061048, rel_tol=1e-3)
     assert math.isclose(x(datetime(1990, 1, 1)), 0.0000000, rel_tol=1e-3)
     assert math.isclose(x(datetime(1990, 3, 15)), 0.2039385, rel_tol=1e-3)
@@ -34,12 +32,12 @@ def test_log_2():
     assert math.isclose(x(datetime(1991, 1, 1)), 1.0000000, rel_tol=1e-3)
     assert math.isclose(x(datetime(1991, 3, 15)), 1.1942797, rel_tol=1e-3)
     x.set_domain(["1", "10"])
-    assert isinstance(x.domain[0], float)
-    assert isinstance(x.domain[1], float)
+    assert isinstance(x.get_domain()[0], float)
+    assert isinstance(x.get_domain()[1], float)
     assert math.isclose(x(5), 0.69897, rel_tol=1e-3)
     x.set_domain([1, 10])
-    assert isinstance(x.domain[0], int)
-    assert isinstance(x.domain[1], int)
+    assert isinstance(x.get_domain()[0], int)
+    assert isinstance(x.get_domain()[1], int)
     assert math.isclose(x(5), 0.69897, rel_tol=1e-3)
 
 
@@ -78,7 +76,7 @@ def test_log_4():
 
 def test_log_5():
     x = d3.scale_log().set_domain([0.1, 1000])
-    assert x.domain == [0.1, 1000]
+    assert x.get_domain() == [0.1, 1000]
 
 
 def test_log_6():
@@ -102,8 +100,8 @@ def test_log_6():
 
 def test_log_7():
     x = d3.scale_log().set_range(["0", "2"])
-    assert isinstance(x.range[0], str)
-    assert isinstance(x.range[1], str)
+    assert isinstance(x.get_range()[0], str)
+    assert isinstance(x.get_range()[1], str)
 
 
 def test_log_8():
@@ -128,7 +126,7 @@ def test_log_9():
 
 def test_log_10():
     x = d3.scale_log().set_range(["red", "blue"])
-    assert x.interpolate == d3.interpolate
+    assert x.get_interpolate() == d3.interpolate
     assert x(5) == "rgb(77, 0, 178)"
     x.set_interpolate(d3.interpolate_hsl)
     assert x(5) == "rgb(154, 0, 255)"
@@ -136,7 +134,7 @@ def test_log_10():
 
 def test_log_11():
     x = d3.scale_log()
-    assert x.clamp is False
+    assert x.get_clamp() is False
     assert math.isclose(x(0.5), -0.3010299, rel_tol=1e-6)
     assert math.isclose(x(15), 1.1760913, rel_tol=1e-6)
 
@@ -211,58 +209,58 @@ def test_log_17():
 
 def test_log_18():
     x = d3.scale_log().set_domain([1.1, 10.9]).nice()
-    assert x.domain == [1, 100]
+    assert x.get_domain() == [1, 100]
     x.set_domain([10.9, 1.1]).nice()
-    assert x.domain == [100, 1]
+    assert x.get_domain() == [100, 1]
     x.set_domain([0.7, 11.001]).nice()
-    assert x.domain == [0.1, 100]
+    assert x.get_domain() == [0.1, 100]
     x.set_domain([123.1, 6.7]).nice()
-    assert x.domain == [1000, 1]
+    assert x.get_domain() == [1000, 1]
     x.set_domain([0.01, 0.49]).nice()
-    assert x.domain == [0.01, 1]
+    assert x.get_domain() == [0.01, 1]
     x.set_domain([1.5, 50]).nice()
-    assert x.domain == [1, 100]
+    assert x.get_domain() == [1, 100]
     assert x(1) == 0
     assert x(100) == 1
 
 
 def test_log_19():
     x = d3.scale_log().set_domain([0, 0]).nice()
-    assert x.domain == [0, 0]
+    assert x.get_domain() == [0, 0]
     x.set_domain([0.5, 0.5]).nice()
-    assert x.domain == [0.1, 1]
+    assert x.get_domain() == [0.1, 1]
 
 
 def test_log_20():
     x = d3.scale_log().set_domain([1.1, 1.5, 10.9]).nice()
-    assert x.domain == [1, 1.5, 100]
+    assert x.get_domain() == [1, 1.5, 100]
     x.set_domain([-123.1, -1.5, -0.5]).nice()
-    assert x.domain == [-1000, -1.5, -0.1]
+    assert x.get_domain() == [-1000, -1.5, -0.1]
 
 
 def test_log_21():
     x = d3.scale_log()
     y = x.copy()
     x.set_domain([10, 100])
-    assert y.domain == [1, 10]
+    assert y.get_domain() == [1, 10]
     assert x(10) == 0
     assert y(1) == 0
     y.set_domain([100, 1000])
     assert x(100) == 1
     assert y(100) == 0
-    assert x.domain == [10, 100]
-    assert y.domain == [100, 1000]
+    assert x.get_domain() == [10, 100]
+    assert y.get_domain() == [100, 1000]
 
 
 def test_log_22():
     x = d3.scale_log().set_domain([1.5, 50])
     y = x.copy().nice()
-    assert x.domain == [1.5, 50]
+    assert x.get_domain() == [1.5, 50]
     assert x(1.5) == 0
     assert x(50) == 1
     assert x.invert(0) == 1.5
     assert math.isclose(x.invert(1), 50, rel_tol=1e-6)
-    assert y.domain == [1, 100]
+    assert y.get_domain() == [1, 100]
     assert y(1) == 0
     assert y(100) == 1
     assert y.invert(0) == 1
@@ -275,12 +273,12 @@ def test_log_23():
     x.set_range([1, 2])
     assert x.invert(1) == 1
     assert math.isclose(y.invert(1), 10, rel_tol=1e-6)
-    assert y.range == [0, 1]
+    assert y.get_range() == [0, 1]
     y.set_range([2, 3])
     assert math.isclose(x.invert(2), 10, rel_tol=1e-6)
     assert y.invert(2) == 1
-    assert x.range == [1, 2]
-    assert y.range == [2, 3]
+    assert x.get_range() == [1, 2]
+    assert y.get_range() == [2, 3]
 
 
 def test_log_24():
@@ -289,7 +287,7 @@ def test_log_24():
     x.set_interpolate(d3.interpolate_hsl)
     assert x(5) == "rgb(154, 0, 255)"
     assert y(5) == "rgb(77, 0, 178)"
-    assert y.interpolate == d3.interpolate
+    assert y.get_interpolate() == d3.interpolate
 
 
 def test_log_25():
@@ -298,11 +296,11 @@ def test_log_25():
     x.set_clamp(False)
     assert math.isclose(x(0.5), -0.30103, rel_tol=1e-6)
     assert y(0.5) == 0
-    assert y.clamp is True
+    assert y.get_clamp() is True
     y.set_clamp(False)
     assert math.isclose(x(20), 1.30103, rel_tol=1e-6)
     assert math.isclose(y(20), 1.30103, rel_tol=1e-6)
-    assert x.clamp is False
+    assert x.get_clamp() is False
 
 
 def test_log_26():

@@ -5,9 +5,9 @@ import detroit as d3
 
 def test_quantile_1():
     s = d3.scale_quantile()
-    assert s.domain == []
-    assert s.range == []
-    assert s.unknown is None
+    assert s.get_domain() == []
+    assert s.get_range() == []
+    assert s.get_unknown() is None
 
 
 def test_quantile_2():
@@ -38,29 +38,29 @@ def test_quantile_3():
 
 def test_quantile_4():
     s = d3.scale_quantile().set_domain([6, 3, 7, 8, 8, 13, 20, 15, 16, 10])
-    assert s.domain == [3, 6, 7, 8, 8, 10, 13, 15, 16, 20]
+    assert s.get_domain() == [3, 6, 7, 8, 8, 10, 13, 15, 16, 20]
 
 
 def test_quantile_5():
     s = d3.scale_quantile().set_domain(["6", "13", "20"])
-    assert s.domain == [6, 13, 20]
+    assert s.get_domain() == [6, 13, 20]
 
 
 def test_quantile_6():
     s = d3.scale_quantile().set_domain({6, 13, 20})
-    assert s.domain == [6, 13, 20]
+    assert s.get_domain() == [6, 13, 20]
 
 
 def test_quantile_7():
     s = d3.scale_quantile().set_domain([1, 2, 0, 0, None])
-    assert s.domain == [0, 0, 1, 2]
+    assert s.get_domain() == [0, 0, 1, 2]
 
 
 def test_quantile_8():
     s = d3.scale_quantile().set_domain(
         [6, 3, math.nan, None, 7, 8, 8, 13, None, 20, 15, 16, 10, math.nan]
     )
-    assert s.domain == [3, 6, 7, 8, 8, 10, 13, 15, 16, 20]
+    assert s.get_domain() == [3, 6, 7, 8, 8, 10, 13, 15, 16, 20]
 
 
 def test_quantile_9():
@@ -69,15 +69,15 @@ def test_quantile_9():
         .set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20])
         .set_range([0, 1, 2, 3])
     )
-    assert s.quantiles == [7.25, 9, 14.5]
+    assert s.get_quantiles() == [7.25, 9, 14.5]
     s.set_domain([3, 6, 7, 8, 8, 9, 10, 13, 15, 16, 20]).set_range([0, 1, 2, 3])
-    assert s.quantiles == [7.5, 9, 14]
+    assert s.get_quantiles() == [7.5, 9, 14]
 
 
 def test_quantile_10():
     s = d3.scale_quantile().set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20])
-    assert s.set_range([0, 1, 2, 3]).quantiles == [7.25, 9, 14.5]
-    assert s.set_range([0, 1]).quantiles == [9]
+    assert s.set_range([0, 1, 2, 3]).get_quantiles() == [7.25, 9, 14.5]
+    assert s.set_range([0, 1]).get_quantiles() == [9]
 
 
 def test_quantile_11():
@@ -86,7 +86,7 @@ def test_quantile_11():
         .set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20])
         .set_range({0, 1, 2, 3})
     )
-    assert s.range == [0, 1, 2, 3]
+    assert s.get_range() == [0, 1, 2, 3]
 
 
 def test_quantile_12():

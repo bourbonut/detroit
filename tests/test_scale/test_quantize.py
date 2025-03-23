@@ -12,16 +12,16 @@ def frange(start, end, step=1):
 
 def test_quantize_1():
     s = d3.scale_quantize()
-    assert s.domain == [0, 1]
-    assert s.range == [0, 1]
-    assert s.thresholds == [0.5]
+    assert s.get_domain() == [0, 1]
+    assert s.get_range() == [0, 1]
+    assert s.get_thresholds() == [0.5]
     assert s(0.25) == 0
     assert s(0.75) == 1
 
 
 def test_quantize_2():
     s = d3.scale_quantize().set_range([0, 1, 2])
-    assert s.thresholds == [1 / 3, 2 / 3]
+    assert s.get_thresholds() == [1 / 3, 2 / 3]
     assert s(0.0) == 0
     assert s(0.2) == 0
     assert s(0.4) == 1
@@ -48,7 +48,7 @@ def test_quantize_4():
 
 def test_quantize_5():
     s = d3.scale_quantize().set_domain(["-1.20", "2.40"])
-    assert s.domain == [-1.2, 2.4]
+    assert s.get_domain() == [-1.2, 2.4]
     assert s(-1.2) == 0
     assert s(0.5) == 0
     assert s(0.7) == 1
@@ -57,12 +57,12 @@ def test_quantize_5():
 
 def test_quantize_6():
     s = d3.scale_quantize().set_domain({1, 2})
-    assert s.domain == [1, 2]
+    assert s.get_domain() == [1, 2]
 
 
 def test_quantize_7():
     s = d3.scale_quantize().set_domain([-1, 100, 200])
-    assert s.domain == [-1, 100]
+    assert s.get_domain() == [-1, 100]
 
 
 def test_quantize_8():
@@ -137,7 +137,7 @@ def test_quantize_12():
 
 def test_quantize_13():
     s = d3.scale_quantize().set_domain([4.2, 6.2]).set_range(range(10))
-    for y in s.range:
+    for y in s.get_range():
         e = s.invert_extent(y)
         assert s(e[0]) == y
         assert s(e[1]) == (y + 1 if y < 9 else y)
