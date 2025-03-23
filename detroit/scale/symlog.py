@@ -47,12 +47,11 @@ class ScaleSymlog(Transformer, LinearBase):
         self.rescale()
         return self
 
-    @property
-    def constant(self):
+    def get_constant(self):
         return self._c
 
     def copy(self):
-        return copy(self, ScaleSymlog()).set_constant(self.constant)
+        return copy(self, ScaleSymlog()).set_constant(self.get_constant())
 
 
 @overload

@@ -83,12 +83,11 @@ class ScalePow(Transformer, LinearBase):
         self._exponent = float(exponent)
         return self._rescale()
 
-    @property
-    def exponent(self):
+    def get_exponent(self):
         return self._exponent
 
     def copy(self):
-        return copy(self, ScalePow()).set_exponent(self.exponent)
+        return copy(self, ScalePow()).set_exponent(self.get_exponent())
 
 
 @overload

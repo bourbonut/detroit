@@ -63,8 +63,7 @@ class ScaleBand(ScaleOrdinal):
         super().set_domain(domain)
         return self.rescale()
 
-    @property
-    def domain(self):
+    def get_domain(self):
         return self._domain.copy()
 
     def set_range(self, range_vals: list[int | float]) -> ScaleBand:
@@ -84,8 +83,7 @@ class ScaleBand(ScaleOrdinal):
         self._r0, self._r1 = map(float, range_vals)
         return self.rescale()
 
-    @property
-    def range(self) -> list[int | float]:
+    def get_range(self) -> list[int | float]:
         return [self._r0, self._r1]
 
     def set_range_round(self, range_vals: list[int | range]) -> ScaleBand:
@@ -107,12 +105,10 @@ class ScaleBand(ScaleOrdinal):
         self._round = True
         return self.rescale()
 
-    @property
-    def bandwidth(self):
+    def get_bandwidth(self):
         return self._bandwidth
 
-    @property
-    def step(self):
+    def get_step(self):
         return self._step
 
     def set_round(self, round_val: bool) -> ScaleBand:
@@ -132,8 +128,7 @@ class ScaleBand(ScaleOrdinal):
         self._round = bool(round_val)
         return self.rescale()
 
-    @property
-    def round(self):
+    def get_round(self):
         return self._round
 
     def set_padding(self, padding: int | float) -> ScaleBand:
@@ -155,8 +150,7 @@ class ScaleBand(ScaleOrdinal):
         self._padding_inner = min(1, self._padding_outer)
         return self.rescale()
 
-    @property
-    def padding(self):
+    def get_padding(self):
         return self._padding_inner
 
     def set_padding_inner(self, padding_inner: int | float) -> ScaleBand:
@@ -195,12 +189,10 @@ class ScaleBand(ScaleOrdinal):
         self._padding_outer = float(padding_outer)
         return self.rescale()
 
-    @property
-    def padding_inner(self):
+    def get_padding_inner(self):
         return self._padding_inner
 
-    @property
-    def padding_outer(self):
+    def get_padding_outer(self):
         return self._padding_outer
 
     def set_align(self, align: int | float) -> ScaleBand:
@@ -221,8 +213,7 @@ class ScaleBand(ScaleOrdinal):
         self._align = max(0, min(1, float(align)))
         return self.rescale()
 
-    @property
-    def align(self):
+    def get_align(self):
         return self._align
 
     def copy(self):

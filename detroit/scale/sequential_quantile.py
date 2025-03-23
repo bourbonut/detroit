@@ -31,7 +31,7 @@ class SequentialQuantile:
         """
         if x is not None and not (isinstance(x, float) and math.isnan(x)):
             return self._interpolator(
-                (bisect(self.domain, x, 1) - 1) / (len(self.domain) - 1)
+                (bisect(self.get_domain(), x, 1) - 1) / (len(self.get_domain()) - 1)
             )
 
     def set_domain(self, domain: list[int | float]) -> SequentialQuantile:
@@ -55,8 +55,7 @@ class SequentialQuantile:
         self._domain = sorted(self._domain)
         return self
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return self._domain.copy()
 
     def set_interpolator(self, interpolator: Callable) -> SequentialQuantile:
@@ -76,12 +75,10 @@ class SequentialQuantile:
         self._interpolator = interpolator
         return self
 
-    @property
-    def interpolator(self) -> Callable:
+    def get_interpolator(self) -> Callable:
         return self._interpolator
 
-    @property
-    def range(self) -> list[float]:
+    def get_range(self) -> list[float]:
         """
         Returns an array of interpolated values from domain values
         using interpolator function.
@@ -92,8 +89,8 @@ class SequentialQuantile:
             Interpolated values
         """
         return [
-            self._interpolator(i / (len(self.domain) - 1))
-            for i in range(len(self.domain))
+            self._interpolator(i / (len(self.get_domain()) - 1))
+            for i in range(len(self.get_domain()))
         ]
 
     def quantiles(self, n: int) -> list[float]:
@@ -111,13 +108,13 @@ class SequentialQuantile:
             Array of :math:`n + 1` quantiles
         """
         return (
-            [self.domain[0]]
-            + quantiles(self.domain, n=n, method="inclusive")
-            + [self.domain[-1]]
+            [self.get_domain()[0]]
+            + quantiles(self.get_domain(), n=n, method="inclusive")
+            + [self.get_domain()[-1]]
         )
 
     def copy(self):
-        return SequentialQuantile().set_domain(self.domain)
+        return SequentialQuantile().set_domain(self.get_domain())
 
 
 @overload

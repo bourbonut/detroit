@@ -62,8 +62,7 @@ class ScaleQuantize(LinearBase):
         self._x0, self._x1 = map(float, sorted(domain)[:2])
         return self.rescale()
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return [self._x0, self._x1]
 
     def set_range(self, range_vals: list[T]) -> ScaleQuantize:
@@ -84,8 +83,7 @@ class ScaleQuantize(LinearBase):
         self._n = len(self._range_vals) - 1
         return self.rescale()
 
-    @property
-    def range(self) -> list[T]:
+    def get_range(self) -> list[T]:
         return self._range_vals.copy()
 
     def invert_extent(self, y: T) -> int | float:
@@ -132,20 +130,18 @@ class ScaleQuantize(LinearBase):
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown
 
-    @property
-    def thresholds(self):
+    def get_thresholds(self):
         return self._domain.copy()
 
     def copy(self):
         return (
             ScaleQuantize()
-            .domain([self._x0, self._x1])
-            .range(self._range_vals)
-            .unknown(self._unknown)
+            .set_domain(self.get_domain())
+            .set_range(self.get_range())
+            .set_unknown(self.get_unknown())
         )
 
 

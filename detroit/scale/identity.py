@@ -67,8 +67,7 @@ class Identity(LinearBase):
         self._domain = list(domain)
         return self
 
-    @property
-    def domain(self):
+    def get_domain(self):
         return self._domain
 
     def set_range(self, range_vals: list[T]) -> Identity:
@@ -87,8 +86,7 @@ class Identity(LinearBase):
         """
         return self.set_domain(range_vals)
 
-    @property
-    def range(self):
+    def get_range(self):
         return self._domain
 
     def set_unknown(self, unknown: Any) -> Identity:
@@ -109,8 +107,7 @@ class Identity(LinearBase):
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self):
+    def get_unknown(self):
         return self._unknown
 
     def copy(self):

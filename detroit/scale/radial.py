@@ -103,8 +103,7 @@ class ScaleRadial(Transformer, LinearBase):
         super().set_range([square(x) for x in self._range_vals])
         return self
 
-    @property
-    def range(self):
+    def get_range(self):
         return self._range_vals.copy()
 
     def set_range_round(self, range_vals: list[int | float]) -> ScaleRadial:
@@ -141,18 +140,17 @@ class ScaleRadial(Transformer, LinearBase):
         self._round = bool(round_val)
         return self
 
-    @property
-    def round(self):
+    def get_round(self):
         return self._round
 
     def copy(self):
         return (
             ScaleRadial()
-            .set_domain(self.domain)
-            .set_range(self.range)
-            .set_round(self.round)
-            .set_clamp(self.clamp)
-            .set_unknown(self._unknown)
+            .set_domain(self.get_domain())
+            .set_range(self.get_range())
+            .set_round(self.get_round())
+            .set_clamp(self.get_clamp())
+            .set_unknown(self.get_unknown())
         )
 
 

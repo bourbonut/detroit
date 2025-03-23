@@ -99,8 +99,7 @@ class LogBase:
         self._base = float(base)
         return self._rescale()
 
-    @property
-    def base(self) -> int | float:
+    def get_base(self) -> int | float:
         return self._base
 
     def ticks(self, count: int | None = None) -> ScaleLog:
@@ -118,7 +117,7 @@ class LogBase:
         ScaleLog
             Itself
         """
-        d = self.domain
+        d = self.get_domain()
         u = d[0]
         v = d[-1]
         r = v < u
@@ -231,7 +230,7 @@ class LogBase:
                     return 0
                 return self._pows(math.ceil(self._logs(x)))
 
-        return self.set_domain(nice(self.domain, Interval))
+        return self.set_domain(nice(self.get_domain(), Interval))
 
 
 class ScaleLog(Transformer, LogBase):
@@ -242,7 +241,7 @@ class ScaleLog(Transformer, LogBase):
     def _rescale(self):
         self._logs = logp(self._base)
         self._pows = powp(self._base)
-        d = self.domain[0]
+        d = self.get_domain()[0]
         if isinstance(d, datetime):
             d = d.timestamp()
         if d < 0:
@@ -262,7 +261,7 @@ class ScaleLog(Transformer, LogBase):
         return self._rescale()
 
     def copy(self):
-        return copy(self, ScaleLog()).set_base(self.base)
+        return copy(self, ScaleLog()).set_base(self.get_base())
 
 
 @overload

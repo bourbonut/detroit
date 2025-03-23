@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from collections.abc import Callable
 from datetime import datetime
-from typing import TypeVar, overload
+from typing import overload, TypeVar
 
 from ..time import (
     time_day,
@@ -17,21 +15,14 @@ from ..time import (
 )
 from ..time_format import time_format
 from .continuous import Transformer, copy, identity
+from ..types import T, Formatter
+from .utils import as_float
 from .init import init_range
 from .nice import nice
 
-T = TypeVar("T")
+TScaleTime = TypeVar("TScaleTime", bound="ScaleTime")
 
-
-def number(t):
-    return (
-        t.timestamp()
-        if isinstance(t, datetime)
-        else datetime.fromtimestamp(t).timestamp()
-    )
-
-
-class Calendar(Transformer):
+class ScaleTime(Transformer[datetime]):
     """
     Time scales are a variant of linear scales that have a temporal domain:
     domain values are coerced to dates rather than numbers, and invert
@@ -94,7 +85,21 @@ class Calendar(Transformer):
         self._format_month = time_format("%B")
         self._format_year = time_format("%Y")
 
-    def _tick_format(self, date):
+    def _tick_format(self, date: datetime | None = None) -> Formatter[str]:
+        """
+        Private method which generates a formatter function given the "magnitude" of
+        the date input.
+
+        Parameters
+        ----------
+        date : datetime | None
+            Date input
+
+        Returns
+        -------
+        Formatter[str]
+            Formatter function which returns a string
+        """
         if self._second(date) < date:
             return self._format_millisecond(date)
         elif self._minute(date) < date:
@@ -126,12 +131,12 @@ class Calendar(Transformer):
 
         Returns
         -------
-        Datetime
+        datetime
             Corresponding value from the domain
         """
         return datetime.fromtimestamp(super().invert(y))
 
-    def ticks(self, count: int | None = None):
+    def ticks(self, count: int | None = None) -> list[datetime]:
         """
         Returns representative dates from the scale’s domain.
 
@@ -144,23 +149,22 @@ class Calendar(Transformer):
 
         Returns
         -------
-        list[int | float]
+        list[datetime]
             The returned tick values are uniformly-spaced (mostly),
             have sensible values (such as every day at midnight),
             and are guaranteed to be within the extent of the domain.
             Ticks are often used to display reference lines, or tick
             marks, in conjunction with the visualized data.
         """
-        d = self.domain
+        d = self.get_domain()
         return self._ticks(d[0], d[-1], count if count is not None else 10)
 
-    def tick_format(self, _: int = 0, specifier: str | None = None) -> Callable[[datetime], str]:
+    def tick_format(self, _: int = 0, specifier: str | None = None) -> Formatter[str]:
         """
-        Returns a number format function suitable for displaying
-        a tick value, automatically computing the appropriate
-        precision based on the fixed interval between tick values.
-        The specified count should have the same value as the count
-        that is used to generate the tick values.
+        Returns a formatter function suitable for displaying a tick value,
+        automatically computing the appropriate precision based on the fixed interval
+        between tick values. The specified count should have the same value as the
+        count that is used to generate the tick values.
 
         Parameters
         ----------
@@ -172,16 +176,15 @@ class Calendar(Transformer):
 
         Returns
         -------
-        Callable[[datetime], str]
-            Tick format function
+        Formatter[str]
+            Tick format function which returns a string
         """
         return self._tick_format if specifier is None else self._format(specifier)
 
-    def nice(self, interval: Callable | list[datetime] | None = None) -> Calendar:
+    def nice(self, interval: Callable | list[datetime] | None = None) -> TScaleTime:
         """
-        This method typically modifies the scale’s domain,
-        and may only extend the bounds to the nearest round
-        value.
+        This method typically modifies the scale’s domain, and may only extend the
+        bounds to the nearest round value.
 
         Parameters
         ----------
@@ -192,10 +195,10 @@ class Calendar(Transformer):
 
         Returns
         -------
-        Calendar
+        ScaleTime
             Itself
         """
-        d = self.domain
+        d = self.get_domain()
         if not interval or not hasattr(interval, "range"):
             interval = self._tick_interval(
                 d[0], d[-1], interval if interval is not None else 10
@@ -205,7 +208,7 @@ class Calendar(Transformer):
     def copy(self):
         return copy(
             self,
-            Calendar(
+            ScaleTime(
                 self._ticks,
                 self._tick_interval,
                 self._year,
@@ -220,18 +223,18 @@ class Calendar(Transformer):
 
 
 @overload
-def scale_time() -> Calendar: ...
+def scale_time() -> ScaleTime: ...
 
 
 @overload
-def scale_time(range_vals: list[T]) -> Calendar: ...
+def scale_time(range_vals: list[T]) -> ScaleTime: ...
 
 
 @overload
-def scale_time(domain: list[datetime], range_vals: list[T]) -> Calendar: ...
+def scale_time(domain: list[datetime], range_vals: list[T]) -> ScaleTime: ...
 
 
-def scale_time(*args) -> Calendar:
+def scale_time(*args) -> ScaleTime:
     """
     Builds a new time scale with the specified domain and range,
     the default interpolator and clamping disabled
@@ -246,7 +249,7 @@ def scale_time(*args) -> Calendar:
 
     Returns
     -------
-    Calendar
+    ScaleTime
         Scale object
 
     Examples
@@ -255,7 +258,7 @@ def scale_time(*args) -> Calendar:
     >>> from datetime import datetime
     >>> d3.scale_time([datetime(2000, 1, 1), datetime(2000, 1, 2)], [0, 960])
     """
-    calendar = Calendar(
+    scaler = ScaleTime(
         time_ticks,
         time_tick_interval,
         time_year,
@@ -267,8 +270,8 @@ def scale_time(*args) -> Calendar:
         time_second,
     ).set_domain([datetime(2000, 1, 1), datetime(2000, 1, 2)])
     if len(args) == 1:
-        return init_range(calendar, range_vals=args[0])
+        return init_range(scaler, range_vals=args[0])
     elif len(args) == 2:
         domain, range_vals = args
-        return init_range(calendar, domain=domain, range_vals=range_vals)
-    return init_range(calendar)
+        return init_range(scaler, domain=domain, range_vals=range_vals)
+    return init_range(scaler)

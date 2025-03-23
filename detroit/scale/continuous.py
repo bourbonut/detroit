@@ -1,6 +1,5 @@
-from __future__ import annotations
-
-import math
+from math import isnan, nan
+from dataclasses import dataclass
 from bisect import bisect
 from collections.abc import Callable
 from datetime import datetime
@@ -13,55 +12,83 @@ from ..interpolate import (
     interpolate_number,
     interpolate_round,
 )
-from .constant import constant
+from ..types import Number, GenValue, T
+from .utils import constant, identity, as_float
 from .number import number
 
-T = TypeVar("T")
+TTransformer = TypeVar("TTransformer", bound="Transformer")
 
 
-def identity(x):
-    return x
+def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
+    """
+    Makes a function which takes a generic value and returns the normalized value
+    based on :code:`a` and :code:`b` values. Normalization is done by applying the
+    following formula: :code:`(x - a) / (b - a)`.
 
+    Parameters
+    ----------
+    a : GenValue
+        Generic value
+    b : GenValue
+        Generic value
 
-def normalize(a, b):
-    if isinstance(a, datetime):
-        a = a.timestamp()
-    elif isinstance(a, str):
-        a = float(a)
-    if isinstance(b, datetime):
-        b = b.timestamp()
-    elif isinstance(b, str):
-        b = float(b)
+    Returns
+    -------
+    Callable[[T], float]
+        Normalization function based on :code:`a` and :code:`b` values
+    """
+    a = as_float(a)
+    b = as_float(b)
     b = b - a
-    if not math.isnan(b) and b:
 
-        def f(x):
-            if isinstance(x, datetime):
-                x = x.timestamp()
-            elif isinstance(x, str):
-                x = float(x)
-            return (x - a) / b
+    if isnan(b):
+        return constant(nan)
+    elif b == 0:
+        return constant(0.5)
 
-        return f
-    else:
-        return constant(math.nan if math.isnan(b) else 0.5)
+    def normalizer(x):
+        x = as_float(x)
+        return (x - a) / b
+
+    return normalizer
 
 
-def clamper(a, b):
-    a = a.timestamp() if isinstance(a, datetime) else a
-    b = b.timestamp() if isinstance(b, datetime) else b
+def clamper(a: GenValue, b: GenValue) -> Callable[[GenValue], float]:
+    """
+    Makes a function which clamps its input value borned by :code:`a` and :code:`b`
+    values.
+
+    Parameters
+    ----------
+    a : GenValue
+        Generic value
+    b : GenValue
+        Generic value
+
+    Returns
+    -------
+    Callable[[GenValue], float]
+        Clamp function based on :code:`a` and :code:`b` values
+    """
+    a = as_float(a)
+    b = as_float(b)
     if a > b:
         a, b = b, a
 
-    def f(x):
-        x = x.timestamp() if isinstance(x, datetime) else x
+    def clamp(x):
+        x = as_float(x)
         return max(a, min(b, x))
 
-    return f
+    return clamp
 
 
 class BiMap:
-    def __init__(self, domain, range_vals, interpolate):
+    def __init__(
+        self,
+        domain: tuple[T, T],
+        range_vals: tuple[T, T],
+        interpolate: Callable[[T, T], Callable[[T], float]],
+    ):
         d0, d1 = domain[0], domain[1]
         r0, r1 = range_vals[0], range_vals[1]
         if d1 < d0:
@@ -71,15 +98,20 @@ class BiMap:
             self.d0 = normalize(d0, d1)
             self.r0 = interpolate(r0, r1)
 
-    def __call__(self, x):
+    def __call__(self, x: T) -> float:
         return self.r0(self.d0(x))
 
 
 class PolyMap:
-    def __init__(self, domain, range_vals, interpolate):
+    def __init__(
+        self,
+        domain: list[T],
+        range_vals: list[T],
+        interpolate: Callable[[T, T], Callable[[T], float]],
+    ):
         self.domain = domain
         self.j = j = min(len(self.domain), len(range_vals)) - 1
-        self.d = [None] * j
+        self.d = [None] * j # TODO: use list by comprehension
         self.r = [None] * j
 
         if self.domain[j] < self.domain[0]:
@@ -90,18 +122,18 @@ class PolyMap:
             self.d[i] = normalize(self.domain[i], self.domain[i + 1])
             self.r[i] = interpolate(range_vals[i], range_vals[i + 1])
 
-    def __call__(self, x):
+    def __call__(self, x: T) -> float:
         i = bisect(self.domain, x, 1, self.j) - 1
         return self.r[i](self.d[i](x))
 
 
 def copy(source, target):
     return (
-        target.set_domain(source.domain)
-        .set_range(source.range)
-        .set_interpolate(source.interpolate)
-        .set_clamp(source.clamp)
-        .set_unknown(source.unknown)
+        target.set_domain(source.get_domain())
+        .set_range(source.get_range())
+        .set_interpolate(source.get_interpolate())
+        .set_clamp(source.get_clamp())
+        .set_unknown(source.get_unknown())
     )
 
 
@@ -111,16 +143,16 @@ class Transformer(Generic[T]):
 
     Parameters
     ----------
-    t : Callable[[int | float], T]
+    t : Callable[[Number], T]
         Transform function
-    u : Callable[[T], int | float]
+    u : Callable[[T], Number]
         Untransform function
     """
 
     def __init__(
         self,
-        t: Callable[[int | float], T] = identity,
-        u: Callable[[T], int | float] = identity,
+        t: Callable[[Number], T] = identity,
+        u: Callable[[T], Number] = identity,
     ):
         self.transform = t
         self.untransform = u
@@ -155,7 +187,7 @@ class Transformer(Generic[T]):
         T
             Corresponding value from the range
         """
-        if x is None or (isinstance(x, float) and math.isnan(x)):
+        if x is None or (isinstance(x, float) and isnan(x)):
             return self._unknown
         else:
             if not self.output:
@@ -191,7 +223,7 @@ class Transformer(Generic[T]):
             self.input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self.untransform(self.input(y)))
 
-    def set_domain(self, domain: list[int | float]) -> Transformer:
+    def set_domain(self, domain: list[int | float]) -> TTransformer:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -208,11 +240,10 @@ class Transformer(Generic[T]):
         self._domain = list(map(number, domain))
         return self.rescale()
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[T]) -> Transformer:
+    def set_range(self, range_vals: list[T]) -> TTransformer:
         """
         Sets the scale's range to the specified array of values
 
@@ -229,11 +260,10 @@ class Transformer(Generic[T]):
         self._range = list(range_vals)
         return self.rescale()
 
-    @property
-    def range(self) -> list[T]:
+    def get_range(self) -> list[T]:
         return self._range.copy()
 
-    def set_range_round(self, range_vals: list[T]) -> Transformer:
+    def set_range_round(self, range_vals: list[T]) -> TTransformer:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -252,7 +282,7 @@ class Transformer(Generic[T]):
         self._interpolate = interpolate_round
         return self.rescale()
 
-    def set_clamp(self, clamp: bool) -> Transformer:
+    def set_clamp(self, clamp: bool) -> TTransformer:
         """
         Enables or disables clamping accordingly
 
@@ -269,11 +299,10 @@ class Transformer(Generic[T]):
         self._clamp = True if clamp else identity
         return self.rescale()
 
-    @property
-    def clamp(self) -> bool:
+    def get_clamp(self) -> bool:
         return self._clamp != identity
 
-    def set_interpolate(self, interpolate: Callable[[T, T], T]) -> Transformer:
+    def set_interpolate(self, interpolate: Callable[[T, T], T]) -> TTransformer:
         """
         Sets the scale's range interpolator factory.
 
@@ -290,11 +319,10 @@ class Transformer(Generic[T]):
         self._interpolate = interpolate
         return self.rescale()
 
-    @property
-    def interpolate(self) -> Callable[[T, T], T]:
+    def get_interpolate(self) -> Callable[[T, T], T]:
         return self._interpolate
 
-    def set_unknown(self, unknown: Any) -> Transformer:
+    def set_unknown(self, unknown: Any) -> TTransformer:
         """
         Sets the output value of the scale for undefined
         or NaN input values.
@@ -312,6 +340,5 @@ class Transformer(Generic[T]):
         self._unknown = unknown
         return self.rescale()
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown

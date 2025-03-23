@@ -62,8 +62,7 @@ class ScaleThreshold:
         self._n = min(len(self._domain), len(self._range_vals) - 1)
         return self
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return self._domain.copy()
 
     def set_range(self, range_vals: list[T]) -> ScaleThreshold:
@@ -84,8 +83,7 @@ class ScaleThreshold:
         self._n = min(len(self._domain), len(self._range_vals) - 1)
         return self
 
-    @property
-    def range(self) -> list[T]:
+    def get_range(self) -> list[T]:
         return self._range_vals.copy()
 
     def invert_extent(self, y: T) -> list[int | float | None]:
@@ -130,16 +128,15 @@ class ScaleThreshold:
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown
 
     def copy(self):
         return (
             ScaleThreshold()
-            .set_domain(self.domain)
-            .set_range(self.range_vals)
-            .set_unknown(self.unknown)
+            .set_domain(self.get_domain())
+            .set_range(self.get_range())
+            .set_unknown(self.get_unknown())
         )
 
 

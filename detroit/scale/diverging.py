@@ -94,8 +94,7 @@ class Diverging:
         self._s = -1 if self._t1 < self._t0 else 1
         return self
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return [self._x0, self._x1, self._x2]
 
     def set_clamp(self, clamp: bool) -> Diverging:
@@ -115,8 +114,7 @@ class Diverging:
         self._clamp = bool(clamp)
         return self
 
-    @property
-    def clamp(self) -> bool:
+    def get_clamp(self) -> bool:
         return self._clamp
 
     def set_interpolator(self, interpolator: Callable) -> Diverging:
@@ -136,8 +134,7 @@ class Diverging:
         self._interpolator = interpolator
         return self
 
-    @property
-    def interpolator(self) -> Callable:
+    def get_interpolator(self) -> Callable:
         return self._interpolator
 
     def set_range(self, range_vals: list[T]) -> Diverging:
@@ -184,8 +181,7 @@ class Diverging:
         )
         return self
 
-    @property
-    def range(self) -> list[T]:
+    def get_range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(0.5), self._interpolator(1)]
 
     def set_unknown(self, unknown: Any) -> Diverging:
@@ -206,8 +202,7 @@ class Diverging:
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown
 
 
@@ -229,7 +224,7 @@ class DivergingLog(Diverging, LogBase):
     def _rescale(self):
         self._logs = logp(self._base)
         self._pows = powp(self._base)
-        d = self.domain[0]
+        d = self.get_domain()[0]
         if isinstance(d, datetime):
             d = d.timestamp()
         if d < 0:
@@ -327,8 +322,7 @@ class DivergingPow(Diverging, LinearBase):
         self._exponent = float(exponent)
         return self._rescale()
 
-    @property
-    def exponent(self):
+    def get_exponent(self):
         return self._exponent
 
     def copy(self):

@@ -73,8 +73,7 @@ class ScaleOrdinal:
             self._index[value] = len(self._domain) - 1
         return self
 
-    @property
-    def domain(self) -> list[U]:
+    def get_domain(self) -> list[U]:
         return self._domain.copy()
 
     def set_range(self, range_vals: list[V]) -> ScaleOrdinal:
@@ -94,8 +93,7 @@ class ScaleOrdinal:
         self._range_vals = list(range_vals)
         return self
 
-    @property
-    def range(self) -> list[V]:
+    def get_range(self) -> list[V]:
         return self._range_vals.copy()
 
     def set_unknown(self, unknown: Any) -> ScaleOrdinal:
@@ -116,16 +114,15 @@ class ScaleOrdinal:
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown
 
     def copy(self):
         return (
             ScaleOrdinal()
-            .set_domain(self.domain)
-            .set_range(self.range)
-            .set_unknown(self.unknown)
+            .set_domain(self.get_domain())
+            .set_range(self.get_range())
+            .set_unknown(self.get_unknown())
         )
 
 

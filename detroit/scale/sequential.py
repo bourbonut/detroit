@@ -72,8 +72,7 @@ class Sequential:
         self._k10 = 0 if self._t0 == self._t1 else 1 / (self._t1 - self._t0)
         return self
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return [self._x0, self._x1]
 
     def set_clamp(self, clamp: bool) -> Sequential:
@@ -93,8 +92,7 @@ class Sequential:
         self._clamp = bool(clamp)
         return self
 
-    @property
-    def clamp(self) -> bool:
+    def get_clamp(self) -> bool:
         return self._clamp
 
     def set_interpolator(self, interpolator: Callable) -> Sequential:
@@ -114,8 +112,7 @@ class Sequential:
         self._interpolator = interpolator
         return self
 
-    @property
-    def interpolator(self) -> Callable:
+    def get_interpolator(self) -> Callable:
         return self._interpolator
 
     def set_range(self, range_vals: list[T]) -> Sequential:
@@ -137,8 +134,7 @@ class Sequential:
         self._interpolator = interpolate(self._r0, self._r1)
         return self
 
-    @property
-    def range(self) -> list[T]:
+    def get_range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
     def set_range_round(self, range_vals: list[T]) -> Sequential:
@@ -160,8 +156,7 @@ class Sequential:
         self._interpolator = interpolate_round(self._r0, self._r1)
         return self
 
-    @property
-    def range_round(self) -> list[T]:
+    def get_range_round(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
     def set_unknown(self, unknown: Any) -> Sequential:
@@ -182,17 +177,16 @@ class Sequential:
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown
 
 
 def copy(source, target):
     return (
-        target.set_domain(source.domain)
-        .set_interpolator(source.interpolator)
-        .set_clamp(source.clamp)
-        .set_unknown(source.unknown)
+        target.set_domain(source.get_domain())
+        .set_interpolator(source.get_interpolator())
+        .set_clamp(source.get_clamp())
+        .set_unknown(source.get_unknown())
     )
 
 
@@ -312,8 +306,7 @@ class SequentialPow(Sequential, LinearBase):
         self._exponent = float(exponent)
         return self._rescale()
 
-    @property
-    def exponent(self):
+    def get_exponent(self):
         return self._exponent
 
     def copy(self):

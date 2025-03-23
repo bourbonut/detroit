@@ -102,8 +102,7 @@ class ScaleQuantile:
         self._domain = sorted(self._domain)
         return self.rescale()
 
-    @property
-    def domain(self) -> list[int | float]:
+    def get_domain(self) -> list[int | float]:
         return self._domain.copy()
 
     def set_range(self, range_vals: list[T]) -> ScaleQuantile:
@@ -123,8 +122,7 @@ class ScaleQuantile:
         self._range_vals = list(range_vals)
         return self.rescale()
 
-    @property
-    def range(self) -> list[T]:
+    def get_range(self) -> list[T]:
         return self._range_vals.copy()
 
     def set_unknown(self, unknown: Any) -> ScaleQuantile:
@@ -144,20 +142,18 @@ class ScaleQuantile:
         self._unknown = unknown
         return self
 
-    @property
-    def unknown(self) -> Any:
+    def get_unknown(self) -> Any:
         return self._unknown
 
-    @property
-    def quantiles(self):
+    def get_quantiles(self):
         return self._thresholds.copy()
 
     def copy(self):
         return (
             ScaleQuantile()
-            .domain(self._domain)
-            .range(self._range_vals)
-            .unknown(self._unknown)
+            .set_domain(self._domain)
+            .set_range(self._range_vals)
+            .set_unknown(self._unknown)
         )
 
 

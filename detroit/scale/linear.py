@@ -31,7 +31,7 @@ class LinearBase:
             within the extent of the domain. Ticks are often used to display
             reference lines, or tick marks, in conjunction with the visualized data.
         """
-        d = self.domain
+        d = self.get_domain()
         return ticks(d[0], d[-1], count if count is not None else 10)
 
     def tick_format(
@@ -57,7 +57,7 @@ class LinearBase:
         Callable[[int | float], str]
             Tick format function
         """
-        d = self.domain
+        d = self.get_domain()
         return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
 
     def nice(self, count: int | None = None) -> LinearBase:
@@ -79,7 +79,7 @@ class LinearBase:
         if count is None:
             count = 10
 
-        d = self.domain
+        d = self.get_domain()
         i0 = 0
         i1 = len(d) - 1
         start = d[i0]
