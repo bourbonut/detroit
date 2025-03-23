@@ -14,7 +14,6 @@ from ..interpolate import (
 )
 from ..types import Number, GenValue, T
 from .utils import constant, identity, as_float
-from .number import number
 
 TTransformer = TypeVar("TTransformer", bound="Transformer")
 
@@ -223,13 +222,13 @@ class Transformer(Generic[T]):
             self.input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self.untransform(self.input(y)))
 
-    def set_domain(self, domain: list[int | float]) -> TTransformer:
+    def set_domain(self, domain: list[Number]) -> TTransformer:
         """
         Sets the scale's domain to the specified array of numbers
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -237,7 +236,7 @@ class Transformer(Generic[T]):
         Transformer
             Itself
         """
-        self._domain = list(map(number, domain))
+        self._domain = list(map(lambda x: float(x) if isinstance(x, str) else x, domain))
         return self.rescale()
 
     def get_domain(self) -> list[int | float]:

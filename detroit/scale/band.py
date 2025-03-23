@@ -4,8 +4,9 @@ from typing import TypeVar, overload
 
 from .init import init_range
 from .ordinal import ScaleOrdinal
+from ..types import T
 
-T = TypeVar("T")
+TScaleBand = TypeVar("TScaleBand", bound="ScaleBand")
 
 
 class ScaleBand(ScaleOrdinal):
@@ -46,7 +47,7 @@ class ScaleBand(ScaleOrdinal):
         values = [start + self._step * i for i in range(n)]
         return super().set_range(values[::-1] if reverse else values)
 
-    def set_domain(self, domain: list[T]) -> ScaleBand:
+    def set_domain(self, domain: list[T])-> TScaleBand:
         """
         Sets the scale's domain to the specified array of values
 
@@ -66,7 +67,7 @@ class ScaleBand(ScaleOrdinal):
     def get_domain(self):
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[int | float]) -> ScaleBand:
+    def set_range(self, range_vals: list[int | float])-> TScaleBand:
         """
         Sets the scale's range to the specified array of numbers
 
@@ -86,7 +87,7 @@ class ScaleBand(ScaleOrdinal):
     def get_range(self) -> list[int | float]:
         return [self._r0, self._r1]
 
-    def set_range_round(self, range_vals: list[int | range]) -> ScaleBand:
+    def set_range_round(self, range_vals: list[int | range])-> TScaleBand:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -111,7 +112,7 @@ class ScaleBand(ScaleOrdinal):
     def get_step(self):
         return self._step
 
-    def set_round(self, round_val: bool) -> ScaleBand:
+    def set_round(self, round_val: bool)-> TScaleBand:
         """
         Enable or disable rounding accordingly
 
@@ -131,7 +132,7 @@ class ScaleBand(ScaleOrdinal):
     def get_round(self):
         return self._round
 
-    def set_padding(self, padding: int | float) -> ScaleBand:
+    def set_padding(self, padding: int | float)-> TScaleBand:
         """
         A convenience method for setting the inner and outer padding
         to the same padding value.
@@ -153,7 +154,7 @@ class ScaleBand(ScaleOrdinal):
     def get_padding(self):
         return self._padding_inner
 
-    def set_padding_inner(self, padding_inner: int | float) -> ScaleBand:
+    def set_padding_inner(self, padding_inner: int | float)-> TScaleBand:
         """
         Sets the inner padding to the specified number which must
         be less than or equal to 1
@@ -171,7 +172,7 @@ class ScaleBand(ScaleOrdinal):
         self._padding_inner = min(1, float(padding_inner))
         return self.rescale()
 
-    def set_padding_outer(self, padding_outer: int | float) -> ScaleBand:
+    def set_padding_outer(self, padding_outer: int | float)-> TScaleBand:
         """
         Sets the outer padding to the specified number
         which is typically in the range [0, 1]
@@ -195,7 +196,7 @@ class ScaleBand(ScaleOrdinal):
     def get_padding_outer(self):
         return self._padding_outer
 
-    def set_align(self, align: int | float) -> ScaleBand:
+    def set_align(self, align: int | float)-> TScaleBand:
         """
         Sets the alignment to the specified value which must
         be in the range [0, 1]
@@ -229,15 +230,15 @@ class ScaleBand(ScaleOrdinal):
 
 
 @overload
-def scale_band() -> ScaleBand: ...
+def scale_band()-> TScaleBand: ...
 
 
 @overload
-def scale_band(range_vals: list[int | float]) -> ScaleBand: ...
+def scale_band(range_vals: list[int | float])-> TScaleBand: ...
 
 
 @overload
-def scale_band(domain: list[T], range_vals: list[int | float]) -> ScaleBand: ...
+def scale_band(domain: list[T], range_vals: list[int | float])-> TScaleBand: ...
 
 
 def scale_band(*args):
@@ -272,15 +273,15 @@ def scale_band(*args):
 
 
 @overload
-def scale_point() -> ScaleBand: ...
+def scale_point()-> ScaleBand: ...
 
 
 @overload
-def scale_point(range_vals: list[int | float]) -> ScaleBand: ...
+def scale_point(range_vals: list[int | float])-> ScaleBand: ...
 
 
 @overload
-def scale_point(domain: list[T], range_vals: list[int | float]) -> ScaleBand: ...
+def scale_point(domain: list[T], range_vals: list[int | float])-> ScaleBand: ...
 
 
 def scale_point(*args):

@@ -7,7 +7,7 @@ from typing import overload
 from .continuous import Transformer, identity
 from .init import init_range
 from .linear import LinearBase
-from .number import number
+from .utils import as_float
 
 
 def sign(x):
@@ -99,7 +99,7 @@ class ScaleRadial(Transformer, LinearBase):
         ScaleRadial
             Itself
         """
-        self._range_vals = [number(x) for x in range_vals]
+        self._range_vals = [as_float(x) for x in range_vals]
         super().set_range([square(x) for x in self._range_vals])
         return self
 
