@@ -3,7 +3,7 @@ Time scales
 
 .. autofunction:: detroit.scale_time
 
-.. autoclass:: detroit.scale.time.Calendar
+.. autoclass:: detroit.scale.time.ScaleTime
 
    .. automethod:: __call__
    .. automethod:: invert
