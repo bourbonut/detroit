@@ -153,23 +153,31 @@ class Transformer(Generic[T]):
         t: Callable[[Number], T] = identity,
         u: Callable[[T], Number] = identity,
     ):
-        self.transform = t
-        self.untransform = u
+        self._transform = t
+        self._untransform = u
         self._domain = [0, 1]
         self._range = [0, 1]
         self._clamp = identity
         self._interpolate = interpolate_value
         self._unknown = None
-        self.input = None
-        self.output = None
-        self.rescale()
+        self._input = None
+        self._output = None
+        self._rescale()
 
-    def rescale(self):
+    def _rescale(self) -> TTransformer:
+        """
+        Private method which updates:
+
+        * :code:`clamp` attribute
+        * :code:`piecewise` attribute
+        * :code:`input` attribute
+        * :code:`output` attribute
+        """
         n = min(len(self._domain), len(self._range))
         if self._clamp != identity:
             self._clamp = clamper(self._domain[0], self._domain[n - 1])
         self.piecewise = PolyMap if n > 2 else BiMap
-        self.output = self.input = None
+        self._output = self._input = None
         return self
 
     def __call__(self, x: Number) -> T:
@@ -189,14 +197,14 @@ class Transformer(Generic[T]):
         if x is None or (isinstance(x, float) and isnan(x)):
             return self._unknown
         else:
-            if not self.output:
+            if not self._output:
                 domain = [
                     x.timestamp() if isinstance(x, datetime) else x
                     for x in self._domain
                 ]
-                domain = [self.transform(x) for x in domain]
-                self.output = self.piecewise(domain, self._range, self._interpolate)
-            return self.output(self.transform(self._clamp(x)))
+                domain = [self._transform(x) for x in domain]
+                self._output = self.piecewise(domain, self._range, self._interpolate)
+            return self._output(self._transform(self._clamp(x)))
 
     def invert(self, y: T) -> Number:
         """
@@ -214,13 +222,13 @@ class Transformer(Generic[T]):
         Number
             Corresponding value from the domain
         """
-        if not self.input:
+        if not self._input:
             domain = [
                 x.timestamp() if isinstance(x, datetime) else x for x in self._domain
             ]
-            domain = [self.transform(x) for x in domain]
-            self.input = self.piecewise(self._range, domain, interpolate_number)
-        return self._clamp(self.untransform(self.input(y)))
+            domain = [self._transform(x) for x in domain]
+            self._input = self.piecewise(self._range, domain, interpolate_number)
+        return self._clamp(self._untransform(self._input(y)))
 
     def set_domain(self, domain: list[Number]) -> TTransformer:
         """
@@ -238,7 +246,7 @@ class Transformer(Generic[T]):
         """
         # TODO: update lambda function to as_float function
         self._domain = list(map(lambda x: float(x) if isinstance(x, str) else x, domain))
-        return self.rescale()
+        return self._rescale()
 
     def get_domain(self) -> list[Number]:
         return self._domain.copy()
@@ -258,7 +266,7 @@ class Transformer(Generic[T]):
             Itself
         """
         self._range = list(range_vals)
-        return self.rescale()
+        return self._rescale()
 
     def get_range(self) -> list[T]:
         return self._range.copy()
@@ -280,7 +288,7 @@ class Transformer(Generic[T]):
         """
         self._range = list(map(float, range_vals))
         self._interpolate = interpolate_round
-        return self.rescale()
+        return self._rescale()
 
     def set_clamp(self, clamp: bool) -> TTransformer:
         """
@@ -297,7 +305,7 @@ class Transformer(Generic[T]):
             Itself
         """
         self._clamp = True if clamp else identity
-        return self.rescale()
+        return self._rescale()
 
     def get_clamp(self) -> bool:
         return self._clamp != identity
@@ -317,7 +325,7 @@ class Transformer(Generic[T]):
             Itself
         """
         self._interpolate = interpolate
-        return self.rescale()
+        return self._rescale()
 
     def get_interpolate(self) -> Callable[[T, T], T]:
         return self._interpolate
@@ -338,7 +346,7 @@ class Transformer(Generic[T]):
             Itself
         """
         self._unknown = unknown
-        return self.rescale()
+        return self._rescale()
 
     def get_unknown(self) -> Any:
         return self._unknown

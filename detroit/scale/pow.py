@@ -49,21 +49,21 @@ class ScalePow(Transformer, LinearBase):
         super().__init__(t, u)
         self._exponent = exponent
 
-    def _rescale(self):
+    def _pow_rescale(self):
         if self._exponent == 1:
-            self.transform = identity
-            self.untransform = identity
-            self.rescale()
+            self._transform = identity
+            self._untransform = identity
+            self._rescale()
             return self
         elif self._exponent == 0.5:
-            self.transform = transform_sqrt
-            self.untransform = transform_square
-            self.rescale()
+            self._transform = transform_sqrt
+            self._untransform = transform_square
+            self._rescale()
             return self
         else:
-            self.transform = transform_pow(self._exponent)
-            self.untransform = transform_pow(1 / self._exponent)
-            self.rescale()
+            self._transform = transform_pow(self._exponent)
+            self._untransform = transform_pow(1 / self._exponent)
+            self._rescale()
             return self
 
     def set_exponent(self, exponent: int | float) -> ScalePow:
@@ -81,7 +81,7 @@ class ScalePow(Transformer, LinearBase):
             Itself
         """
         self._exponent = float(exponent)
-        return self._rescale()
+        return self._pow_rescale()
 
     def get_exponent(self):
         return self._exponent

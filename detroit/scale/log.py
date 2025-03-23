@@ -97,7 +97,7 @@ class LogBase:
             Itself
         """
         self._base = float(base)
-        return self._rescale()
+        return self._log_rescale()
 
     def get_base(self) -> int | float:
         return self._base
@@ -238,7 +238,7 @@ class ScaleLog(Transformer, LogBase):
         Transformer.__init__(self, transform_log, transform_exp)
         LogBase.__init__(self)
 
-    def _rescale(self):
+    def _log_rescale(self):
         self._logs = logp(self._base)
         self._pows = powp(self._base)
         d = self.get_domain()[0]
@@ -247,18 +247,18 @@ class ScaleLog(Transformer, LogBase):
         if d < 0:
             self._logs = reflect(self._logs)
             self._pows = reflect(self._pows)
-            self.transform = transform_logn
-            self.untransform = transform_expn
-            super().rescale()
+            self._transform = transform_logn
+            self._untransform = transform_expn
+            self._rescale()
         else:
-            self.transform = transform_log
-            self.untransform = transform_exp
-            super().rescale()
+            self._transform = transform_log
+            self._untransform = transform_exp
+            self._rescale()
         return self
 
     def set_domain(self, domain):
         super().set_domain(domain)
-        return self._rescale()
+        return self._log_rescale()
 
     def copy(self):
         return copy(self, ScaleLog()).set_base(self.get_base())

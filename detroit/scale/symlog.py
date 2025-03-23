@@ -42,9 +42,9 @@ class ScaleSymlog(Transformer, LinearBase):
             Itself
         """
         self._c = float(c)
-        self.transform = transform_symlog(self._c)
-        self.untransform = transform_symexp(self._c)
-        self.rescale()
+        self._transform = transform_symlog(self._c)
+        self._untransform = transform_symexp(self._c)
+        self._rescale()
         return self
 
     def get_constant(self):
