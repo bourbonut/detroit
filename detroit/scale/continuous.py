@@ -172,13 +172,13 @@ class Transformer(Generic[T]):
         self.output = self.input = None
         return self
 
-    def __call__(self, x: int | float) -> T:
+    def __call__(self, x: Number) -> T:
         """
         Given a value from the domain, returns the corresponding value from the range.
 
         Parameters
         ----------
-        x : int | float
+        x : Number
             Input value
 
         Returns
@@ -198,7 +198,7 @@ class Transformer(Generic[T]):
                 self.output = self.piecewise(domain, self._range, self._interpolate)
             return self.output(self.transform(self._clamp(x)))
 
-    def invert(self, y: T) -> int | float:
+    def invert(self, y: T) -> Number:
         """
         Given a value from the range, returns the corresponding value
         from the domain. Inversion is useful for interaction, say to
@@ -211,7 +211,7 @@ class Transformer(Generic[T]):
 
         Returns
         -------
-        int | float
+        Number
             Corresponding value from the domain
         """
         if not self.input:
@@ -236,10 +236,11 @@ class Transformer(Generic[T]):
         Transformer
             Itself
         """
+        # TODO: update lambda function to as_float function
         self._domain = list(map(lambda x: float(x) if isinstance(x, str) else x, domain))
         return self.rescale()
 
-    def get_domain(self) -> list[int | float]:
+    def get_domain(self) -> list[Number]:
         return self._domain.copy()
 
     def set_range(self, range_vals: list[T]) -> TTransformer:
