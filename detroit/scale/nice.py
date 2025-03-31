@@ -1,4 +1,6 @@
-def nice(domain, interval):
+from ..types import T, Interval
+
+def nice(domain: list[T], interval: Interval) -> list[T]:
     domain = domain.copy()
 
     i0 = 0

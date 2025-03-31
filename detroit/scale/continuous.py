@@ -1,5 +1,4 @@
 from math import isnan, nan
-from dataclasses import dataclass
 from bisect import bisect
 from collections.abc import Callable
 from datetime import datetime
@@ -15,7 +14,7 @@ from ..interpolate import (
 from ..types import Number, GenValue, T
 from .utils import constant, identity, as_float
 
-TTransformer = TypeVar("TTransformer", bound="Transformer")
+TTransformer = TypeVar("Itself", bound="Transformer")
 
 
 def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:

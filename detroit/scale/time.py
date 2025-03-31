@@ -16,7 +16,6 @@ from ..time import (
 from ..time_format import time_format
 from .continuous import Transformer, copy, identity
 from ..types import T, Formatter
-from .utils import as_float
 from .init import init_range
 from .nice import nice
 

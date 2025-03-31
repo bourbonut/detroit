@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import math
 from collections.abc import Callable
 from typing import TypeVar, overload
@@ -7,23 +5,24 @@ from typing import TypeVar, overload
 from .continuous import Transformer, copy, identity
 from .init import init_range
 from .linear import LinearBase
+from ..types import T, Number
 
-T = TypeVar("T")
+TScalePow = TypeVar("Itself", bound="ScalePow")
 
 
-def transform_pow(exponent):
+def transform_pow(exponent: Number) -> Callable[[float], float]:
     return lambda x: (-math.pow(-x, exponent) if x < 0 else math.pow(x, exponent))
 
 
-def transform_sqrt(x):
+def transform_sqrt(x: float) -> float:
     return -math.sqrt(-x) if x < 0 else math.sqrt(x)
 
 
-def transform_square(x):
+def transform_square(x: float) -> float:
     return -x * x if x < 0 else x * x
 
 
-class ScalePow(Transformer, LinearBase):
+class ScalePow(Transformer[float], LinearBase):
     """
     Power ("pow") scales are similar to linear scales, except an exponential
     transform is applied to the input domain value before the output range
@@ -35,16 +34,19 @@ class ScalePow(Transformer, LinearBase):
 
     Parameters
     ----------
-    t : Callable
+    t : Callable[[float], float]
         Transform function
-    u : Callable
+    u : Callable[[float], float]
         Untransform function
     exponent : float | int
         Exponent
     """
 
     def __init__(
-        self, t: Callable = identity, u: Callable = identity, exponent: float | int = 1
+        self,
+        t: Callable[[float], float] = identity,
+        u: Callable[[float], float] = identity,
+        exponent: float | int = 1,
     ):
         super().__init__(t, u)
         self._exponent = exponent
@@ -66,13 +68,13 @@ class ScalePow(Transformer, LinearBase):
             self._rescale()
             return self
 
-    def set_exponent(self, exponent: int | float) -> ScalePow:
+    def set_exponent(self, exponent: Number) -> TScalePow:
         """
         Sets the current exponent to the given numeric value.
 
         Parameters
         ----------
-        exponent : int | float
+        exponent : Number
             exponent
 
         Returns
@@ -83,7 +85,7 @@ class ScalePow(Transformer, LinearBase):
         self._exponent = float(exponent)
         return self._pow_rescale()
 
-    def get_exponent(self):
+    def get_exponent(self) -> Number:
         return self._exponent
 
     def copy(self):
@@ -95,11 +97,11 @@ def scale_pow() -> ScalePow: ...
 
 
 @overload
-def scale_pow(range_vals: list[T]) -> ScalePow: ...
+def scale_pow(range_vals: list[float]) -> ScalePow: ...
 
 
 @overload
-def scale_pow(domain: list[int | float], range_vals: list[T]) -> ScalePow: ...
+def scale_pow(domain: list[Number], range_vals: list[float]) -> ScalePow: ...
 
 
 def scale_pow(*args) -> ScalePow:
@@ -107,6 +109,13 @@ def scale_pow(*args) -> ScalePow:
     Constructs a new pow scale with the specified domain and
     range, the exponent 1, the default interpolator and
     clamping disabled.
+
+    Parameters
+    ----------
+    domain : list[Number]
+        Array of numbers
+    range_vals : list[float]
+        Array of values
 
     Returns
     -------
@@ -127,17 +136,24 @@ def scale_sqrt() -> ScalePow: ...
 
 
 @overload
-def scale_sqrt(range_vals: list[T]) -> ScalePow: ...
+def scale_sqrt(range_vals: list[float]) -> ScalePow: ...
 
 
 @overload
-def scale_sqrt(domain: list[int | float], range_vals: list[T]) -> ScalePow: ...
+def scale_sqrt(domain: list[Number], range_vals: list[float]) -> ScalePow: ...
 
 
 def scale_sqrt(*args) -> ScalePow:
     """
     Constructs a new pow scale with the specified domain and range,
     the exponent 0.5, the default interpolator and clamping disabled.
+
+    Parameters
+    ----------
+    domain : list[Number]
+        Array of numbers
+    range_vals : list[float]
+        Array of values
 
     Returns
     -------

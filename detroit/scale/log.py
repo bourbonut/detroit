@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import math
 from datetime import datetime
-from typing import overload
+from typing import overload, TypeVar
+from collections.abc import Callable
 
 from ..array import ticks
 from ..format import format_specifier, locale_format
@@ -10,38 +9,40 @@ from .continuous import Transformer, copy
 from .init import init_range
 from .nice import nice
 
+TLogBase = TypeVar("Itself", bound="LogBase")
+TScaleLog = TypeVar("Itself", bound="ScaleLog")
 
-def transform_log(x):
+def transform_log(x: datetime | float) -> float:
     if isinstance(x, datetime):
         x = x.timestamp()
     return math.log(x)
 
 
-def transform_exp(x):
+def transform_exp(x: datetime | float) -> float:
     if isinstance(x, datetime):
         x = x.timestamp()
     return math.exp(x)
 
 
-def transform_logn(x):
+def transform_logn(x: datetime | float) -> float:
     if isinstance(x, datetime):
         x = x.timestamp()
     return -math.log(-x)
 
 
-def transform_expn(x):
+def transform_expn(x: datetime | float) -> float:
     if isinstance(x, datetime):
         x = x.timestamp()
     return -math.exp(-x)
 
 
-def pow10(x):
+def pow10(x: datetime | float) -> float:
     if isinstance(x, datetime):
         x = x.timestamp()
     return 10**x if math.isfinite(x) else 0 if x < 0 else x
 
 
-def powp(base):
+def powp(base: int | float) -> Callable[[float], float]:
     if base == 10:
         return pow10
     elif base == math.e:
@@ -50,7 +51,7 @@ def powp(base):
         return lambda x: math.pow(base, x)
 
 
-def logp(base):
+def logp(base: int | float) -> Callable[[float], float]:
     if base == math.e:
         return math.log
     elif base == 10:
@@ -61,7 +62,7 @@ def logp(base):
         return lambda x: math.log(x, base)
 
 
-def reflect(f):
+def reflect(f: Callable[[float], float]) -> Callable[[float], float]:
     def local_reflect(x):
         return -f(-x)
 
@@ -82,7 +83,7 @@ class LogBase:
         self._logs = None
         self._pows = None
 
-    def set_base(self, base: int | float) -> ScaleLog:
+    def set_base(self, base: int | float) -> TLogBase:
         """
         Sets the scale's base value
 
@@ -93,7 +94,7 @@ class LogBase:
 
         Returns
         -------
-        ScaleLog
+        LogBase
             Itself
         """
         self._base = float(base)
@@ -102,7 +103,7 @@ class LogBase:
     def get_base(self) -> int | float:
         return self._base
 
-    def ticks(self, count: int | None = None) -> ScaleLog:
+    def ticks(self, count: int | None = None) -> TLogBase:
         """
         Like :code:`ScaleLinear.ticks`, but customized for a log scale.
 
@@ -114,7 +115,7 @@ class LogBase:
 
         Returns
         -------
-        ScaleLog
+        LogBase
             Itself
         """
         d = self.get_domain()
@@ -161,7 +162,7 @@ class LogBase:
 
     def tick_format(
         self, count: int | None = None, specifier: str | None = None
-    ) -> ScaleLog:
+    ) -> TLogBase:
         """
         Like :code:`ScaleLinear.tick_format`, but customized for a log scale.
         The specified count typically has the same value as the count
@@ -178,7 +179,7 @@ class LogBase:
 
         Returns
         -------
-        ScaleLog
+        LogBase
             Itself
         """
         if count is None:
@@ -206,14 +207,14 @@ class LogBase:
 
         return f
 
-    def nice(self) -> ScaleLog:
+    def nice(self) -> TLogBase:
         """
         Like :code:`ScaleLinear.nice`, except extends the domain
         to integer powers of base.
 
         Returns
         -------
-        ScaleLog
+        LogBase
             Itself
         """
 
@@ -233,7 +234,13 @@ class LogBase:
         return self.set_domain(nice(self.get_domain(), Interval))
 
 
-class ScaleLog(Transformer, LogBase):
+class ScaleLog(Transformer[float], LogBase):
+    """
+    Logarithmic ("log") scales are like linear scales except that a logarithmic
+    transform is applied to the input domain value before the output range value
+    is computed. The mapping to the range value y can be expressed as a function
+    of the domain value x: :math:`y = m \\log(x) + b`.
+    """
     def __init__(self):
         Transformer.__init__(self, transform_log, transform_exp)
         LogBase.__init__(self)
@@ -256,7 +263,20 @@ class ScaleLog(Transformer, LogBase):
             self._rescale()
         return self
 
-    def set_domain(self, domain):
+    def set_domain(self, domain: list[float]) -> TScaleLog:
+        """
+        Sets the scale's domain to the specified array of values.
+
+        Parameters
+        ----------
+        domain : list[float]
+            Domain
+
+        Returns
+        -------
+        TScaleLog
+            Itself
+        """
         super().set_domain(domain)
         return self._log_rescale()
 

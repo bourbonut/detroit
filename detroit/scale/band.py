@@ -1,15 +1,12 @@
-from __future__ import annotations
-
-from typing import TypeVar, overload
+from typing import TypeVar, overload, Generic
 
 from .init import init_range
 from .ordinal import ScaleOrdinal
-from ..types import T
+from ..types import T, Number
 
-TScaleBand = TypeVar("TScaleBand", bound="ScaleBand")
+TScaleBand = TypeVar("Itself", bound="ScaleBand")
 
-
-class ScaleBand(ScaleOrdinal):
+class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     """
     Band scales are like band scales except the output range is continuous
     and numeric. The scale divides the continuous range into uniform bands.
@@ -27,9 +24,9 @@ class ScaleBand(ScaleOrdinal):
         self._padding_inner = 0
         self._padding_outer = 0
         self._align = 0.5
-        self.rescale()
+        self._rescale()
 
-    def rescale(self):
+    def _rescale(self):
         n = len(self._domain)
         reverse = self._r1 < self._r0
         start = self._r1 if reverse else self._r0
@@ -47,7 +44,7 @@ class ScaleBand(ScaleOrdinal):
         values = [start + self._step * i for i in range(n)]
         return super().set_range(values[::-1] if reverse else values)
 
-    def set_domain(self, domain: list[T])-> TScaleBand:
+    def set_domain(self, domain: list[T]) -> TScaleBand:
         """
         Sets the scale's domain to the specified array of values
 
@@ -62,18 +59,18 @@ class ScaleBand(ScaleOrdinal):
             Itself
         """
         super().set_domain(domain)
-        return self.rescale()
+        return self._rescale()
 
     def get_domain(self):
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[int | float])-> TScaleBand:
+    def set_range(self, range_vals: list[Number]) -> TScaleBand:
         """
         Sets the scale's range to the specified array of numbers
 
         Parameters
         ----------
-        range_vals : list[int | float]
+        range_vals : list[Number]
             Range
 
         Returns
@@ -82,12 +79,12 @@ class ScaleBand(ScaleOrdinal):
             Itself
         """
         self._r0, self._r1 = map(float, range_vals)
-        return self.rescale()
+        return self._rescale()
 
-    def get_range(self) -> list[int | float]:
+    def get_range(self) -> list[Number]:
         return [self._r0, self._r1]
 
-    def set_range_round(self, range_vals: list[int | range])-> TScaleBand:
+    def set_range_round(self, range_vals: list[int | range]) -> TScaleBand:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -104,7 +101,7 @@ class ScaleBand(ScaleOrdinal):
         """
         self._r0, self._r1 = map(float, range_vals)
         self._round = True
-        return self.rescale()
+        return self._rescale()
 
     def get_bandwidth(self):
         return self._bandwidth
@@ -112,7 +109,7 @@ class ScaleBand(ScaleOrdinal):
     def get_step(self):
         return self._step
 
-    def set_round(self, round_val: bool)-> TScaleBand:
+    def set_round(self, round_val: bool) -> TScaleBand:
         """
         Enable or disable rounding accordingly
 
@@ -127,19 +124,19 @@ class ScaleBand(ScaleOrdinal):
             Itself
         """
         self._round = bool(round_val)
-        return self.rescale()
+        return self._rescale()
 
     def get_round(self):
         return self._round
 
-    def set_padding(self, padding: int | float)-> TScaleBand:
+    def set_padding(self, padding: Number) -> TScaleBand:
         """
         A convenience method for setting the inner and outer padding
         to the same padding value.
 
         Parameters
         ----------
-        padding : int | float
+        padding : Number
             Padding value
 
         Returns
@@ -149,19 +146,19 @@ class ScaleBand(ScaleOrdinal):
         """
         self._padding_outer = float(padding)
         self._padding_inner = min(1, self._padding_outer)
-        return self.rescale()
+        return self._rescale()
 
     def get_padding(self):
         return self._padding_inner
 
-    def set_padding_inner(self, padding_inner: int | float)-> TScaleBand:
+    def set_padding_inner(self, padding_inner: Number) -> TScaleBand:
         """
         Sets the inner padding to the specified number which must
         be less than or equal to 1
 
         Parameters
         ----------
-        padding_inner : int | float
+        padding_inner : Number
             Inner padding value
 
         Returns
@@ -170,16 +167,16 @@ class ScaleBand(ScaleOrdinal):
             Itself
         """
         self._padding_inner = min(1, float(padding_inner))
-        return self.rescale()
+        return self._rescale()
 
-    def set_padding_outer(self, padding_outer: int | float)-> TScaleBand:
+    def set_padding_outer(self, padding_outer: Number) -> TScaleBand:
         """
         Sets the outer padding to the specified number
         which is typically in the range [0, 1]
 
         Parameters
         ----------
-        padding_outer : int | float
+        padding_outer : Number
             Outer padding value
 
         Returns
@@ -188,7 +185,7 @@ class ScaleBand(ScaleOrdinal):
             Itself
         """
         self._padding_outer = float(padding_outer)
-        return self.rescale()
+        return self._rescale()
 
     def get_padding_inner(self):
         return self._padding_inner
@@ -196,14 +193,14 @@ class ScaleBand(ScaleOrdinal):
     def get_padding_outer(self):
         return self._padding_outer
 
-    def set_align(self, align: int | float)-> TScaleBand:
+    def set_align(self, align: Number) -> TScaleBand:
         """
         Sets the alignment to the specified value which must
         be in the range [0, 1]
 
         Parameters
         ----------
-        align : int | float
+        align : Number
             Alignment value
 
         Returns
@@ -212,7 +209,7 @@ class ScaleBand(ScaleOrdinal):
             Itself
         """
         self._align = max(0, min(1, float(align)))
-        return self.rescale()
+        return self._rescale()
 
     def get_align(self):
         return self._align
@@ -230,15 +227,15 @@ class ScaleBand(ScaleOrdinal):
 
 
 @overload
-def scale_band()-> TScaleBand: ...
+def scale_band() -> TScaleBand: ...
 
 
 @overload
-def scale_band(range_vals: list[int | float])-> TScaleBand: ...
+def scale_band(range_vals: list[Number]) -> TScaleBand: ...
 
 
 @overload
-def scale_band(domain: list[T], range_vals: list[int | float])-> TScaleBand: ...
+def scale_band(domain: list[T], range_vals: list[Number]) -> TScaleBand: ...
 
 
 def scale_band(*args):
@@ -250,7 +247,7 @@ def scale_band(*args):
     ----------
     domain : list[T]
         Array of values
-    range_vals : list[int | float]
+    range_vals : list[Number]
         Array of numbers
 
     Returns
@@ -273,15 +270,15 @@ def scale_band(*args):
 
 
 @overload
-def scale_point()-> ScaleBand: ...
+def scale_point() -> ScaleBand[T]: ...
 
 
 @overload
-def scale_point(range_vals: list[int | float])-> ScaleBand: ...
+def scale_point(range_vals: list[Number]) -> ScaleBand[T]: ...
 
 
 @overload
-def scale_point(domain: list[T], range_vals: list[int | float])-> ScaleBand: ...
+def scale_point(domain: list[T], range_vals: list[Number]) -> ScaleBand[T]: ...
 
 
 def scale_point(*args):
@@ -293,7 +290,7 @@ def scale_point(*args):
     ----------
     domain : list[T]
         Array of values
-    range_vals : list[int | float]
+    range_vals : list[Number]
         Array of numbers
 
     Returns

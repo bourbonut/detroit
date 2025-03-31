@@ -1,13 +1,18 @@
+from collections.abc import Callable
 from .object_to_value import interpolate as interpolate_value
+from ..types import U, V
 
 
-def piecewise(interpolate, values=None):
+def piecewise(
+    interpolate: Callable[[U, U], Callable[[float], V]],
+    values: list[U] | None = None,
+) -> Callable[[float], V]:
     if values is None:
         values = interpolate
         interpolate = interpolate_value
 
     n = len(values) - 1
-    I = [interpolate_value(values[i], values[i + 1]) for i in range(n)]
+    I = [interpolate(values[i], values[i + 1]) for i in range(n)]
 
     def local_interpolate(t):
         i = max(0, min(n - 1, int(t * n)))

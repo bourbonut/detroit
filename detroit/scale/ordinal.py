@@ -1,14 +1,11 @@
-from __future__ import annotations
-
-from typing import Any, TypeVar, overload
+from typing import Any, TypeVar, overload, Generic
+from ..types import U, V
 
 from .init import init_range
 
-U = TypeVar("U")
-V = TypeVar("V")
+TScaleOrdinal = TypeVar("Itself", bound="ScaleOrdinal")
 
-
-class ScaleOrdinal:
+class ScaleOrdinal(Generic[U, V]):
     """
     Unlike continuous scales, ordinal scales have a discrete domain and range.
     For example, an ordinal scale might map a set of named categories to a set
@@ -50,9 +47,9 @@ class ScaleOrdinal:
             return None
         return self._range_vals[index]
 
-    def set_domain(self, domain: list[U]) -> ScaleOrdinal:
+    def set_domain(self, domain: list[U]) -> TScaleOrdinal:
         """
-        Sets the scale’s domain to the specified array of values
+        Sets the scale’s domain to the specified array of values.
 
         Parameters
         ----------
@@ -76,7 +73,7 @@ class ScaleOrdinal:
     def get_domain(self) -> list[U]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[V]) -> ScaleOrdinal:
+    def set_range(self, range_vals: list[V]) -> TScaleOrdinal:
         """
         Sets the scale’s range to the specified array of values
 
@@ -96,7 +93,7 @@ class ScaleOrdinal:
     def get_range(self) -> list[V]:
         return self._range_vals.copy()
 
-    def set_unknown(self, unknown: Any) -> ScaleOrdinal:
+    def set_unknown(self, unknown: Any) -> TScaleOrdinal:
         """
         Sets the output value of the scale for undefined
         or NaN input values.
@@ -127,15 +124,15 @@ class ScaleOrdinal:
 
 
 @overload
-def scale_ordinal() -> ScaleOrdinal: ...
+def scale_ordinal() -> ScaleOrdinal[U, V]: ...
 
 
 @overload
-def scale_ordinal(range_vals: list[V]) -> ScaleOrdinal: ...
+def scale_ordinal(range_vals: list[V]) -> ScaleOrdinal[U, V]: ...
 
 
 @overload
-def scale_ordinal(domain: list[U], range_vals: list[V]) -> ScaleOrdinal: ...
+def scale_ordinal(domain: list[U], range_vals: list[V]) -> ScaleOrdinal[U, V]: ...
 
 
 def scale_ordinal(*args):
@@ -151,7 +148,7 @@ def scale_ordinal(*args):
 
     Returns
     -------
-    ScaleOrdinal
+    ScaleOrdinal[U, V]
         Scale object
 
     Examples

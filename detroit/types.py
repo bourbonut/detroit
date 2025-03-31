@@ -6,13 +6,23 @@ T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
 TScaler = TypeVar("TScaler", bound="Scaler")
-TSeqScaler = TypeVar("TSeqScaler", bound="SeqScaler")
+TContinuousScaler = TypeVar("TContinousScaler", bound="ContinuousScaler")
+TSequentialScaler = TypeVar("TSequentialScaler", bound="SequentialScaler")
 Number: TypeAlias = int | float
 GenValue: TypeAlias = datetime | str | int | float
 
 # Type definition for :code:`Formatter`: a function which takes a string to be
 # formatted and returns the formatted value.
 Formatter: TypeAlias = Callable[[str], T]
+
+class Interval(Protocol):
+    @staticmethod
+    def floor(x: float) -> float:
+        ...
+
+    @staticmethod
+    def ceil(x: float) -> float:
+        ...
 
 class Scaler(Protocol[U, V]):
 
@@ -31,7 +41,7 @@ class Scaler(Protocol[U, V]):
     def set_range(self, range_vals: list[V]) -> TScaler:
         ...
 
-class ContScaler(Scaler[U, V]):
+class ContinuousScaler(Scaler[U, V], Generic[U, V]):
     def invert(self, y: V) -> U:
         ...
 
@@ -44,16 +54,16 @@ class ContScaler(Scaler[U, V]):
     def get_unknown(self) -> Any:
         ...
 
-    def set_interpolate(self, interpolate: Callable[[V, V], V]) -> TScaler:
+    def set_interpolate(self, interpolate: Callable[[V, V], V]) -> TContinuousScaler:
         ...
 
-    def set_clamp(self, clamp: bool) -> TScaler:
+    def set_clamp(self, clamp: bool) -> TContinuousScaler:
         ...
 
-    def set_unknown(self, clamp: Any) -> TScaler:
+    def set_unknown(self, clamp: Any) -> TContinuousScaler:
         ...
 
-class SeqScaler(Scaler[U, V]):
+class SequentialScaler(Scaler[U, V], Generic[U, V]):
 
-    def set_interpolator(self, interpolator: Callable[[U], V]) -> TSeqScaler:
+    def set_interpolator(self, interpolator: Callable[[U], V]) -> TSequentialScaler:
         ...

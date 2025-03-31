@@ -1,18 +1,17 @@
-from __future__ import annotations
-
 import math
-from typing import Callable, TypeVar, overload
+from typing import Callable, TypeVar, overload, Generic
 
 from ..array import tick_increment, ticks
 from .continuous import Transformer, copy
 from .init import init_range
 from .tick_format import tick_format
+from ..types import T, Number
 
-T = TypeVar("T")
+TLinearBase = TypeVar("Itself", bound="LinearBase")
 
 
 class LinearBase:
-    def ticks(self, count: int | None = None) -> list[int | float]:
+    def ticks(self, count: int | None = None) -> list[Number]:
         """
         Returns approximately count representative values
         from the scale's domain.
@@ -25,7 +24,7 @@ class LinearBase:
 
         Returns
         -------
-        list[int | float]
+        list[Number]
             Tick values are uniformly spaced, have human-readable values
             (such as multiples of powers of 10), and are guaranteed to be
             within the extent of the domain. Ticks are often used to display
@@ -36,7 +35,7 @@ class LinearBase:
 
     def tick_format(
         self, count: int | None = None, specifier: str | None = None
-    ) -> Callable[[int | float], str]:
+    ) -> Callable[[Number], str]:
         """
         Returns a number format function suitable for displaying
         a tick value, automatically computing the appropriate
@@ -54,13 +53,13 @@ class LinearBase:
 
         Returns
         -------
-        Callable[[int | float], str]
+        Callable[[Number], str]
             Tick format function
         """
         d = self.get_domain()
         return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
 
-    def nice(self, count: int | None = None) -> LinearBase:
+    def nice(self, count: int | None = None) -> TLinearBase:
         """
         Extends the domain so that it starts and ends on nice round values.
 
@@ -116,7 +115,7 @@ class LinearBase:
         return self
 
 
-class ScaleLinear(Transformer, LinearBase):
+class ScaleLinear(Transformer[T], LinearBase, Generic[T]):
     """
     Linear scales map a continuous, quantitative input domain to a continuous
     output range using a linear transformation (translate and scale). If the
@@ -131,15 +130,15 @@ class ScaleLinear(Transformer, LinearBase):
 
 
 @overload
-def scale_linear() -> ScaleLinear: ...
+def scale_linear() -> ScaleLinear[T]: ...
 
 
 @overload
-def scale_linear(range_vals: list[T]) -> ScaleLinear: ...
+def scale_linear(range_vals: list[T]) -> ScaleLinear[T]: ...
 
 
 @overload
-def scale_linear(domain: list[int | float], range_vals: list[T]) -> ScaleLinear: ...
+def scale_linear(domain: list[Number], range_vals: list[T]) -> ScaleLinear[T]: ...
 
 
 def scale_linear(*args):
@@ -149,14 +148,14 @@ def scale_linear(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     range_vals : list[T]
         Array of values
 
     Returns
     -------
-    ScaleLinear
+    ScaleLinear[T]
         Scale object
 
     Examples

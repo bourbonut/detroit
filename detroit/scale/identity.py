@@ -1,14 +1,13 @@
-from __future__ import annotations
-
 import math
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Generic
+from ..types import T
 
 from .linear import LinearBase
 
-T = TypeVar("T")
+TIdentity = TypeVar("Itself", bound="Identity")
 
 
-class Identity(LinearBase):
+class Identity(LinearBase, Generic[T]):
     """
     Build a new identity scale with the specified range (and by extension, domain).
     """
@@ -50,7 +49,7 @@ class Identity(LinearBase):
         """
         return self(x)
 
-    def set_domain(self, domain: list[T]) -> Identity:
+    def set_domain(self, domain: list[T]) -> TIdentity:
         """
         Sets the scale’s domain
 
@@ -70,7 +69,7 @@ class Identity(LinearBase):
     def get_domain(self):
         return self._domain
 
-    def set_range(self, range_vals: list[T]) -> Identity:
+    def set_range(self, range_vals: list[T]) -> TIdentity:
         """
         Sets the scale’s range
 
@@ -89,7 +88,7 @@ class Identity(LinearBase):
     def get_range(self):
         return self._domain
 
-    def set_unknown(self, unknown: Any) -> Identity:
+    def set_unknown(self, unknown: Any) -> TIdentity:
         """
         Sets the output value of the scale for undefined
         or NaN input values.
@@ -114,7 +113,7 @@ class Identity(LinearBase):
         return Identity(self._domain).set_unknown(self._unknown)
 
 
-def scale_identity(values: list[T] | None = None) -> Identity:
+def scale_identity(values: list[T] | None = None) -> Identity[T]:
     """
     Build a new identity scale with the specified range
     (and by extension, domain).
