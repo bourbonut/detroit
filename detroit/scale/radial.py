@@ -1,28 +1,28 @@
-from __future__ import annotations
-
 import math
 from collections.abc import Callable
-from typing import overload
+from typing import overload, TypeVar
 
 from .continuous import Transformer, identity
 from .init import init_range
 from .linear import LinearBase
 from .utils import as_float
+from ..types import Number
 
+TScaleRadial = TypeVar("Itself", bound="ScaleRadial")
 
-def sign(x):
+def sign(x: float) -> float:
     return -1 if x < 0 else 1
 
 
-def square(x):
+def square(x: float) -> float:
     return sign(x) * x * x
 
 
-def unsquare(x):
+def unsquare(x: float) -> float:
     return sign(x) * math.sqrt(abs(x))
 
 
-class ScaleRadial(Transformer, LinearBase):
+class ScaleRadial(Transformer[float], LinearBase):
     """
     Radial scales are a variant of linear scales where the range
     is internally squared so that an input value corresponds linearly
@@ -33,30 +33,30 @@ class ScaleRadial(Transformer, LinearBase):
 
     Parameters
     ----------
-    t : Callable
+    t : Callable[[float], float]
         Tranform function
-    u : Callable
+    u : Callable[[float], float]
         Untranform function
     """
 
-    def __init__(self, t: Callable = identity, u: Callable = identity):
+    def __init__(self, t: Callable[[float], float] = identity, u: Callable[[float], float] = identity):
         super().__init__(t, u)
         self._range_vals = [0, 1]
         self._round = False
         self._unknown = None
 
-    def __call__(self, x: int | float) -> int | float:
+    def __call__(self, x: Number) -> Number:
         """
         Given a value from the domain, returns the corresponding value from the range.
 
         Parameters
         ----------
-        x : int | float
+        x : Number
             Input value
 
         Returns
         -------
-        int | float
+        Number
             Corresponding value from the range
         """
         y = unsquare(super().__call__(x))
@@ -67,7 +67,7 @@ class ScaleRadial(Transformer, LinearBase):
         else:
             return y
 
-    def invert(self, y: int | float) -> int | float:
+    def invert(self, y: Number) -> Number:
         """
         Given a value from the range, returns the corresponding value
         from the domain. Inversion is useful for interaction, say to
@@ -75,23 +75,23 @@ class ScaleRadial(Transformer, LinearBase):
 
         Parameters
         ----------
-        y : int | float
+        y : Number
             Input value
 
         Returns
         -------
-        int | float
+        Number
             Corresponding value from the domain
         """
         return super().invert(square(y))
 
-    def set_range(self, range_vals: list[int | float]) -> ScaleRadial:
+    def set_range(self, range_vals: list[Number]) -> TScaleRadial:
         """
         Sets the scale's range to the specified array of values
 
         Parameters
         ----------
-        range_vals : list[int | float]
+        range_vals : list[Number]
             Range values
 
         Returns
@@ -106,14 +106,14 @@ class ScaleRadial(Transformer, LinearBase):
     def get_range(self):
         return self._range_vals.copy()
 
-    def set_range_round(self, range_vals: list[int | float]) -> ScaleRadial:
+    def set_range_round(self, range_vals: list[Number]) -> TScaleRadial:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
 
         Parameters
         ----------
-        range_vals : list[int | float]
+        range_vals : list[Number]
             Range values
 
         Returns
@@ -123,7 +123,7 @@ class ScaleRadial(Transformer, LinearBase):
         """
         return super().set_range(range_vals).set_round(True)
 
-    def set_round(self, round_val: bool) -> ScaleRadial:
+    def set_round(self, round_val: bool) -> TScaleRadial:
         """
         Enables or disables rounding accordingly
 
@@ -159,12 +159,12 @@ def scale_radial() -> ScaleRadial: ...
 
 
 @overload
-def scale_radial(range_vals: list[int | float]) -> ScaleRadial: ...
+def scale_radial(range_vals: list[Number]) -> ScaleRadial: ...
 
 
 @overload
 def scale_radial(
-    domain: list[int | float], range_vals: list[int | float]
+    domain: list[Number], range_vals: list[Number]
 ) -> ScaleRadial: ...
 
 
@@ -174,9 +174,9 @@ def scale_radial(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
-    range_vals : list[int | float]
+    range_vals : list[Number]
         Array of values
 
     Returns

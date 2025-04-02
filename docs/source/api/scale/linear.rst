@@ -30,4 +30,15 @@ Linear scales
    .. automethod:: tick_format
    .. automethod:: nice
 
+
+.. autofunction:: detroit.scale_radial
+
+.. autoclass:: detroit.scale.radial.ScaleRadial
+
+   .. automethod:: __call__
+   .. automethod:: invert
+   .. automethod:: set_range
+   .. automethod:: set_range_round
+   .. automethod:: set_round
+
 .. autofunction:: detroit.tick_format

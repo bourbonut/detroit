@@ -1,16 +1,15 @@
-from __future__ import annotations
-
 import math
 from bisect import bisect
-from typing import Any, TypeVar, overload
+from typing import Any, TypeVar, overload, Generic
 
 from .init import init_range
 from .linear import LinearBase
+from ..types import T, Number
 
-T = TypeVar("T")
+TScaleQuantize = TypeVar("Itself", bound="ScaleQuantize")
 
 
-class ScaleQuantize(LinearBase):
+class ScaleQuantize(LinearBase, Generic[T]):
     def __init__(self):
         self._x0 = 0
         self._x1 = 1
@@ -19,14 +18,14 @@ class ScaleQuantize(LinearBase):
         self._range_vals = [0, 1]
         self._unknown = None
 
-    def __call__(self, x: int | float | None = None) -> T:
+    def __call__(self, x: Number | None = None) -> T:
         """
         Given a value in the input domain, returns the corresponding
         value in the output range.
 
         Parameters
         ----------
-        x : int | float | None
+        x : Number | None
             Input value
 
         Returns
@@ -45,13 +44,13 @@ class ScaleQuantize(LinearBase):
         self._domain = [((i + 1) * x1 - (i - n) * x0) / (n + 1) for i in range(n)]
         return self
 
-    def set_domain(self, domain: list[int | float]) -> ScaleQuantize:
+    def set_domain(self, domain: list[Number]) -> TScaleQuantize:
         """
         Sets the scale’s domain to the specified two-element array of numbers.
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -62,10 +61,10 @@ class ScaleQuantize(LinearBase):
         self._x0, self._x1 = map(float, sorted(domain)[:2])
         return self.rescale()
 
-    def get_domain(self) -> list[int | float]:
+    def get_domain(self) -> list[Number]:
         return [self._x0, self._x1]
 
-    def set_range(self, range_vals: list[T]) -> ScaleQuantize:
+    def set_range(self, range_vals: list[T]) -> TScaleQuantize:
         """
         Sets the scale’s range to the specified array of values
 
@@ -86,7 +85,7 @@ class ScaleQuantize(LinearBase):
     def get_range(self) -> list[T]:
         return self._range_vals.copy()
 
-    def invert_extent(self, y: T) -> int | float:
+    def invert_extent(self, y: T) -> Number:
         """
         Returns the extent of values in the domain :math:`[x_0, x_1]`
         for the corresponding value in the range: the inverse of quantize.
@@ -100,7 +99,7 @@ class ScaleQuantize(LinearBase):
 
         Returns
         -------
-        int | float
+        Number
             Output value
         """
         i = self._range_vals.index(y)
@@ -113,7 +112,7 @@ class ScaleQuantize(LinearBase):
         else:
             return [self._domain[i - 1], self._domain[i]]
 
-    def set_unknown(self, unknown: Any) -> ScaleQuantize:
+    def set_unknown(self, unknown: Any) -> TScaleQuantize:
         """
         Sets the scale's unknown value
 
@@ -146,15 +145,15 @@ class ScaleQuantize(LinearBase):
 
 
 @overload
-def scale_quantize() -> ScaleQuantize: ...
+def scale_quantize() -> ScaleQuantize[T]: ...
 
 
 @overload
-def scale_quantize(range_vals: list[T]) -> ScaleQuantize: ...
+def scale_quantize(range_vals: list[T]) -> ScaleQuantize[T]: ...
 
 
 @overload
-def scale_quantize(domain: list[int | float], range_vals: list[T]) -> ScaleQuantize: ...
+def scale_quantize(domain: list[Number], range_vals: list[T]) -> ScaleQuantize[T]: ...
 
 
 def scale_quantize(*args):
@@ -163,14 +162,14 @@ def scale_quantize(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     range_vals : list[T]
         Array of values
 
     Returns
     -------
-    ScaleQuantize
+    ScaleQuantize[T]
         Scale object
 
     Examples

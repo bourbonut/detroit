@@ -11,7 +11,7 @@ from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .sequential import copy
 from .symlog import transform_symlog
-from ..types import T
+from ..types import T, Number
 
 TDiverging = TypeVar("Itself", bound="Diverging")
 TDivergingLinear = TypeVar("Itself", bound="DivergingLinear")
@@ -51,13 +51,13 @@ class Diverging:
         self._clamp = False
         self._unknown = None
 
-    def __call__(self, x: int | float) -> float:
+    def __call__(self, x: Number) -> float:
         """
         Given a value from the domain, returns the corresponding value from the range.
 
         Parameters
         ----------
-        x : int | float
+        x : Number
             Input value
 
         Returns
@@ -73,13 +73,13 @@ class Diverging:
             x = 0.5 + (x - self._t1) * k
             return self._interpolator(max(0, min(1, x)) if self._clamp else x)
 
-    def set_domain(self, domain: list[int | float]) -> TDiverging:
+    def set_domain(self, domain: list[Number]) -> TDiverging:
         """
         Sets the scale's domain to the specified array of numbers
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -96,7 +96,7 @@ class Diverging:
         self._s = -1 if self._t1 < self._t0 else 1
         return self
 
-    def get_domain(self) -> list[int | float]:
+    def get_domain(self) -> list[Number]:
         return [self._x0, self._x1, self._x2]
 
     def set_clamp(self, clamp: bool) -> TDiverging:
@@ -237,13 +237,13 @@ class DivergingLog(Diverging, LogBase):
             self._transform = transform_log
         return self
 
-    def set_domain(self, domain: list[int | float]) -> TDivergingLog:
+    def set_domain(self, domain: list[Number]) -> TDivergingLog:
         """
         Sets the scale's domain to the specified array of numbers
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -261,17 +261,17 @@ class DivergingLog(Diverging, LogBase):
 
 
 class DivergingSymlog(Diverging):
-    def __init__(self, c: int | float = 1):
+    def __init__(self, c: Number = 1):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
-    def set_constant(self, c: int | float) -> TDivergingSymlog:
+    def set_constant(self, c: Number) -> TDivergingSymlog:
         """
         Sets the symlog constant to the specified number and returns this scale.
 
         Parameters
         ----------
-        c : int | float
+        c : Number
             Constant value
 
         Returns
@@ -307,13 +307,13 @@ class DivergingPow(Diverging, LinearBase):
             self.rescale()
             return self
 
-    def set_exponent(self, exponent: int | float) -> TDivergingPow:
+    def set_exponent(self, exponent: Number) -> TDivergingPow:
         """
         Sets the scale's exponent value.
 
         Parameters
         ----------
-        exponent : int | float
+        exponent : Number
             Exponent value
 
         Returns
@@ -341,7 +341,7 @@ def scale_diverging(interpolator: Callable) -> DivergingLinear: ...
 
 @overload
 def scale_diverging(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable
 ) -> DivergingLinear: ...
 
 
@@ -352,7 +352,7 @@ def scale_diverging(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     interpolator : Callable
         Interpolator function
@@ -386,7 +386,7 @@ def scale_diverging_log(interpolator: Callable) -> DivergingLog: ...
 
 @overload
 def scale_diverging_log(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable
 ) -> DivergingLog: ...
 
 
@@ -397,7 +397,7 @@ def scale_diverging_log(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     interpolator : Callable
         Interpolator function
@@ -431,7 +431,7 @@ def scale_diverging_symlog(interpolator: Callable) -> DivergingSymlog: ...
 
 @overload
 def scale_diverging_symlog(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable
 ) -> DivergingSymlog: ...
 
 
@@ -442,7 +442,7 @@ def scale_diverging_symlog(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     interpolator : Callable
         Interpolator function
@@ -476,7 +476,7 @@ def scale_diverging_pow(interpolator: Callable) -> DivergingPow: ...
 
 @overload
 def scale_diverging_pow(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable
 ) -> DivergingPow: ...
 
 
@@ -488,7 +488,7 @@ def scale_diverging_pow(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     interpolator : Callable
         Interpolator function
@@ -522,7 +522,7 @@ def scale_diverging_sqrt(interpolator: Callable) -> DivergingPow: ...
 
 @overload
 def scale_diverging_sqrt(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable
 ) -> DivergingPow: ...
 
 
@@ -533,7 +533,7 @@ def scale_diverging_sqrt(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     interpolator : Callable
         Interpolator function

@@ -1,16 +1,15 @@
-from __future__ import annotations
-
 import math
 from bisect import bisect
 from statistics import quantiles
-from typing import Any, TypeVar, overload
+from typing import Any, TypeVar, overload, Generic
 
 from .init import init_range
+from ..types import T, Number
 
-T = TypeVar("T")
+TScaleQuantile = TypeVar("Itself", bound="ScaleQuantile")
 
 
-class ScaleQuantile:
+class ScaleQuantile(Generic[T]):
     """
     Quantile scales map a sampled input domain to a discrete range.
     The domain is considered continuous and thus the scale will accept
@@ -32,14 +31,14 @@ class ScaleQuantile:
         self._thresholds = quantiles(self._domain, n=n, method="inclusive")
         return self
 
-    def __call__(self, x: int | float) -> T:
+    def __call__(self, x: Number) -> T:
         """
         Given a value in the input domain, returns the
         corresponding value in the output range.
 
         Parameters
         ----------
-        x : int | float
+        x : Number
             Input value
 
         Returns
@@ -51,7 +50,7 @@ class ScaleQuantile:
             return self._unknown
         return self._range_vals[bisect(self._thresholds, x)]
 
-    def invert_extent(self, y: T) -> int | float:
+    def invert_extent(self, y: T) -> Number:
         """
         Returns the extent of values in the domain :math:`[x_0, x_1]`
         for the corresponding value in the range: the inverse of quantile.
@@ -63,7 +62,7 @@ class ScaleQuantile:
 
         Returns
         -------
-        int | float
+        Number
             Output value
         """
         if y not in self._range_vals:
@@ -78,14 +77,14 @@ class ScaleQuantile:
             ]
         )
 
-    def set_domain(self, domain: list[int | float]) -> ScaleQuantile:
+    def set_domain(self, domain: list[Number]) -> TScaleQuantile:
         """
         Sets the domain of the quantile scale to the specified
         set of discrete numeric values .
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -102,10 +101,10 @@ class ScaleQuantile:
         self._domain = sorted(self._domain)
         return self.rescale()
 
-    def get_domain(self) -> list[int | float]:
+    def get_domain(self) -> list[Number]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[T]) -> ScaleQuantile:
+    def set_range(self, range_vals: list[T]) -> TScaleQuantile:
         """
         Sets the discrete values in the range.
 
@@ -125,7 +124,7 @@ class ScaleQuantile:
     def get_range(self) -> list[T]:
         return self._range_vals.copy()
 
-    def set_unknown(self, unknown: Any) -> ScaleQuantile:
+    def set_unknown(self, unknown: Any) -> TScaleQuantile:
         """
         Sets the scale's unknown value.
 
@@ -158,15 +157,15 @@ class ScaleQuantile:
 
 
 @overload
-def scale_quantile() -> ScaleQuantile: ...
+def scale_quantile() -> ScaleQuantile[T]: ...
 
 
 @overload
-def scale_quantile(range_vals: list[T]) -> ScaleQuantile: ...
+def scale_quantile(range_vals: list[T]) -> ScaleQuantile[T]: ...
 
 
 @overload
-def scale_quantile(domain: list[int | float], range_vals: list[T]) -> ScaleQuantile: ...
+def scale_quantile(domain: list[Number], range_vals: list[T]) -> ScaleQuantile[T]: ...
 
 
 def scale_quantile(*args):
@@ -175,14 +174,14 @@ def scale_quantile(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
     range_vals : list[T]
         Array of values
 
     Returns
     -------
-    ScaleQuantile
+    ScaleQuantile[T]
         Scale object
 
     Examples

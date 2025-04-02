@@ -9,6 +9,7 @@ Scales can also be used with virtually any type of data, such as named categoric
    :maxdepth: 2
    :caption: Contents:
 
+   continuous
    linear
    time
    pow

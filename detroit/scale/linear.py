@@ -123,6 +123,13 @@ class ScaleLinear(Transformer[T], LinearBase, Generic[T]):
     default choice for continuous quantitative data because they preserve
     proportional differences. Each range value y can be expressed as a function
     of the domain value x: :math:`y = m \\cdot x + b`.
+
+    Parameters
+    ----------
+    t : Callable[[Number], T]
+        Transform function
+    u : Callable[[T], Number]
+        Untransform function
     """
 
     def copy(self):

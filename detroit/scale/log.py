@@ -8,6 +8,7 @@ from ..format import format_specifier, locale_format
 from .continuous import Transformer, copy
 from .init import init_range
 from .nice import nice
+from ..types import Number
 
 TLogBase = TypeVar("Itself", bound="LogBase")
 TScaleLog = TypeVar("Itself", bound="ScaleLog")
@@ -42,7 +43,7 @@ def pow10(x: datetime | float) -> float:
     return 10**x if math.isfinite(x) else 0 if x < 0 else x
 
 
-def powp(base: int | float) -> Callable[[float], float]:
+def powp(base: Number) -> Callable[[float], float]:
     if base == 10:
         return pow10
     elif base == math.e:
@@ -51,7 +52,7 @@ def powp(base: int | float) -> Callable[[float], float]:
         return lambda x: math.pow(base, x)
 
 
-def logp(base: int | float) -> Callable[[float], float]:
+def logp(base: Number) -> Callable[[float], float]:
     if base == math.e:
         return math.log
     elif base == 10:
@@ -83,13 +84,13 @@ class LogBase:
         self._logs = None
         self._pows = None
 
-    def set_base(self, base: int | float) -> TLogBase:
+    def set_base(self, base: Number) -> TLogBase:
         """
         Sets the scale's base value
 
         Parameters
         ----------
-        base : int | float
+        base : Number
             Base value
 
         Returns
@@ -100,7 +101,7 @@ class LogBase:
         self._base = float(base)
         return self._log_rescale()
 
-    def get_base(self) -> int | float:
+    def get_base(self) -> Number:
         return self._base
 
     def ticks(self, count: int | None = None) -> TLogBase:
@@ -289,11 +290,11 @@ def scale_log() -> ScaleLog: ...
 
 
 @overload
-def scale_log(range_vals: list[int | float]) -> ScaleLog: ...
+def scale_log(range_vals: list[Number]) -> ScaleLog: ...
 
 
 @overload
-def scale_log(domain: list[int | float], range_vals: list[int | float]) -> ScaleLog: ...
+def scale_log(domain: list[Number], range_vals: list[Number]) -> ScaleLog: ...
 
 
 def scale_log(*args):
@@ -303,9 +304,9 @@ def scale_log(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
-    range_vals : list[int | float]
+    range_vals : list[Number]
         Array of values
 
     Returns

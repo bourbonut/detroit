@@ -17,7 +17,7 @@ def init_range(
 def init_interpolator(
     obj: SequentialScaler,
     domain: list[U] | None = None,
-    interpolator: Callable[[V, V], V] | None = None,
+    interpolator: Callable[[V], V] | None = None,
 ):
     if domain is None and interpolator is None:
         return obj

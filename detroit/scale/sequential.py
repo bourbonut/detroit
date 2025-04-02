@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, TypeVar, overload
+from typing import Any, TypeVar, overload, Generic
 
 from ..interpolate import interpolate, interpolate_round
 from .continuous import identity
@@ -12,12 +12,23 @@ from .linear import LinearBase
 from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .symlog import transform_symlog
+from ..types import T, Number
 
-T = TypeVar("T")
+TSequential = TypeVar("Itself", bound="Sequential")
+TSequentialPow = TypeVar("Itself", bound="SequentialPow")
+TSequentialLog = TypeVar("Itself", bound="SequentialLog")
+TSequentialSymlog = TypeVar("Itself", bound="SequentialSymlog")
 
+class Sequential(Generic[T]):
+    """
+    Sequential transformation
 
-class Sequential:
-    def __init__(self, t: Callable):
+    Parameters
+    ----------
+    t : Callable[[Number], T]
+        Transform function
+    """
+    def __init__(self, t: Callable[[Number], T]):
         self._x0 = 0
         self._x1 = 1
         self._transform = t
@@ -28,13 +39,13 @@ class Sequential:
         self._clamp = False
         self._unknown = None
 
-    def __call__(self, x: int | float) -> T:
+    def __call__(self, x: Number) -> T:
         """
         Given a value from the domain, returns the corresponding value from the range.
 
         Parameters
         ----------
-        x : int | float
+        x : Number
             Input value
 
         Returns
@@ -52,13 +63,13 @@ class Sequential:
                 x = max(0, min(1, x))
         return self._interpolator(x)
 
-    def set_domain(self, domain: list[int | float]) -> Sequential:
+    def set_domain(self, domain: list[Number]) -> TSequential:
         """
         Sets the scale's domain to the specified array of numbers
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -72,10 +83,10 @@ class Sequential:
         self._k10 = 0 if self._t0 == self._t1 else 1 / (self._t1 - self._t0)
         return self
 
-    def get_domain(self) -> list[int | float]:
+    def get_domain(self) -> list[Number]:
         return [self._x0, self._x1]
 
-    def set_clamp(self, clamp: bool) -> Sequential:
+    def set_clamp(self, clamp: bool) -> TSequential:
         """
         Enables or disables clamping accordingly.
 
@@ -95,13 +106,13 @@ class Sequential:
     def get_clamp(self) -> bool:
         return self._clamp
 
-    def set_interpolator(self, interpolator: Callable) -> Sequential:
+    def set_interpolator(self, interpolator: Callable[[float], float]) -> TSequential:
         """
         Sets the scale’s interpolator to the specified function.
 
         Parameters
         ----------
-        interpolator : Callable
+        interpolator: Callable[[float], float]
             Interpolator function
 
         Returns
@@ -112,10 +123,10 @@ class Sequential:
         self._interpolator = interpolator
         return self
 
-    def get_interpolator(self) -> Callable:
+    def get_interpolator(self) -> Callable[[float], float]:
         return self._interpolator
 
-    def set_range(self, range_vals: list[T]) -> Sequential:
+    def set_range(self, range_vals: list[T]) -> TSequential:
         """
         The given two-element array is converted
         to an interpolator function using interpolate
@@ -137,7 +148,7 @@ class Sequential:
     def get_range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
-    def set_range_round(self, range_vals: list[T]) -> Sequential:
+    def set_range_round(self, range_vals: list[T]) -> TSequential:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -159,7 +170,7 @@ class Sequential:
     def get_range_round(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
-    def set_unknown(self, unknown: Any) -> Sequential:
+    def set_unknown(self, unknown: Any) -> TSequential:
         """
         Sets the output value of the scale for undefined
         or NaN input values.
@@ -190,7 +201,10 @@ def copy(source, target):
     )
 
 
-class SequentialLinear(Sequential, LinearBase):
+class SequentialLinear(Sequential[float], LinearBase):
+    """
+    Linear sequential transformation
+    """
     def __init__(self):
         Sequential.__init__(self, identity)
 
@@ -198,11 +212,13 @@ class SequentialLinear(Sequential, LinearBase):
         return copy(self, SequentialLinear())
 
 
-class SequentialLog(Sequential, LogBase):
+class SequentialLog(Sequential[float], LogBase):
+    """
+    Log sequential transformation
+    """
     def __init__(self):
-        Sequential.__init__(self)
+        Sequential.__init__(self, transform_symlog)
         LogBase.__init__(self)
-        self.transform = transform_log
         self.set_domain([1, 10])
 
     def _rescale(self):
@@ -214,18 +230,18 @@ class SequentialLog(Sequential, LogBase):
         if d < 0:
             self._logs = reflect(self._logs)
             self._pows = reflect(self._pows)
-            self.transform = transform_logn
+            self._transform = transform_logn
         else:
-            self.transform = transform_log
+            self._transform = transform_log
         return self
 
-    def set_domain(self, domain: list[int | float]) -> SequentialLog:
+    def set_domain(self, domain: list[Number]) -> TSequentialLog:
         """
         Sets the scale's domain to the specified array of numbers
 
         Parameters
         ----------
-        domain : list[int | float]
+        domain : list[Number]
             Domain
 
         Returns
@@ -242,60 +258,72 @@ class SequentialLog(Sequential, LogBase):
         return copy(self, SequentialLog()).base(self.base)
 
 
-class SequentialSymlog(Sequential):
-    def __init__(self, c: int | float = 1):
+class SequentialSymlog(Sequential[float]):
+    """
+    Symlog sequential transformation
+
+    Parameters
+    ----------
+    c : Number
+        Symlog constant value
+    """
+    def __init__(self, c: Number = 1):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
-    def set_constant(self, c: int | float) -> SequentialLog:
+    def set_constant(self, c: Number) -> TSequentialSymlog:
         """
         Sets the symlog constant to the specified number and returns this scale.
 
         Parameters
         ----------
-        c : int | float
+        c : Number
             Constant value
 
         Returns
         -------
-        SequentialLog
+        SequentialSymlog
             Itself
         """
         self._c = float(c)
-        self.transform = transform_symlog(self._c)
-        self.rescale()
+        self._transform = transform_symlog(self._c)
         return self
 
     def copy(self):
         return copy(self, SequentialSymlog()).set_constant(self.constant)
 
 
-class SequentialPow(Sequential, LinearBase):
-    def __init__(self, t: Callable = identity):
+class SequentialPow(Sequential[float], LinearBase):
+    """
+    Power sequential transformation
+    
+    Parameters
+    ----------
+    t : Callable[[Number], T]
+        Transform function
+    """
+    def __init__(self, t: Callable[[Number], float] = identity):
         super().__init__(t)
         self._exponent = 1
 
-    def _rescale(self):
+    def _rescale(self) -> TSequentialPow:
         if self._exponent == 1:
-            self.transform = identity
-            self.rescale()
+            self._transform = identity
             return self
         elif self._exponent == 0.5:
-            self.transform = transform_sqrt
-            self.rescale()
+            self._transform = transform_sqrt
             return self
         else:
-            self.transform = transform_pow(self._exponent)
-            self.rescale()
+            self._transform = transform_pow(self._exponent)
             return self
 
-    def set_exponent(self, exponent: int | float) -> SequentialPow:
+    def set_exponent(self, exponent: Number) -> TSequentialPow:
         """
         Sets the scale's exponent value.
 
         Parameters
         ----------
-        exponent : int | float
+        exponent : Number
             Exponent value
 
         Returns
@@ -318,12 +346,12 @@ def scale_sequential() -> SequentialLinear: ...
 
 
 @overload
-def scale_sequential(interpolator: Callable) -> SequentialLinear: ...
+def scale_sequential(interpolator: Callable[[float], float]) -> SequentialLinear: ...
 
 
 @overload
 def scale_sequential(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable[[float], float]
 ) -> SequentialLinear: ...
 
 
@@ -334,9 +362,9 @@ def scale_sequential(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Domain
-    interpolator : Callable
+    interpolator: Callable[[float], float]
         Interpolator
 
     Returns
@@ -363,12 +391,12 @@ def scale_sequential_log() -> SequentialLog: ...
 
 
 @overload
-def scale_sequential_log(interpolator: Callable) -> SequentialLog: ...
+def scale_sequential_log(interpolator: Callable[[float], float]) -> SequentialLog: ...
 
 
 @overload
 def scale_sequential_log(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable[[float], float]
 ) -> SequentialLog: ...
 
 
@@ -379,9 +407,9 @@ def scale_sequential_log(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Domain
-    interpolator : Callable
+    interpolator: Callable[[float], float]
         Interpolator
 
     Returns
@@ -408,12 +436,12 @@ def scale_sequential_symlog() -> SequentialSymlog: ...
 
 
 @overload
-def scale_sequential_symlog(interpolator: Callable) -> SequentialSymlog: ...
+def scale_sequential_symlog(interpolator: Callable[[float], float]) -> SequentialSymlog: ...
 
 
 @overload
 def scale_sequential_symlog(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable[[float], float]
 ) -> SequentialSymlog: ...
 
 
@@ -424,9 +452,9 @@ def scale_sequential_symlog(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Domain
-    interpolator : Callable
+    interpolator: Callable[[float], float]
         Interpolator
 
     Returns
@@ -453,12 +481,12 @@ def scale_sequential_pow() -> SequentialPow: ...
 
 
 @overload
-def scale_sequential_pow(interpolator: Callable) -> SequentialPow: ...
+def scale_sequential_pow(interpolator: Callable[[float], float]) -> SequentialPow: ...
 
 
 @overload
 def scale_sequential_pow(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable[[float], float]
 ) -> SequentialPow: ...
 
 
@@ -470,9 +498,9 @@ def scale_sequential_pow(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Domain
-    interpolator : Callable
+    interpolator: Callable[[float], float]
         Interpolator
 
     Returns
@@ -499,12 +527,12 @@ def scale_sequential_sqrt() -> SequentialPow: ...
 
 
 @overload
-def scale_sequential_sqrt(interpolator: Callable) -> SequentialPow: ...
+def scale_sequential_sqrt(interpolator: Callable[[float], float]) -> SequentialPow: ...
 
 
 @overload
 def scale_sequential_sqrt(
-    domain: list[int | float], interpolator: Callable
+    domain: list[Number], interpolator: Callable[[float], float]
 ) -> SequentialPow: ...
 
 
@@ -516,9 +544,9 @@ def scale_sequential_sqrt(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Domain
-    interpolator : Callable
+    interpolator: Callable[[float], float]
         Interpolator
 
     Returns

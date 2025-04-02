@@ -6,8 +6,9 @@ from typing import TypeVar, overload
 from .continuous import Transformer, copy
 from .init import init_range
 from .linear import LinearBase
+from ..types import T, Number
 
-T = TypeVar("T")
+TScaleSymlog = TypeVar("Itself", bound="ScaleSymlog")
 
 
 def sign(x):
@@ -22,18 +23,27 @@ def transform_symexp(c):
     return lambda x: sign(x) * math.expm1(abs(x)) * c
 
 
-class ScaleSymlog(Transformer, LinearBase):
-    def __init__(self, c=1):
+class ScaleSymlog(Transformer[float], LinearBase):
+    """
+    A bi-symmetric log transformation for wide-range data by Webber for
+    details. Unlike a log scale, a symlog scale domain can include zero.
+
+    Parameters
+    ----------
+    c : Number
+        Symlog constant value
+    """
+    def __init__(self, c: Number = 1):
         self._c = c
         super().__init__(transform_symlog(self._c), transform_symexp(self._c))
 
-    def set_constant(self, c: int | float) -> ScaleSymlog:
+    def set_constant(self, c: Number) -> TScaleSymlog:
         """
         Sets the symlog constant to the specified number and returns this scale.
 
         Parameters
         ----------
-        c : int | float
+        c : Number
             Constant value
 
         Returns
@@ -63,7 +73,7 @@ def scale_symlog(range_vals: list[T]) -> ScaleSymlog: ...
 
 
 @overload
-def scale_symlog(domain: list[int | float], range_vals: list[T]) -> ScaleSymlog: ...
+def scale_symlog(domain: list[Number], range_vals: list[T]) -> ScaleSymlog: ...
 
 
 def scale_symlog(*args):
@@ -74,9 +84,9 @@ def scale_symlog(*args):
 
     Parameters
     ----------
-    domain : list[int | float]
+    domain : list[Number]
         Array of numbers
-    range_vals : list[int | float]
+    range_vals : list[Number]
         Array of values
 
     Returns

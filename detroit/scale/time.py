@@ -19,7 +19,7 @@ from ..types import T, Formatter
 from .init import init_range
 from .nice import nice
 
-TScaleTime = TypeVar("TScaleTime", bound="ScaleTime")
+TScaleTime = TypeVar("Itself", bound="ScaleTime")
 
 class ScaleTime(Transformer[datetime]):
     """
