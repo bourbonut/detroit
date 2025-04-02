@@ -127,5 +127,14 @@ def scale_identity(values: list[T] | None = None) -> Identity[T]:
     -------
     Identity
         Scale object
+
+    Examples
+    --------
+
+    >>> scale = d3.scale_identity()
+    >>> scale(3)
+    3
+    >>> scale("a")
+    'a'
     """
     return Identity(domain=values)

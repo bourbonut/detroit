@@ -142,7 +142,37 @@ def scale_sequential_quantile(*args):
     Examples
     --------
 
-    >>> d3.scale_sequential_quantile()
+    >>> scale = d3.scale_sequential_quantile().set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20])
+    >>> scale = scale.set_interpolator(d3.interpolate_blues)
+    >>> for x in range(21):
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 rgb(247, 251, 255)
+    1 rgb(247, 251, 255)
+    2 rgb(247, 251, 255)
+    3 rgb(247, 251, 255)
+    4 rgb(247, 251, 255)
+    5 rgb(247, 251, 255)
+    6 rgb(225, 237, 248)
+    7 rgb(202, 222, 240)
+    8 rgb(130, 186, 219)
+    9 rgb(130, 186, 219)
+    10 rgb(89, 161, 207)
+    11 rgb(89, 161, 207)
+    12 rgb(89, 161, 207)
+    13 rgb(55, 135, 192)
+    14 rgb(55, 135, 192)
+    15 rgb(28, 106, 175)
+    16 rgb(11, 77, 148)
+    17 rgb(11, 77, 148)
+    18 rgb(11, 77, 148)
+    19 rgb(11, 77, 148)
+    20 rgb(8, 48, 107)
+    >>> d3.interpolate_blues(0)
+    'rgb(247, 251, 255)'
+    >>> d3.interpolate_blues(1)
+    'rgb(8, 48, 107)'
     """
     scale = SequentialQuantile()
     if len(args) == 1:

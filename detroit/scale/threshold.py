@@ -174,7 +174,23 @@ def scale_threshold(*args):
     Examples
     --------
 
-    >>> d3.scale_threshold([0, 1], ["red", "white", "blue"])
+    >>> scale = d3.scale_threshold([0, 1], ["red", "white", "blue"])
+    >>> for x in range(steps + 1):
+    ...     x = -1 + 2 * x / steps
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    -1.0 red
+    -0.8 red
+    -0.6 red
+    -0.4 red
+    -0.19999999999999996 red
+    0.0 white
+    0.19999999999999996 white
+    0.3999999999999999 white
+    0.6000000000000001 white
+    0.8 white
+    1.0 blue
     """
     scale = ScaleThreshold()
     if len(args) == 1:

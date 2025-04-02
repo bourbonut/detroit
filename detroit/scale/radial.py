@@ -170,7 +170,7 @@ def scale_radial(
 
 def scale_radial(*args):
     """
-    Builds  a new radial scale with the specified domain and range.
+    Builds a new radial scale with the specified domain and range.
 
     Parameters
     ----------
@@ -187,7 +187,23 @@ def scale_radial(*args):
     Examples
     --------
 
-    >>> d3.scale_radial([100, 200], [0, 480])
+    >>> scale = d3.scale_radial([100, 200], [0, 480])
+    >>> for x in range(11):
+    ...     x = 100 + x * 10
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    100 0.0
+    110 151.7893276880822
+    120 214.66252583997982
+    130 262.9068276024797
+    140 303.5786553761644
+    150 339.4112549695428
+    160 371.806401235912
+    170 401.59681273635624
+    180 429.32505167995964
+    190 455.36798306424663
+    200 480.0
     """
     scale = ScaleRadial()
     if len(args) == 1:

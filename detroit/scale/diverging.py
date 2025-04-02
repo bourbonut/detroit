@@ -281,7 +281,6 @@ class DivergingSymlog(Diverging):
         """
         self._c = float(c)
         self._transform = transform_symlog(self._c)
-        self.rescale()
         return self
 
     def copy(self):
@@ -296,15 +295,12 @@ class DivergingPow(Diverging, LinearBase):
     def _rescale(self):
         if self._exponent == 1:
             self._transform = identity
-            self.rescale()
             return self
         elif self._exponent == 0.5:
             self._transform = transform_sqrt
-            self.rescale()
             return self
         else:
             self._transform = transform_pow(self._exponent)
-            self.rescale()
             return self
 
     def set_exponent(self, exponent: Number) -> TDivergingPow:
@@ -365,7 +361,26 @@ def scale_diverging(*args):
     Examples
     --------
 
-    >>> d3.scale_diverging([-1, 0, 1], d3.interpolate_RdBu)
+    >>> scale = d3.scale_diverging([-1, 0, 1], d3.interpolate_rdbu)
+    >>> steps = 8
+    >>> for x in range(steps + 1):
+    ...     x = -1 + 2 * x / steps
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    -1.0 rgb(103, 0, 31)
+    -0.75 rgb(184, 45, 53)
+    -0.5 rgb(228, 130, 104)
+    -0.25 rgb(250, 204, 180)
+    0.0 rgb(242, 239, 238)
+    0.25 rgb(191, 220, 235)
+    0.5 rgb(107, 172, 208)
+    0.75 rgb(42, 113, 174)
+    1.0 rgb(5, 48, 97)
+    >>> d3.interpolate_rdbu(0)
+    'rgb(103, 0, 31)'
+    >>> d3.interpolate_rdbu(1)
+    'rgb(5, 48, 97)'
     """
     scale = DivergingLinear()
     if len(args) == 1:
@@ -410,7 +425,29 @@ def scale_diverging_log(*args):
     Examples
     --------
 
-    >>> d3.scale_diverging_log([1, 10, 100], d3.interpolate_RdBu)
+    >>> scale = d3.scale_diverging_log([1, 10, 100], d3.interpolate_rdbu)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 2 * x / steps
+    ...     x = 10 ** x
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    1.0 rgb(103, 0, 31)
+    1.5848931924611136 rgb(172, 32, 47)
+    2.51188643150958 rgb(213, 96, 80)
+    3.9810717055349722 rgb(240, 162, 133)
+    6.309573444801933 rgb(250, 215, 196)
+    10.0 rgb(242, 239, 238)
+    15.848931924611133 rgb(205, 227, 238)
+    25.118864315095795 rgb(143, 194, 220)
+    39.810717055349734 rgb(74, 148, 196)
+    63.09573444801933 rgb(34, 101, 163)
+    100.0 rgb(5, 48, 97)
+    >>> d3.interpolate_rdbu(0)
+    'rgb(103, 0, 31)'
+    >>> d3.interpolate_rdbu(1)
+    'rgb(5, 48, 97)'
     """
     scale = DivergingLog()
     if len(args) == 1:
@@ -455,7 +492,30 @@ def scale_diverging_symlog(*args):
     Examples
     --------
 
-    >>> d3.scale_diverging_symlog([1, 10, 100], d3.interpolate_RdBu)
+    >>> scale = d3.scale_diverging_symlog([1, 10, 100], d3.interpolate_rdbu)
+    >>> scale = scale.set_constant(2)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 2 * x / steps
+    ...     x = 10 ** x
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    1.0 rgb(44, 0, 19)
+    1.5848931924611136 rgb(79, 0, 27)
+    2.51188643150958 rgb(129, 9, 35)
+    3.9810717055349722 rgb(181, 41, 51)
+    6.309573444801933 rgb(218, 106, 87)
+    10.0 rgb(244, 176, 147)
+    15.848931924611133 rgb(250, 228, 216)
+    25.118864315095795 rgb(228, 237, 242)
+    39.810717055349734 rgb(180, 214, 231)
+    63.09573444801933 rgb(111, 174, 210)
+    100.0 rgb(53, 126, 184)
+    >>> d3.interpolate_rdbu(0)
+    'rgb(103, 0, 31)'
+    >>> d3.interpolate_rdbu(1)
+    'rgb(5, 48, 97)'
     """
     scale = DivergingSymlog()
     if len(args) == 1:
@@ -501,7 +561,30 @@ def scale_diverging_pow(*args):
     Examples
     --------
 
-    >>> d3.scale_diverging_pow([0, 1, 10], d3.interpolate_RdBu)
+    >>> from math import sqrt
+    >>> scale = d3.scale_diverging_pow([0, 1, 10], d3.interpolate_rdbu)
+    >>> scale = scale.set_exponent(2)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = sqrt(10) * x / steps
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0.0 rgb(103, 0, 31)
+    0.31622776601683794 rgb(140, 13, 37)
+    0.6324555320336759 rgb(213, 96, 80)
+    0.9486832980505138 rgb(249, 232, 221)
+    1.2649110640673518 rgb(233, 239, 242)
+    1.5811388300841898 rgb(213, 231, 240)
+    1.8973665961010275 rgb(180, 214, 232)
+    2.213594362117866 rgb(131, 187, 217)
+    2.5298221281347035 rgb(74, 148, 196)
+    2.8460498941515415 rgb(36, 103, 166)
+    3.1622776601683795 rgb(5, 48, 97)
+    >>> d3.interpolate_rdbu(0)
+    'rgb(103, 0, 31)'
+    >>> d3.interpolate_rdbu(1)
+    'rgb(5, 48, 97)'
     """
     scale = DivergingPow()
     if len(args) == 1:
@@ -546,6 +629,27 @@ def scale_diverging_sqrt(*args):
     Examples
     --------
 
-    >>> d3.scale_diverging_sqrt([0, 1, 10], d3.interpolate_RdBu)
+    >>> scale = d3.scale_diverging_sqrt([0, 1, 10], d3.interpolate_rdbu)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 100 * x / steps
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0.0 rgb(103, 0, 31)
+    10.0 rgb(194, 221, 235)
+    20.0 rgb(148, 197, 222)
+    30.0 rgb(108, 172, 209)
+    40.0 rgb(77, 150, 197)
+    50.0 rgb(56, 130, 186)
+    60.0 rgb(42, 113, 174)
+    70.0 rgb(31, 96, 159)
+    80.0 rgb(22, 79, 139)
+    90.0 rgb(13, 63, 118)
+    100.0 rgb(5, 48, 97)
+    >>> d3.interpolate_rdbu(0)
+    'rgb(103, 0, 31)'
+    >>> d3.interpolate_rdbu(1)
+    'rgb(5, 48, 97)'
     """
     return scale_diverging_pow(*args).set_exponent(0.5)

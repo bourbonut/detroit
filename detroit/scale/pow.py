@@ -121,6 +121,45 @@ def scale_pow(*args) -> ScalePow:
     -------
     ScalePow
         Scale object
+
+    Examples
+    --------
+    >>> scale = d3.scale_pow([0, 10], [0, 960])
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 0.0
+    1 96.0
+    2 192.0
+    3 288.0
+    4 384.0
+    5 480.0
+    6 576.0
+    7 672.0
+    8 768.0
+    9 864.0
+    10 960.0
+
+    With :code:`exponent = 2`:
+
+    >>> scale = scale.set_exponent(2)
+    >>> for x in range(steps + 1):
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 0.0
+    1 9.6
+    2 38.4
+    3 86.39999999999999
+    4 153.6
+    5 240.0
+    6 345.59999999999997
+    7 470.4
+    8 614.4
+    9 777.6
+    10 960.0
     """
     scale = ScalePow()
     if len(args) == 1:
@@ -159,6 +198,26 @@ def scale_sqrt(*args) -> ScalePow:
     -------
     ScalePow
         Scale object
+
+    Examples
+    --------
+    >>> scale = d3.scale_sqrt([0, 10], [0, 960])
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 0.0
+    1 303.5786553761644
+    2 429.3250516799596
+    3 525.8136552049594
+    4 607.1573107523288
+    5 678.8225099390855
+    6 743.612802471824
+    7 803.1936254727125
+    8 858.6501033599192
+    9 910.7359661284933
+    10 960.0
     """
     scale = ScalePow().set_exponent(0.5)
     if len(args) == 1:

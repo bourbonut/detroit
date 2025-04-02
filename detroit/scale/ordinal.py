@@ -154,7 +154,19 @@ def scale_ordinal(*args):
     Examples
     --------
 
-    >>> d3.scale_ordinal(["a", "b", "c"], ["red", "green", "blue"])
+    >>> scale = d3.scale_ordinal(["a", "b", "c"], ["red", "green", "blue"])
+    >>> for c in "abcdefgh":
+    ...     print(c, scale(c))
+    ...     
+    ... 
+    a red
+    b green
+    c blue
+    d red
+    e green
+    f blue
+    g red
+    h green
     """
     scale = ScaleOrdinal()
     if len(args) == 1:

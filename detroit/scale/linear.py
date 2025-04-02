@@ -168,8 +168,23 @@ def scale_linear(*args):
     Examples
     --------
 
-    >>> d3.scale_linear([0, 100], ["red", "blue"])
-    >>> d3.scale_linear(["red", "blue"]) # default domain of [0, 1]
+    >>> scale = d3.scale_linear([0, 100], ["red", "blue"])
+    >>> for x in range(11):
+    ...     x = x * 10
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 rgb(255, 0, 0)
+    10 rgb(230, 0, 26)
+    20 rgb(204, 0, 51)
+    30 rgb(178, 0, 76)
+    40 rgb(153, 0, 102)
+    50 rgb(128, 0, 128)
+    60 rgb(102, 0, 153)
+    70 rgb(76, 0, 178)
+    80 rgb(51, 0, 204)
+    90 rgb(26, 0, 230)
+    100 rgb(0, 0, 255)
     """
     scale = ScaleLinear()
     if len(args) == 1:

@@ -217,14 +217,15 @@ class SequentialLog(Sequential[float], LogBase):
     Log sequential transformation
     """
     def __init__(self):
-        Sequential.__init__(self, transform_symlog)
+        Sequential.__init__(self, identity)
         LogBase.__init__(self)
+        self._transform = transform_log
         self.set_domain([1, 10])
 
     def _rescale(self):
         self._logs = logp(self._base)
         self._pows = powp(self._base)
-        d = self.domain[0]
+        d = self.get_domain()[0]
         if isinstance(d, datetime):
             d = d.timestamp()
         if d < 0:
@@ -375,7 +376,27 @@ def scale_sequential(*args):
     Examples
     --------
 
-    >>> d3.scale_sequential([0, 100], d3.interpolate_blues)
+    >>> scale = d3.scale_sequential([0, 100], d3.interpolate_blues)
+    >>> for x in range(11):
+    ...     x = 10 * x
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 rgb(247, 251, 255)
+    10 rgb(227, 238, 249)
+    20 rgb(207, 225, 242)
+    30 rgb(181, 212, 233)
+    40 rgb(147, 195, 223)
+    50 rgb(109, 174, 213)
+    60 rgb(75, 151, 201)
+    70 rgb(47, 126, 188)
+    80 rgb(24, 100, 170)
+    90 rgb(10, 74, 144)
+    100 rgb(8, 48, 107)
+    >>> d3.interpolate_blues(0)
+    'rgb(247, 251, 255)'
+    >>> d3.interpolate_blues(1)
+    'rgb(8, 48, 107)'
     """
     scale = SequentialLinear()
     if len(args) == 1:
@@ -420,7 +441,29 @@ def scale_sequential_log(*args):
     Examples
     --------
 
-    >>> d3.scale_sequential_log([0, 100], d3.interpolate_blues)
+    >>> scale = d3.scale_sequential_log([1, 100], d3.interpolate_blues)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 2 * x / steps
+    ...     x = 10 ** x
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    1.0 rgb(247, 251, 255)
+    1.5848931924611136 rgb(227, 238, 249)
+    2.51188643150958 rgb(207, 225, 242)
+    3.9810717055349722 rgb(181, 212, 233)
+    6.309573444801933 rgb(147, 195, 223)
+    10.0 rgb(109, 174, 213)
+    15.848931924611133 rgb(75, 151, 201)
+    25.118864315095795 rgb(47, 126, 188)
+    39.810717055349734 rgb(24, 100, 170)
+    63.09573444801933 rgb(10, 74, 144)
+    100.0 rgb(8, 48, 107)
+    >>> d3.interpolate_blues(0)
+    'rgb(247, 251, 255)'
+    >>> d3.interpolate_blues(1)
+    'rgb(8, 48, 107)'
     """
     scale = SequentialLog()
     if len(args) == 1:
@@ -465,7 +508,30 @@ def scale_sequential_symlog(*args):
     Examples
     --------
 
-    >>> d3.scale_sequential_symlog([0, 100], d3.interpolate_blues)
+    >>> scale = d3.scale_sequential_symlog([1, 100], d3.interpolate_blues)
+    >>> scale = scale.set_constant(2)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 2 * x / steps
+    ...     x = 10 ** x
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    1.0 rgb(255, 255, 255)
+    1.5848931924611136 rgb(253, 255, 255)
+    2.51188643150958 rgb(241, 247, 253)
+    3.9810717055349722 rgb(227, 238, 248)
+    6.309573444801933 rgb(210, 227, 243)
+    10.0 rgb(187, 215, 235)
+    15.848931924611133 rgb(154, 199, 225)
+    25.118864315095795 rgb(113, 177, 214)
+    39.810717055349734 rgb(75, 152, 201)
+    63.09573444801933 rgb(44, 123, 186)
+    100.0 rgb(19, 94, 165)
+    >>> d3.interpolate_blues(0)
+    'rgb(247, 251, 255)'
+    >>> d3.interpolate_blues(1)
+    'rgb(8, 48, 107)'
     """
     scale = SequentialSymlog()
     if len(args) == 1:
@@ -511,7 +577,29 @@ def scale_sequential_pow(*args):
     Examples
     --------
 
-    >>> d3.scale_sequential_pow([0, 100], d3.interpolate_blues)
+    >>> scale = d3.scale_sequential_pow([0, 100], d3.interpolate_blues)
+    >>> scale = scale.set_exponent(2)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 10 * x / steps
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0.0 rgb(247, 251, 255)
+    1.0 rgb(245, 250, 254)
+    2.0 rgb(239, 246, 252)
+    3.0 rgb(229, 239, 249)
+    4.0 rgb(215, 231, 245)
+    5.0 rgb(195, 219, 238)
+    6.0 rgb(162, 203, 227)
+    7.0 rgb(112, 176, 214)
+    8.0 rgb(63, 141, 196)
+    9.0 rgb(22, 98, 168)
+    10.0 rgb(8, 48, 107)
+    >>> d3.interpolate_blues(0)
+    'rgb(247, 251, 255)'
+    >>> d3.interpolate_blues(1)
+    'rgb(8, 48, 107)'
     """
     scale = SequentialPow()
     if len(args) == 1:
@@ -557,6 +645,27 @@ def scale_sequential_sqrt(*args):
     Examples
     --------
 
-    >>> d3.scale_sequential_sqrt([0, 100], d3.interpolate_blues)
+    >>> scale = d3.scale_sequential_sqrt([0, 100], d3.interpolate_blues)
+    >>> steps = 10
+    >>> for x in range(steps + 1):
+    ...     x = 100**2 * x / steps
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0.0 rgb(247, 251, 255)
+    1000.0 rgb(176, 210, 232)
+    2000.0 rgb(129, 186, 219)
+    3000.0 rgb(92, 163, 208)
+    4000.0 rgb(65, 143, 197)
+    5000.0 rgb(45, 124, 186)
+    6000.0 rgb(29, 107, 175)
+    7000.0 rgb(17, 91, 162)
+    8000.0 rgb(11, 76, 146)
+    9000.0 rgb(8, 62, 127)
+    10000.0 rgb(8, 48, 107)
+    >>> d3.interpolate_blues(0)
+    'rgb(247, 251, 255)'
+    >>> d3.interpolate_blues(1)
+    'rgb(8, 48, 107)'
     """
     return scale_sequential_pow(*args).set_exponent(0.5)

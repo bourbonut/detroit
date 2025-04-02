@@ -187,7 +187,33 @@ def scale_quantile(*args):
     Examples
     --------
 
-    >>> d3.scale_quantile()
+    >>> scale = d3.scale_quantile().set_domain([3, 6, 7, 8, 8, 10, 13, 15, 16, 20])
+    >>> scale = scale.set_range([0, 1, 2, 3])
+    >>> for x in range(21):
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 0
+    1 0
+    2 0
+    3 0
+    4 0
+    5 0
+    6 0
+    7 0
+    8 1
+    9 2
+    10 2
+    11 2
+    12 2
+    13 2
+    14 2
+    15 3
+    16 3
+    17 3
+    18 3
+    19 3
+    20 3
     """
     scale = ScaleQuantile()
     if len(args) == 1:

@@ -175,7 +175,23 @@ def scale_quantize(*args):
     Examples
     --------
 
-    >>> d3.scale_quantize()
+    >>> scale = d3.scale_quantize([0, 100], d3.SCHEME_BLUES[6])
+    >>> for x in range(11):
+    ...     x = 10 * x
+    ...     print(x, scale(x))
+    ...     
+    ... 
+    0 #f7fbff
+    10 #f7fbff
+    20 #deebf7
+    30 #c6dbef
+    40 #9ecae1
+    50 #6baed6
+    60 #4292c6
+    70 #2171b5
+    80 #08519c
+    90 #08306b
+    100 #08306b
     """
     scale = ScaleQuantize()
     if len(args) == 1:

@@ -258,7 +258,21 @@ def scale_band(*args):
     Examples
     --------
 
-    >>> d3.scale_band(["a", "b", "c"], [0, 960])
+    >>> scale = d3.scale_band(["a", "b", "c"], [0, 960])
+    >>> for c in "abcdefgh":
+    ...     print(c, scale(c))
+    ...     
+    ... 
+    a 0.0
+    b 320.0
+    c 640.0
+    d 0.0
+    e 320.0
+    f 640.0
+    g 0.0
+    h 320.0
+    >>> scale.get_bandwidth()
+    320.0
     """
     scale = ScaleBand()
     if len(args) == 1:
@@ -301,7 +315,21 @@ def scale_point(*args):
     Examples
     --------
 
-    >>> d3.scale_point(["a", "b", "c"], [0, 960])
+    >>> scale = d3.scale_point(["a", "b", "c"], [0, 960])
+    >>> for c in "abcdefgh":
+    ...     print(c, scale(c))
+    ...     
+    ... 
+    a 0.0
+    b 480.0
+    c 960.0
+    d 0.0
+    e 480.0
+    f 960.0
+    g 0.0
+    h 480.0
+    >>> scale.get_bandwidth()
+    0.0
     """
     scale = ScaleBand().set_padding_inner(1)
     if len(args) == 1:
