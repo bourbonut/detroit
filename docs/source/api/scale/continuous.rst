@@ -17,3 +17,10 @@ Continuous base classes
    .. automethod:: ticks
    .. automethod:: tick_format
    .. automethod:: nice
+
+.. autoclass:: detroit.scale.log.LogBase
+
+   .. automethod:: set_base
+   .. automethod:: ticks
+   .. automethod:: tick_format
+   .. automethod:: nice
