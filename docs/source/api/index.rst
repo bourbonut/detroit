@@ -17,3 +17,4 @@ API
    shape/index
    time
    time_format
+   types
