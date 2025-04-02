@@ -109,7 +109,7 @@ class PolyMap:
     ):
         self.domain = domain
         self.j = j = min(len(self.domain), len(range_vals)) - 1
-        self.d = [None] * j # TODO: use list by comprehension
+        self.d = [None] * j  # TODO: use list by comprehension
         self.r = [None] * j
 
         if self.domain[j] < self.domain[0]:
@@ -244,7 +244,9 @@ class Transformer(Generic[T]):
             Itself
         """
         # TODO: update lambda function to as_float function
-        self._domain = list(map(lambda x: float(x) if isinstance(x, str) else x, domain))
+        self._domain = list(
+            map(lambda x: float(x) if isinstance(x, str) else x, domain)
+        )
         return self._rescale()
 
     def get_domain(self) -> list[Number]:

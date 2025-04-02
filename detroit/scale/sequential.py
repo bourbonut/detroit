@@ -19,6 +19,7 @@ TSequentialPow = TypeVar("Itself", bound="SequentialPow")
 TSequentialLog = TypeVar("Itself", bound="SequentialLog")
 TSequentialSymlog = TypeVar("Itself", bound="SequentialSymlog")
 
+
 class Sequential(Generic[T]):
     """
     Sequential transformation
@@ -28,6 +29,7 @@ class Sequential(Generic[T]):
     t : Callable[[Number], T]
         Transform function
     """
+
     def __init__(self, t: Callable[[Number], T]):
         self._x0 = 0
         self._x1 = 1
@@ -205,6 +207,7 @@ class SequentialLinear(Sequential[float], LinearBase):
     """
     Linear sequential transformation
     """
+
     def __init__(self):
         Sequential.__init__(self, identity)
 
@@ -216,6 +219,7 @@ class SequentialLog(Sequential[float], LogBase):
     """
     Log sequential transformation
     """
+
     def __init__(self):
         Sequential.__init__(self, identity)
         LogBase.__init__(self)
@@ -268,6 +272,7 @@ class SequentialSymlog(Sequential[float]):
     c : Number
         Symlog constant value
     """
+
     def __init__(self, c: Number = 1):
         self._c = c
         super().__init__(transform_symlog(self._c))
@@ -297,12 +302,13 @@ class SequentialSymlog(Sequential[float]):
 class SequentialPow(Sequential[float], LinearBase):
     """
     Power sequential transformation
-    
+
     Parameters
     ----------
     t : Callable[[Number], T]
         Transform function
     """
+
     def __init__(self, t: Callable[[Number], float] = identity):
         super().__init__(t)
         self._exponent = 1
@@ -380,8 +386,8 @@ def scale_sequential(*args):
     >>> for x in range(11):
     ...     x = 10 * x
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     0 rgb(247, 251, 255)
     10 rgb(227, 238, 249)
     20 rgb(207, 225, 242)
@@ -447,8 +453,8 @@ def scale_sequential_log(*args):
     ...     x = 2 * x / steps
     ...     x = 10 ** x
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     1.0 rgb(247, 251, 255)
     1.5848931924611136 rgb(227, 238, 249)
     2.51188643150958 rgb(207, 225, 242)
@@ -479,7 +485,9 @@ def scale_sequential_symlog() -> SequentialSymlog: ...
 
 
 @overload
-def scale_sequential_symlog(interpolator: Callable[[float], float]) -> SequentialSymlog: ...
+def scale_sequential_symlog(
+    interpolator: Callable[[float], float],
+) -> SequentialSymlog: ...
 
 
 @overload
@@ -515,8 +523,8 @@ def scale_sequential_symlog(*args):
     ...     x = 2 * x / steps
     ...     x = 10 ** x
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     1.0 rgb(255, 255, 255)
     1.5848931924611136 rgb(253, 255, 255)
     2.51188643150958 rgb(241, 247, 253)
@@ -583,8 +591,8 @@ def scale_sequential_pow(*args):
     >>> for x in range(steps + 1):
     ...     x = 10 * x / steps
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     0.0 rgb(247, 251, 255)
     1.0 rgb(245, 250, 254)
     2.0 rgb(239, 246, 252)
@@ -650,8 +658,8 @@ def scale_sequential_sqrt(*args):
     >>> for x in range(steps + 1):
     ...     x = 100**2 * x / steps
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     0.0 rgb(247, 251, 255)
     1000.0 rgb(176, 210, 232)
     2000.0 rgb(129, 186, 219)

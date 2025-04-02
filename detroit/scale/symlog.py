@@ -31,6 +31,7 @@ class ScaleSymlog(Transformer[float], LinearBase):
     c : Number
         Symlog constant value
     """
+
     def __init__(self, c: Number = 1):
         self._c = c
         super().__init__(transform_symlog(self._c), transform_symexp(self._c))
@@ -106,8 +107,8 @@ def scale_symlog(*args):
     ...     x = 2 * x / steps
     ...     x = 10 ** x
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     1.0 98.9989231832065
     1.5848931924611136 142.48806851481947
     2.51188643150958 198.64193111140278

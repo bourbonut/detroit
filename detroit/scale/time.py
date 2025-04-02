@@ -21,6 +21,7 @@ from .nice import nice
 
 TScaleTime = TypeVar("Itself", bound="ScaleTime")
 
+
 class ScaleTime(Transformer[datetime]):
     """
     Time scales are a variant of linear scales that have a temporal domain:
@@ -259,8 +260,8 @@ def scale_time(*args) -> ScaleTime:
     >>> for x in range(24 + 1):
     ...     x = datetime(2000, 1, 1) + x * hour
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     2000-01-01 00:00:00 0.0
     2000-01-01 01:00:00 40.0
     2000-01-01 02:00:00 80.0

@@ -3,6 +3,7 @@ from collections.abc import Callable
 from math import isnan
 from ..types import T, GenValue
 
+
 def is_null(x: float | None) -> bool:
     """
     Returns if the input value is :code:`None` or :code:`math.nan`.
@@ -18,6 +19,7 @@ def is_null(x: float | None) -> bool:
         If value is :code:`None` or :code:`math.nan`.
     """
     return x is None or isnan(x)
+
 
 def as_float(x: GenValue) -> float:
     """
@@ -38,6 +40,7 @@ def as_float(x: GenValue) -> float:
     else:
         return float(x)
 
+
 def constant(x: T) -> Callable[..., T]:
     """
     Takes a value :code:`x` and returns a function which takes any argument
@@ -53,10 +56,12 @@ def constant(x: T) -> Callable[..., T]:
     Callable[..., T]
         Function which takes any argument and returns the :code:`x` value
     """
+
     def f(*args):
         return x
 
     return f
+
 
 def identity(x: T) -> T:
     """

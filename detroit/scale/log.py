@@ -13,6 +13,7 @@ from ..types import Number
 TLogBase = TypeVar("Itself", bound="LogBase")
 TScaleLog = TypeVar("Itself", bound="ScaleLog")
 
+
 def transform_log(x: datetime | float) -> float:
     if isinstance(x, datetime):
         x = x.timestamp()
@@ -242,6 +243,7 @@ class ScaleLog(Transformer[float], LogBase):
     is computed. The mapping to the range value y can be expressed as a function
     of the domain value x: :math:`y = m \\log(x) + b`.
     """
+
     def __init__(self):
         Transformer.__init__(self, transform_log, transform_exp)
         LogBase.__init__(self)
@@ -323,8 +325,8 @@ def scale_log(*args):
     ...     x = x / steps
     ...     x = 10 ** x
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     1.0 0.0
     1.2589254117941673 96.0
     1.5848931924611136 192.0

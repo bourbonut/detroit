@@ -6,6 +6,7 @@ from ..types import T, Number
 
 TScaleBand = TypeVar("Itself", bound="ScaleBand")
 
+
 class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     """
     Band scales are like band scales except the output range is continuous
@@ -261,8 +262,8 @@ def scale_band(*args):
     >>> scale = d3.scale_band(["a", "b", "c"], [0, 960])
     >>> for c in "abcdefgh":
     ...     print(c, scale(c))
-    ...     
-    ... 
+    ...
+    ...
     a 0.0
     b 320.0
     c 640.0
@@ -318,8 +319,8 @@ def scale_point(*args):
     >>> scale = d3.scale_point(["a", "b", "c"], [0, 960])
     >>> for c in "abcdefgh":
     ...     print(c, scale(c))
-    ...     
-    ... 
+    ...
+    ...
     a 0.0
     b 480.0
     c 960.0

@@ -10,6 +10,7 @@ from ..types import Number
 
 TScaleRadial = TypeVar("Itself", bound="ScaleRadial")
 
+
 def sign(x: float) -> float:
     return -1 if x < 0 else 1
 
@@ -39,7 +40,11 @@ class ScaleRadial(Transformer[float], LinearBase):
         Untranform function
     """
 
-    def __init__(self, t: Callable[[float], float] = identity, u: Callable[[float], float] = identity):
+    def __init__(
+        self,
+        t: Callable[[float], float] = identity,
+        u: Callable[[float], float] = identity,
+    ):
         super().__init__(t, u)
         self._range_vals = [0, 1]
         self._round = False
@@ -163,9 +168,7 @@ def scale_radial(range_vals: list[Number]) -> ScaleRadial: ...
 
 
 @overload
-def scale_radial(
-    domain: list[Number], range_vals: list[Number]
-) -> ScaleRadial: ...
+def scale_radial(domain: list[Number], range_vals: list[Number]) -> ScaleRadial: ...
 
 
 def scale_radial(*args):
@@ -191,8 +194,8 @@ def scale_radial(*args):
     >>> for x in range(11):
     ...     x = 100 + x * 10
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     100 0.0
     110 151.7893276880822
     120 214.66252583997982

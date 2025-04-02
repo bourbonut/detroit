@@ -9,6 +9,7 @@ from .init import init_interpolator
 
 TSequentialQuantile = TypeVar("Itself", bound="SequentialQuantile")
 
+
 class SequentialQuantile:
     def __init__(self):
         self._domain = []
@@ -146,8 +147,8 @@ def scale_sequential_quantile(*args):
     >>> scale = scale.set_interpolator(d3.interpolate_blues)
     >>> for x in range(21):
     ...     print(x, scale(x))
-    ...     
-    ... 
+    ...
+    ...
     0 rgb(247, 251, 255)
     1 rgb(247, 251, 255)
     2 rgb(247, 251, 255)

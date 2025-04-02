@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from ..types import ContinuousScaler, SequentialScaler, U, V
 
+
 def init_range(
     obj: ContinuousScaler,
     domain: list[U] | None = None,

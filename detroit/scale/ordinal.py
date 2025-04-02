@@ -5,6 +5,7 @@ from .init import init_range
 
 TScaleOrdinal = TypeVar("Itself", bound="ScaleOrdinal")
 
+
 class ScaleOrdinal(Generic[U, V]):
     """
     Unlike continuous scales, ordinal scales have a discrete domain and range.
@@ -157,8 +158,8 @@ def scale_ordinal(*args):
     >>> scale = d3.scale_ordinal(["a", "b", "c"], ["red", "green", "blue"])
     >>> for c in "abcdefgh":
     ...     print(c, scale(c))
-    ...     
-    ... 
+    ...
+    ...
     a red
     b green
     c blue
