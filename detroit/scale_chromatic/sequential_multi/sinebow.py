@@ -1,4 +1,4 @@
-from ...coloration import rgb
+from ...color import rgb
 
 from math import pi, sin
 

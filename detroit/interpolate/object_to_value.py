@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from datetime import datetime
 
-from ..coloration.color import Color, color
+from ..color.color import Color, color
 from .constant import constant
 from .date import interpolate_date
 from .number import interpolate_number

@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from ..coloration import rgb as color_rgb
+from ..color import rgb as color_rgb
 from .basis import interpolate_basis
 from .basis_closed import interpolate_basis_closed
 from .color import color as nogamma

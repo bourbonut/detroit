@@ -1,6 +1,6 @@
 import detroit as d3
-from detroit.coloration.color import Color
-from detroit.coloration.cubehelix import Cubehelix
+from detroit.color.color import Color
+from detroit.color.cubehelix import Cubehelix
 
 
 def test_cubehelix_1():

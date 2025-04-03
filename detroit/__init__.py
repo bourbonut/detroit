@@ -11,7 +11,7 @@ from .array import (
 
 from .axis import axis_bottom, axis_left, axis_right, axis_top
 
-from .coloration import (
+from .color import (
     color,
     cubehelix,
     gray,

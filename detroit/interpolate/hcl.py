@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from ..coloration import hcl as color_hcl
+from ..color import hcl as color_hcl
 from .color import color, hue
 
 

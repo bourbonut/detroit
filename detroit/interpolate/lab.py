@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from ..coloration import lab as color_lab
+from ..color import lab as color_lab
 from .color import color
 
 

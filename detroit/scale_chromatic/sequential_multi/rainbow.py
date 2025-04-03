@@ -1,5 +1,5 @@
 from ...interpolate import interpolate_cubehelix_long
-from ...coloration import cubehelix
+from ...color import cubehelix
 from math import floor
 
 interpolate_warm = interpolate_cubehelix_long(cubehelix(-100, 0.75, 0.35), cubehelix(80, 1.50, 0.8))

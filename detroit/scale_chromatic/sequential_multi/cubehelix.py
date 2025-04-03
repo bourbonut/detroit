@@ -1,5 +1,5 @@
 from ...interpolate import interpolate_cubehelix_long
-from ...coloration import cubehelix
+from ...color import cubehelix
 
 
 interpolate_cubehelix_default = interpolate_cubehelix_long(
