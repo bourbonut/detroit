@@ -726,6 +726,7 @@ class Selection:
         ...     selection.attr("first-name", first).attr("last-name", last)
 
         Now say:
+
         >>> d3.select_all("div").call(name, "John", "Snow")
 
         This is roughly equivalent to:
