@@ -361,6 +361,7 @@ def hsl_convert(obj):
         s = 0 if 0 < l < 1 else h
     return HSL(h, s, l, obj.opacity)
 
+
 def clamph(value):
     value = (value or 0) % 360
     return value + 360 if value < 0 else value
@@ -549,7 +550,7 @@ class HSL(Color):
         Opacity value
     """
 
-    def __init__(self, h: float, s: float, l: float, opacity: float = 1.):
+    def __init__(self, h: float, s: float, l: float, opacity: float = 1.0):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
@@ -656,6 +657,7 @@ class HSL(Color):
 
     def __repr__(self) -> str:
         return f"HSL(h={self.h}, s={self.s}, l={self.l}, opacity={self.opacity})"
+
 
 @overload
 def rgb(specifier: str) -> RGB: ...

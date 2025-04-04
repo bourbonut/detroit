@@ -63,7 +63,7 @@ class Cubehelix(Color):
         Opacity value
     """
 
-    def __init__(self, h: float, s: float, l: float, opacity: float = 1.):
+    def __init__(self, h: float, s: float, l: float, opacity: float = 1.0):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
@@ -126,6 +126,7 @@ class Cubehelix(Color):
 
     def __repr__(self) -> str:
         return f"Cubehelix(h={self.h}, s={self.s}, l={self.l}, opacity={self.opacity})"
+
 
 @overload
 def cubehelix(specifier: str) -> Cubehelix: ...

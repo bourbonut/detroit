@@ -34,6 +34,7 @@ def lab_convert(obj):
         z = xyz2lab((0.0139322 * r + 0.0971045 * g + 0.7141733 * b) / ZN)
     return LAB(116 * y - 16, 500 * (x - y), 200 * (y - z), obj.opacity)
 
+
 def xyz2lab(t):
     return t ** (1 / 3) if t > T3 else t / T2 + T0
 
@@ -89,7 +90,7 @@ class LAB(Color):
         Opacity value
     """
 
-    def __init__(self, l: float, a: float, b: float, opacity: float = 1.):
+    def __init__(self, l: float, a: float, b: float, opacity: float = 1.0):
         self.l = float(l)
         self.a = float(a)
         self.b = float(b)
@@ -169,7 +170,7 @@ class HCL(Color):
         Opacity value
     """
 
-    def __init__(self, h: float, c: float, l: float, opacity: float = 1.):
+    def __init__(self, h: float, c: float, l: float, opacity: float = 1.0):
         self.h = float(h)
         self.c = float(c)
         self.l = float(l)
@@ -220,6 +221,7 @@ class HCL(Color):
 
     def __repr__(self) -> str:
         return f"HCL(h={self.h}, c={self.c}, l={self.l}, opacity={self.opacity})"
+
 
 @overload
 def lab(specifier: str) -> LAB: ...
@@ -311,6 +313,7 @@ def gray(*args):
     elif len(args) == 2:
         l, opacity = args
         return LAB(l, 0, 0, opacity)
+
 
 @overload
 def lch(specifier: str) -> HCL: ...
