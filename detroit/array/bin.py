@@ -1,16 +1,15 @@
-from __future__ import annotations
-
 import math
 from bisect import bisect
 from collections.abc import Callable, Iterable
 from inspect import signature
-from typing import Any
+from typing import Any, TypeVar
 
 from .extent import extent
 from .nice import nice
 from .threshold import threshold_sturges
 from .ticks import tick_increment, ticks
 
+Tbin = TypeVar("Itself", bound="bin")
 
 def identity(x, *args):
     return x
@@ -37,16 +36,16 @@ class Bin:
         self.x0 = None
         self.x1 = None
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._list)
 
-    def __getitem__(self, key):
-        return self._list[key]
+    def __getitem__(self, index: int):
+        return self._list[index]
 
-    def __setitem__(self, key, item):
-        self._list[key] = item
+    def __setitem__(self, index, item):
+        self._list[index] = item
 
-    def append(self, item):
+    def append(self, item: int | float):
         self._list.append(item)
 
     def __str__(self):
@@ -55,7 +54,7 @@ class Bin:
     def __repr__(self):
         return str(self)
 
-    def __eq__(self, bin):
+    def __eq__(self, bin) -> bool:
         return self._list == bin._list and self.x0 == self.x0 and self.x1 == self.x1
 
 
@@ -83,6 +82,12 @@ class bin:
         -------
         list[Bin]
             Array of bins
+
+        Examples
+        --------
+
+        >>> d3.bin()([0, 0, 0, 10, 20, 20])
+        [Bin([0, 0, 0], x0=0, x1=5), Bin([], x0=5, x1=10), Bin([10], x0=10, x1=15), Bin([], x0=15, x1=20), Bin([20, 20], x0=20, x1=25)]
         """
         if not isinstance(data, list):
             data = list(data)
@@ -159,71 +164,62 @@ class bin:
 
         return bins
 
-    def value(self, obj: Callable | Any | None = None) -> Callable | bin:
+    def set_value(self, value: Callable[[int | float, int, Iterable[int | float]], float] | Any) -> Tbin:
         """
-        Set value to the given object or return the current value
+        Sets value
 
         Parameters
         ----------
-        obj : Callable | Any | None
+        Value : Callable[[int | float, int, Iterable[int | float]], float] | Any
+            Value function or constant object
+
+        Returns
+        -------
+        bin
+            Itself
+        """
+        self._value = value if callable(value) else constant(value)
+        return self
+
+    def set_domain(self, domain: Callable[[float], float] | tuple[float, float]) -> Tbin:
+        """
+        Sets domain
+
+        Parameters
+        ----------
+        obj : Callable[[float], float] | tuple[float, float]
+            Domain function or domain tuple
+
+        Returns
+        -------
+        bin
+            Itself
+        """
+        self._domain = domain if callable(domain) else constant(domain[0], domain[1])
+        return self
+
+    def set_thresholds(self, thresholds: Callable[[list[float | None]], float] | Any) -> Tbin:
+        """
+        Sets thresholds
+
+        Parameters
+        ----------
+        thresholds : Callable[[list[float | None]], float] | Any
             Object or function
 
         Returns
         -------
-        Callable | bin
-            Current value or updated self
+        bin
+            Itself
         """
-        if obj is None:
-            return self._value
-        elif callable(obj):
-            self._value = obj
-            return self
-        else:
-            self._value = constant(obj)
-            return self
+        self._threshold = thresholds if callable(thresholds) else constant(thresholds)
+        return self
 
-    def domain(self, obj: Callable | Any | None = None) -> Callable | bin:
-        """
-        Set domain to the given object or return the current domain
+    def get_value(self):
+        return self._value
 
-        Parameters
-        ----------
-        obj : Callable | Any | None
-            Object or function
+    def get_domain(self):
+        return self._domain
 
-        Returns
-        -------
-        Callable | bin
-            Current domain or updated self
-        """
-        if obj is None:
-            return self._domain
-        elif callable(obj):
-            self._domain = obj
-            return self
-        else:
-            self._domain = constant(obj[0], obj[1])
-            return self
-
-    def thresholds(self, obj: Callable | Any | None = None) -> Callable | bin:
-        """
-        Set thresholds to the given object or return the current thresholds
-
-        Parameters
-        ----------
-        obj : Callable | Any | None
-            Object or function
-
-        Returns
-        -------
-        Callable | bin
-            Current thresholds or updated self
-        """
-        if obj is None:
-            return self._threshold
-        elif callable(obj):
-            self._threshold = obj
-            return self
-        else:
-            self._threshold = constant(obj)
-            return self
+    def get_thresholds(self):
+        return self._threshold

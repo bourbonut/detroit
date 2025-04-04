@@ -18,9 +18,9 @@ def box(bin_values, x0, x1):
 
 def test_bin_simple():
     h = d3.bin()
-    assert h.value()(42) == 42
-    assert h.domain() == d3.extent
-    assert h.thresholds() == threshold_sturges
+    assert h.get_value()(42) == 42
+    assert h.get_domain() == d3.extent
+    assert h.get_thresholds() == threshold_sturges
 
 
 def test_bin_1():
@@ -47,7 +47,7 @@ def test_bin_2():
 
 def test_bin_3():
     with pytest.raises(ValueError):
-        h = d3.bin().value(lambda d, i, data: 12)  # Pointless, but for consistency.
+        h = d3.bin().set_value(lambda d, i, data: 12)  # Pointless, but for consistency.
         assert h([0, 0, 0, 1, 2, 2]) == [
             box([0, 0, 0, 1, 2, 2], 12, 12),
         ]
@@ -65,7 +65,7 @@ def test_bin_4():
 
 
 def test_bin_5():
-    h = d3.bin().value(lambda d: d["value"])
+    h = d3.bin().set_value(lambda d: d["value"])
     a = {"value": 0}
     b = {"value": 10}
     c = {"value": 20}
@@ -79,8 +79,8 @@ def test_bin_5():
 
 
 def test_bin_6():
-    h = d3.bin().domain([0, 20])
-    assert list(h.domain()()) == [0, 20]
+    h = d3.bin().set_domain([0, 20])
+    assert list(h.get_domain()()) == [0, 20]
     assert h([1, 2, 2, 10, 18, 18]) == [
         box([1, 2, 2], 0, 5),
         box([], 5, 10),
@@ -97,8 +97,8 @@ def test_bin_7():
         actual[:] = values
         return [0, 20]
 
-    h = d3.bin().domain(domain)
-    assert h.domain() == domain
+    h = d3.bin().set_domain(domain)
+    assert h.get_domain() == domain
     assert h(values) == [
         box([1, 2, 2], 0, 5),
         box([], 5, 10),
@@ -109,7 +109,7 @@ def test_bin_7():
 
 
 def test_bin_8():
-    h = d3.bin().thresholds(3)
+    h = d3.bin().set_thresholds(3)
     assert h([0, 0, 0, 10, 30, 30]) == [
         box([0, 0, 0], 0, 10),
         box([10], 10, 20),
@@ -119,7 +119,7 @@ def test_bin_8():
 
 
 def test_bin_9():
-    h = d3.bin().thresholds([10, 20])
+    h = d3.bin().set_thresholds([10, 20])
     assert h([0, 0, 0, 10, 30, 30]) == [
         box([0, 0, 0], 0, 10),
         box([10], 10, 20),
@@ -128,7 +128,7 @@ def test_bin_9():
 
 
 def test_bin_10():
-    h = d3.bin().thresholds([0, 1, 2, 3, 4])
+    h = d3.bin().set_thresholds([0, 1, 2, 3, 4])
     assert h([0, 1, 2, 3]) == [
         box([0], 0, 1),
         box([1], 1, 2),
@@ -145,14 +145,14 @@ def test_bin_11():
         actual[:] = [values, x0, x1]
         return [10, 20]
 
-    h = d3.bin().thresholds(domain)
+    h = d3.bin().set_thresholds(domain)
     assert h(values) == [
         box([0, 0, 0], 0, 10),
         box([10], 10, 20),
         box([30, 30], 20, 30),
     ]
     assert actual, [values, 0, 30]
-    assert h.thresholds(lambda values, x0, x1: 5)(values) == [
+    assert h.set_thresholds(lambda values, x0, x1: 5)(values) == [
         box([0, 0, 0], 0, 5),
         box([], 5, 10),
         box([10], 10, 15),
@@ -164,7 +164,7 @@ def test_bin_11():
 
 
 def test_bin_12():
-    h = d3.bin().domain([0, 1]).thresholds(5)
+    h = d3.bin().set_domain([0, 1]).set_thresholds(5)
     assert list(map(lambda b: [b.x0, b.x1], h([]))) == [
         [0.0, 0.2],
         [0.2, 0.4],
@@ -186,7 +186,7 @@ def test_bin_13():
 
 
 def test_bin_14():
-    h = d3.bin().thresholds(10)
+    h = d3.bin().set_thresholds(10)
     assert h([9.8, 10, 11, 12, 13, 13.2]) == [
         box([9.8], 9.5, 10),
         box([10], 10, 10.5),
@@ -200,7 +200,7 @@ def test_bin_14():
 
 
 def test_bin_15():
-    h = d3.bin().thresholds(10).domain([9.7, 13.3])
+    h = d3.bin().set_thresholds(10).set_domain([9.7, 13.3])
     assert h([9.8, 10, 11, 12, 13, 13.2]) == [
         box([9.8], 9.7, 10),
         box([10], 10, 10.5),
@@ -214,7 +214,7 @@ def test_bin_15():
 
 
 def test_bin_16():
-    h = d3.bin().thresholds(10).domain([9.5, 13.5])
+    h = d3.bin().set_thresholds(10).set_domain([9.5, 13.5])
     assert h([9.8, 10, 11, 12, 13, 13.2]) == [
         box([9.8], 9.5, 10),
         box([10], 10, 10.5),
@@ -228,7 +228,7 @@ def test_bin_16():
 
 
 def test_bin_17():
-    h = d3.bin().thresholds(10)
+    h = d3.bin().set_thresholds(10)
     assert h([1, 2, 3, 4, 5]) == [
         box([1], 1, 1.5),
         box([], 1.5, 2),
@@ -247,34 +247,17 @@ def test_bin_17():
 #     d3.bins = d3.bin().thresholds(57)(height)
 #     assert d3.bins.map(b => b.length) == [1, 0, 0, 0, 0, 0, 2, 1, 2, 1, 1, 4, 11, 7, 13, 39, 78, 93, 119, 193, 354, 393, 573, 483, 651, 834, 808, 763, 627, 648, 833, 672, 578, 498, 395, 425, 278, 235, 182, 128, 91, 69, 43, 29, 21, 23, 3, 3, 1, 1, 1]
 
-
-def test_bin_18():
-    for n in [
-        1,
-        2,
-        5,
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
-        1000,
-        2000,
-        5000,
-        10000,
-        20000,
-        50000,
-    ]:
-        assert all(
-            map(lambda d: len(d._list) == 1, d3.bin().thresholds(n)(ticks(1, 2, n)))
-        )
+@pytest.mark.parametrize("n", [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000])
+def test_bin_18(n):
+    assert all(
+        map(lambda d: len(d._list) == 1, d3.bin().set_thresholds(n)(ticks(1, 2, n)))
+    )
 
 
 def test_bin_19():
-    assert d3.bin().domain([4, 5])([5]) == [box([5], 4, 5)]
+    assert d3.bin().set_domain([4, 5])([5]) == [box([5], 4, 5)]
     eights = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
-    assert d3.bin().domain([3, 8])(eights) == [
+    assert d3.bin().set_domain([3, 8])(eights) == [
         box([], 3, 4),
         box([], 4, 5),
         box([], 5, 6),
@@ -285,15 +268,15 @@ def test_bin_19():
 
 def test_bin_20():
     thresholds = [3, 4, 5, 6]
-    b = d3.bin().domain([4, 5]).thresholds(thresholds)
+    b = d3.bin().set_domain([4, 5]).set_thresholds(thresholds)
     assert b([5]) == [box([], 4, 5), box([5], 5, 5)]
     assert thresholds == [3, 4, 5, 6]
-    assert b.thresholds()() == [3, 4, 5, 6]
+    assert b.get_thresholds()() == [3, 4, 5, 6]
 
 
 def test_bin_21():
     thresholds = [3, 4, 5, 6]
-    b = d3.bin().domain([4, 5]).thresholds(lambda values, x0, x1: thresholds)
-    assert b.thresholds()(None, None, None) == [3, 4, 5, 6]
+    b = d3.bin().set_domain([4, 5]).set_thresholds(lambda values, x0, x1: thresholds)
+    assert b.get_thresholds()(None, None, None) == [3, 4, 5, 6]
     assert b([5]) == [box([], 4, 5), box([5], 5, 5)]
     assert thresholds == [3, 4, 5, 6]

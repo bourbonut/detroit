@@ -14,6 +14,6 @@ Array
 .. autoclass:: detroit.array.bin.bin
 
    .. automethod:: __call__
-   .. automethod:: value
-   .. automethod:: domain
-   .. automethod:: thresholds
+   .. automethod:: set_value
+   .. automethod:: set_domain
+   .. automethod:: set_thresholds

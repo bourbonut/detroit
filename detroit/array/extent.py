@@ -23,6 +23,23 @@ def extent(
     -------
     tuple[T, T]
         Minimum, maximum
+
+    Examples
+    --------
+
+    >>> a = [1, 4, -2, 8]
+    >>> d3.extent(a)
+    >>> b = [{"a": 8}, {"a": 1}, {"a": 16}]
+    >>> d3.extent(b, lambda x: x["a"])
+
+    Notes
+    -----
+
+    The accessor function can take one, two or three arguments where :
+
+    * the first one is the value over iteration
+    * the second one is its index
+    * the last one is the input :code:`values` without any modification
     """
 
     def is_valid(value):

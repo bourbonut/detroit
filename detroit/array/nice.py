@@ -2,9 +2,7 @@ import math
 from typing import TypeVar
 
 from .ticks import tick_increment
-
-T = TypeVar("T")
-
+from ..types import T
 
 def nice(start: T, stop: T, count: int) -> tuple[T, T]:
     """
@@ -26,6 +24,14 @@ def nice(start: T, stop: T, count: int) -> tuple[T, T]:
     -------
     tuple[T, T]
         Aligned interval
+
+    Examples
+    --------
+
+    >>> d3.nice(10.2, 20.8, 10)
+    [10, 21]
+    >>> d3.nice(10.2, 20.8, 1)
+    [0, 50]
     """
     prestep = None
     while True:
