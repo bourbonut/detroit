@@ -179,16 +179,76 @@ NAMED = {
 
 
 class Color:
+    """
+    Color base class used by :code:`RGB`, :code:`HSL`, :code:`Cubehelix`,
+    :code:`LAB` and :code:`HCL`.
+    """
     def format_hex(self) -> str:
+        """
+        Returns the color formatted as hex color.
+
+        Returns
+        -------
+        str
+            Hex color
+
+        Examples
+        --------
+
+        >>> d3.rgb(128, 250, 102, 0.2).format_hex()
+        '#80fa66'
+        """
         return self.rgb().format_hex()
 
     def format_hex_8(self) -> str:
+        """
+        Returns the color formatted as hex color with alpha channel (opacity).
+
+        Returns
+        -------
+        str
+            Hex color
+
+        Examples
+        --------
+
+        >>> d3.rgb(128, 250, 102, 0.2).format_hex_8()
+        '#80fa6633'
+        """
         return self.rgb().format_hex_8()
 
     def format_hsl(self) -> str:
+        """
+        Returns the color formatted as HSL color.
+
+        Returns
+        -------
+        str
+            HSL color
+
+        Examples
+        --------
+
+        >>> d3.rgb(128, 250, 102, 0.2).format_hsl()
+        'hsla(109.45945945945947, 93.67088607594937%, 69.01960784313725%, 0.2)'
+        """
         return hsl_convert(self).format_hsl()
 
     def format_rgb(self) -> str:
+        """
+        Returns the color formatted as RGB color.
+
+        Returns
+        -------
+        str
+            RGB color
+
+        Examples
+        --------
+
+        >>> d3.rgb(128, 250, 102, 0.2).format_rgb()
+        'rgba(128, 250, 102, 0.2)'
+        """
         return self.rgb().format_rgb()
 
     def __str__(self):

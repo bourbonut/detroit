@@ -18,6 +18,13 @@ Functions
 Classes
 -------
 
+.. autoclass:: detroit.color.color.Color
+
+   .. automethod:: format_hex
+   .. automethod:: format_hex_8
+   .. automethod:: format_hsl
+   .. automethod:: format_rgb
+
 .. autoclass:: detroit.color.color.RGB
 
    .. automethod:: brighter
