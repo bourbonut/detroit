@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from collections.abc import Callable, Iterator
 from itertools import zip_longest
-from typing import Any, Protocol, TypeAlias, overload
+from typing import Any, Protocol, TypeAlias, TypeVar, overload
 
 from lxml import etree
 
@@ -15,23 +13,9 @@ from .namespace import namespace
 from .matcher import matcher
 from .style import style_constant, style_function, style_value
 from .text import text_constant, text_function
+from ..types import Data, Value, Accessor
 
-Data: TypeAlias = Any
-Value: TypeAlias = Any
-
-
-class Accessor(Protocol):
-    @overload
-    def __call__(self, d: Data) -> Value: ...
-
-    @overload
-    def __call__(self, d: Data, i: int) -> Value: ...
-
-    @overload
-    def __call__(self, d: Data, i: int, group: list[etree.Element]) -> Value: ...
-
-    def __call__(self, *args) -> Value: ...
-
+TSelection = TypeVar("Selection", bound="Selection")
 
 def selector(element: etree.Element, selection: str | None = None):
     if selection is None:
@@ -125,7 +109,7 @@ class Selection:
         self._exit = exit
         self._data = data or {}
 
-    def select(self, selection: str | None = None) -> Selection:
+    def select(self, selection: str | None = None) -> TSelection:
         """
         Selects the first element that matches the specified :code:`selection` string
 
@@ -164,7 +148,7 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def select_all(self, selection: str | None = None) -> Selection:
+    def select_all(self, selection: str | None = None) -> TSelection:
         """
         Selects all elements that match the specified :code:`selection` string
 
@@ -203,7 +187,7 @@ class Selection:
         ]
         return Selection(subgroups, parents or self._parents, data=self._data)
 
-    def enter(self) -> Selection:
+    def enter(self) -> TSelection:
         """
         Returns the enter selection: placeholder nodes for each datum
         that had no corresponding DOM element in the selection.
@@ -219,7 +203,7 @@ class Selection:
             data=self._data,
         )
 
-    def exit(self) -> Selection:
+    def exit(self) -> TSelection:
         """
         Returns the exit selection: existing DOM elements in the
         selection for which no new datum was found.
@@ -238,7 +222,7 @@ class Selection:
             data=self._data,
         )
 
-    def merge(self, context: Selection) -> Selection:
+    def merge(self, context: TSelection) -> TSelection:
         """
         Returns a new selection merging this selection with the
         specified other selection or transition. The returned
@@ -276,7 +260,7 @@ class Selection:
 
         return Selection(merges, self._parents, data=self._data | selection._data)
 
-    def filter(self, match: Accessor | int | float | str) -> Selection:
+    def filter(self, match: Accessor | int | float | str) -> TSelection:
         """
         Filters the selection, returning a new selection that contains
         only the elements for which the specified filter is true.
@@ -313,7 +297,7 @@ class Selection:
         return Selection(subgroups, self._parents, data=self._data)
 
 
-    def append(self, name: str) -> Selection:
+    def append(self, name: str) -> TSelection:
         """
         If the specified name is a string, appends a new element
         of this type (tag name) as the last child of each selected
@@ -388,7 +372,7 @@ class Selection:
                         node = node._parent
                     callback(node, self._data.get(node), i, group)
 
-    def attr(self, name: str, value: Accessor | str | None = None) -> Selection:
+    def attr(self, name: str, value: Accessor | str | None = None) -> TSelection:
         """
         If a value is specified, sets the attribute with the specified name
         to the specified value on the selected elements and returns this selection.
@@ -422,7 +406,7 @@ class Selection:
             self.each(attr_constant(name, value))
         return self
 
-    def style(self, name: str, value: Accessor | str | None = None) -> Selection:
+    def style(self, name: str, value: Accessor | str | None = None) -> TSelection:
         """
         If a value is specified, sets the style with the specified name
         to the specified value on the selected elements and returns this selection.
@@ -456,7 +440,7 @@ class Selection:
             self.each(style_constant(name, value))
         return self
 
-    def text(self, value: Accessor | str | None = None) -> Selection:
+    def text(self, value: Accessor | str | None = None) -> TSelection:
         """
         If the value is a constant, then all elements are given the same
         text content; otherwise, if the value is a function, it is evaluated
@@ -486,7 +470,7 @@ class Selection:
             self.each(text_constant(value))
         return self
 
-    def datum(self, value: Data) -> Selection:
+    def datum(self, value: Data) -> TSelection:
         """
         Sets the bound data for the first selected node.
 
@@ -503,7 +487,7 @@ class Selection:
         self._data[self.node()] = value
         return self
 
-    def data(self, values: list[Data], key: Accessor | None = None) -> Selection:
+    def data(self, values: list[Data], key: Accessor | None = None) -> TSelection:
         """
         Binds the specified list of data with the selected elements,
         returning a new selection that represents the update selection:
@@ -568,7 +552,7 @@ class Selection:
 
         return Selection(update, parents, enter, exit, self._data)
 
-    def order(self) -> Selection:
+    def order(self) -> TSelection:
         """
         Re-inserts elements into the document such that the document order
         of each group matches the selection order.
@@ -592,7 +576,7 @@ class Selection:
 
     def join(
         self,
-        onenter: Callable | Selection,
+        onenter: Callable | TSelection,
         onupdate: Callable | None = None,
         onexit: Callable | None = None,
     ):
@@ -645,7 +629,7 @@ class Selection:
         else:
             return update
 
-    def insert(self, name: str, before: etree.Element) -> Selection:
+    def insert(self, name: str, before: etree.Element) -> TSelection:
         """
         If the specified name is a string, inserts a new element
         of this type (tag name) before the first element matching
@@ -679,7 +663,7 @@ class Selection:
                         group[i] = created
         return self
 
-    def remove(self) -> Selection:
+    def remove(self) -> TSelection:
         """
         Removes the selected elements from the document. Returns this
         selection (the removed elements) which are now detached from
@@ -699,7 +683,7 @@ class Selection:
         self.each(remove)
         return self
 
-    def call(self, func: Callable[[Selection, ...], Any], *args: Data) -> Selection:
+    def call(self, func: Callable[[TSelection, ...], Any], *args: Data) -> TSelection:
         """
         Invokes the specified function exactly once, passing in
         this selection along with any optional arguments. Returns
@@ -738,7 +722,7 @@ class Selection:
         func(self, *args)
         return self
 
-    def clone(self) -> Selection:
+    def clone(self) -> TSelection:
         """
         Inserts clones of the selected elements immediately following
         the selected elements and returns a selection of the newly
@@ -790,7 +774,7 @@ class Selection:
                 if node is not None:
                     yield node
 
-    def selection(self) -> Selection:
+    def selection(self) -> TSelection:
         """
         Returns the selection
 

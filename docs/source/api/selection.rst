@@ -28,7 +28,3 @@ Selection
    .. automethod:: style
    .. automethod:: text
    .. automethod:: to_string
-
-.. autoclass:: detroit.selection.selection.Accessor
-
-   .. automethod:: __call__

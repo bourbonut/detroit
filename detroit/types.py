@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TypeVar, TypeAlias, Protocol, Generic, Any
+from typing import TypeVar, TypeAlias, Protocol, Generic, Any, overload
 from collections.abc import Callable
 
 T = TypeVar("T")
@@ -14,6 +14,9 @@ GenValue: TypeAlias = datetime | str | int | float
 # Type definition for :code:`Formatter`: a function which takes a string to be
 # formatted and returns the formatted value.
 Formatter: TypeAlias = Callable[[str], T]
+
+Data: TypeAlias = Any
+Value: TypeAlias = Any
 
 class Interval(Protocol):
     """
@@ -249,5 +252,59 @@ class SequentialScaler(Scaler[U, V], Generic[U, V]):
         -------
         SequentialScaler
             Itself
+        """
+        ...
+
+class Accessor(Protocol):
+    """
+    Protocol which describes how an accessor is defined.
+
+    Accessors are found in differents modules of :code:`detroit` when a
+    function iterates over an array of values and only specific values must be
+    processed.
+
+    Therefore, an accessor behaves like a function. However, the signature of
+    the function can be flexible. The function can take one, two or three
+    arguments.
+
+    The first argument represents a value of the iterated array.
+    The second argument represents the index of this value.
+    The last and third argument is the original array without modification.
+
+    Examples
+    --------
+
+    The following functions are valid "accessors":
+
+    >>> lambda d: d["weights"]
+    >>> lambda d, i: i * d["length"]
+    >>> lambda d, _, data: len(data) + d["count"]
+    """
+    @overload
+    def __call__(self, d: U) -> V: ...
+
+    @overload
+    def __call__(self, d: U, i: int) -> V: ...
+
+    @overload
+    def __call__(self, d: U, i: int, data: list[U]) -> V: ...
+
+    def __call__(self, *args) -> V:
+        """
+        Given at least one argument, returns a processed value.
+
+        Parameters
+        ----------
+        d : U
+            Represents a value of :code:`data` such as :code:`d = data[i]`.
+        i : int
+            Index of the value (i.e. :code:`data[i]`)
+        data : list[U]
+            Array of values
+
+        Returns
+        -------
+        V
+            A desired value
         """
         ...

@@ -27,3 +27,7 @@ Types
 .. autoclass:: detroit.types.SequentialScaler
 
    .. automethod:: set_interpolator
+
+.. autoclass:: detroit.types.Accessor
+
+   .. automethod:: __call__
