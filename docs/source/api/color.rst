@@ -1,15 +1,22 @@
 Color
 =====
 
+Functions
+---------
+
+.. autofunction:: detroit.color
 .. autofunction:: detroit.rgb
 .. autofunction:: detroit.hsl
+.. autofunction:: detroit.cubehelix
+.. autofunction:: detroit.lab
+.. autofunction:: detroit.gray
 .. autofunction:: detroit.hcl
 .. autofunction:: detroit.lch
-.. autofunction:: detroit.lab
-.. autofunction:: detroit.cubehelix
 
-.. autofunction:: detroit.gray
-.. autofunction:: detroit.color
+------------
+
+Classes
+-------
 
 .. autoclass:: detroit.color.color.RGB
 
@@ -31,6 +38,12 @@ Color
    .. automethod:: displayable
    .. automethod:: format_hsl
 
+.. autoclass:: detroit.color.cubehelix.Cubehelix
+
+   .. automethod:: brighter
+   .. automethod:: darker
+   .. automethod:: rgb
+
 .. autoclass:: detroit.color.lab.LAB
 
    .. automethod:: brighter
@@ -38,12 +51,6 @@ Color
    .. automethod:: rgb
 
 .. autoclass:: detroit.color.lab.HCL
-
-   .. automethod:: brighter
-   .. automethod:: darker
-   .. automethod:: rgb
-
-.. autoclass:: detroit.color.cubehelix.Cubehelix
 
    .. automethod:: brighter
    .. automethod:: darker

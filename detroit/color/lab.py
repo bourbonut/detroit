@@ -1,9 +1,10 @@
-from __future__ import annotations
-
 import math
-from typing import overload
+from typing import overload, TypeVar
 
 from .color import RGB, Color, rgb_convert
+
+TLAB = TypeVar("LAB", bound="LAB")
+THCL = TypeVar("HCL", bound="HCL")
 
 K = 18
 XN = 0.96422
@@ -33,44 +34,43 @@ def lab_convert(obj):
         z = xyz2lab((0.0139322 * r + 0.0971045 * g + 0.7141733 * b) / ZN)
     return LAB(116 * y - 16, 500 * (x - y), 200 * (y - z), obj.opacity)
 
-
-def gray(*args):
-    if len(args) == 1:
-        l = args[0]
-        opacity = 1
-        return LAB(l, 0, 0, opacity)
-    elif len(args) == 2:
-        l, opacity = args
-        return LAB(l, 0, 0, opacity)
+def xyz2lab(t):
+    return t ** (1 / 3) if t > T3 else t / T2 + T0
 
 
-@overload
-def lab(specifier: str) -> LAB: ...
+def lab2xyz(t):
+    return t**3 if t > T1 else T2 * (t - T0)
 
 
-@overload
-def lab(l: int | float, a: int | float, b: int | float) -> LAB: ...
+def lrgb2rgb(x):
+    return 255 * (12.92 * x if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055)
 
 
-@overload
-def lab(
-    l: int | float, a: int | float, b: int | float, opacity: int | float
-) -> LAB: ...
+def rgb2lrgb(x):
+    x /= 255
+    return x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4
 
 
-def lab(*args):
-    """
-    Builds a new LAB color
-    """
-    if len(args) == 1:
-        return lab_convert(args[0])
-    elif len(args) == 3:
-        l, a, b = args
-        opacity = 1
-        return LAB(l, a, b, opacity)
-    elif len(args) == 4:
-        l, a, b, opacity = args
-        return LAB(l, a, b, opacity)
+def hcl_convert(obj):
+    if isinstance(obj, HCL):
+        return HCL(obj.h, obj.c, obj.l, obj.opacity)
+    if not isinstance(obj, LAB):
+        obj = lab_convert(obj)
+    if obj.a == 0 and obj.b == 0:
+        return HCL(
+            float("nan"), 0 if 0 < obj.l < 100 else float("nan"), obj.l, obj.opacity
+        )
+    h = math.degrees(math.atan2(obj.b, obj.a))
+    return HCL(
+        h + 360 if h < 0 else h, (obj.a**2 + obj.b**2) ** 0.5, obj.l, obj.opacity
+    )
+
+
+def hcl2lab(obj):
+    if math.isnan(obj.h):
+        return LAB(obj.l, 0, 0, obj.opacity)
+    h = math.radians(obj.h)
+    return LAB(obj.l, math.cos(h) * obj.c, math.sin(h) * obj.c, obj.opacity)
 
 
 class LAB(Color):
@@ -79,25 +79,23 @@ class LAB(Color):
 
     Parameters
     ----------
-    l : int | float
+    l : float
         L* channel value
-    a : int | float
+    a : float
         a* channel value
-    b : int | float
+    b : float
         b* channel value
-    opacity : int | float
+    opacity : float
         Opacity value
     """
 
-    def __init__(
-        self, l: int | float, a: int | float, b: int | float, opacity: int | float = 1
-    ):
+    def __init__(self, l: float, a: float, b: float, opacity: float = 1.):
         self.l = float(l)
         self.a = float(a)
         self.b = float(b)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> LAB:
+    def brighter(self, k: float | None = None) -> TLAB:
         """
         Returns a brighter copy of this color.
 
@@ -113,7 +111,7 @@ class LAB(Color):
         """
         return LAB(self.l + K * (1 if k is None else k), self.a, self.b, self.opacity)
 
-    def darker(self, k: float | None = None) -> LAB:
+    def darker(self, k: float | None = None) -> TLAB:
         """
         Returns a darker copy of this color.
 
@@ -151,95 +149,8 @@ class LAB(Color):
             self.opacity,
         )
 
-
-def xyz2lab(t):
-    return t ** (1 / 3) if t > T3 else t / T2 + T0
-
-
-def lab2xyz(t):
-    return t**3 if t > T1 else T2 * (t - T0)
-
-
-def lrgb2rgb(x):
-    return 255 * (12.92 * x if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055)
-
-
-def rgb2lrgb(x):
-    x /= 255
-    return x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4
-
-
-def hcl_convert(obj):
-    if isinstance(obj, HCL):
-        return HCL(obj.h, obj.c, obj.l, obj.opacity)
-    if not isinstance(obj, LAB):
-        obj = lab_convert(obj)
-    if obj.a == 0 and obj.b == 0:
-        return HCL(
-            float("nan"), 0 if 0 < obj.l < 100 else float("nan"), obj.l, obj.opacity
-        )
-    h = math.degrees(math.atan2(obj.b, obj.a))
-    return HCL(
-        h + 360 if h < 0 else h, (obj.a**2 + obj.b**2) ** 0.5, obj.l, obj.opacity
-    )
-
-
-@overload
-def lch(specifier: str) -> HCL: ...
-
-
-@overload
-def lch(l: int | float, c: int | float, h: int | float) -> HCL: ...
-
-
-@overload
-def lch(
-    l: int | float, c: int | float, h: int | float, opacity: int | float
-) -> HCL: ...
-
-
-def lch(*args):
-    """
-    Builds a new HCL color
-    """
-    if len(args) == 1:
-        return hcl_convert(args[0])
-    elif len(args) == 3:
-        l, c, h = args
-        opacity = 1
-        return HCL(h, c, l, opacity)
-    elif len(args) == 4:
-        l, c, h, opacity = args
-        return HCL(h, c, l, opacity)
-
-
-@overload
-def hcl(specifier: str) -> HCL: ...
-
-
-@overload
-def hcl(h: int | float, c: int | float, l: int | float) -> HCL: ...
-
-
-@overload
-def hcl(
-    h: int | float, c: int | float, l: int | float, opacity: int | float
-) -> HCL: ...
-
-
-def hcl(*args):
-    """
-    Builds a new HCL color
-    """
-    if len(args) == 1:
-        return hcl_convert(args[0])
-    elif len(args) == 3:
-        h, c, l = args
-        opacity = 1
-        return HCL(h, c, l, opacity)
-    elif len(args) == 4:
-        h, c, l, opacity = args
-        return HCL(h, c, l, opacity)
+    def __repr__(self) -> str:
+        return f"LAB(l={self.l}, a={self.a}, b={self.b}, opacity={self.opacity})"
 
 
 class HCL(Color):
@@ -248,25 +159,23 @@ class HCL(Color):
 
     Parameters
     ----------
-    h : int | float
+    h : float
         Hue channel value
-    c : int | float
+    c : float
         Chroma channel value
-    l : int | float
+    l : float
         Luminance channel value
-    opacity : int | float
+    opacity : float
         Opacity value
     """
 
-    def __init__(
-        self, h: int | float, c: int | float, l: int | float, opacity: int | float
-    ):
+    def __init__(self, h: float, c: float, l: float, opacity: float = 1.):
         self.h = float(h)
         self.c = float(c)
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> HCL:
+    def brighter(self, k: float | None = None) -> THCL:
         """
         Returns a brighter copy of this color.
 
@@ -282,7 +191,7 @@ class HCL(Color):
         """
         return HCL(self.h, self.c, self.l + K * (1 if k is None else k), self.opacity)
 
-    def darker(self, k: float | None = None) -> HCL:
+    def darker(self, k: float | None = None) -> THCL:
         """
         Returns a darker copy of this color.
 
@@ -309,9 +218,201 @@ class HCL(Color):
         """
         return hcl2lab(self).rgb()
 
+    def __repr__(self) -> str:
+        return f"HCL(h={self.h}, c={self.c}, l={self.l}, opacity={self.opacity})"
 
-def hcl2lab(obj):
-    if math.isnan(obj.h):
-        return LAB(obj.l, 0, 0, obj.opacity)
-    h = math.radians(obj.h)
-    return LAB(obj.l, math.cos(h) * obj.c, math.sin(h) * obj.c, obj.opacity)
+@overload
+def lab(specifier: str) -> LAB: ...
+
+
+@overload
+def lab(l: float, a: float, b: float) -> LAB: ...
+
+
+@overload
+def lab(l: float, a: float, b: float, opacity: float) -> LAB: ...
+
+
+def lab(*args):
+    """
+    Builds a new LAB color.
+
+    Parameters
+    ----------
+    specifier : str
+        String which represents a color
+    l : float
+        L* channel value between 0 and 100
+    a : float
+        a* channel value between -128 and 127
+    b : float
+        b* channel value between -128 and 127
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    LAB
+        LAB object
+
+    Examples
+    --------
+
+    >>> d3.lab("#2e65ffff")
+    LAB(l=46.97291122702186, a=27.037050613700043, b=-83.1712687492733, opacity=1.0)
+    >>> d3.lab(78.25, -17.71, 76.47, 0.8)
+    LAB(l=78.25, a=-17.71, b=76.47, opacity=0.8)
+    """
+    if len(args) == 1:
+        return lab_convert(args[0])
+    elif len(args) == 3:
+        l, a, b = args
+        opacity = 1
+        return LAB(l, a, b, opacity)
+    elif len(args) == 4:
+        l, a, b, opacity = args
+        return LAB(l, a, b, opacity)
+
+
+@overload
+def gray(l: float) -> LAB: ...
+
+
+@overload
+def gray(l: float, opacity: float) -> gray: ...
+
+
+def gray(*args):
+    """
+    Builds a new LAB color on gray gradient.
+
+    Parameters
+    ----------
+    l : float
+        L* channel value between 0 and 100
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    LAB
+        LAB object
+
+    Examples
+    --------
+
+    >>> d3.gray(78.25, 0.8)
+    LAB(l=78.25, a=0.0, b=0.0, opacity=0.8)
+    """
+    if len(args) == 1:
+        l = args[0]
+        opacity = 1
+        return LAB(l, 0, 0, opacity)
+    elif len(args) == 2:
+        l, opacity = args
+        return LAB(l, 0, 0, opacity)
+
+@overload
+def lch(specifier: str) -> HCL: ...
+
+
+@overload
+def lch(l: float, c: float, h: float) -> HCL: ...
+
+
+@overload
+def lch(l: float, c: float, h: float, opacity: float) -> HCL: ...
+
+
+def lch(*args):
+    """
+    Builds a new HCL color from LCH format.
+
+    Parameters
+    ----------
+    specifier : str
+        String which represents a color
+    l : float
+        Luminance channel value
+    c : float
+        Chroma channel value
+    h : float
+        Hue channel value
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    HCL
+        HCL object
+
+    Examples
+    --------
+
+    >>> d3.lch("#2e65ffff")
+    HCL(h=288.00814189783785, c=87.45548611294561, l=46.97291122702186, opacity=1.0)
+    >>> d3.lch(43.14, 83.82, 60, 0.8)
+    HCL(h=60.0, c=83.82, l=43.14, opacity=0.8)
+    """
+    if len(args) == 1:
+        return hcl_convert(args[0])
+    elif len(args) == 3:
+        l, c, h = args
+        opacity = 1
+        return HCL(h, c, l, opacity)
+    elif len(args) == 4:
+        l, c, h, opacity = args
+        return HCL(h, c, l, opacity)
+
+
+@overload
+def hcl(specifier: str) -> HCL: ...
+
+
+@overload
+def hcl(h: float, c: float, l: float) -> HCL: ...
+
+
+@overload
+def hcl(h: float, c: float, l: float, opacity: float) -> HCL: ...
+
+
+def hcl(*args):
+    """
+    Builds a new HCL color.
+
+    Parameters
+    ----------
+    specifier : str
+        String which represents a color
+    h : float
+        Hue channel value
+    c : float
+        Chroma channel value
+    l : float
+        Luminance channel value
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    HCL
+        HCL object
+
+    Examples
+    --------
+
+    >>> d3.hcl("#2e65ffff")
+    HCL(h=288.00814189783785, c=87.45548611294561, l=46.97291122702186, opacity=1.0)
+    >>> d3.hcl(60, 83.82, 43.14, 0.8)
+    HCL(h=60.0, c=83.82, l=43.14, opacity=0.8)
+    """
+    if len(args) == 1:
+        return hcl_convert(args[0])
+    elif len(args) == 3:
+        h, c, l = args
+        opacity = 1
+        return HCL(h, c, l, opacity)
+    elif len(args) == 4:
+        h, c, l, opacity = args
+        return HCL(h, c, l, opacity)

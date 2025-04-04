@@ -1,8 +1,9 @@
-from __future__ import annotations
-
 import math
 import re
-from typing import overload
+from typing import overload, TypeVar
+
+TRGB = TypeVar("RGB", bound="RGB")
+THSL = TypeVar("HSL", bound="HSL")
 
 DARKER = 0.7
 BRIGHTER = 1 / DARKER
@@ -194,7 +195,7 @@ class Color:
         return self.format_rgb()
 
 
-def color(format: str) -> RGB | HSL | None:
+def color(format: str) -> TRGB | THSL | None:
     """
     Parses the specified CSS Color specifier string,
     returning an RGB or HSL color.
@@ -209,6 +210,18 @@ def color(format: str) -> RGB | HSL | None:
     -------
     RGB | HSL | None
         Formatted color
+
+    Examples
+    --------
+
+    >>> d3.color("#2e65ffff")
+    RGB(r=46, g=101, b=255, opacity=1.0)
+    >>> d3.color("rgb(108, 10, 204)")
+    RGB(r=108, g=10, b=204, opacity=1.0)
+    >>> d3.color("hsl(210.4, 90%, 70%)")
+    HSL(h=210.4, s=0.9, l=0.7, opacity=1.0)
+    >>> d3.color("bad") is None
+    True
     """
     format = format.strip().lower()
     if format == "transparent":
@@ -294,33 +307,78 @@ def rgb_convert(obj):
     return RGB(obj.r, obj.g, obj.b, obj.opacity)
 
 
-@overload
-def rgb(specifier: str) -> RGB: ...
+def clampa(opacity):
+    return 1 if math.isnan(opacity) else max(0, min(1, opacity))
 
 
-@overload
-def rgb(r: int | float, g: int | float, b: int | float) -> RGB: ...
+def clampi(value):
+    return 0 if math.isnan(value) else max(0, min(255, round(value) or 0))
 
 
-@overload
-def rgb(
-    r: int | float, g: int | float, b: int | float, opacity: int | float
-) -> RGB: ...
+def hex(value):
+    value = clampi(value)
+    return f"{'0' if value < 16 else ''}{value:x}"
 
 
-def rgb(*args):
-    """
-    Builds a new RGB color
-    """
-    if len(args) == 1:
-        return rgb_convert(args[0])
-    elif len(args) == 3:
-        r, g, b = args
-        opacity = 1
-        return RGB(r, g, b, opacity)
-    elif len(args) == 4:
-        r, g, b, opacity = args
-        return RGB(r, g, b, opacity)
+def hsla(h, s, l, a):
+    if a <= 0:
+        h = s = l = math.nan
+    elif l <= 0 or l >= 1:
+        h = s = math.nan
+    elif s <= 0:
+        h = math.nan
+    return HSL(h, s, l, a)
+
+
+def hsl_convert(obj):
+    if isinstance(obj, HSL):
+        return HSL(obj.h, obj.s, obj.l, obj.opacity)
+    if not isinstance(obj, Color):
+        obj = color(obj)
+    if not obj:
+        return HSL(0, 0, 0)
+    if isinstance(obj, HSL):
+        return obj
+    obj = obj.rgb()
+    r = obj.r / 255
+    g = obj.g / 255
+    b = obj.b / 255
+    min_val = min(r, g, b)
+    max_val = max(r, g, b)
+    h = math.nan
+    s = max_val - min_val
+    l = (max_val + min_val) / 2
+    if s:
+        if r == max_val:
+            h = (g - b) / s + (g < b) * 6
+        elif g == max_val:
+            h = (b - r) / s + 2
+        else:
+            h = (r - g) / s + 4
+        s /= l < 0.5 and (max_val + min_val) or (2 - max_val - min_val)
+        h *= 60
+    else:
+        s = 0 if 0 < l < 1 else h
+    return HSL(h, s, l, obj.opacity)
+
+def clamph(value):
+    value = (value or 0) % 360
+    return value + 360 if value < 0 else value
+
+
+def clampt(value):
+    return max(0, min(1, value or 0))
+
+
+def hsl2rgb(h, m1, m2):
+    if h < 60:
+        return (m1 + (m2 - m1) * h / 60) * 255
+    elif h < 180:
+        return m2 * 255
+    elif h < 240:
+        return (m1 + (m2 - m1) * (240 - h) / 60) * 255
+    else:
+        return m1 * 255
 
 
 class RGB(Color):
@@ -329,25 +387,23 @@ class RGB(Color):
 
     Parameters
     ----------
-    r : int | float
+    r : int
         Red channel value
-    g : int | float
+    g : int
         Green channel value
-    b : int | float
+    b : int
         Blue channel value
-    opacity : int | float
+    opacity : float
         Opacity value
     """
 
-    def __init__(
-        self, r: int | float, g: int | float, b: int | float, opacity: int | float = 1
-    ):
+    def __init__(self, r: int, g: int, b: int, opacity: float = 1):
         self.r = float(r)
         self.g = float(g)
         self.b = float(b)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> RGB:
+    def brighter(self, k: float | None = None) -> TRGB:
         """
         Returns a brighter copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(100, 186, 255).
@@ -368,7 +424,7 @@ class RGB(Color):
         k = BRIGHTER if k is None else BRIGHTER**k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
-    def darker(self, k: float | None = None) -> RGB:
+    def darker(self, k: float | None = None) -> TRGB:
         """
         Returns a darker copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(49, 91, 126).
@@ -389,7 +445,7 @@ class RGB(Color):
         k = DARKER if k is None else DARKER**k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
-    def rgb(self) -> RGB:
+    def rgb(self) -> TRGB:
         """
         Returns the RGB equivalent of this color
 
@@ -400,7 +456,7 @@ class RGB(Color):
         """
         return self
 
-    def clamp(self) -> RGB:
+    def clamp(self) -> TRGB:
         """
         Returns a new RGB color where the r, g, and b channels are clamped
         to the range [0, 255] and rounded to the nearest integer value, and
@@ -473,89 +529,8 @@ class RGB(Color):
         a = clampa(self.opacity)
         return f"{'rgb(' if a == 1 else 'rgba('}{clampi(self.r)}, {clampi(self.g)}, {clampi(self.b)}{')' if a == 1 else f', {a})'}"
 
-
-def clampa(opacity):
-    return 1 if math.isnan(opacity) else max(0, min(1, opacity))
-
-
-def clampi(value):
-    return 0 if math.isnan(value) else max(0, min(255, round(value) or 0))
-
-
-def hex(value):
-    value = clampi(value)
-    return f"{'0' if value < 16 else ''}{value:x}"
-
-
-def hsla(h, s, l, a):
-    if a <= 0:
-        h = s = l = math.nan
-    elif l <= 0 or l >= 1:
-        h = s = math.nan
-    elif s <= 0:
-        h = math.nan
-    return HSL(h, s, l, a)
-
-
-def hsl_convert(obj):
-    if isinstance(obj, HSL):
-        return HSL(obj.h, obj.s, obj.l, obj.opacity)
-    if not isinstance(obj, Color):
-        obj = color(obj)
-    if not obj:
-        return HSL(0, 0, 0)
-    if isinstance(obj, HSL):
-        return obj
-    obj = obj.rgb()
-    r = obj.r / 255
-    g = obj.g / 255
-    b = obj.b / 255
-    min_val = min(r, g, b)
-    max_val = max(r, g, b)
-    h = math.nan
-    s = max_val - min_val
-    l = (max_val + min_val) / 2
-    if s:
-        if r == max_val:
-            h = (g - b) / s + (g < b) * 6
-        elif g == max_val:
-            h = (b - r) / s + 2
-        else:
-            h = (r - g) / s + 4
-        s /= l < 0.5 and (max_val + min_val) or (2 - max_val - min_val)
-        h *= 60
-    else:
-        s = 0 if 0 < l < 1 else h
-    return HSL(h, s, l, obj.opacity)
-
-
-@overload
-def hsl(specifier: str) -> HSL: ...
-
-
-@overload
-def hsl(h: int | float, s: int | float, l: int | float) -> HSL: ...
-
-
-@overload
-def hsl(
-    h: int | float, s: int | float, l: int | float, opacity: int | float
-) -> HSL: ...
-
-
-def hsl(*args):
-    """
-    Build a new HSL color
-    """
-    if len(args) == 1:
-        return hsl_convert(args[0])
-    elif len(args) == 3:
-        h, l, s = args
-        opacity = 1
-        return HSL(h, l, s, opacity)
-    elif len(args) == 4:
-        h, l, s, opacity = args
-        return HSL(h, l, s, opacity)
+    def __repr__(self) -> str:
+        return f"RGB(r={int(self.r)}, g={int(self.g)}, b={int(self.b)}, opacity={self.opacity})"
 
 
 class HSL(Color):
@@ -564,25 +539,23 @@ class HSL(Color):
 
     Parameters
     ----------
-    h : int | float
+    h : float
         Hue channel value
-    s : int | float
+    s : float
         Saturation channel value
-    l : int | float
+    l : float
         Lightness channel value
-    opacity : int | float
+    opacity : float
         Opacity value
     """
 
-    def __init__(
-        self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1
-    ):
+    def __init__(self, h: float, s: float, l: float, opacity: float = 1.):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> HSL:
+    def brighter(self, k: float | None = None) -> THSL:
         """
         Returns a brighter copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(100, 186, 255).
@@ -603,7 +576,7 @@ class HSL(Color):
         k = BRIGHTER if k is None else BRIGHTER**k
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
-    def darker(self, k: float | None = None) -> HSL:
+    def darker(self, k: float | None = None) -> THSL:
         """
         Returns a darker copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(49, 91, 126).
@@ -645,7 +618,7 @@ class HSL(Color):
             self.opacity,
         )
 
-    def clamp(self) -> HSL:
+    def clamp(self) -> THSL:
         """
         Returns a new HSL color where the h channel is clamped to the range [0, 360),
         and the s, l, and opacity channels are clamped to the range [0, 1].
@@ -681,22 +654,110 @@ class HSL(Color):
         l = str(clampt(self.l) * 100).removesuffix(".0")
         return f"{'hsl(' if a == 1 else 'hsla('}{h}, {s}%, {l}%{')' if a == 1 else f', {a})'}"
 
+    def __repr__(self) -> str:
+        return f"HSL(h={self.h}, s={self.s}, l={self.l}, opacity={self.opacity})"
 
-def clamph(value):
-    value = (value or 0) % 360
-    return value + 360 if value < 0 else value
-
-
-def clampt(value):
-    return max(0, min(1, value or 0))
+@overload
+def rgb(specifier: str) -> RGB: ...
 
 
-def hsl2rgb(h, m1, m2):
-    if h < 60:
-        return (m1 + (m2 - m1) * h / 60) * 255
-    elif h < 180:
-        return m2 * 255
-    elif h < 240:
-        return (m1 + (m2 - m1) * (240 - h) / 60) * 255
-    else:
-        return m1 * 255
+@overload
+def rgb(r: int, g: int, b: int) -> RGB: ...
+
+
+@overload
+def rgb(r: int, g: int, b: int, opacity: float) -> RGB: ...
+
+
+def rgb(*args):
+    """
+    Builds a new RGB color.
+
+    Parameters
+    ----------
+    specifier : str
+        String which represents a color
+    r : int
+        Red value between 0 and 255
+    g : int
+        Green value between 0 and 255
+    b : int
+        Blue value between 0 and 255
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    RGB
+        RGB object
+
+    Examples
+    --------
+
+    >>> d3.rgb("#2e65ffff")
+    RGB(r=46, g=101, b=255, opacity=1.0)
+    >>> d3.rgb(128, 250, 102, 0.2)
+    RGB(r=128, g=250, b=102, opacity=0.2)
+    """
+    if len(args) == 1:
+        return rgb_convert(args[0])
+    elif len(args) == 3:
+        r, g, b = args
+        opacity = 1
+        return RGB(r, g, b, opacity)
+    elif len(args) == 4:
+        r, g, b, opacity = args
+        return RGB(r, g, b, opacity)
+
+
+@overload
+def hsl(specifier: str) -> HSL: ...
+
+
+@overload
+def hsl(h: float, s: float, l: float) -> HSL: ...
+
+
+@overload
+def hsl(h: float, s: float, l: float, opacity: float) -> HSL: ...
+
+
+def hsl(*args):
+    """
+    Build a new HSL color.
+
+    Parameters
+    ----------
+    specifier : str
+        String which represents a color
+    h : float
+        Hue channel value between 0 and 360
+    s : float
+        Saturation channel value between 0 and 1
+    l : float
+        Lightness channel value between 0 and 1
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    HSL
+        HSL object
+
+    Examples
+    --------
+
+    >>> d3.hsl("#2e65ffff")
+    HSL(h=224.21052631578948, s=1.0, l=0.5901960784313726, opacity=1.0)
+    >>> d3.hsl(210.4, 0.9, 0.7, 0.8)
+    HSL(h=210.4, s=0.9, l=0.7, opacity=0.8)
+    """
+    if len(args) == 1:
+        return hsl_convert(args[0])
+    elif len(args) == 3:
+        h, l, s = args
+        opacity = 1
+        return HSL(h, l, s, opacity)
+    elif len(args) == 4:
+        h, l, s, opacity = args
+        return HSL(h, l, s, opacity)

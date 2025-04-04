@@ -1,10 +1,10 @@
-from __future__ import annotations
-
 import math
-from typing import overload
+from typing import overload, TypeVar
 
 from .color import BRIGHTER, DARKER, RGB, Color, rgb_convert
 from .lab import HCL, hcl_convert
+
+TCubehelix = TypeVar("Cubehelix", bound="Cubehelix")
 
 A = -0.14861
 B = +1.78277
@@ -35,35 +35,6 @@ def cubehelix_convert(obj):
     return Cubehelix(h + 360 if h < 0 else h, s, l, obj.opacity)
 
 
-@overload
-def cubehelix(specifier: str) -> Cubehelix: ...
-
-
-@overload
-def cubehelix(h: int | float, s: int | float, l: int | float) -> Cubehelix: ...
-
-
-@overload
-def cubehelix(
-    h: int | float, s: int | float, l: int | float, opacity: int | float
-) -> Cubehelix: ...
-
-
-def cubehelix(*args):
-    """
-    Build a new Cubehelix color
-    """
-    if len(args) == 1:
-        return cubehelix_convert(args[0])
-    elif len(args) == 3:
-        h, s, l = args
-        opacity = 1
-        return Cubehelix(h, s, l, opacity)
-    elif len(args) == 4:
-        h, s, l, opacity = args
-        return Cubehelix(h, s, l, opacity)
-
-
 def lch(*args):
     if len(args) == 1:
         return hcl_convert(args[0])
@@ -82,25 +53,23 @@ class Cubehelix(Color):
 
     Parameters
     ----------
-    h : int | float
+    h : float
         Hue channel value
-    s : int | float
+    s : float
         Saturation channel value
-    l : int | float
+    l : float
         Lightness channel value
-    opacity : int | float
+    opacity : float
         Opacity value
     """
 
-    def __init__(
-        self, h: int | float, s: int | float, l: int | float, opacity: int | float = 1
-    ):
+    def __init__(self, h: float, s: float, l: float, opacity: float = 1.):
         self.h = float(h)
         self.s = float(s)
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> Cubehelix:
+    def brighter(self, k: float | None = None) -> TCubehelix:
         """
         Returns a brighter copy of this color.
 
@@ -117,7 +86,7 @@ class Cubehelix(Color):
         k = BRIGHTER if k is None else BRIGHTER**k
         return Cubehelix(self.h, self.s, self.l * k, self.opacity)
 
-    def darker(self, k: float | None = None) -> Cubehelix:
+    def darker(self, k: float | None = None) -> TCubehelix:
         """
         Returns a darker copy of this color.
 
@@ -154,3 +123,58 @@ class Cubehelix(Color):
             255 * (l + a * (E * cosh)),
             self.opacity,
         )
+
+    def __repr__(self) -> str:
+        return f"Cubehelix(h={self.h}, s={self.s}, l={self.l}, opacity={self.opacity})"
+
+@overload
+def cubehelix(specifier: str) -> Cubehelix: ...
+
+
+@overload
+def cubehelix(h: float, s: float, l: float) -> Cubehelix: ...
+
+
+@overload
+def cubehelix(h: float, s: float, l: float, opacity: float) -> Cubehelix: ...
+
+
+def cubehelix(*args):
+    """
+    Build a new Cubehelix color
+
+    Parameters
+    ----------
+    specifier : str
+        String which represents a color
+    h : float
+        Hue channel value between 0 and 360
+    s : float
+        Saturation channel value between 0 and 1
+    l : float
+        Lightness channel value between 0 and 1
+    opacity : float
+        Opacity value between 0 and 1
+
+    Returns
+    -------
+    Cubehelix
+        Cubehelix object
+
+    Examples
+    --------
+
+    >>> d3.cubehelix("#2e65ffff")
+    Cubehelix(h=222.45389380826435, s=1.3363126255145055, l=0.3978037691833379, opacity=1.0)
+    >>> d3.cubehelix(210.4, 0.9, 0.7, 0.8)
+    Cubehelix(h=210.4, s=0.9, l=0.7, opacity=0.8)
+    """
+    if len(args) == 1:
+        return cubehelix_convert(args[0])
+    elif len(args) == 3:
+        h, s, l = args
+        opacity = 1
+        return Cubehelix(h, s, l, opacity)
+    elif len(args) == 4:
+        h, s, l, opacity = args
+        return Cubehelix(h, s, l, opacity)

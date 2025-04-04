@@ -7,7 +7,7 @@ API
 
    array
    axis
-   coloration
+   color
    format
    interpolate
    path
