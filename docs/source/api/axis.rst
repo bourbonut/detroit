@@ -1,6 +1,14 @@
 Axis
 ====
 
+.. image:: ../figures/light_all_axis.svg
+   :align: center
+   :class: only-light
+
+.. image:: ../figures/dark_all_axis.svg
+   :align: center
+   :class: only-dark
+
 .. autofunction:: detroit.axis_top
 .. autofunction:: detroit.axis_left
 .. autofunction:: detroit.axis_right
