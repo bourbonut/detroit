@@ -32,7 +32,7 @@ def number(scale):
 
 
 def center(scale, offset):
-    offset = max(0, scale.bandwidth - offset * 2) / 2
+    offset = max(0, scale.get_bandwidth() - offset * 2) / 2
     if scale.round:
         offset = round(offset)
     return lambda d: float(scale(d)) + offset
@@ -101,7 +101,7 @@ class Axis:
             args = self._tick_arguments[:nargs]
             values = self._scale.ticks(*args)
         else:
-            values = self._scale.domain
+            values = self._scale.get_domain()
 
         if self._tick_format is not None:
             format_func = self._tick_format
@@ -115,7 +115,7 @@ class Axis:
                 return d
 
         spacing = max(self._tick_size_inner, 0) + self._tick_padding
-        range_values = self._scale.range
+        range_values = self._scale.get_range()
         range0 = float(range_values[0]) + self._offset
         range1 = float(range_values[-1]) + self._offset
 
