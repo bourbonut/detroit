@@ -147,8 +147,9 @@ class Selection:
         Notes
         -----
 
-        Supported strings are :code:`<tag_name>.<class_name>` or `.<class_name>` or `<tag_name>`.
-        To get element in reverse order, you can use `<tag_name>:last-of-type`.
+        Supported strings are :code:`<tag_name>.<class_name>` or
+        :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
+        order, you can use :code:`<tag_name>:last-of-type`.
         """
         subgroups = [
             selector(node, selection)[:1]
@@ -185,8 +186,9 @@ class Selection:
         Notes
         -----
 
-        Supported strings are :code:`<tag_name>.<class_name>` or `.<class_name>` or `<tag_name>`.
-        To get element in reverse order, you can use `<tag_name>:last-of-type`.
+        Supported strings are :code:`<tag_name>.<class_name>` or
+        :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
+        order, you can use :code:`<tag_name>:last-of-type`.
         """
         subgroups = [
             selector(node, selection)
