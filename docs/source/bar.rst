@@ -86,7 +86,7 @@ Bar chart
        .attr("x", lambda d: x(d[0]))
        .attr("y", lambda d: y(d[1]))
        .attr("height", lambda d: y(0) - y(d[1]))
-       .attr("width", x.bandwidth)
+       .attr("width", x.get_bandwidth())
        .attr("fill", "steelblue")
    )
 
