@@ -1,10 +1,9 @@
 from collections.abc import Callable
 from typing import TypeVar
+from ..types import T
 
-T = TypeVar("T")
 
-
-def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[T], list[T]]:
+def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[float], list[T]]:
     """
     Returns an interpolator between the two arbitrary values a and b.
 
@@ -17,8 +16,19 @@ def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[T], lis
 
     Returns
     -------
-    Callable[[T], list[T]]
-        Interpolator
+    Callable[[float], list[T]]
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_number_array([0, 10, 20], [30, 40, 50])
+    >>> interpolator(0)
+    [0, 10, 20]
+    >>> interpolator(1)
+    [30, 40, 50]
+    >>> interpolator(0.5)
+    [15.0, 25.0, 35.0]
     """
     if b is None:
         b = []

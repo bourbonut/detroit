@@ -4,24 +4,35 @@ from collections.abc import Callable
 from .color import hue
 
 
-def interpolate_hue(a: int | float, b: int | float) -> Callable[[float], float]:
+def interpolate_hue(a: float, b: float) -> Callable[[float], float]:
     """
     Returns an interpolator between the two hue angles a and b.
     If either hue is NaN, the opposing value is used. The shortest
     path between hues is used. The return value of the interpolator
-    is a number in [0, 360).
+    is a number in :math:`[0, 360)`.
 
     Parameters
     ----------
-    a : int | float
+    a : float
         Hue angle a
-    b : int | float
+    b : float
         Hue angle b
 
     Returns
     -------
     Callable[[float], float]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_hue(45, 180)
+    >>> interpolator(0)
+    45.0
+    >>> interpolator(1)
+    180.0
+    >>> interpolator(0.5)
+    112.5
     """
     i = hue(float(a), float(b))
 

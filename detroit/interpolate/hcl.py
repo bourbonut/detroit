@@ -44,7 +44,18 @@ def interpolate_hcl(a: str, b: str) -> Callable[[float], str]:
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_hcl("red", "blue")
+    >>> interpolator(0)
+    'rgb(255, 0, 0)'
+    >>> interpolator(1)
+    'rgb(0, 0, 255)'
+    >>> interpolator(0.5)
+    'rgb(245, 0, 134)'
     """
     return HLCInterpolator(hue)(a, b)
 
@@ -63,6 +74,17 @@ def interpolate_hcl_long(a: str, b: str) -> Callable[[float], str]:
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_hcl_long("red", "blue")
+    >>> interpolator(0)
+    'rgb(255, 0, 0)'
+    >>> interpolator(1)
+    'rgb(0, 0, 255)'
+    >>> interpolator(0.5)
+    'rgb(0, 130, 64)'
     """
     return HLCInterpolator(color)(a, b)

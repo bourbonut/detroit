@@ -1,8 +1,6 @@
 from collections.abc import Callable
 from typing import TypeVar
-
-T = TypeVar("T")
-
+from ..types import T
 
 def interpolate_discrete(range_: list[T]) -> Callable[[float], T]:
     """
@@ -16,7 +14,18 @@ def interpolate_discrete(range_: list[T]) -> Callable[[float], T]:
     Returns
     -------
     Callable[[float], T]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_discrete(["a", "b", "c"])
+    >>> interpolator(0)
+    'a'
+    >>> interpolator(1)
+    'c'
+    >>> interpolator(0.5)
+    'b'
     """
     n = len(range_)
     return lambda t: range_[max(0, min(n - 1, int(t * n)))]

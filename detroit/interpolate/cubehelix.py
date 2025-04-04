@@ -51,13 +51,23 @@ interpolate_cubehelix.__doc__ = """
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_cubehelix("red", "blue")
+    >>> interpolator(0)
+    'rgb(255, 0, 0)'
+    >>> interpolator(1)
+    'rgb(0, 0, 255)'
+    >>> interpolator(0.5)
+    'rgb(238, 0, 209)'
     """
 
 interpolate_cubehelix_long = CubeHelixInterpolator(color)
 interpolate_cubehelix_long.__doc__ = """
     Like :code:`interpolate_cubehelix`, but does not use the shortest path between hues.
-
 
     Parameters
     ----------
@@ -69,5 +79,16 @@ interpolate_cubehelix_long.__doc__ = """
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_cubehelix_long("red", "blue")
+    >>> interpolator(0)
+    'rgb(255, 0, 0)'
+    >>> interpolator(1)
+    'rgb(0, 0, 255)'
+    >>> interpolator(0.5)
+    'rgb(238, 0, 209)'
     """

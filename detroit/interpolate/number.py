@@ -1,24 +1,32 @@
 from collections.abc import Callable
-from typing import TypeVar
+from ..types import Number
 
-T = TypeVar("T")
-
-
-def interpolate_number(a: T, b: T) -> Callable[[T], T]:
+def interpolate_number(a: Number, b: Number) -> Callable[[float], float]:
     """
     Returns an interpolator between the two numbers a and b.
 
     Parameters
     ----------
-    a : T
+    a : Number
         a value
-    b : T
+    b : Number
         b value
 
     Returns
     -------
-    Callable[[T], T]
-        Interpolator
+    Callable[[float], float]
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_number(10, 20)
+    >>> interpolator(0)
+    10.0
+    >>> interpolator(1)
+    20.0
+    >>> interpolator(0.5)
+    15.0
     """
     a, b = float(a), float(b)
     return lambda t: a * (1 - t) + b * t

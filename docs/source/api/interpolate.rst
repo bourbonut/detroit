@@ -1,7 +1,15 @@
 Interpolate
 ===========
 
+Generic function
+----------------
+
 .. autofunction:: detroit.interpolate
+
+
+Typed functions
+---------------
+
 .. autofunction:: detroit.interpolate_array
 .. autofunction:: detroit.interpolate_basis
 .. autofunction:: detroit.interpolate_basis_closed

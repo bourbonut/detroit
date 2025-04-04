@@ -35,7 +35,18 @@ def interpolate_string(a: str, b: str) -> Callable[[float], str]:
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_string("10.", "20.")
+    >>> interpolator(0)
+    '10.0'
+    >>> interpolator(1)
+    '20.0'
+    >>> interpolator(0.5)
+    '15.0'
     """
     a, b = str(a), str(b)
 

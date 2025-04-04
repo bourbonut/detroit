@@ -68,8 +68,36 @@ class GeneralZoomRhoInterpolator(Base):
 class ZoomRho:
     """
     An interpolator for zooming smoothly between two views of a two-dimensional
-    plane based on “Smooth and efficient zooming and panning” by
-    Jarke J. van Wijk and Wim A.A. Nuij.
+    plane based on "Smooth and efficient zooming and panning" by Jarke J. van
+    Wijk and Wim A.A. Nuij.
+
+    Each view is defined as an array of three numbers: cx, cy and width. The
+    first two coordinates cx, cy represent the center of the viewport; the last
+    coordinate width represents the size of the viewport.
+
+
+    Parameters
+    ----------
+    a : list[float]
+        View a
+    b : list[float]
+        View b
+
+    Returns
+    -------
+    Callable[[float], float]
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_zoom([0, 0, 1], [10, 10, 5])
+    >>> interpolator(0)
+    [0.0, 0.0, 1.0]
+    >>> interpolator(1)
+    [10.00000000000023, 10.00000000000023, 5.0000000000001155]
+    >>> interpolator(0.5)
+    [1.666666666666673, 1.666666666666673, 10.775486583496573]
     """
 
     def __init__(self, rho, rho2, rho4):
@@ -77,24 +105,24 @@ class ZoomRho:
         self.rho2 = rho2
         self.rho4 = rho4
 
-    def __call__(self, a: list, b: list) -> Callable:
+    def __call__(self, a: list[float], b: list[float]) -> Callable[[float], float]:
         """
-        Returns an interpolator between the two views a and b. Each view is defined
-        as an array of three numbers: cx, cy and width. The first two coordinates cx,
-        cy represent the center of the viewport; the last coordinate width represents
-        the size of the viewport.
+        Returns an interpolator between the two views a and b. Each view is
+        defined as an array of three numbers: cx, cy and width. The first two
+        coordinates cx, cy represent the center of the viewport; the last
+        coordinate width represents the size of the viewport.
 
         Parameters
         ----------
-        a : list
+        a : list[float]
             View a
-        b : list
+        b : list[float]
             View b
 
         Returns
         -------
-        Callable
-            Interpolator
+        Callable[[float], float]
+            Interpolator function
         """
         d = dist(a[:-1], b[:-1]) ** 2
         interpolator = (

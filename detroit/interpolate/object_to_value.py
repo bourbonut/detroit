@@ -8,16 +8,35 @@ from .number import interpolate_number
 from .number_array import interpolate_number_array, is_number_array
 from .rgb import interpolate_rgb
 from .string import interpolate_string
+from ..types import T, U, V
 
 
-def interpolate_object(a, b) -> Callable:
+def interpolate_object(a: dict[U, V], b: dict[U, V]) -> Callable[[float], dict[U, V]]:
     """
     Returns an interpolator between the two objects a and b.
 
+    Parameters
+    ----------
+    a : dict[U, V]
+        Object a
+    b : dict[U, V]
+        Object b
+
     Returns
     -------
-    Callable
-        Interpolator
+    Callable[[float], dict[U, V]]
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_object({"a": [0, 10, 20]}, {"a": [30, 40, 50]})
+    >>> interpolator(0)
+    {'a': [0, 10, 20]}
+    >>> interpolator(1)
+    {'a': [30, 40, 50]}
+    >>> interpolator(0.5)
+    {'a': [15.0, 25.0, 35.0]}
     """
     i = {}
     c = {}
@@ -41,26 +60,57 @@ def interpolate_object(a, b) -> Callable:
     return local_interpolate
 
 
-def interpolate_array(a: list, b: list) -> Callable:
+def interpolate_array(a: list[T], b: list[T]) -> Callable[[float], list[T]]:
     """
     Returns an interpolator between the two arrays a and b.
 
     Parameters
     ----------
-    a : list
+    a : list[T]
         Array a
-    b : list
+    b : list[T]
         Array b
 
     Returns
     -------
-    Callable
-        Interpolator
+    Callable[[float], list[T]]
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_array([0, 10, 20], [30, 40, 50])
+    >>> interpolator(0)
+    [0, 10, 20]
+    >>> interpolator(1)
+    [30, 40, 50]
+    >>> interpolator(0.5)
+    [15.0, 25.0, 35.0]
     """
     return interpolate_number_array(a, b) if is_number_array(b) else generic_array(a, b)
 
 
-def generic_array(a, b):
+def generic_array(a: list[T], b: list[T]) -> Callable[[float], T]:
+    """
+    Returns an interpolator between two sequences a and b where stored values
+    are interpolated recursively.
+
+    Parameters
+    ----------
+    a : list[T]
+        a sequence
+    b : list[T]
+        b sequence
+
+    Returns
+    -------
+    Callable[[float], T]
+        Interpolator function
+
+    Notes
+    -----
+    Use :func:`interpolate_array` instead of this function.
+    """
     nb = len(b) if b else 0
     na = min(nb, len(a)) if a else 0
     x = [interpolate(a[i], b[i]) for i in range(na)]
@@ -74,9 +124,65 @@ def generic_array(a, b):
     return local_interpolate
 
 
-def interpolate(a, b):
+def interpolate(a: T, b: T) -> Callable[[float], T]:
     """
     Returns an interpolator between the two arbitrary values a and b.
+
+    .. list-table::
+        :widths: 25 75
+
+        *   - :code:`bool`
+            - Returns a constant function based on b value
+        *   - :code:`int` 
+            - See :func:`interpolate_number`
+        *   - :code:`float`
+            - See :func:`interpolate_number`
+        *   - :code:`str`
+            - See :func:`interpolate_rgb` if string can be \
+            formatted as a color else for a generic string, see \
+            :func:`interpolate_string`
+        *   - :class:`Color <detroit.color.color.Color>`
+            - See :func:`interpolate_rgb`
+        *   - :code:`datetime`
+            - See :func:`interpolate_date`
+        *   - :code:`list[int | float]`
+            - See :func:`interpolate_number_array`
+        *   - :code:`list[T] | tuple[T]`
+            - Returns an interpolator which recursively interpolates based on \
+              :code:`T` values
+        *   - :code:`dict[U, V]`
+            - See :func:`interpolate_object`
+        *   - :code:`Any`
+            - See :code:`interpolate_number`
+
+    Parameters
+    ----------
+    a : T
+        Left bound of the interpolator
+    b : T
+        Right bound of the interpolator
+
+    Returns
+    -------
+    Callable[[float], T]
+        Interpolator function where input should be 0 and 1 and outputs a value
+        between a and b:
+
+        .. math::
+
+            interpolator: [0, 1] & \longrightarrow \mathbb [a, b] \\\\
+                               x & \longmapsto y
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate(10, 20)
+    >>> interpolator(0)
+    10.0
+    >>> interpolator(1)
+    20.0
+    >>> interpolator(0.5)
+    15.0
     """
     if b is None or isinstance(b, bool):
         return constant(b)

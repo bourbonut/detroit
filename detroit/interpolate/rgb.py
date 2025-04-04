@@ -52,6 +52,32 @@ class RGBGammaInterpolator:
 
 
 interpolate_rgb = RGBGammaInterpolator(1)
+interpolate_rgb.__doc__ = """
+Returns an interpolator between the two colors start and end.
+
+Parameters
+----------
+start : Number
+    start value
+end : Number
+    end value
+
+Returns
+-------
+Callable[[float], str]
+    Interpolator function
+
+Examples
+--------
+
+>>> interpolator = d3.interpolate_rgb("red", "blue")
+>>> interpolator(0)
+'rgb(255, 0, 0)'
+>>> interpolator(0.5)
+'rgb(128, 0, 128)'
+>>> interpolator(1)
+'rgb(0, 0, 255)'
+"""
 
 
 class RGBSplineInterpolator:
@@ -101,7 +127,18 @@ def interpolate_rgb_basis(colors: list[str]) -> Callable[[float], str]:
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_rgb_basis(["red", "green", "blue"])
+    >>> interpolator(0)
+    'rgb(255, 0, 0)'
+    >>> interpolator(0.5)
+    'rgb(42, 85, 42)'
+    >>> interpolator(1)
+    'rgb(0, 0, 255)'
     """
     return RGBSplineInterpolator(interpolate_basis)(colors)
 
@@ -123,6 +160,17 @@ def interpolate_rgb_basis_closed(colors: list[str]) -> Callable[[float], str]:
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_rgb_basis_closed(["red", "green", "blue"])
+    >>> interpolator(0)
+    'rgb(170, 21, 42)'
+    >>> interpolator(0.5)
+    'rgb(11, 61, 122)'
+    >>> interpolator(1)
+    'rgb(255, 0, 255)'
     """
     return RGBSplineInterpolator(interpolate_basis_closed)(colors)

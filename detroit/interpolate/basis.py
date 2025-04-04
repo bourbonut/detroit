@@ -29,6 +29,17 @@ def interpolate_basis(values: list[float]) -> Callable[[float], float]:
     -------
     Callable[[float], float]
         Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_basis([0, 10, 20])
+    >>> interpolator(0)
+    0.0
+    >>> interpolator(1)
+    20.0
+    >>> interpolator(0.5)
+    10.0
     """
     n = len(values) - 1
 

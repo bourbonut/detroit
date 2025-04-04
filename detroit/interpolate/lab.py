@@ -20,7 +20,18 @@ def interpolate_lab(a: str, b: str) -> Callable[[float], str]:
     Returns
     -------
     Callable[[float], str]
-        Interpolator
+        Interpolator function
+
+    Examples
+    --------
+
+    >>> interpolator = d3.interpolate_lab("red", "blue")
+    >>> interpolator(0)
+    'rgb(255, 0, 0)'
+    >>> interpolator(1)
+    'rgb(0, 0, 255)'
+    >>> interpolator(0.5)
+    'rgb(193, 0, 136)'
     """
     start = color_lab(a)
     end = color_lab(b)
