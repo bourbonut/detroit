@@ -11,7 +11,7 @@ Color
 .. autofunction:: detroit.gray
 .. autofunction:: detroit.color
 
-.. autoclass:: detroit.coloration.color.RGB
+.. autoclass:: detroit.color.color.RGB
 
    .. automethod:: brighter
    .. automethod:: darker
@@ -22,7 +22,7 @@ Color
    .. automethod:: format_hex_8
    .. automethod:: format_rgb
 
-.. autoclass:: detroit.coloration.color.HSL
+.. autoclass:: detroit.color.color.HSL
 
    .. automethod:: brighter
    .. automethod:: darker
@@ -31,19 +31,19 @@ Color
    .. automethod:: displayable
    .. automethod:: format_hsl
 
-.. autoclass:: detroit.coloration.lab.LAB
+.. autoclass:: detroit.color.lab.LAB
 
    .. automethod:: brighter
    .. automethod:: darker
    .. automethod:: rgb
 
-.. autoclass:: detroit.coloration.lab.HCL
+.. autoclass:: detroit.color.lab.HCL
 
    .. automethod:: brighter
    .. automethod:: darker
    .. automethod:: rgb
 
-.. autoclass:: detroit.coloration.cubehelix.Cubehelix
+.. autoclass:: detroit.color.cubehelix.Cubehelix
 
    .. automethod:: brighter
    .. automethod:: darker
