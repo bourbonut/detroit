@@ -22,5 +22,9 @@ def create(name: str) -> Selection:
         XML tree
     """
     fullname = namespace(name)
-    document = etree.Element(fullname["local"], attrib=fullname["space"])
+    document = (
+        etree.Element(fullname["local"], attrib={"xmlns": fullname["space"][None]})
+        if isinstance(fullname, dict) else
+        etree.Element(fullname)
+    )
     return Selection([[document]], [document])

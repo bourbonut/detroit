@@ -1,5 +1,5 @@
 NAMESPACES = {
-    "svg": {"xmlns": "http://www.w3.org/2000/svg"},
+    "svg": {None: "http://www.w3.org/2000/svg"},
     # 'xhtml': xhtml,
     # 'xlink': "http://www.w3.org/1999/xlink",
     # 'xml': "http://www.w3.org/XML/1998/namespace",
@@ -7,8 +7,8 @@ NAMESPACES = {
 }
 
 
-def namespace(name):
-    prefix = name + ""
+def namespace(name: str):
+    prefix = name
     i = prefix.find(":")
     if i >= 0 and (prefix := name[:i]) != "xmlns":
         name = name[i + 1 :]

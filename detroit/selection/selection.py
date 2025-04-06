@@ -40,30 +40,29 @@ def selector(element: etree.Element, selection: str | None = None):
 
 def creator(node: etree.Element, fullname: dict | None = None):
     return (
-        etree.SubElement(node, fullname["local"], attrs=fullname["space"])
+        etree.SubElement(node, fullname["local"], nsmap=fullname["space"])
         if isinstance(fullname, dict)
-        else etree.SubElement(node, fullname)
+        else etree.SubElement(node, fullname, nsmap={})
     )
 
 
 class Selection:
     """
-    A selection is a set of elements from the DOM.
-    Typically these elements are identified by selectors such
-    as .fancy for elements with the class fancy, or div to
-    select DIV elements.
+    A selection is a set of elements from the DOM. Typically these elements are
+    identified by selectors such as .fancy for elements with the class fancy,
+    or div to select DIV elements.
 
     Selection methods come in two forms, :code:`select` and :code:`select_all`:
-    the former selects only the first matching element, while the latter selects
-    all matching elements in document order. The top-level selection methods,
-    d3.select and d3.select_all, query the entire document; the subselection
-    methods, selection.select and selection.select_all, restrict selection to
-    descendants of the selected elements.
+    the former selects only the first matching element, while the latter
+    selects all matching elements in document order. The top-level selection
+    methods, d3.select and d3.select_all, query the entire document; the
+    subselection methods, selection.select and selection.select_all, restrict
+    selection to descendants of the selected elements.
 
-    By convention, selection methods that return the current selection such
-    as selection.attr use four spaces of indent, while methods that return
-    a new selection use only two. This helps reveal changes of context by
-    making them stick out of the chain:
+    By convention, selection methods that return the current selection such as
+    selection.attr use four spaces of indent, while methods that return a new
+    selection use only two. This helps reveal changes of context by making them
+    stick out of the chain:
 
     Parameters
     ----------
@@ -82,8 +81,9 @@ class Selection:
     Examples
     --------
 
+    >>> body = d3.create("body")
     >>> (
-    ...     d3.create("body")
+    ...     body
     ...     .append("svg")
     ...     .attr("width", 960)
     ...     .attr("height", 500)
@@ -93,6 +93,16 @@ class Selection:
     ...     .attr("width", 920)
     ...     .attr("height", 460)
     ... )
+    >>> print(body.to_string())
+    <body>
+      <svg xmlns="http://www.w3.org/2000/svg" weight="960" height="500">
+        <g transform="translate(20, 20)">
+          <rect width="920" height="460"/>
+        </g>
+      </svg>
+    </body>
+    >>> str(body)
+    '<body><svg xmlns="http://www.w3.org/2000/svg" weight="960" height="500"><g transform="translate(20, 20)"><rect width="920" height="460"/></g></svg></body>'
     """
 
     def __init__(
@@ -111,7 +121,7 @@ class Selection:
 
     def select(self, selection: str | None = None) -> TSelection:
         """
-        Selects the first element that matches the specified :code:`selection` string
+        Selects the first element that matches the specified :code:`selection` string.
 
         Parameters
         ----------
@@ -126,7 +136,39 @@ class Selection:
         Examples
         --------
 
-        >>> d3.select("g.ticks")
+        >>> svg = d3.create("svg")
+        >>> svg.append("g").attr("class", "ticks")
+        Selection(
+            groups=[[g.ticks]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f2d1504cb80>: None},
+        )
+        >>> svg.append("g").attr("class", "labels")
+        Selection(
+            groups=[[g.labels]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
+        )
+        >>> svg.select("g.ticks")
+        Selection(
+            groups=[[g.ticks]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
+        )
+        >>> svg.select("g.points")
+        Selection(
+            groups=[[]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
+        )
 
         Notes
         -----
@@ -150,7 +192,7 @@ class Selection:
 
     def select_all(self, selection: str | None = None) -> TSelection:
         """
-        Selects all elements that match the specified :code:`selection` string
+        Selects all elements that match the specified :code:`selection` string.
 
         Parameters
         ----------
@@ -165,7 +207,40 @@ class Selection:
         Examples
         --------
 
-        >>> d3.select_all("g.ticks")
+        >>> svg = d3.create("svg")
+        >>> scale = d3.scale_linear([0, 10], [0, 100])
+        >>> print(svg.call(d3.axis_bottom(scale).set_ticks(3)).to_string())
+        <svg xmlns:xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
+          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H100.5V6"/>
+          <g class="tick" opacity="1" transform="translate(0.5, 0)">
+            <line stroke="currentColor" y2="6"/>
+            <text fill="currentColor" y="9" dy="0.71em">0</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(50.5, 0)">
+            <line stroke="currentColor" y2="6"/>
+            <text fill="currentColor" y="9" dy="0.71em">5</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(100.5, 0)">
+            <line stroke="currentColor" y2="6"/>
+            <text fill="currentColor" y="9" dy="0.71em">10</text>
+          </g>
+        </svg>
+        >>> svg.select_all("g").select_all("line")
+        Selection(
+            groups=[[line], [line], [line]],
+            parents=[g.tick],
+            enter=None,
+            exit=None,
+            data={},
+        )
+        >>> svg.select_all("line")
+        Selection(
+            groups=[[line, line, line]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={},
+        )
 
         Notes
         -----
@@ -189,13 +264,28 @@ class Selection:
 
     def enter(self) -> TSelection:
         """
-        Returns the enter selection: placeholder nodes for each datum
-        that had no corresponding DOM element in the selection.
+        Returns the enter selection: placeholder nodes for each datum that had
+        no corresponding DOM element in the selection.
 
         Returns
         -------
         Selection
             Enter selection
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> text = svg.select_all("text").data(["hello", "world"])
+        >>> text_enter = text.enter()
+        >>> text_enter
+        Selection(
+            groups=[[EnterNode(svg, hello), EnterNode(svg, world)]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={},
+        )
         """
         return Selection(
             self._enter or [[None] * len(group) for group in self._groups],
@@ -205,16 +295,30 @@ class Selection:
 
     def exit(self) -> TSelection:
         """
-        Returns the exit selection: existing DOM elements in the
-        selection for which no new datum was found.
-        (The exit selection is empty for selections not returned
-        by selection.data.)
+        Returns the exit selection: existing DOM elements in the selection for
+        which no new datum was found. (The exit selection is empty for
+        selections not returned by selection.data.)
 
 
         Returns
         -------
         Selection
             Exit selection
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> text = svg.select_all("text").data(["hello", "world"])
+        >>> text_exit = text.exit()
+        >>> text_exit
+        Selection(
+            groups=[[]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={},
+        )
         """
         return Selection(
             self._exit or [[None] * len(group) for group in self._groups],
@@ -224,14 +328,12 @@ class Selection:
 
     def merge(self, context: TSelection) -> TSelection:
         """
-        Returns a new selection merging this selection with the
-        specified other selection or transition. The returned
-        selection has the same number of groups and the same parents
-        as this selection. Any missing (None) elements in this
-        selection are filled with the corresponding element, if
-        present (not null), from the specified selection. (If the
-        other selection has additional groups or parents, they are
-        ignored.)
+        Returns a new selection merging this selection with the specified other
+        selection or transition. The returned selection has the same number of
+        groups and the same parents as this selection. Any missing (None)
+        elements in this selection are filled with the corresponding element,
+        if present (not null), from the specified selection. (If the other
+        selection has additional groups or parents, they are ignored.)
 
         Parameters
         ----------
@@ -242,6 +344,43 @@ class Selection:
         -------
         Selection
             Merged selection
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> text = svg.select_all("text").data(["hello", "world"])
+        >>> text_enter = text.enter()
+        >>> text_enter.append("text").text(lambda text: text)
+        Selection(
+            groups=[[text, text]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element text at 0x7f2d14b2a580>: 'hello', <Element text at 0x7f2d14457540>: 'world'},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns:xmlns="http://www.w3.org/2000/svg">
+          <text>hello</text>
+          <text>world</text>
+        </svg>
+        >>> text
+        Selection(
+            groups=[[None, None]],
+            parents=[svg],
+            enter=[[EnterNode(svg, hello), EnterNode(svg, world)]],
+            exit=[[]],
+            data={},
+        )
+        >>> text = text.merge(text_enter)
+        >>> text
+        Selection(
+            groups=[[EnterNode(svg, hello), EnterNode(svg, world)]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element text at 0x7f2d14b2a580>: 'hello', <Element text at 0x7f2d14457540>: 'world'},
+        )
         """
         selection = context.selection() if hasattr(context, "selection") else context
 
@@ -262,8 +401,8 @@ class Selection:
 
     def filter(self, match: Accessor | int | float | str) -> TSelection:
         """
-        Filters the selection, returning a new selection that contains
-        only the elements for which the specified filter is true.
+        Filters the selection, returning a new selection that contains only the
+        elements for which the specified filter is true.
 
         Parameters
         ----------
@@ -277,9 +416,36 @@ class Selection:
 
         Examples
         --------
-        For example, to filter a selection of table rows to contain only even rows:
 
-        >>> even = d3.select_all("tr").filter(lambda d, i: i % 2 == 0)
+        >>> svg = d3.create("svg")
+        >>> scale = d3.scale_linear([0, 10], [0, 100])
+        >>> print(svg.call(d3.axis_bottom(scale).set_ticks(3)).to_string())
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
+          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H100.5V6"/>
+          <g class="tick" opacity="1" transform="translate(0.5, 0)">
+            <line stroke="currentColor" y2="6"/>
+            <text fill="currentColor" y="9" dy="0.71em">0</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(50.5, 0)">
+            <line stroke="currentColor" y2="6"/>
+            <text fill="currentColor" y="9" dy="0.71em">5</text>
+          </g>
+          <g class="tick" opacity="1" transform="translate(100.5, 0)">
+            <line stroke="currentColor" y2="6"/>
+            <text fill="currentColor" y="9" dy="0.71em">10</text>
+          </g>
+        </svg>
+        >>> result = svg.select_all("text").filter(lambda d, i: i % 2 != 0)
+        >>> result
+        Selection(
+            groups=[[text]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={},
+        )
+        >>> result.node().text
+        '5'
         """
         matches, nargs = matcher(match)
         subgroups = []
@@ -299,14 +465,13 @@ class Selection:
 
     def append(self, name: str) -> TSelection:
         """
-        If the specified name is a string, appends a new element
-        of this type (tag name) as the last child of each selected
-        element, or before the next following sibling in the update
-        selection if this is an enter selection. The latter behavior
-        for enter selections allows you to insert elements into the
-        DOM in an order consistent with the new bound data; however,
-        note that selection.order may still be required if updating
-        elements change order (i.e., if the order of new data is
+        If the specified name is a string, appends a new element of this type
+        (tag name) as the last child of each selected element, or before the
+        next following sibling in the update selection if this is an enter
+        selection. The latter behavior for enter selections allows you to
+        insert elements into the DOM in an order consistent with the new bound
+        data; however, note that selection.order may still be required if
+        updating elements change order (i.e., if the order of new data is
         inconsistent with old data).
 
         Parameters
@@ -322,7 +487,14 @@ class Selection:
         Examples
         --------
 
-        >>> svg.select_all("g").append("path")
+        >>> svg = d3.create("svg")
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg"/>
+        >>> g = svg.append("g").attr("class", "labels")
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g class="labels"/>
+        </svg>
         """
         fullname = namespace(name)
         subgroups = []
@@ -355,15 +527,19 @@ class Selection:
         self, callback: Callable[[etree.Element, Data, int, list[etree.Element]], None]
     ):
         """
-        Invokes the specified function for each selected element,
-        in order, being passed the current DOM element (nodes[i]),
-        the current datum (d), the current index (i), and the
-        current group (nodes).
+        Invokes the specified function for each selected element, in order,
+        being passed the current DOM element (nodes[i]), the current datum (d),
+        the current index (i), and the current group (nodes).
 
         Parameters
         ----------
         callback : Callable[[etree.Element, Data, int, list[etree.Element]], None]
-            Function to call which takes as argument: node, data, index and group
+            Function to call which takes as argument:
+
+            * **node** (`etree.Element`) - the node element
+            * **data** (`Any`) - current data associated to the node
+            * **index** (`int`) - the index of the node in its group
+            * **group** (`list[etree.Element]`) - the node's group with other nodes.
         """
         for group in self._groups:
             for i, node in enumerate(group):
@@ -374,8 +550,9 @@ class Selection:
 
     def attr(self, name: str, value: Accessor | str | None = None) -> TSelection:
         """
-        If a value is specified, sets the attribute with the specified name
-        to the specified value on the selected elements and returns this selection.
+        If a value is specified, sets the attribute with the specified name to
+        the specified value on the selected elements and returns this
+        selection.
 
         If the value is a function, it is evaluated for each selected element,
         in order, being passed the current datum (d), the current index (i),
@@ -396,7 +573,16 @@ class Selection:
         Examples
         --------
 
-        >>> selection.attr("color", "red")
+        >>> svg = d3.create("svg")
+        >>> print(
+        ...     svg.append("g")
+        ...     .attr("class", "labels")
+        ...     .attr("transform", "translate(20, 10)")
+        ...     .to_string()
+        ... )
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g class="labels" transform="translate(20, 10)"/>
+        </svg>
         """
         if value is None:
             return self.node().get(name)
@@ -408,8 +594,8 @@ class Selection:
 
     def style(self, name: str, value: Accessor | str | None = None) -> TSelection:
         """
-        If a value is specified, sets the style with the specified name
-        to the specified value on the selected elements and returns this selection.
+        If a value is specified, sets the style with the specified name to the
+        specified value on the selected elements and returns this selection.
 
         If the value is a function, it is evaluated for each selected element,
         in order, being passed the current datum (d), the current index (i),
@@ -430,7 +616,16 @@ class Selection:
         Examples
         --------
 
-        >>> selection.style("color", "red")
+        >>> svg = d3.create("svg")
+        >>> print(
+        ...     svg.append("text")
+        ...     .style("fill", "black")
+        ...     .style("stroke", "none")
+        ...     .to_string()
+        ... )
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <text style="fill:black;stroke:none;"/>
+        </svg>
         """
         if value is None:
             return style_value(self.nodes.get(name).get("style"), name)
@@ -442,10 +637,10 @@ class Selection:
 
     def text(self, value: Accessor | str | None = None) -> TSelection:
         """
-        If the value is a constant, then all elements are given the same
-        text content; otherwise, if the value is a function, it is evaluated
-        for each selected element, in order, being passed the current
-        datum (d), the current index (i), and the current group (nodes).
+        If the value is a constant, then all elements are given the same text
+        content; otherwise, if the value is a function, it is evaluated for
+        each selected element, in order, being passed the current datum (d),
+        the current index (i), and the current group (nodes).
 
         Parameters
         ----------
@@ -460,7 +655,32 @@ class Selection:
         Examples
         --------
 
-        >>> selection.text("Hello, world!")
+        Direct assignment:
+
+        >>> svg = d3.create("svg")
+        >>> text = svg.append("text").text("Hello, world!")
+        >>> svg = d3.create("svg")
+        >>> print(svg.append("text").text("Hello, world!").to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <text>Hello, world!</text>
+        </svg>
+
+        Through data:
+
+        >>> svg = d3.create("svg")
+        >>> print(
+        ...     svg.select_all("text")
+        ...     .data(["Hello", "world"])
+        ...     .enter()
+        ...     .append("text")
+        ...     .text(lambda text, i: f"{text} - index {i}")
+        ...     .to_string()
+        ... )
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <text>Hello - index 0</text>
+          <text>world - index 1</text>
+        </svg>
+        
         """
         if value is None:
             return self.node().get("text")
@@ -483,24 +703,49 @@ class Selection:
         -------
         Selection
             Itself
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> g1 = svg.append("g").attr("class", "g1")
+        >>> g2 = svg.append("g").attr("class", "g2")
+        >>> g = svg.select_all("g")
+        >>> g
+        Selection(
+            groups=[[g.g1, g.g2]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f3eda0be4c0>: None, <Element g at 0x7f3eda029700>: None},
+        )
+        >>> g.datum("Hello, world")
+        Selection(
+            groups=[[g.g1, g.g2]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f3eda0be4c0>: 'Hello, world', <Element g at 0x7f3eda029700>: None},
+        )
+        >>> g1.node()
+        <Element g at 0x7f3eda0be4c0>
         """
         self._data[self.node()] = value
         return self
 
-    def data(self, values: list[Data], key: Accessor | None = None) -> TSelection:
+    def data(self, values: list[Data] | Accessor, key: Accessor | None = None) -> TSelection:
         """
-        Binds the specified list of data with the selected elements,
-        returning a new selection that represents the update selection:
-        the elements successfully bound to data. Also defines the enter
-        and exit selections on the returned selection, which can be used
-        to add or remove elements to correspond to the new data. The
-        specified data is an array of arbitrary values (e.g., numbers or
-        objects), or a function that returns an array of values for each
-        group.
+        Binds the specified list of data with the selected elements, returning
+        a new selection that represents the update selection: the elements
+        successfully bound to data. Also defines the enter and exit selections
+        on the returned selection, which can be used to add or remove elements
+        to correspond to the new data. The specified data is an array of
+        arbitrary values (e.g., numbers or objects), or a function that returns
+        an array of values for each group.
 
         Parameters
         ----------
-        values : list[Data]
+        values : list[Data] | Accessor
             List of data to bind
         key : Accessor | None
             Optional accessor which returns a key value
@@ -509,6 +754,43 @@ class Selection:
         -------
         Selection
             Itself
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> svg.append("g")
+        Selection(
+            groups=[[g]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f3eda09b540>: None},
+        )
+        >>> svg.append("g")
+        Selection(
+            groups=[[g]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f3eda09b540>: None, <Element g at 0x7f3edac50240>: None},
+        )
+        >>> svg.select_all("text").data(["Hello", "world"])
+        Selection(
+            groups=[[None, None]],
+            parents=[svg],
+            enter=[[EnterNode(svg, Hello), EnterNode(svg, world)]],
+            exit=[[]],
+            data={<Element g at 0x7f3eda09b540>: None, <Element g at 0x7f3edac50240>: None},
+        )
+        >>> svg.select_all("g").data(["Hello", "world"])
+        Selection(
+            groups=[[g, g]],
+            parents=[svg],
+            enter=[[None, None]],
+            exit=[[None, None]],
+            data={<Element g at 0x7f3eda09b540>: 'Hello', <Element g at 0x7f3edac50240>: 'world'},
+        )
         """
         bind = bind_key if key else bind_index
         parents = self._parents
@@ -554,8 +836,8 @@ class Selection:
 
     def order(self) -> TSelection:
         """
-        Re-inserts elements into the document such that the document order
-        of each group matches the selection order.
+        Re-inserts elements into the document such that the document order of
+        each group matches the selection order.
 
         Returns
         -------
@@ -576,28 +858,30 @@ class Selection:
 
     def join(
         self,
-        onenter: Callable | TSelection,
-        onupdate: Callable | None = None,
-        onexit: Callable | None = None,
-    ):
+        onenter: Callable[[TSelection], TSelection] | str,
+        onupdate: Callable[[TSelection], TSelection] | None = None,
+        onexit: Callable[[TSelection], None] | None = None,
+    ) -> TSelection:
         """
-        Appends, removes and reorders elements as necessary to match
-        the data that was previously bound by selection.data, returning
-        the merged enter and update selection. This method is a convenient
-        alternative to the explicit general update pattern, replacing
-        selection.enter, selection.exit, selection.append, selection.remove, and selection.order.
+        Appends, removes and reorders elements as necessary to match the data
+        that was previously bound by selection.data, returning the merged enter
+        and update selection. This method is a convenient alternative to the
+        explicit general update pattern, replacing selection.enter,
+        selection.exit, selection.append, selection.remove, and
+        selection.order.
 
         Parameters
         ----------
-        onenter : Callable | Selection
+        onenter : Callable[[Selection], Selection] | str
             Enter selection or function
-        onupdate : Callable | None
+        onupdate : Callable[[Selection], Selection] | None
             Function
-        onexit : Callable | None
+        onexit : Callable[[Selection], None] | None
             Function
 
         Returns
         -------
+        Selection
             Selection with joined elements
         """
         enter = self.enter()
@@ -631,9 +915,9 @@ class Selection:
 
     def insert(self, name: str, before: etree.Element) -> TSelection:
         """
-        If the specified name is a string, inserts a new element
-        of this type (tag name) before the first element matching
-        the specified before selector for each selected element.
+        If the specified name is a string, inserts a new element of this type
+        (tag name) before the first element matching the specified before
+        selector for each selected element.
 
         Parameters
         ----------
@@ -665,9 +949,8 @@ class Selection:
 
     def remove(self) -> TSelection:
         """
-        Removes the selected elements from the document. Returns this
-        selection (the removed elements) which are now detached from
-        the DOM.
+        Removes the selected elements from the document. Returns this selection
+        (the removed elements) which are now detached from the DOM.
 
         Returns
         -------
@@ -685,9 +968,8 @@ class Selection:
 
     def call(self, func: Callable[[TSelection, ...], Any], *args: Data) -> TSelection:
         """
-        Invokes the specified function exactly once, passing in
-        this selection along with any optional arguments. Returns
-        this selection.
+        Invokes the specified function exactly once, passing in this selection
+        along with any optional arguments. Returns this selection.
 
         Parameters
         ----------
@@ -724,9 +1006,8 @@ class Selection:
 
     def clone(self) -> TSelection:
         """
-        Inserts clones of the selected elements immediately following
-        the selected elements and returns a selection of the newly
-        added clones.
+        Inserts clones of the selected elements immediately following the
+        selected elements and returns a selection of the newly added clones.
 
         Returns
         -------
@@ -799,8 +1080,10 @@ class Selection:
         str
             String
         """
-        return etree.tostring(self._parents[0], pretty_print=pretty_print).decode(
-            "utf-8"
+        return (
+            etree.tostring(self._parents[0], pretty_print=pretty_print)
+            .decode("utf-8")
+            .removesuffix("\n")
         )
 
     def __str__(self) -> str:
