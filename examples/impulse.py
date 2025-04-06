@@ -46,7 +46,7 @@ data = {
 # Specify the chart's dimensions.
 margin = Margin(10, 30, 30, 60)
 width = 960 - margin.left - margin.right
-height = 800 - margin.top - margin.bottom
+height = 680 - margin.top - margin.bottom
 
 # Create the SVG container.
 svg = (
@@ -100,10 +100,10 @@ color = (
 )
 
 # For white axis and text
-svg.select_all("path.domain").attr("stroke", "white")
-svg.select_all("g.tick").select_all("line").attr("stroke", "white")
-svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
-svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("path.domain").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
+# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("impulse.svg", "w") as file:
+with open("dark-impulse.svg", "w") as file:
     file.write(str(svg))
