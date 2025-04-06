@@ -1,5 +1,6 @@
 from collections.abc import Callable, Iterator
 from itertools import zip_longest
+from inspect import signature
 from typing import Any, Protocol, TypeAlias, TypeVar, overload
 
 from lxml import etree
@@ -177,17 +178,15 @@ class Selection:
         :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
         order, you can use :code:`<tag_name>:last-of-type`.
         """
-        subgroups = [
-            selector(node, selection)[:1]
-            for group in self._groups
-            for node in group
-            if node is not None
-        ]
-        parents = [
-            (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
-            for group in self._groups
-            if group[0] is not None
-        ]
+        subgroups = []
+        parents = []
+        for group in self._groups:
+            for node in group:
+                if node is None:
+                    continue
+                subgroups.append(selector(node, selection)[:1])
+                parents.append(node)
+
         return Selection(subgroups, parents or self._parents, data=self._data)
 
     def select_all(self, selection: str | None = None) -> TSelection:
@@ -228,7 +227,7 @@ class Selection:
         >>> svg.select_all("g").select_all("line")
         Selection(
             groups=[[line], [line], [line]],
-            parents=[g.tick],
+            parents=[g.tick, g.tick, g.tick],
             enter=None,
             exit=None,
             data={},
@@ -249,17 +248,15 @@ class Selection:
         :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
         order, you can use :code:`<tag_name>:last-of-type`.
         """
-        subgroups = [
-            selector(node, selection)
-            for group in self._groups
-            for node in group
-            if node is not None
-        ]
-        parents = [
-            (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
-            for group in self._groups
-            if group[0] is not None
-        ]
+        subgroups = []
+        parents = []
+        for group in self._groups:
+            for node in group:
+                if node is None:
+                    continue
+                subgroups.append(selector(node, selection))
+                parents.append(node)
+                
         return Selection(subgroups, parents or self._parents, data=self._data)
 
     def enter(self) -> TSelection:
@@ -798,6 +795,7 @@ class Selection:
 
         if not callable(values):
             values = constant(values)
+        nargs = len(signature(values).parameters)
 
         update = [None] * len(groups)
         enter = [None] * len(groups)
@@ -805,7 +803,8 @@ class Selection:
         for j in range(len(groups)):
             parent = parents[j]
             group = groups[j]
-            data = list(values(parent, self._data.get(parent), j, parents))
+            args = [parent, self._data.get(parent), j, parents][:nargs]
+            data = list(values(*args))
             enter[j] = enter_group = [None] * len(data)
             update[j] = update_group = [None] * len(data)
             exit[j] = exit_group = [None] * len(group)
@@ -883,6 +882,51 @@ class Selection:
         -------
         Selection
             Selection with joined elements
+
+        Examples
+        --------
+
+        >>> data = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
+        >>> svg = d3.create("svg")
+        >>> table = (
+        ...     svg.append("table")
+        ...     .select_all("tr")
+        ...     .data(data)
+        ...     .join("tr")
+        ...     .select_all("td")
+        ...     .data(lambda _, d: d)
+        ...     .join("td")
+        ...     .text(lambda d: str(d))
+        ... )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <table>
+            <tr>
+              <td>0</td>
+              <td>1</td>
+              <td>2</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>5</td>
+              <td>6</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>9</td>
+              <td>10</td>
+              <td>11</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>13</td>
+              <td>14</td>
+              <td>15</td>
+            </tr>
+          </table>
+        </svg>
         """
         enter = self.enter()
         update = self
