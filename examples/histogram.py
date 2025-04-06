@@ -13,7 +13,7 @@ height = 500
 margin = Margin(20, 20, 30, 40)
 
 # Bin the data.
-bins = d3.bin().thresholds(40).value(lambda d: d[3])(unemployment.iter_rows())
+bins = d3.bin().set_thresholds(40).set_value(lambda d: d[3])(unemployment.iter_rows())
 
 # Declare the x (horizontal position) scale.
 x = (
