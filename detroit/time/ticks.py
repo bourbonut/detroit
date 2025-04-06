@@ -83,6 +83,53 @@ class Ticker:
         -------
         list[datetime]
             Array of approximated dates
+
+        Examples
+        --------
+
+        If you give *rounded* :code:`datetime` (for example, day times starting
+        and finishing at :code:`00:00:00`), the function iterates over days.
+
+        >>> from datetime import datetime
+        >>> start = datetime(2011, 1, 1, 0, 0, 0)
+        >>> stop = datetime(2011, 1, 5, 0, 0, 0)
+        >>> count = 4
+        >>> dates = d3.time_ticks(start, stop, count)
+        >>> type(dates)
+        <class 'list'>
+        >>> for d in dates:
+        ...     print(d)
+        ...     
+        ... 
+        2011-01-01 00:00:00
+        2011-01-02 00:00:00
+        2011-01-03 00:00:00
+        2011-01-04 00:00:00
+        2011-01-05 00:00:00
+
+        However, if you give *specific* :code:`datetime`, the function rounds
+        dates based on the time delta between :code:`stop` and :code:`start`
+        and returns :code:`count` dates.
+
+        >>> from datetime import datetime
+        >>> start = datetime(2011, 1, 1, 12, 0, 0)
+        >>> stop = datetime(2011, 1, 5, 12, 0, 0)
+        >>> count = 4
+        >>> dates = d3.time_ticks(start, stop, count)
+        >>> type(dates)
+        <class 'list'>
+        >>> for d in dates:
+        ...     print(d)
+        ...     
+        ... 
+        2011-01-02 00:00:00
+        2011-01-03 00:00:00
+        2011-01-04 00:00:00
+        2011-01-05 00:00:00
+
+        As you can see, the closest date to :code:`2011-01-01 12:00:00` is
+        :code:`2011-01-02 00:00:00`. The function starts from this date and
+        iterates :code:`count` times.
         """
         reverse = stop < start
         if reverse:
@@ -99,8 +146,8 @@ class Ticker:
         self, start: datetime, stop: datetime, count: int
     ) -> TimeInterval:
         """
-        Returns the time interval that would be used by :code:`d3.time_ticks`
-        given the same arguments
+        Returns the time interval that would be used by :func:`d3.time_ticks
+        <detroit.time_ticks>` given the same arguments
 
         Parameters
         ----------
@@ -114,7 +161,8 @@ class Ticker:
         Returns
         -------
         TimeInterval
-            Time interval chosen used by :code:`d3.time_ticks`
+            Time interval chosen used by :func:`d3.time_ticks
+            <detroit.time_ticks>`
         """
         target = abs(stop - start) / count
         i = bisect_right([step for _, _, step in self.tick_intervals], target)
