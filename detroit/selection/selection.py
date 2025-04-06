@@ -1,3 +1,4 @@
+from collections import defaultdict
 from collections.abc import Callable, Iterator
 from itertools import zip_longest
 from inspect import signature
@@ -250,12 +251,40 @@ class Selection:
         """
         subgroups = []
         parents = []
+        indices = {}
         for group in self._groups:
             for node in group:
                 if node is None:
                     continue
-                subgroups.append(selector(node, selection))
-                parents.append(node)
+                subgroup = selector(node, selection)
+                if not subgroup:
+                    subgroups.append(subgroup)
+                    parents.append(node)
+                for subnode in subgroup:
+                    parent = subnode.getparent()
+                    if parent in indices:
+                        index = indices[parent]
+                    else:
+                        parents.append(parent)
+                        index = indices.setdefault(parent, len(indices))
+                        subgroups.append([])
+                    subgroups[index].append(subnode)
+
+        # print(subgroups)
+        # print(parents)
+        #
+        # subgroups = []
+        # parents = []
+        # for group in self._groups:
+        #     for node in group:
+        #         if node is None:
+        #             continue
+        #         subgroups.append(selector(node, selection))
+        #         parents.append(node)
+        #
+        # print(subgroups)
+        # print(parents)
+        # print("=" * 142)
                 
         return Selection(subgroups, parents or self._parents, data=self._data)
 
