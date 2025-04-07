@@ -1,3 +1,5 @@
+from time import perf_counter
+
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from itertools import zip_longest
@@ -32,10 +34,10 @@ def selector(element: etree.Element, selection: str | None = None):
         tag, class_name = selection.split(".")
         tag = tag or "*"
         class_name = f"[@class='{class_name}']" if class_name else ""
-        return element.xpath(f"./*/{tag}{order}{class_name}") + element.xpath(
+        return element.xpath(f"./*//{tag}{order}{class_name}") + element.xpath(
             f"./{tag}{order}{class_name}"
         )
-    return element.xpath(f"./*/{selection}{order}") + element.xpath(
+    return element.xpath(f"./*//{selection}{order}") + element.xpath(
         f"./{selection}{order}"
     )
 
@@ -179,14 +181,19 @@ class Selection:
         :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
         order, you can use :code:`<tag_name>:last-of-type`.
         """
-        subgroups = []
-        parents = []
-        for group in self._groups:
-            for node in group:
-                if node is None:
-                    continue
-                subgroups.append(selector(node, selection)[:1])
-                parents.append(node)
+        groups = defaultdict(list)
+        nodes = (node for group in self._groups for node in group)
+        for node in filter(lambda n: n is not None, nodes):
+            subgroup = selector(node, selection)[:1]
+            if len(subgroup) == 0:
+                groups[node]
+                continue
+            for subnode in subgroup:
+                parent = subnode.getparent()
+                groups[parent].append(subnode)
+
+        subgroups = list(groups.values())
+        parents = list(groups)
 
         return Selection(subgroups, parents or self._parents, data=self._data)
 
@@ -235,8 +242,8 @@ class Selection:
         )
         >>> svg.select_all("line")
         Selection(
-            groups=[[line, line, line]],
-            parents=[svg],
+            groups=[[line], [line], [line]],
+            parents=[g.tick, g.tick, g.tick],
             enter=None,
             exit=None,
             data={},
@@ -249,44 +256,21 @@ class Selection:
         :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
         order, you can use :code:`<tag_name>:last-of-type`.
         """
-        subgroups = []
-        parents = []
-        indices = {}
-        for group in self._groups:
-            for node in group:
-                if node is None:
-                    continue
-                subgroup = selector(node, selection)
-                if not subgroup:
-                    subgroups.append(subgroup)
-                    parents.append(node)
-                for subnode in subgroup:
-                    parent = subnode.getparent()
-                    if parent in indices:
-                        index = indices[parent]
-                    else:
-                        parents.append(parent)
-                        index = indices.setdefault(parent, len(indices))
-                        subgroups.append([])
-                    subgroups[index].append(subnode)
+        groups = defaultdict(list)
+        nodes = (node for group in self._groups for node in group)
+        for node in filter(lambda n: n is not None, nodes):
+            subgroup = selector(node, selection)
+            if len(subgroup) == 0:
+                groups[node]
+                continue
+            for subnode in subgroup:
+                parent = subnode.getparent()
+                groups[parent].append(subnode)
 
-        # print(subgroups)
-        # print(parents)
-        #
-        # subgroups = []
-        # parents = []
-        # for group in self._groups:
-        #     for node in group:
-        #         if node is None:
-        #             continue
-        #         subgroups.append(selector(node, selection))
-        #         parents.append(node)
-        #
-        # print(subgroups)
-        # print(parents)
-        # print("=" * 142)
+        subgroups = list(groups.values())
+        parents = list(groups)
                 
-        return Selection(subgroups, parents or self._parents, data=self._data)
+        return Selection(subgroups, parents, data=self._data)
 
     def enter(self) -> TSelection:
         """
