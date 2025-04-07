@@ -668,8 +668,6 @@ class Selection:
         Direct assignment:
 
         >>> svg = d3.create("svg")
-        >>> text = svg.append("text").text("Hello, world!")
-        >>> svg = d3.create("svg")
         >>> print(svg.append("text").text("Hello, world!").to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
           <text>Hello, world!</text>
@@ -940,6 +938,49 @@ class Selection:
             </tr>
           </table>
         </svg>
+
+        Another usage could be to specify functions :
+
+        >>> svg = d3.create("svg")
+        >>> svg.append("circle").attr("fill", "yellow")
+        Selection(
+            groups=[[circle]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element circle at 0x7f5e219fd300>: None},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <circle fill="yellow"/>
+        </svg>
+        >>> (
+        ...     svg.select_all("circle")
+        ...     .data(data)
+        ...     .join(
+        ...         onenter=lambda enter: enter.append("circle").attr("fill", "green"),
+        ...         onupdate=lambda update: update.attr("fill", "blue")
+        ...     )
+        ...     .attr("stroke", "black")
+        ... )
+        Selection(
+            groups=[[circle, circle, None]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element circle at 0x7f5e219fd300>: 0, <Element circle at 0x7f5e2251f040>: 1, <Element circle at 0x7f5e22517a80>: 2},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <circle fill="blue"/>
+          <circle fill="green" stroke="black"/>
+          <circle fill="green" stroke="black"/>
+        </svg>
+
+        In this example, the attribute :code:`fill` of the existing circle was
+        updated, by :code:`onupdate`, from :code:`yellow` to :code:`blue`. And
+        since :code:`data` has 3 elements, :code:`onenter` has generated the
+        last circles.
         """
         enter = self.enter()
         update = self
