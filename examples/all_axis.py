@@ -67,8 +67,8 @@ svg = (
 # To change color all in white
 # svg.select_all(".domain").attr("stroke", "white")
 # svg.select_all("g.tick").attr("fill", "none").attr("stroke", "white")
-# svg.select_all("g").select_all("line").attr("fill", "none").attr("stroke", "white")
-# svg.select_all("g").select_all("text").style("fill", "white").style("stroke", "none")
+# svg.select_all("line").attr("fill", "none").attr("stroke", "white")
+# svg.select_all("text").style("fill", "white").style("stroke", "none")
 
 with open("all_axis.svg", "w") as file:
     file.write(str(svg))
