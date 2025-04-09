@@ -21,7 +21,31 @@ from ..types import Data, Value, Accessor
 
 TSelection = TypeVar("Selection", bound="Selection")
 
-def selector(element: etree.Element, selection: str | None = None):
+def selector(
+    element: etree.Element, selection: str | None = None
+) -> list[etree.Element]:
+    """
+    Searchs recursively :code:`selection` where the root node is :code:`element`.
+
+    Parameters
+    ----------
+    element : etree.Element
+        Root node on which the search starts
+    selection : str | None
+        Selection description
+
+    Returns
+    -------
+    list[etree.Element]
+        List of found nodes.
+
+    Notes
+    -----
+
+    Supported strings are :code:`<tag_name>.<class_name>` or
+    :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
+    order, you can use :code:`<tag_name>:last-of-type`.
+    """
     if selection is None:
         return element
     order = ""
@@ -42,7 +66,25 @@ def selector(element: etree.Element, selection: str | None = None):
     )
 
 
-def creator(node: etree.Element, fullname: dict | None = None):
+def creator(
+    node: etree.Element, fullname: dict | None = None
+) -> etree.SubElement:
+    """
+    Creates a subnode associated to :code:`node`.
+
+    Parameters
+    ----------
+    node : etree.Element
+        Node on which the subnode will be associated.
+    fullname : dict | None
+        Dictionary with keys :code:`"local"` as name and :code:`"space"` for
+        its namespace.
+
+    Returns
+    -------
+    etree.SubElement
+        Subnode
+    """
     return (
         etree.SubElement(node, fullname["local"], nsmap=fullname["space"])
         if isinstance(fullname, dict)
@@ -1445,7 +1487,13 @@ class Selection:
         --------
 
         >>> svg = d3.create("svg")
-        >>> g = svg.select_all("g").data(list(reversed(range(10)))).enter().append("g").attr("class", lambda d: f"class{d}")
+        >>> g = (
+        ...     svg.select_all("g")
+        ...     .data(list(reversed(range(10))))
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("class", lambda d: f"class{d}")
+        ... )
         >>> print(repr(g))
         Selection(
             groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
