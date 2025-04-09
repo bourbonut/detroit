@@ -184,6 +184,8 @@ class Selection:
         groups = defaultdict(list)
         nodes = (node for group in self._groups for node in group)
         for node in filter(lambda n: n is not None, nodes):
+            if isinstance(node, EnterNode):
+                node = node._parent
             subgroup = selector(node, selection)[:1]
             if len(subgroup) == 0:
                 groups[node]
@@ -259,6 +261,8 @@ class Selection:
         groups = defaultdict(list)
         nodes = (node for group in self._groups for node in group)
         for node in filter(lambda n: n is not None, nodes):
+            if isinstance(node, EnterNode):
+                node = node._parent
             subgroup = selector(node, selection)
             if len(subgroup) == 0:
                 groups[node]
@@ -497,6 +501,8 @@ class Selection:
         Examples
         --------
 
+        Simple append:
+
         >>> svg = d3.create("svg")
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg"/>
@@ -505,33 +511,49 @@ class Selection:
         <svg xmlns="http://www.w3.org/2000/svg">
           <g class="labels"/>
         </svg>
+
+        Multiple append:
+
+        >>> import detroit as d3
+        >>> svg = d3.create("svg")
+        >>> svg.select_all("g").data([None, None]).enter().append("g").append("text")
+        Selection(
+            groups=[[text], [text]],
+            parents=[g, g],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f91d8360200>: None, <Element g at 0x7f91d8360240>: None, <Element text at 0x7f91d8bbb540>: None, <Element text at 0
+        x7f91d8360140>: None},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <text/>
+          </g>
+          <g>
+            <text/>
+          </g>
+        </svg>
         """
         fullname = namespace(name)
-        subgroups = []
-        for group in self._groups:
-            subgroup = []
-            for node in group:
-                if node is None:
-                    continue
-                if isinstance(node, EnterNode):
-                    enter_node = node
-                    node = enter_node._parent
-                    subnode = creator(node, fullname)
-                    node.append(subnode)
-                    subgroup.append(subnode)
-                    self._data[subnode] = enter_node.__data__
-                else:
-                    subnode = creator(node, fullname)
-                    node.append(subnode)
-                    subgroup.append(subnode)
-                    self._data[subnode] = self._data.get(node)
-            subgroups.append(subgroup)
-        parents = [
-            (group[0]._parent if isinstance(group[0], EnterNode) else group[0])
-            for group in self._groups
-            if group[0] is not None
-        ]
-        return Selection(subgroups, parents or self._parents, data=self._data)
+        groups = defaultdict(list)
+        nodes = (node for group in self._groups for node in group)
+        for node in filter(lambda n: n is not None, nodes):
+            if isinstance(node, EnterNode):
+                enter_node = node
+                node = enter_node._parent
+                subnode = creator(node, fullname)
+                node.append(subnode)
+                self._data[subnode] = enter_node.__data__
+                groups[node].append(subnode)
+            else:
+                subnode = creator(node, fullname)
+                node.append(subnode)
+                groups[node].append(subnode)
+                self._data[subnode] = self._data.get(node)
+        subgroups = list(groups.values())
+        parents = list(groups)
+        return Selection(subgroups, parents, data=self._data)
 
     def each(
         self, callback: Callable[[etree.Element, Data, int, list[etree.Element]], None]
@@ -1028,42 +1050,115 @@ class Selection:
         -------
         Selection
             Selection with inserted element(s)
+
+        Examples
+        --------
+
+        Since :code:`before` refers to a selected tag, this method will operate
+        multiple insertions.
+
+        >>> import detroit as d3
+        >>> svg = d3.create("svg")
+        >>> (
+        ...     svg.select_all("g")
+        ...     .data([None, None])
+        ...     .enter()
+        ...     .append("g")
+        ...     .append("text")
+        ... )
+        Selection(
+            groups=[[text], [text]],
+            parents=[g, g],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7fc5748c2f00>: None, <Element g at 0x7fc5748c2300>: None, <Element text at 0x7fc575105280>: None, <Element text at 0
+        x7fc5748c2100>: None},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <text/>
+          </g>
+          <g>
+            <text/>
+          </g>
+        </svg>
+        >>> svg.insert("circle", "text")
+        Selection(
+            groups=[[circle], [circle]],
+            parents=[g, g],
+            enter=None,
+            exit=None,
+            data={<Element circle at 0x7fc5748f9980>: None, <Element circle at 0x7fc5748f8c80>: None},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <circle/>
+            <text/>
+          </g>
+          <g>
+            <circle/>
+            <text/>
+          </g>
+        </svg>
+
+        If you prefer to insert an element at a specific location, you need to
+        select first the specific node and then insert your element.
+
+        >>> svg = d3.create("svg")
+        >>> (
+        ...     svg.select_all("g")
+        ...     .data(["class1", "class2"])
+        ...     .enter()
+        ...     .append("g")
+        ...     .append("text")
+        ...     .attr("class", lambda d: d)
+        ... )
+        Selection(
+            groups=[[text.class1], [text.class2]],
+            parents=[g, g],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7fc5748e9340>: 'class1', <Element g at 0x7fc5748e9b80>: 'class2', <Element text at 0x7fc5753f7140>: 'class1', <Eleme
+        nt text at 0x7fc5748e8180>: 'class2'},
+        )
+        >>> svg.insert("circle", ".class1")
+        Selection(
+            groups=[[circle]],
+            parents=[g],
+            enter=None,
+            exit=None,
+            data={<Element circle at 0x7fc5753f0500>: None},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <circle/>
+            <text class="class1"/>
+          </g>
+          <g>
+            <text class="class2"/>
+          </g>
+        </svg>
         """
-        print(repr(self))
-        print(name, before)
         fullname = namespace(name)
+        selection = self.select_all(before)
         subgroups = []
-        for group in self._groups:
-            subgroup = []
-            for node in group:
-                if node is not None:
-                    if isinstance(node, EnterNode):
-                        node = node._parent
-                    selection = selector(node, before)
-                    # parents = defaultdict(list)
-                    # for found in selection:
-                    #     parent = found.getparent()
-                    #     parents[parent].append(found)
-                    #
-                    # for parent, selection in parents.items():
-                    if len(selection) > 0:
-                        found = selection[0]
-                        parent = found.getparent()
-                        index = parent.index(found)
-                        created = creator(parent, fullname)
-                        parent.insert(index, created)
-                        self._data[created] = self._data.get(node)
-                        subgroup.append(created)
-                        # subgroup.append(node)
-                    else:
-                        subgroup.append(node)
-                else:
-                    subgroup.append(node)
+        for i, group in enumerate(selection._groups):
+            if len(group) > 0:
+                node = group[0]
+                parent = selection._parents[i]
+                index = parent.index(node)
+                created = creator(parent, fullname)
+                parent.insert(index, created)
+                self._data[created] = self._data.get(node)
+                subgroup = [created]
+            else:
+                subgroup = []
             subgroups.append(subgroup)
 
-        print(repr(Selection(subgroups, self._parents, data=self._data)))
-        print("=" * 142)
-        return Selection(subgroups, self._parents, data=self._data)
+        return Selection(subgroups, selection._parents, data=self._data)
 
     def remove(self) -> TSelection:
         """
@@ -1073,16 +1168,66 @@ class Selection:
         Returns
         -------
         Selection
-            Itself with removed elements
+            Selection with removed elements
+
+        Examples
+        --------
+
+        >>> import detroit as d3
+        >>> svg = d3.create("svg")
+        >>> (
+        ...     svg.select_all("g")
+        ...     .data([None] * 10)
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("class", "domain")
+        ... )
+        Selection(
+            groups=[[g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7fd461822100>: None, <Element g at 0x7fd461822800>: None, <Element g at 0x7fd461821980>: None, <Element g at 0x7fd4618219c0>: None, <Element g at 0x7fd461821380>: None, <Element g at 0x7fd461822ec0>: None, <Element g at 0x7fd461821580>: None, <Element g at 0x7fd461822180>: None, <Element g at 0x7fd461823300>: None, <Element g at 0x7fd461821200>: None},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+          <g class="domain"/>
+        </svg>
+        >>> svg.select_all(".domain").remove()
+        Selection(
+            groups=[[]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={},
+        )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg"/>
         """
-
-        def remove(node, data, i, group):
-            parent = node.getparent()
-            if parent is not None:
-                parent.remove(node)
-
-        self.each(remove)
-        return self
+        subgroups = []
+        for group in self._groups:
+            subgroup = []
+            for node in group:
+                if node is not None:
+                    if isinstance(node, EnterNode):
+                        node = node._parent
+                    subgroup.append(node)
+                    parent = node.getparent()
+                    if parent is not None:
+                        parent.remove(node)
+                        subgroup.pop()
+                        self._data.pop(node, None)
+            subgroups.append(subgroup)
+        return Selection(subgroups, self._parents, data=self._data)
 
     def call(self, func: Callable[[TSelection, ...], Any], *args: Data) -> TSelection:
         """
@@ -1104,9 +1249,9 @@ class Selection:
         Examples
         --------
 
-        This is equivalent to invoking the function
-        by hand but facilitates method chaining. For example, to set
-        several styles in a reusable function:
+        This is equivalent to invoking the function by hand but facilitates
+        method chaining. For example, to set several styles in a reusable
+        function:
 
         >>> def name(selection, first, last):
         ...     selection.attr("first-name", first).attr("last-name", last)
@@ -1145,6 +1290,27 @@ class Selection:
         -------
         etree.Element
             Node
+
+        Examples
+        --------
+        >>> svg = d3.create("svg")
+        >>> g = (
+        ...     svg.select_all("g")
+        ...     .data(list(reversed(range(10))))
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("class", lambda d: f"class{d}")
+        ... )
+        >>> g
+        Selection(
+            groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7fac2cf609c0>: 9, <Element g at 0x7fac2c4e1880>: 8, <Element g at 0x7fac2c4e0840>: 7, <Element g at 0x7fac2cca92c0>:6, <Element g at 0x7fac2cca8800>: 5, <Element g at 0x7fac2cca99c0>: 4, <Element g at 0x7fac2cca9940>: 3, <Element g at 0x7fac2cca9200>: 2, <Element g at 0x7fac2ccaa980>: 1, <Element g at 0x7fac2ccaa400>: 0},
+        )
+        >>> g.node()
+        <Element g at 0x7fac2cf609c0>
         """
         return next(iter(self))
 
@@ -1156,6 +1322,27 @@ class Selection:
         -------
         list[etree.Element]
             List of nodes
+
+        Examples
+        --------
+        >>> svg = d3.create("svg")
+        >>> g = (
+        ...     svg.select_all("g")
+        ...     .data(list(reversed(range(10))))
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("class", lambda d: f"class{d}")
+        ... )
+        >>> g
+        Selection(
+            groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7fac2cf609c0>: 9, <Element g at 0x7fac2c4e1880>: 8, <Element g at 0x7fac2c4e0840>: 7, <Element g at 0x7fac2cca92c0>:6, <Element g at 0x7fac2cca8800>: 5, <Element g at 0x7fac2cca99c0>: 4, <Element g at 0x7fac2cca9940>: 3, <Element g at 0x7fac2cca9200>: 2, <Element g at 0x7fac2ccaa980>: 1, <Element g at 0x7fac2ccaa400>: 0},
+        )
+        >>> g.nodes()
+        [<Element g at 0x7fac2cf609c0>, <Element g at 0x7fac2c4e1880>, <Element g at 0x7fac2c4e0840>, <Element g at 0x7fac2cca92c0>, <Element g at 0x7fac2cca8800>, <Element g at 0x7fac2cca99c0>, <Element g at 0x7fac2cca9940>, <Element g at 0x7fac2cca9200>, <Element g at 0x7fac2ccaa980>, <Element g at 0x7fac2ccaa400>]
         """
         return list(self)
 
@@ -1175,7 +1362,7 @@ class Selection:
 
     def selection(self) -> TSelection:
         """
-        Returns the selection
+        Returns the selection without any modification.
 
         Returns
         -------
@@ -1197,6 +1384,35 @@ class Selection:
         -------
         str
             String
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> g = (
+        ...     svg.select_all("g")
+        ...     .data(list(reversed(range(10))))
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("class", lambda d: f"class{d}")
+        ... )
+        >>> print(svg.to_string())
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g class="class9"/>
+          <g class="class8"/>
+          <g class="class7"/>
+          <g class="class6"/>
+          <g class="class5"/>
+          <g class="class4"/>
+          <g class="class3"/>
+          <g class="class2"/>
+          <g class="class1"/>
+          <g class="class0"/>
+        </svg>
+        >>> print(svg.to_string(False))
+        <svg xmlns="http://www.w3.org/2000/svg"><g class="class9"/><g class="class8"/><g class="class7"/><g class="class6"/><g class="class5"/><g class="class4"/><g class="class3"/><g class="class2"/><g class="class1"/><g class="class0"/></svg>
+        >>> svg.to_string(False) == str(svg)
+        True
         """
         return (
             etree.tostring(self._parents[0], pretty_print=pretty_print)
@@ -1206,7 +1422,8 @@ class Selection:
 
     def __str__(self) -> str:
         """
-        Returns the SVG content
+        Returns the SVG content. Equivalent to
+        :code:`Selection.to_string(False)`.
 
         Returns
         -------
@@ -1223,6 +1440,20 @@ class Selection:
         -------
         str
             String
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> g = svg.select_all("g").data(list(reversed(range(10)))).enter().append("g").attr("class", lambda d: f"class{d}")
+        >>> print(repr(g))
+        Selection(
+            groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7fac2c337240>: 9, <Element g at 0x7fac2cf91980>: 8, <Element g at 0x7fac2cf92680>: 7, <Element g at 0x7fac2cf91680>:6, <Element g at 0x7fac2cf7f100>: 5, <Element g at 0x7fac2cf7e180>: 4, <Element g at 0x7fac2cf7cec0>: 3, <Element g at 0x7fac2cf7c500>: 2, <Element g at 0x7fac2cf7fc80>: 1, <Element g at 0x7fac2cf7f700>: 0},
+        )
         """
 
         def node_repr(node):
