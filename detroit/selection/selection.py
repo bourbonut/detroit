@@ -1011,39 +1011,59 @@ class Selection:
         else:
             return update
 
-    def insert(self, name: str, before: etree.Element) -> TSelection:
+    def insert(self, name: str, before: str) -> TSelection:
         """
         If the specified name is a string, inserts a new element of this type
-        (tag name) before the first element matching the specified before
-        selector for each selected element.
+        (tag name) before the first element matching the specified
+        :code:`before` selector for each selected element.
 
         Parameters
         ----------
         name : str
             Tag name
-        before : etree.Element
-            Node element
+        before : str
+            Node element selection
 
         Returns
         -------
         Selection
-            Itself with inserted element
+            Selection with inserted element(s)
         """
+        print(repr(self))
+        print(name, before)
         fullname = namespace(name)
+        subgroups = []
         for group in self._groups:
-            for i, node in enumerate(group):
+            subgroup = []
+            for node in group:
                 if node is not None:
                     if isinstance(node, EnterNode):
                         node = node._parent
                     selection = selector(node, before)
-                    if selection := [
-                        found for found in selection if found.getparent() == node
-                    ]:
-                        index = node.index(selection[0])
-                        created = creator(node, fullname)
-                        node.insert(index, created)
-                        group[i] = created
-        return self
+                    # parents = defaultdict(list)
+                    # for found in selection:
+                    #     parent = found.getparent()
+                    #     parents[parent].append(found)
+                    #
+                    # for parent, selection in parents.items():
+                    if len(selection) > 0:
+                        found = selection[0]
+                        parent = found.getparent()
+                        index = parent.index(found)
+                        created = creator(parent, fullname)
+                        parent.insert(index, created)
+                        self._data[created] = self._data.get(node)
+                        subgroup.append(created)
+                        # subgroup.append(node)
+                    else:
+                        subgroup.append(node)
+                else:
+                    subgroup.append(node)
+            subgroups.append(subgroup)
+
+        print(repr(Selection(subgroups, self._parents, data=self._data)))
+        print("=" * 142)
+        return Selection(subgroups, self._parents, data=self._data)
 
     def remove(self) -> TSelection:
         """
