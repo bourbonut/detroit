@@ -117,9 +117,9 @@ class LinearBase:
     def __str__(self) -> str:
         name = self.__class__.__name__
         attrbs = ["domain", "range"]
-        attrbs = (f"{a}={getattr(self, f'get_{a}')()}," for a in attrbs)
-        attrbs = "\n    ".join(attrbs)
-        return f"{name}(\n    {attrbs}\n)"
+        attrbs = (f"{a}={getattr(self, f'get_{a}')()}" for a in attrbs)
+        attrbs = ", ".join(attrbs)
+        return f"{name}({attrbs})"
 
     def __repr__(self) -> str:
         name = self.__class__.__name__
