@@ -28,3 +28,5 @@ Selection
    .. automethod:: style
    .. automethod:: text
    .. automethod:: to_string
+   .. automethod:: __str__
+   .. automethod:: __repr__
