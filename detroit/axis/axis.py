@@ -248,8 +248,7 @@ class Axis:
         self._scale = scale
         return self
 
-    @property
-    def scale(self) -> Type[Transformer | Sequential | Diverging]:
+    def get_scale(self) -> Type[Transformer | Sequential | Diverging]:
         return self._scale
 
     def set_ticks(self, *ticks: int | str | Callable) -> Axis:
@@ -315,8 +314,7 @@ class Axis:
         self._tick_arguments = list(tick_arguments)
         return self
 
-    @property
-    def tick_arguments(self) -> list[int | str | Callable]:
+    def get_tick_arguments(self) -> list[int | str | Callable]:
         return self._tick_arguments.copy()
 
     def set_tick_values(self, tick_values: list[int | float]) -> Axis:
@@ -342,8 +340,7 @@ class Axis:
         self._tick_values = tick_values
         return self
 
-    @property
-    def tick_values(self) -> list[int | float]:
+    def get_tick_values(self) -> list[int | float]:
         return self._tick_values
 
     def set_tick_format(self, tick_format: Callable) -> Axis:
@@ -370,8 +367,7 @@ class Axis:
         self._tick_format = tick_format
         return self
 
-    @property
-    def tick_format(self) -> Callable:
+    def get_tick_format(self) -> Callable:
         return self._tick_format
 
     def set_tick_size(self, tick_size: int) -> Axis:
@@ -420,8 +416,7 @@ class Axis:
         self._tick_size_inner = tick_size_inner
         return self
 
-    @property
-    def tick_size_inner(self) -> int:
+    def get_tick_size_inner(self) -> int:
         return self._tick_size_inner
 
     def set_tick_size_outer(self, tick_size_outer: int) -> Axis:
@@ -447,8 +442,7 @@ class Axis:
         self._tick_size_outer = tick_size_outer
         return self
 
-    @property
-    def tick_size_outer(self) -> Axis:
+    def get_tick_size_outer(self) -> Axis:
         return self._tick_size_outer
 
     def set_tick_padding(self, tick_padding: int) -> Axis:
@@ -473,8 +467,7 @@ class Axis:
         self._tick_padding = tick_padding
         return self
 
-    @property
-    def tick_padding(self) -> Axis:
+    def get_tick_padding(self) -> Axis:
         return self._tick_padding
 
     def set_offset(self, offset: int | float) -> Axis:
@@ -499,8 +492,7 @@ class Axis:
         self._offset = offset
         return self
 
-    @property
-    def offset(self) -> int | float:
+    def get_offset(self) -> int | float:
         return self._offset
 
 
