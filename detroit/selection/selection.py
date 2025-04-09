@@ -239,7 +239,7 @@ class Selection:
         subgroups = list(groups.values())
         parents = list(groups)
 
-        return Selection(subgroups, parents or self._parents, data=self._data)
+        return Selection(subgroups, parents, data=self._data)
 
     def select_all(self, selection: str | None = None) -> TSelection:
         """
@@ -702,7 +702,7 @@ class Selection:
         </svg>
         """
         if value is None:
-            return style_value(self.nodes.get(name).get("style"), name)
+            return style_value(self.node().get("style"), name)
         elif callable(value):
             self.each(style_function(name, value))
         else:
@@ -755,7 +755,7 @@ class Selection:
         
         """
         if value is None:
-            return self.node().get("text")
+            return self.node().text
         elif callable(value):
             self.each(text_function(value))
         else:
@@ -1005,6 +1005,7 @@ class Selection:
 
         Another usage could be to specify functions :
 
+        >>> data = [None] * 3
         >>> svg = d3.create("svg")
         >>> svg.append("circle").attr("fill", "yellow")
         Selection(
@@ -1113,8 +1114,7 @@ class Selection:
             parents=[g, g],
             enter=None,
             exit=None,
-            data={<Element g at 0x7fc5748c2f00>: None, <Element g at 0x7fc5748c2300>: None, <Element text at 0x7fc575105280>: None, <Element text at 0
-        x7fc5748c2100>: None},
+            data={<Element g at 0x7fc5748c2f00>: None, <Element g at 0x7fc5748c2300>: None, <Element text at 0x7fc575105280>: None, <Element text at 0x7fc5748c2100>: None},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
