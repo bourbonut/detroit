@@ -112,6 +112,18 @@ class Identity(LinearBase, Generic[T]):
     def copy(self):
         return Identity(self._domain).set_unknown(self._unknown)
 
+    def __str__(self) -> str:
+        name = self.__class__.__name__
+        attrbs = ["domain", "range"]
+        attrbs = (f"{a}={getattr(self, f'get_{a}')()}," for a in attrbs)
+        attrbs = "\n    ".join(attrbs)
+        return f"{name}(\n    {attrbs}\n)"
+
+    def __repr__(self) -> str:
+        name = self.__class__.__name__
+        addr = id(self)
+        return f"<{name} at {hex(addr)}>"
+
 
 def scale_identity(values: list[T] | None = None) -> Identity[T]:
     """

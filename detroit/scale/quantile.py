@@ -155,6 +155,18 @@ class ScaleQuantile(Generic[T]):
             .set_unknown(self._unknown)
         )
 
+    def __str__(self) -> str:
+        name = self.__class__.__name__
+        attrbs = ["domain", "range"]
+        attrbs = (f"{a}={getattr(self, f'get_{a}')()}," for a in attrbs)
+        attrbs = "\n    ".join(attrbs)
+        return f"{name}(\n    {attrbs}\n)"
+
+    def __repr__(self) -> str:
+        name = self.__class__.__name__
+        addr = id(self)
+        return f"<{name} at {hex(addr)}>"
+
 
 @overload
 def scale_quantile() -> ScaleQuantile[T]: ...
