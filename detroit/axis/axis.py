@@ -350,70 +350,77 @@ class Axis:
 
         To generate three ticks with percentage formatting on a linear scale :
 
-        >>> svg = d3.create("svg")
-        >>> axis = d3.axis_bottom(d3.scale_linear())
-        >>> svg.call(axis.set_ticks(3, "%"))
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(d3.scale_linear().set_range([0, width - 2 * margin]))
+        >>> svg.append("g").attr("transform", f"translate({margin}, {margin * 0.5})").call(
+        ...     axis.set_ticks(3, "%")
+        ... )
         Selection(
-            groups=[[svg]],
+            groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={},
+            data={<Element g at 0x7fab48999000>: None, <Element g at 0x7fab47d70900>: 0.0, <Element g at 0x7fab47d70240>: 0.5, <Element g at 0x7fab47d70a00>: 1.0, <Element path at 0x7fab47d70f00>: 0.0, <Element line at 0x7fab47d70e40>: 0.0, <Element line at 0x7fab47d70f80>: 0.5, <Element line at 0x7fab47d71000>: 1.0, <Element text at 0x7fab47d71100>: 0.0, <Element text at 0x7fab47d71180>: 0.5, <Element text at 0x7fab47d71200>: 1.0},
         )
-        >>> print(svg.to_string())
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H1.5V6"/>
-          <g class="tick" opacity="1" transform="translate(0.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">0%</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.0, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">50%</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">100%</text>
-          </g>
-        </svg>
+
+        **Result**
+
+        .. image:: ../figures/light_axis_ticks_1.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_ticks_1.svg
+           :align: center
+           :class: only-dark
+
+        ------------
 
         To generate ticks every fifteen minutes with a time scale :
 
-        >>> svg = d3.create("svg")
-        >>> scale = d3.scale_time([datetime(2000, 1, 1, 12, 0), datetime(2000, 1, 1, 13, 0)], [0, 1])
-        >>> axis = d3.axis_bottom(scale)
-        >>> svg.call(axis.set_ticks(d3.time_minute.every(15)))
+        >>> from datetime import datetime
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> scale = d3.scale_time(
+        ...     [datetime(2000, 1, 1, 12, 0), datetime(2000, 1, 1, 13, 0)], [0, 1]
+        ... )
+        >>> axis = d3.axis_bottom(scale.set_range([0, width - 2 * margin]))
+        >>> svg.append("g").attr("transform", f"translate({margin}, {margin * 0.5})").call(
+        ...     axis.set_ticks(d3.time_minute.every(15))
+        ... )
         Selection(
-            groups=[[svg]],
+            groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={},
+            data={<Element g at 0x7f8394f32b40>: None, <Element g at 0x7f8394f33140>: datetime.datetime(2000, 1, 1, 12, 0), <Element g at 0x7f8394f33080>: datetime.datetime(2000, 1, 1, 12, 15), <Element g at 0x7f8394f33100>: datetime.datetime(2000, 1, 1, 12, 30), <Element g at 0x7f8394f33180>: datetime.datetime(2000, 1, 1, 12, 45), <Element g at 0x7f8394f33000>: datetime.datetime(2000, 1, 1, 13, 0), <Element path at 0x7f8394f33600>: datetime.datetime(2000, 1, 1, 12, 0), <Element line at 0x7f8394f33540>: datetime.datetime(2000, 1, 1, 12, 0), <Element line at 0x7f8394f336c0>: datetime.datetime(2000, 1, 1, 12, 15), <Element line at 0x7f8394f33740>: datetime.datetime(2000, 1, 1, 12, 30), <Element line at 0x7f8394f337c0>: datetime.datetime(2000, 1, 1, 12, 45), <Element line at 0x7f8394f33840>: datetime.datetime(2000, 1, 1, 13, 0), <Element text at 0x7f8394f33980>: datetime.datetime(2000, 1, 1, 12, 0), <Element text at 0x7f8394f33a00>: datetime.datetime(2000, 1, 1, 12, 15), <Element text at 0x7f8394f33a80>: datetime.datetime(2000, 1, 1, 12, 30), <Element text at 0x7f8394f33b00>: datetime.datetime(2000, 1, 1, 12, 45), <Element text at 0x7f8394f33b80>: datetime.datetime(2000, 1, 1, 13, 0)},
         )
-        >>> print(svg.to_string())
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H1.5V6"/>
-          <g class="tick" opacity="1" transform="translate(0.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">12 </text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.75, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">12:15</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.0, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">12:30</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.25, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">12:45</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">01 </text>
-          </g>
-        </svg>
+
+        **Result**
+
+        .. image:: ../figures/light_axis_ticks_2.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_ticks_2.svg
+           :align: center
+           :class: only-dark
+
+        ------------
 
         Note the similarities with :code:`set_tick_arguments`:
 
@@ -479,62 +486,40 @@ class Axis:
         Examples
         --------
 
-        >>> svg = d3.create("svg")
-        >>> axis = d3.axis_bottom(d3.scale_linear())
-        >>> axis.set_tick_values(list(reversed(range(10))))
-        <Axis[BOTTOM] at 0x7fb4e01b8370>
-        >>> svg.call(axis)
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(
+        ...     d3.scale_linear().set_domain([0, 360]).set_range([0, width - 2 * margin])
+        ... )
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_tick_values([0, 120, 240, 360]))
+        ... )
         Selection(
-            groups=[[svg]],
+            groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={},
+            data={<Element g at 0x7f8394f332c0>: None, <Element g at 0x7f8394f33f80>: 0, <Element g at 0x7f8394f4c080>: 120, <Element g at 0x7f8394f4c100>: 240, <Element g at 0x7f8394f4c040>: 360, <Element path at 0x7f8394f4c4c0>: 0, <Element line at 0x7f8394f4c400>: 0, <Element line at 0x7f8394f4c540>: 120, <Element line at 0x7f8394f4c5c0>: 240, <Element line at 0x7f8394f4c640>: 360, <Element text at 0x7f8394f4c180>: 0, <Element text at 0x7f8394f4c740>: 120, <Element text at 0x7f8394f4c7c0>: 240, <Element text at 0x7f8394f4c840>: 360},
         )
-        >>> print(svg.to_string())
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H1.5V6"/>
-          <g class="tick" opacity="1" transform="translate(9.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">9.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(8.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">8.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(7.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">7.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(6.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">6.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(5.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">5.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(4.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">4.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(3.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">3.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(2.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">2.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">1.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">0.0</text>
-          </g>
-        </svg>
+
+        **Result**
+
+        .. image:: ../figures/light_axis_angle.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_angle.svg
+           :align: center
+           :class: only-dark
         """
         self._tick_values = tick_values
         return self
@@ -562,64 +547,40 @@ class Axis:
         For example, to display integers as decimal notation rounded to
         significant digits:
 
-        >>> svg = d3.create("svg")
-        >>> axis = d3.axis_bottom(d3.scale_linear().set_domain([0, 10_000]))
-        >>> svg.call(axis.set_tick_format(d3.format("~s")))
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(
+        ...     d3.scale_linear().set_domain([0, 10_000]).set_range([0, width - 2 * margin])
+        ... )
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_tick_format(d3.format("~s")))
+        ... )
         Selection(
-            groups=[[svg]],
+            groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={},
+            data={<Element g at 0x7f8394f32c40>: None, <Element g at 0x7f8394f4c580>: 0, <Element g at 0x7f8394f4c6c0>: 1000, <Element g at 0x7f8394f4c600>: 2000, <Element g at 0x7f8394f4c1c0>: 3000, <Element g at 0x7f8394f4c140>: 4000, <Element g at 0x7f8394f4c2c0>: 5000, <Element g at 0x7f8394f4c9c0>: 6000, <Element g at 0x7f8394f4c980>: 7000, <Element g at 0x7f8394f4c940>: 8000, <Element g at 0x7f8394f4c0c0>: 9000, <Element g at 0x7f8394f4c900>: 10000, <Element path at 0x7f8394f4ce80>: 0, <Element line at 0x7f8394f4cdc0>: 0, <Element line at 0x7f8394f4cf00>: 1000, <Element line at 0x7f8394f4cf80>: 2000, <Element line at 0x7f8394f4d000>: 3000, <Element line at 0x7f8394f4d080>: 4000, <Element line at 0x7f8394f4d100>: 5000, <Element line at 0x7f8394f4d180>: 6000, <Element line at 0x7f8394f4d200>: 7000, <Element line at 0x7f8394f4d280>: 8000, <Element line at 0x7f8394f4d300>: 9000, <Element line at 0x7f8394f4d380>: 10000, <Element text at 0x7f8394f4ca40>: 0, <Element text at 0x7f8394f4d480>: 1000, <Element text at 0x7f8394f4d500>: 2000, <Element text at 0x7f8394f4d580>: 3000, <Element text at 0x7f8394f4d600>: 4000, <Element text at 0x7f8394f4d680>: 5000, <Element text at 0x7f8394f4d700>: 6000, <Element text at 0x7f8394f4d780>: 7000, <Element text at 0x7f8394f4d800>: 8000, <Element text at 0x7f8394f4d880>: 9000, <Element text at 0x7f8394f4d900>: 10000},
         )
-        >>> print(svg.to_string())
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H1.5V6"/>
-          <g class="tick" opacity="1" transform="translate(0.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.6, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">1k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.7, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">2k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.8, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">3k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.9, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">4k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.0, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">5k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.1, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">6k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.2, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">7k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.3, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">8k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.4, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">9k</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="9" dy="0.71em">10k</text>
-          </g>
-        </svg>
+
+        **Result**
+
+        .. image:: ../figures/light_axis_format.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_format.svg
+           :align: center
+           :class: only-dark
         """
         self._tick_format = tick_format
         return self
@@ -645,67 +606,38 @@ class Axis:
         Examples
         --------
 
-        In the following example, :code:`y2` of every :code:`line` takes the
-        value :code:`0`.
-
-        >>> svg = d3.create("svg")
-        >>> axis = d3.axis_bottom(d3.scale_linear()).set_tick_size(0)
-        >>> svg.call(axis)
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(d3.scale_linear().set_range([0, width - 2 * margin]))
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_tick_size(12))
+        ... )
         Selection(
-            groups=[[svg]],
+            groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={},
+            data={<Element g at 0x7f8394f33700>: None, <Element g at 0x7f8394f33780>: 0.0, <Element g at 0x7f8394f4d0c0>: 0.1, <Element g at 0x7f8394f4cf40>: 0.2, <Element g at 0x7f8394f4d040>: 0.3, <Element g at 0x7f8394f4cb00>: 0.4, <Element g at 0x7f8394f4d1c0>: 0.5, <Element g at 0x7f8394f4d240>: 0.6, <Element g at 0x7f8394f4d2c0>: 0.7, <Element g at 0x7f8394f4d340>: 0.8, <Element g at 0x7f8394f4d140>: 0.9, <Element g at 0x7f8394f4d3c0>: 1.0, <Element path at 0x7f8394f4da40>: 0.0, <Element line at 0x7f8394f4cc00>: 0.0, <Element line at 0x7f8394f4da80>: 0.1, <Element line at 0x7f8394f4d9c0>: 0.2, <Element line at 0x7f8394f4db40>: 0.3, <Element line at 0x7f8394f4dbc0>: 0.4, <Element line at 0x7f8394f4dc40>: 0.5, <Element line at 0x7f8394f4dcc0>: 0.6, <Element line at 0x7f8394f4dd40>: 0.7, <Element line at 0x7f8394f4ddc0>: 0.8, <Element line at 0x7f8394f4de40>: 0.9, <Element line at 0x7f8394f4dec0>: 1.0, <Element text at 0x7f8394f4c340>: 0.0, <Element text at 0x7f8394f4dfc0>: 0.1, <Element text at 0x7f8394f4e040>: 0.2, <Element text at 0x7f8394f4e0c0>: 0.3, <Element text at 0x7f8394f4e140>: 0.4, <Element text at 0x7f8394f4e1c0>: 0.5, <Element text at 0x7f8394f4e240>: 0.6, <Element text at 0x7f8394f4e2c0>: 0.7, <Element text at 0x7f8394f4e340>: 0.8, <Element text at 0x7f8394f4e3c0>: 0.9, <Element text at 0x7f8394f4e440>: 1.0},
         )
-        >>> print(svg.to_string())
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-          <path class="domain" stroke="currentColor" d="M0.5,0.5H1.5"/>
-          <g class="tick" opacity="1" transform="translate(0.5, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.6, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.1</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.7, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.2</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.8, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.3</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.9, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.4</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.0, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.5</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.1, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.6</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.2, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.7</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.3, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.8</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.4, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">0.9</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.5, 0)">
-            <line stroke="currentColor" y2="0"/>
-            <text fill="currentColor" y="3" dy="0.71em">1.0</text>
-          </g>
-        </svg>
+
+        **Result**
+
+        .. image:: ../figures/light_axis_tick_size.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_tick_size.svg
+           :align: center
+           :class: only-dark
         """
         self._tick_size_inner = self._tick_size_outer = tick_size
         return self
@@ -728,16 +660,43 @@ class Axis:
         Examples
         --------
 
-        >>> print(d3.axis_bottom(d3.scale_linear()).set_tick_size_inner(0))
-        Axis[BOTTOM](
-            scale=ScaleLinear(domain=[0, 1], range=[0, 1]),
-            tick_arguments=[],
-            tick_values=None,
-            tick_size_inner=0,
-            tick_size_outer=6,
-            tick_padding=3,
-            offset=0.5,
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(d3.scale_linear().set_range([0, width - 2 * margin]))
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_tick_size_inner(0))
+        ... )
+        Selection(
+            groups=[[g]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f8394f33240>: None, <Element g at 0x7f8394f4de80>: 0.0, <Element g at 0x7f8394f4dd00>: 0.1, <Element g at 0x7f8394f4de00>: 0.2, <Element g at 0x7f8394f4df00>: 0.3, <Element g at 0x7f8394f4dc00>: 0.4, <Element g at 0x7f8394f4d7c0>: 0.5, <Element g at 0x7f8394f4cec0>: 0.6, <Element g at 0x7f8394f4d940>: 0.7, <Element g at 0x7f8394f4d840>: 0.8, <Element g at 0x7f8394f4d6c0>: 0.9, <Element g at 0x7f8394f4d740>: 1.0, <Element path at 0x7f8394f4e580>: 0.0, <Element line at 0x7f8394f4c680>: 0.0, <Element line at 0x7f8394f4e540>: 0.1, <Element line at 0x7f8394f4e500>: 0.2, <Element line at 0x7f8394f4e680>: 0.3, <Element line at 0x7f8394f4e700>: 0.4, <Element line at 0x7f8394f4e780>: 0.5, <Element line at 0x7f8394f4e800>: 0.6, <Element line at 0x7f8394f4e880>: 0.7, <Element line at 0x7f8394f4e900>: 0.8, <Element line at 0x7f8394f4e980>: 0.9, <Element line at 0x7f8394f4ea00>: 1.0, <Element text at 0x7f8394f4c500>: 0.0, <Element text at 0x7f8394f4eb00>: 0.1, <Element text at 0x7f8394f4eb80>: 0.2, <Element text at 0x7f8394f4ec00>: 0.3, <Element text at 0x7f8394f4ec80>: 0.4, <Element text at 0x7f8394f4ed00>: 0.5, <Element text at 0x7f8394f4ed80>: 0.6, <Element text at 0x7f8394f4ee00>: 0.7, <Element text at 0x7f8394f4ee80>: 0.8, <Element text at 0x7f8394f4ef00>: 0.9, <Element text at 0x7f8394f4ef80>: 1.0},
         )
+
+        **Result**
+
+        .. image:: ../figures/light_axis_tick_size_inner.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_tick_size_inner.svg
+           :align: center
+           :class: only-dark
+
+        Notes
+        -----
+
+        Inner ticks are all ticks with an associated value.
         """
         self._tick_size_inner = tick_size_inner
         return self
@@ -763,16 +722,43 @@ class Axis:
         Examples
         --------
 
-        >>> print(d3.axis_bottom(d3.scale_linear()).set_tick_size_outer(0))
-        Axis[BOTTOM](
-            scale=ScaleLinear(domain=[0, 1], range=[0, 1]),
-            tick_arguments=[],
-            tick_values=None,
-            tick_size_inner=6,
-            tick_size_outer=0,
-            tick_padding=3,
-            offset=0.5,
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(d3.scale_linear().set_range([0, width - 2 * margin]))
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_tick_size_outer(12))
+        ... )
+        Selection(
+            groups=[[g]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f8394f33f00>: None, <Element g at 0x7f8394f4e380>: 0.0, <Element g at 0x7f8394f4e300>: 0.1, <Element g at 0x7f8394f4e480>: 0.2, <Element g at 0x7f8394f4e280>: 0.3, <Element g at 0x7f8394f4c200>: 0.4, <Element g at 0x7f8394f4db00>: 0.5, <Element g at 0x7f8394f4d640>: 0.6, <Element g at 0x7f8394f4cfc0>: 0.7, <Element g at 0x7f8394f4df40>: 0.8, <Element g at 0x7f8394f4d5c0>: 0.9, <Element g at 0x7f8394f4c880>: 1.0, <Element path at 0x7f8394f4f140>: 0.0, <Element line at 0x7f8394f4e080>: 0.0, <Element line at 0x7f8394f4f100>: 0.1, <Element line at 0x7f8394f4f180>: 0.2, <Element line at 0x7f8394f4f200>: 0.3, <Element line at 0x7f8394f4f280>: 0.4, <Element line at 0x7f8394f4f300>: 0.5, <Element line at 0x7f8394f4f380>: 0.6, <Element line at 0x7f8394f4f400>: 0.7, <Element line at 0x7f8394f4f480>: 0.8, <Element line at 0x7f8394f4f500>: 0.9, <Element line at 0x7f8394f4f580>: 1.0, <Element text at 0x7f8394f4db80>: 0.0, <Element text at 0x7f8394f4f680>: 0.1, <Element text at 0x7f8394f4f700>: 0.2, <Element text at 0x7f8394f4f780>: 0.3, <Element text at 0x7f8394f4f800>: 0.4, <Element text at 0x7f8394f4f880>: 0.5, <Element text at 0x7f8394f4f900>: 0.6, <Element text at 0x7f8394f4f980>: 0.7, <Element text at 0x7f8394f4fa00>: 0.8, <Element text at 0x7f8394f4fa80>: 0.9, <Element text at 0x7f8394f4fb00>: 1.0},
         )
+
+        **Result**
+
+        .. image:: ../figures/light_axis_tick_size_outer.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_tick_size_outer.svg
+           :align: center
+           :class: only-dark
+
+        Notes
+        -----
+
+        Outer ticks are only ticks on extremities of the axis.
         """
         self._tick_size_outer = tick_size_outer
         return self
@@ -797,67 +783,38 @@ class Axis:
         Examples
         --------
 
-        In this example, the value :code:`y` of every :code:`text` takes the
-        value :code:`6`:
-
-        >>> svg = d3.create("svg")
-        >>> axis = d3.axis_bottom(d3.scale_linear()).set_tick_padding(0)
-        >>> svg.call(axis)
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(d3.scale_linear().set_range([0, width - 2 * margin]))
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_tick_padding(8))
+        ... )
         Selection(
-            groups=[[svg]],
+            groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={},
+            data={<Element g at 0x7f8394f4e4c0>: None, <Element g at 0x7f8394f4ef40>: 0.0, <Element g at 0x7f8394f4efc0>: 0.1, <Element g at 0x7f8394f4edc0>: 0.2, <Element g at 0x7f8394f4c780>: 0.3, <Element g at 0x7f8394f4ee40>: 0.4, <Element g at 0x7f8394f4c8c0>: 0.5, <Element g at 0x7f8394f4e940>: 0.6, <Element g at 0x7f8394f4cd80>: 0.7, <Element g at 0x7f8394f4d8c0>: 0.8, <Element g at 0x7f8394f4e180>: 0.9, <Element g at 0x7f8394f4e400>: 1.0, <Element path at 0x7f8394f4fcc0>: 0.0, <Element line at 0x7f8394f4ebc0>: 0.0, <Element line at 0x7f8394f4fc80>: 0.1, <Element line at 0x7f8394f4fd00>: 0.2, <Element line at 0x7f8394f4fd80>: 0.3, <Element line at 0x7f8394f4fe00>: 0.4, <Element line at 0x7f8394f4fe80>: 0.5, <Element line at 0x7f8394f4ff00>: 0.6, <Element line at 0x7f8394f4ff80>: 0.7, <Element line at 0x7f8394f54040>: 0.8, <Element line at 0x7f8394f540c0>: 0.9, <Element line at 0x7f8394f54140>: 1.0, <Element text at 0x7f8394f4dc80>: 0.0, <Element text at 0x7f8394f54240>: 0.1, <Element text at 0x7f8394f542c0>: 0.2, <Element text at 0x7f8394f54340>: 0.3, <Element text at 0x7f8394f543c0>: 0.4, <Element text at 0x7f8394f54440>: 0.5, <Element text at 0x7f8394f544c0>: 0.6, <Element text at 0x7f8394f54540>: 0.7, <Element text at 0x7f8394f545c0>: 0.8, <Element text at 0x7f8394f54640>: 0.9, <Element text at 0x7f8394f546c0>: 1.0},
         )
-        >>> print(svg.to_string())
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
-          <path class="domain" stroke="currentColor" d="M0.5,6V0.5H1.5V6"/>
-          <g class="tick" opacity="1" transform="translate(0.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.0</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.6, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.1</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.7, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.2</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.8, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.3</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(0.9, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.4</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.0, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.5</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.1, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.6</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.2, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.7</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.3, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.8</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.4, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">0.9</text>
-          </g>
-          <g class="tick" opacity="1" transform="translate(1.5, 0)">
-            <line stroke="currentColor" y2="6"/>
-            <text fill="currentColor" y="6" dy="0.71em">1.0</text>
-          </g>
-        </svg>
+
+        **Result**
+
+        .. image:: ../figures/light_axis_tick_padding.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_tick_padding.svg
+           :align: center
+           :class: only-dark
 
         Notes
         -----
@@ -888,16 +845,38 @@ class Axis:
         Examples
         --------
 
-        >>> print(d3.axis_bottom(d3.scale_linear()).set_offset(0))
-        Axis[BOTTOM](
-            scale=ScaleLinear(domain=[0, 1], range=[0, 1]),
-            tick_arguments=[],
-            tick_values=None,
-            tick_size_inner=6,
-            tick_size_outer=6,
-            tick_padding=3,
-            offset=0,
+        >>> width = 810
+        >>> height = 30
+        >>> margin = 15
+        >>> svg = (
+        ...     d3.create("svg")
+        ...     .attr("width", width)
+        ...     .attr("height", height)
+        ...     .attr("viewBox", f"0 0 {width} {height}")
+        ... )
+        >>> axis = d3.axis_bottom(d3.scale_linear().set_range([0, width - 2 * margin]))
+        >>> (
+        ...     svg.append("g")
+        ...     .attr("transform", f"translate({margin}, {margin * 0.5})")
+        ...     .call(axis.set_offset(8))
+        ... )
+        Selection(
+            groups=[[g]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7f8394f4f000>: None, <Element g at 0x7f8394f4ca00>: 0.0, <Element g at 0x7f8394f4d4c0>: 0.1, <Element g at 0x7f8394f4ecc0>: 0.2, <Element g at 0x7f8394f4f5c0>: 0.3, <Element g at 0x7f8394f4f940>: 0.4, <Element g at 0x7f8394f4ea40>: 0.5, <Element g at 0x7f8394f4ed40>: 0.6, <Element g at 0x7f8394f4f2c0>: 0.7, <Element g at 0x7f8394f4e200>: 0.8, <Element g at 0x7f8394f4da00>: 0.9, <Element g at 0x7f8394f4eac0>: 1.0, <Element path at 0x7f8394f33940>: 0.0, <Element line at 0x7f8394f33e80>: 0.0, <Element line at 0x7f8394f322c0>: 0.1, <Element line at 0x7f8394f33cc0>: 0.2, <Element line at 0x7f8394f4f540>: 0.3, <Element line at 0x7f8394f4e8c0>: 0.4, <Element line at 0x7f8394f541c0>: 0.5, <Element line at 0x7f8394f54100>: 0.6, <Element line at 0x7f8394f54840>: 0.7, <Element line at 0x7f8394f547c0>: 0.8, <Element line at 0x7f8394f54880>: 0.9, <Element line at 0x7f8394f54900>: 1.0, <Element text at 0x7f8394f4e6c0>: 0.0, <Element text at 0x7f8394f54a00>: 0.1, <Element text at 0x7f8394f54a80>: 0.2, <Element text at 0x7f8394f54b00>: 0.3, <Element text at 0x7f8394f54b80>: 0.4, <Element text at 0x7f8394f54c00>: 0.5, <Element text at 0x7f8394f54c80>: 0.6, <Element text at 0x7f8394f54d00>: 0.7, <Element text at 0x7f8394f54d80>: 0.8, <Element text at 0x7f8394f54e00>: 0.9, <Element text at 0x7f8394f54e80>: 1.0},
         )
+
+        **Result**
+
+        .. image:: ../figures/light_axis_offset.svg
+           :align: center
+           :class: only-light
+
+        .. image:: ../figures/dark_axis_offset.svg
+           :align: center
+           :class: only-dark
         """
         self._offset = offset
         return self
