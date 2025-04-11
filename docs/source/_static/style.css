@@ -1,0 +1,45 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "avenir next", avenir, helvetica, "helvetica neue", ubuntu, roboto, noto, "segoe ui", arial, sans-serif;
+}
+
+.sidebar-search {
+  border: 1px solid var(--color-sidebar-link-text);
+  border-radius: 20px;
+  margin-inline: 5px;
+}
+
+.sidebar-search-container:focus-within, .sidebar-search-container:hover {
+  background: transparent;
+}
+
+.sidebar-tree .toctree-l1>.reference, .sidebar-tree .toctree-l1>label .icon {
+  color: var(--color-foreground-secondary);
+  font-weight: 500;
+}
+
+.sidebar-tree .toctree-l1>.reference.current, .sidebar-tree .toctree-l1>label {
+  color: var(--color-sidebar-link-text--top-level);
+  font-weight: 700;
+}
+
+.sidebar-tree .current-page>.reference {
+  color: var(--color-sidebar-link-text--top-level);
+}
+
+.sidebar-tree .reference:hover {
+  color: var(--color-sidebar-link-text--top-level);
+}
+
+.sidebar-tree li.current.has-children>.reference {
+  color: var(--color-foreground-primary); 
+  font-weight: 700;
+}
+
+.sidebar-tree li.current.has-children>.reference.current {
+  color: var(--color-sidebar-link-text--top-level); 
+  font-weight: 700;
+}
+
+.toctree-checkbox:checked~ul {
+  border-left: 1px solid var(--color-sidebar-link-text);
+}

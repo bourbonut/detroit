@@ -34,6 +34,8 @@ html_theme = 'furo'
 html_static_path = ['_static']
 html_favicon = '_static/favicon.ico'
 
+html_css_files = ['style.css']
+
 html_theme_options = {
     "source_branch": "main",
     "source_directory": "docs/source/",
