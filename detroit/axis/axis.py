@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from inspect import signature
-from typing import Literal, Type
+from typing import Literal
 
 from ..scale.continuous import Transformer
 from ..scale.diverging import Diverging
 from ..scale.sequential import Sequential
 from ..selection.selection import Selection
+from ..types import ContinuousScaler, SequentialScaler
 
 TOP = 1
 RIGHT = 2
@@ -51,14 +52,14 @@ class Axis:
     ----------
     orient : Literal[1, 2, 3, 4]
         Orientation
-    scale : Type[Transformer | Sequential | Diverging]
+    scale : ContinuousScaler | SequentialScaler
         Scaler
     """
 
     def __init__(
         self,
         orient: Literal[1, 2, 3, 4],
-        scale: Type[Transformer | Sequential | Diverging],
+        scale: ContinuousScaler | SequentialScaler,
     ):
         self._scale = scale
         self._orient = orient
@@ -281,13 +282,13 @@ class Axis:
             )
         )
 
-    def set_scale(self, scale: Type[Transformer | Sequential | Diverging]) -> Axis:
+    def set_scale(self, scale: ContinuousScaler | SequentialScaler) -> Axis:
         """
         Sets scale value
 
         Parameters
         ----------
-        scale : Type[Transformer | Sequential | Diverging]
+        scale : ContinuousScaler | SequentialScaler
             New scale
 
         Returns
@@ -326,7 +327,7 @@ class Axis:
         self._scale = scale
         return self
 
-    def get_scale(self) -> Type[Transformer | Sequential | Diverging]:
+    def get_scale(self) -> ContinuousScaler | SequentialScaler:
         return self._scale
 
     def set_ticks(self, *ticks: int | str | Callable) -> Axis:
@@ -908,7 +909,7 @@ class Axis:
         return f"<{name} at {hex(addr)}>"
 
 
-def axis_top(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
+def axis_top(scale: ContinuousScaler | SequentialScaler) -> Axis:
     """
     Builds a new top-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -916,7 +917,7 @@ def axis_top(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
 
     Parameters
     ----------
-    scale : Type[Transformer | Sequential | Diverging]
+    scale : ContinuousScaler | SequentialScaler
         Scaler
 
     Returns
@@ -927,7 +928,7 @@ def axis_top(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     return Axis(TOP, scale)
 
 
-def axis_right(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
+def axis_right(scale: ContinuousScaler | SequentialScaler) -> Axis:
     """
     Builds a new right-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -935,7 +936,7 @@ def axis_right(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
 
     Parameters
     ----------
-    scale : Type[Transformer | Sequential | Diverging]
+    scale : ContinuousScaler | SequentialScaler
         Scaler
 
     Returns
@@ -946,7 +947,7 @@ def axis_right(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     return Axis(RIGHT, scale)
 
 
-def axis_bottom(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
+def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> Axis:
     """
     Builds a new bottom-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -954,7 +955,7 @@ def axis_bottom(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
 
     Parameters
     ----------
-    scale : Type[Transformer | Sequential | Diverging]
+    scale : ContinuousScaler | SequentialScaler
         Scaler
 
     Returns
@@ -965,7 +966,7 @@ def axis_bottom(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
     return Axis(BOTTOM, scale)
 
 
-def axis_left(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
+def axis_left(scale: ContinuousScaler | SequentialScaler) -> Axis:
     """
     Builds a new left-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -973,7 +974,7 @@ def axis_left(scale: Type[Transformer | Sequential | Diverging]) -> Axis:
 
     Parameters
     ----------
-    scale : Type[Transformer | Sequential | Diverging]
+    scale : ContinuousScaler | SequentialScaler
         Scaler
 
     Returns
