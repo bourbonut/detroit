@@ -56,7 +56,7 @@ pip install detroit
 | random          | -        | -        | Use `import random`           |
 | scale           | Yes      | Yes      | Mostly `test_linear`          |
 | scale-chromatic | Yes      | Yes      | See all schemes in `examples` |
-| selection       | Yes      | No       | TODO: tests                   |
+| selection       | Yes      | Yes      |                               |
 | shape           | Yes      | Yes      | Missing some of shapes        |
 | time            | Yes      | Yes      |                               |
 | time-format     | Yes      | Yes      |                               |
