@@ -330,14 +330,14 @@ class Axis:
     def get_scale(self) -> ContinuousScaler | SequentialScaler:
         return self._scale
 
-    def set_ticks(self, *ticks: int | str | Callable) -> Axis:
+    def set_ticks(self, *ticks: int | str) -> Axis:
         """
         Tick values will be passed to :code:`scale.ticks` and
         :code:`scale.tick_format` when :code:`Axis.__call__` is called
 
         Parameters
         ----------
-        *ticks : int | str | Callable
+        *ticks : int | str
             It depends on :code:`scale` type. Most of the time, it is the
             *count* for the number of ticks and optional format specifier
 
@@ -430,14 +430,14 @@ class Axis:
         self._tick_arguments = list(ticks)
         return self
 
-    def set_tick_arguments(self, tick_arguments: list[int | str | Callable]) -> Axis:
+    def set_tick_arguments(self, tick_arguments: list[int | str]) -> Axis:
         """
         Tick arguments will be passed to :code:`scale.ticks` and
         :code:`scale.tick_format` when :code:`Axis.__call__` is called
 
         Parameters
         ----------
-        tick_arguments : list[int | str | Callable]
+        tick_arguments : list[int | str]
             It depends on :code:`scale` type. Most of the time, it is the
             *count* for the number of ticks and optional format specifier
 
@@ -528,13 +528,13 @@ class Axis:
     def get_tick_values(self) -> list[int | float]:
         return self._tick_values
 
-    def set_tick_format(self, tick_format: Callable) -> Axis:
+    def set_tick_format(self, tick_format: Callable[[int | float], str]) -> Axis:
         """
         Sets the tick format function and returns the axis.
 
         Parameters
         ----------
-        tick_format : Callable
+        tick_format : Callable[[int | float], str]
             Tick formatter
 
         Returns
