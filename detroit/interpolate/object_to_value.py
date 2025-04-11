@@ -153,7 +153,7 @@ def interpolate(a: T, b: T) -> Callable[[float], T]:
         *   - :code:`dict[U, V]`
             - See :func:`interpolate_object`
         *   - :code:`Any`
-            - See :code:`interpolate_number`
+            - See :func:`interpolate_number`
 
     Parameters
     ----------
