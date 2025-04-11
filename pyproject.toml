@@ -17,7 +17,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering :: Visualization",
 ]
-license = "ISC"
+license-files = ["LICENSE"]
 
 [project.urls]
 Homepage="https://github.com/bourbonut/detroit"
