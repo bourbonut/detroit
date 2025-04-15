@@ -12,7 +12,7 @@
     </a>
 </p>
 
-`detroit` is Python implentation of [d3js](https://d3js.org/).
+`detroit` is Python implementation of [d3js](https://d3js.org/).
 
 - [Documentation](https://detroit.readthedocs.io/en/latest/)
 - [Examples](https://github.com/bourbonut/detroit/tree/main/examples)
