@@ -2,15 +2,19 @@
 #  / O \    There are some missing features which would be added in future
 # /_____\
 
+# Source : https://observablehq.com/@bensimonds/gantt-chart
+
 from dataclasses import make_dataclass, field, replace
+from datetime import datetime
+from collections import defaultdict
+import re
 import detroit as d3
 import polars as pl
 from operator import attrgetter
 from collections import namedtuple
-from itertools import starmap
+from itertools import starmap, chain
 
 URL = "https://static.observableusercontent.com/files/30316fb45e0a9f6658d43ea6d1def6cb18e0508b9e8b150cb07e55923bace4a91c4fbcbef26c3875ffea810f2334847bd3a2b757181bde9619fec76fd763c8bf?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27archigos.csv"
-Margin = namedtuple("Margin", ["top", "right", "bottom", "left", "lane_gutter"])
 
 archigos = (
     pl.read_csv(URL)
@@ -23,6 +27,7 @@ archigos = (
     )
 )
 
+Margin = namedtuple("Margin", ["top", "right", "bottom", "left", "lane_gutter"])
 Row = make_dataclass(
     "Row",
     archigos.columns
@@ -32,28 +37,42 @@ Row = make_dataclass(
         ("lane_no", int, field(default=0)),
     ],
 )
+Reference = namedtuple("Reference", ["start", "label", "color"])
+
+cm = d3.scale_ordinal(d3.SCHEME_DARK_2).set_domain(archigos["exit"].unique().to_list())
+
+# Parameters
+width = 600
+key = lambda d: d.obsid
+start = lambda d: d.startdate
+end = lambda d: d.enddate
+color = lambda d: cm(d.exit)
+label = lambda d: d.leader
+lane = lambda d: d.countryname
+title = lambda d: f"{d.countryname} - {d.leader} - {d3.time_format('%Y')(d.startdate)} to {d3.time_format('%Y')(d.enddate)}"
+x_padding = 0
+y_padding = 0.1
+round_radius = 4
+fixed_row_height = True
+row_height = 25
+height = 500
+label_min_width = 50
+show_lane_labels = "left"
+show_axis = True
+
+margin = Margin(30, 20, 30, 20, 120)
+x_scale = d3.scale_time()
+x_domain = None
+show_lane_boundaries = True
+reference_lines = [
+    Reference(datetime(1989, 12, 9), "Berlin Wall Falls", "black"),
+    Reference(datetime(1939, 10, 1), "WWII", "black"),
+    Reference(datetime(1945, 10, 2), "", "#555"),
+    Reference(datetime(1914, 8, 28), "WWI", "black"),
+    Reference(datetime(1918, 12, 11), "", "#555"),
+]
 
 data = list(starmap(Row, archigos.iter_rows()))
-
-show_lane_labels = "right"
-
-width = 600
-height = 500
-margin = Margin(30, 20, 30, 20, 120)
-
-reference_lines = []
-fixed_row_height = False
-x_domain = None
-x_padding = 5
-round_radius = 4
-
-
-def color(d):
-    return d
-
-
-def title(d):
-    return f"{d.countryname} - {d.leader} - {d3.time_format('%Y')(d.startdate)} to {d3.time_format('%Y')(d.enddate)}"
 
 
 def assign_rows(data, monotonic=False):
@@ -63,8 +82,8 @@ def assign_rows(data, monotonic=False):
     def find_slot(slots, bar_start, bar_end):
         # Add some padding to bars to leave space between them
         # Do comparisons in pixel space for cleaner padding.
-        bar_start_px = round(d3.scale_time()(bar_start))
-        bar_end_padded_px = round(d3.scale_time()(bar_end) + x_padding)
+        bar_start_px = round(x_scale(bar_start))
+        bar_end_padded_px = round(x_scale(bar_end) + x_padding)
 
         for i in range(len(slots)):
             if (slots[i][1] <= bar_start_px) and not monotonic:
@@ -75,30 +94,27 @@ def assign_rows(data, monotonic=False):
         slots.append([len(slots), bar_end_padded_px])
         return len(slots) - 1
 
-    def update(row):
-        row.row_no = find_slot(slots, row.startdate, row.enddate)
-        return row
-
-    return list(map(update, sorted(data, key=lambda item: item.startdate)))
+    return [
+        replace(d, row_no=find_slot(slots, start(d), end(d)))
+        for d in sorted(data, key=start)
+    ]
 
 
 def assign_lanes(data, monotonic=False):
     # Assign rows, but grouped by some keys so that bars are arranged in groups belonging to the same lane.
-    groups = {}
-    for row in data:
-        group_data = groups.setdefault(row.countryname, [])
-        group_data.append(row)
+    groups = defaultdict(list)
+    for d in data:
+        groups[lane(d)].append(d)
 
     new_data = []
     row_count = 0
-    for i, lane_name in enumerate(groups):
-        group_data = groups[lane_name]
+    for i, (lane_name, group_data) in enumerate(groups.items()):
         # For each group assign rows
         group_data = assign_rows(group_data, monotonic)
         for d in group_data:
             # Offset future rows by the maximum row number from this gorup.
-            row = replace(row, lane=lane_name, lane_no=i, row_no=row_count + d.row_no)
-            new_data.append(row)
+            d = replace(d, lane=lane_name, lane_no=i, row_no=row_count + d.row_no)
+            new_data.append(d)
 
         row_count += max(map(lambda d: d.row_no, group_data)) + 1
 
@@ -106,8 +122,13 @@ def assign_lanes(data, monotonic=False):
 
 
 svg = (
-    d3.create("svg").attr("class", "gantt").attr("width", width).attr("height", height)
+    d3.create("svg")
+    .attr("class", "gantt")
+    .attr("width", width)
 )
+
+if not fixed_row_height:
+    svg.attr("height", height)
 
 axis_group = (
     svg.append("g")
@@ -118,16 +139,10 @@ bars_group = svg.append("g").attr("class", "gantt_group-bars")
 lanes_group = svg.append("g").attr("class", "gantt__group-lanes")
 reference_lines_group = svg.append("g").attr("class", "gantt_group-reference-lines")
 
-x = d3.scale_time().set_range(
-    [
-        margin.left + (margin.lane_gutter if show_lane_labels == "left" else 0),
-        width
-        - margin.right
-        - (margin.lane_gutter if show_lane_labels == "right" else 0),
-    ]
-)
-y = d3.scale_band().set_padding(0.2).set_round(True)
-
+range_min = margin.left + (margin.lane_gutter if show_lane_labels == "left" else 0)
+range_max = width - margin.right - (margin.lane_gutter if show_lane_labels == "right" else 0)
+x = d3.scale_time().set_range([range_min, range_max])
+y = d3.scale_band().set_padding(y_padding).set_round(True)
 
 def update_reference_lines(reference_lines):
     def enter_func(enter):
@@ -174,15 +189,15 @@ def update_reference_lines(reference_lines):
     )
 
 
-def update_bars(new_data, height=height, duration=0):
+def update_bars(new_data, row_height=row_height, height=height, duration=0):
     # Persist data|
     data = new_data
     # Create x scales using our raw data. Since we need a scale to map it with assignLanes
     start = attrgetter("startdate")
     end = attrgetter("enddate")
     x_domain_data = [
-        min(list(map(start, data)) + list(map(start, reference_lines))),
-        max(list(map(end, data)) + list(map(end, reference_lines))),
+        min(chain(map(start, data), map(lambda d: d.start, reference_lines))),
+        max(chain(map(end, data), map(lambda d: d.start, reference_lines))),
     ]
     # Update the x domain
     x.set_domain(x_domain or x_domain_data).nice()
@@ -192,17 +207,17 @@ def update_bars(new_data, height=height, duration=0):
     n_rows = max(map(lambda d: d.row_no + 1, data))
     # Calculate the height of our chart if not specified exactly.
     if fixed_row_height:
-        height = (height * n_rows) + margin.top + margin.bottom
+        height = (row_height * n_rows) + margin.top + margin.bottom
         svg.attr("height", height)
     else:
-        height = (height - margin.top - margin.bottom) / n_rows
+        row_height = (height - margin.top - margin.bottom) / n_rows
 
-    # Update the yDomain
+    # Update the y domain
     y_domain = sorted(set(map(lambda d: d.row_no, data)))
     y.set_domain(y_domain).set_range([margin.top, height - margin.bottom])
 
     def bar_length(d, i, shrink=0.0):
-        return max(round(x(d.enddate) - x(d.startdate) - shrink), 0)
+        return max(round(x(end(d)) - x(start(d)) - shrink), 0)
 
     def enter_func(enter):
         g = enter.append("g")
@@ -216,7 +231,7 @@ def update_bars(new_data, height=height, duration=0):
         )
         (
             g.append("rect")
-            .attr("height", y.bandwidth)
+            .attr("height", y.get_bandwidth())
             .attr("rx", round_radius)
             .attr("fill", color)
             .attr("stroke", "white")
@@ -226,28 +241,30 @@ def update_bars(new_data, height=height, duration=0):
             .attr("width", lambda d: bar_length(d, 0))
         )
 
-        g.append("title").text(title)
-        # Add a clipping path for text
-        # slugify = lambda text: str(text).lower().split([^a-z0-9]).filter(d => d).join('-')
-        (
-            g.append("clipPath")
-            # .attr('id', lambda d, i: f"barclip-{slugify(d.obsid)}")
-            .append("rect")
-            .attr("width", lambda d, i: bar_length(d, i, 4))
-            .attr("height", y.bandwidth)
-            .attr("rx", round_radius)
-        )
-        (
-            g.append("text")
-            .attr("x", max(round_radius * 0.75, 5))
-            .attr("y", y.bandwidth / 2)
-            .attr("dominant-baseline", "middle")
-            .attr("font-size", min([y.bandwidth * 0.6, 16]))
-            .attr("fill", "white")
-            # .attr('visibility', lambda d: 'visible' if barLength(d) >= label_min_width else 'hidden') # Hide labels on short bars
-            # .attr('clip-path', lambda d, i: f"url(#barclip-{slugify(d.obsid)}")
-            .text(lambda d: d.leader)
-        )
+        if title is not None:
+            g.append("title").text(title)
+        if label is not None:
+            # Add a clipping path for text
+            slugify = lambda text: "-".join(filter(None, re.split(r"[^a-z0-9]", str(text).lower())))
+            (
+                g.append("clipPath")
+                .attr('id', lambda d: f"barclip-{slugify(key(d))}")
+                .append("rect")
+                .attr("width", lambda d, i: bar_length(d, i, 4))
+                .attr("height", y.get_bandwidth())
+                .attr("rx", round_radius)
+            )
+            (
+                g.append("text")
+                .attr("x", max(round_radius * 0.75, 5))
+                .attr("y", y.get_bandwidth() / 2)
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", min([y.get_bandwidth() * 0.6, 16]))
+                .attr("fill", "white")
+                .attr('visibility', lambda d: 'visible' if bar_length(d, 0) >= label_min_width else 'hidden') # Hide labels on short bars
+                .attr('clip-path', lambda d, i: f"url(#barclip-{slugify(d.obsid)}")
+                .text(lambda d: label(d))
+            )
         return g
 
     def update_func(update):
@@ -264,43 +281,104 @@ def update_bars(new_data, height=height, duration=0):
             # .duration(duration)
             .attr("fill", color)
             .attr("width", lambda d: bar_length(d))
-            .attr("height", y.bandwidth)
+            .attr("height", y.get_bandwidth())
         )
-        update.select("title").text(title)
-        (
-            update.select("clipPath")
-            .select("rect")
-            # .transition()
-            # .duration(duration)
-            .attr("width", lambda d, i: bar_length(d, i, 4))
-            .attr("height", y.bandwidth)
-        )
-        (
-            update.select("text")
-            .attr("y", y.bandwidth / 2)
-            .attr("font-size", min([y.bandwidth * 0.6, 16]))
-            # .attr('visibility', lambda d: 'visible' if barLength(d) >= label_min_width else 'hidden') # Hide labels on short bars
-            .text(lambda d: d.leader)
-        )
+        if title is not None:
+            update.select("title").text(title)
+
+        if label is not None:
+            (
+                update.select("clipPath")
+                .select("rect")
+                # .transition()
+                # .duration(duration)
+                .attr("width", lambda d, i: bar_length(d, i, 4))
+                .attr("height", y.get_bandwidth())
+            )
+            (
+                update.select("text")
+                .attr("y", y.get_bandwidth() / 2)
+                .attr("font-size", min([y.get_bandwidth() * 0.6, 16]))
+                .attr('visibility', lambda d: 'visible' if bar_length(d, i) >= label_min_width else 'hidden') # Hide labels on short bars
+                .text(lambda d: label(d))
+            )
         return update
 
     def exit_func(exit):
         exit.remove()
 
     # Update bars
-    bars_group.select_all("g").data(data, lambda d, i: i).join(
+    bars_group.select_all("g").data(data, lambda d: key(d)).join(
         enter_func, update_func, exit_func
     )
 
+    if show_lane_boundaries:
+        lanes = {}
+        for d in new_data:
+            lanes[d.countryname] = max(d.row_no, lanes.get(d.countryname, 0))
+        lanes = list(lanes.items())
+
+        def enter_func(enter):
+            g = (
+                enter.append("g")
+                .attr(
+                    "transform",
+                    lambda d: f"translate(0, {y(d[1]) + y.get_step() - y.get_padding_inner() * y.get_step() * 0.5})"
+                )
+            )
+            (
+                g.append("path")
+                .attr("d", d3.line()([[margin.left, 0], [width - margin.right, 0]]))
+                .attr("stroke", "grey")
+            )
+            if show_lane_labels:
+                if show_lane_labels == "left":
+                    x_value = margin.left + 5
+                elif show_lane_labels == "right":
+                    x_value = width - margin.right - 5
+                else:
+                    x_value = 0
+                (
+                    g.append("text")
+                    .text(lambda d: d[0])
+                    .attr("x", x_value)
+                    .attr("y", -5)
+                    .attr("text-anchor", "beginning" if show_lane_labels == "left" else "end")
+                    .attr("dominant-baseline", "bottom")
+                    .attr("font-size", "0.75em")
+                    .attr("fill", "grey")
+                )
+            return g
+
+        def update_func(update):
+            (
+                update.attr(
+                    "transform",
+                    lambda d: f"translate(0, {y(d[1]) + y.get_step() - y.get_padding_inner() * y.get_step() * 0.5})"
+                )
+            )
+            (
+                update.select("text").text(lambda d: d[0])
+            )
+            return update
+
+        def exit_func(exit):
+            exit.remove()
+
+        lanes_group.select_all("g").data(lanes).join(
+            enter_func, update_func, exit_func
+        )
+
     # Draw axis
-    (
-        axis_group.call(d3.axis_top(x))
-        # .transition()
-        # .duration(duration)
-    )
+    if show_axis:
+        (
+            axis_group.call(d3.axis_top(x))
+            # .transition()
+            # .duration(duration)
+        )
 
     # IndexError: list index out of range
-    # update_reference_lines(reference_lines)
+    update_reference_lines(reference_lines)
 
 
 update_bars(data)
