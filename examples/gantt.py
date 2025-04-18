@@ -1,24 +1,39 @@
-#   / \     This example is not working currently
-#  / O \    There are some missing features which would be added in future
-# /_____\
-
 # Source : https://observablehq.com/@bensimonds/gantt-chart
 
-from dataclasses import make_dataclass, field, replace
-from datetime import datetime
-from collections import defaultdict
 import re
+from collections import defaultdict, namedtuple
+from dataclasses import field, make_dataclass, replace
+from datetime import datetime
+from functools import reduce
+from itertools import accumulate, chain, starmap
+from math import exp
+from operator import attrgetter, iadd, ior
+
 import detroit as d3
 import polars as pl
-from operator import attrgetter
-from collections import namedtuple
-from itertools import starmap, chain
 
 URL = "https://static.observableusercontent.com/files/30316fb45e0a9f6658d43ea6d1def6cb18e0508b9e8b150cb07e55923bace4a91c4fbcbef26c3875ffea810f2334847bd3a2b757181bde9619fec76fd763c8bf?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27archigos.csv"
 
+SELECTED_COUNTRIES = [
+    "United States of America",
+    "United Kingdom",
+    "France",
+    "Germany",
+    "German Federal Republic",
+    "German Democratic Republic",
+    "Russia",
+    "China",
+    "Japan",
+]
+
 archigos = (
     pl.read_csv(URL)
-    .filter(pl.col("countryname") == "United States of America")
+    .filter(
+        reduce(
+            ior,
+            map(lambda country: pl.col("countryname") == country, SELECTED_COUNTRIES),
+        )
+    )
     .rename({"": "id"})
     .select(
         pl.all().exclude("startdate", "enddate"),
@@ -39,17 +54,24 @@ Row = make_dataclass(
 )
 Reference = namedtuple("Reference", ["start", "label", "color"])
 
-cm = d3.scale_ordinal(d3.SCHEME_DARK_2).set_domain(archigos["exit"].unique().to_list())
+cm = d3.scale_ordinal(d3.SCHEME_DARK_2).set_domain(
+    archigos.group_by("exit")
+    .len()
+    .sort("len", "exit", descending=True)["exit"]
+    .to_list()
+)
 
-# Parameters
-width = 600
+# Gantt Parameters
+width = 1152
 key = lambda d: d.obsid
 start = lambda d: d.startdate
 end = lambda d: d.enddate
 color = lambda d: cm(d.exit)
 label = lambda d: d.leader
 lane = lambda d: d.countryname
-title = lambda d: f"{d.countryname} - {d.leader} - {d3.time_format('%Y')(d.startdate)} to {d3.time_format('%Y')(d.enddate)}"
+title = (
+    lambda d: f"{d.countryname} - {d.leader} - {d3.time_format('%Y')(d.startdate)} to {d3.time_format('%Y')(d.enddate)}"
+)
 x_padding = 0
 y_padding = 0.1
 round_radius = 4
@@ -71,6 +93,11 @@ reference_lines = [
     Reference(datetime(1914, 8, 28), "WWI", "black"),
     Reference(datetime(1918, 12, 11), "", "#555"),
 ]
+
+# Legend Parameters
+rect_size = 15
+legend_width = width
+legend_height = rect_size * 2
 
 data = list(starmap(Row, archigos.iter_rows()))
 
@@ -121,11 +148,8 @@ def assign_lanes(data, monotonic=False):
     return new_data
 
 
-svg = (
-    d3.create("svg")
-    .attr("class", "gantt")
-    .attr("width", width)
-)
+gantt = d3.create("svg").attr("class", "gantt").attr("width", width)
+svg = gantt.append("g").attr("transform", f"translate(0, {legend_height})")
 
 if not fixed_row_height:
     svg.attr("height", height)
@@ -140,9 +164,12 @@ lanes_group = svg.append("g").attr("class", "gantt__group-lanes")
 reference_lines_group = svg.append("g").attr("class", "gantt_group-reference-lines")
 
 range_min = margin.left + (margin.lane_gutter if show_lane_labels == "left" else 0)
-range_max = width - margin.right - (margin.lane_gutter if show_lane_labels == "right" else 0)
+range_max = (
+    width - margin.right - (margin.lane_gutter if show_lane_labels == "right" else 0)
+)
 x = d3.scale_time().set_range([range_min, range_max])
 y = d3.scale_band().set_padding(y_padding).set_round(True)
+
 
 def update_reference_lines(reference_lines):
     def enter_func(enter):
@@ -189,7 +216,9 @@ def update_reference_lines(reference_lines):
     )
 
 
-def update_bars(new_data, row_height=row_height, height=height, duration=0):
+def update_bars(new_data, duration=0):
+    global height
+    global row_height
     # Persist data|
     data = new_data
     # Create x scales using our raw data. Since we need a scale to map it with assignLanes
@@ -245,10 +274,12 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
             g.append("title").text(title)
         if label is not None:
             # Add a clipping path for text
-            slugify = lambda text: "-".join(filter(None, re.split(r"[^a-z0-9]", str(text).lower())))
+            slugify = lambda text: "-".join(
+                filter(None, re.split(r"[^a-z0-9]", str(text).lower()))
+            )
             (
                 g.append("clipPath")
-                .attr('id', lambda d: f"barclip-{slugify(key(d))}")
+                .attr("id", lambda d: f"barclip-{slugify(key(d))}")
                 .append("rect")
                 .attr("width", lambda d, i: bar_length(d, i, 4))
                 .attr("height", y.get_bandwidth())
@@ -261,8 +292,13 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
                 .attr("dominant-baseline", "middle")
                 .attr("font-size", min([y.get_bandwidth() * 0.6, 16]))
                 .attr("fill", "white")
-                .attr('visibility', lambda d: 'visible' if bar_length(d, 0) >= label_min_width else 'hidden') # Hide labels on short bars
-                .attr('clip-path', lambda d, i: f"url(#barclip-{slugify(d.obsid)}")
+                .attr(
+                    "visibility",
+                    lambda d: "visible"
+                    if bar_length(d, 0) >= label_min_width
+                    else "hidden",
+                )  # Hide labels on short bars
+                .attr("clip-path", lambda d, i: f"url(#barclip-{slugify(d.obsid)}")
                 .text(lambda d: label(d))
             )
         return g
@@ -299,7 +335,12 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
                 update.select("text")
                 .attr("y", y.get_bandwidth() / 2)
                 .attr("font-size", min([y.get_bandwidth() * 0.6, 16]))
-                .attr('visibility', lambda d: 'visible' if bar_length(d, i) >= label_min_width else 'hidden') # Hide labels on short bars
+                .attr(
+                    "visibility",
+                    lambda d: "visible"
+                    if bar_length(d, i) >= label_min_width
+                    else "hidden",
+                )  # Hide labels on short bars
                 .text(lambda d: label(d))
             )
         return update
@@ -314,17 +355,14 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
 
     if show_lane_boundaries:
         lanes = {}
-        for d in new_data:
+        for d in data:
             lanes[d.countryname] = max(d.row_no, lanes.get(d.countryname, 0))
         lanes = list(lanes.items())
 
         def enter_func(enter):
-            g = (
-                enter.append("g")
-                .attr(
-                    "transform",
-                    lambda d: f"translate(0, {y(d[1]) + y.get_step() - y.get_padding_inner() * y.get_step() * 0.5})"
-                )
+            g = enter.append("g").attr(
+                "transform",
+                lambda d: f"translate(0, {y(d[1]) + y.get_step() - y.get_padding_inner() * y.get_step() * 0.5})",
             )
             (
                 g.append("path")
@@ -343,7 +381,10 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
                     .text(lambda d: d[0])
                     .attr("x", x_value)
                     .attr("y", -5)
-                    .attr("text-anchor", "beginning" if show_lane_labels == "left" else "end")
+                    .attr(
+                        "text-anchor",
+                        "beginning" if show_lane_labels == "left" else "end",
+                    )
                     .attr("dominant-baseline", "bottom")
                     .attr("font-size", "0.75em")
                     .attr("fill", "grey")
@@ -354,20 +395,16 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
             (
                 update.attr(
                     "transform",
-                    lambda d: f"translate(0, {y(d[1]) + y.get_step() - y.get_padding_inner() * y.get_step() * 0.5})"
+                    lambda d: f"translate(0, {y(d[1]) + y.get_step() - y.get_padding_inner() * y.get_step() * 0.5})",
                 )
             )
-            (
-                update.select("text").text(lambda d: d[0])
-            )
+            (update.select("text").text(lambda d: d[0]))
             return update
 
         def exit_func(exit):
             exit.remove()
 
-        lanes_group.select_all("g").data(lanes).join(
-            enter_func, update_func, exit_func
-        )
+        lanes_group.select_all("g").data(lanes).join(enter_func, update_func, exit_func)
 
     # Draw axis
     if show_axis:
@@ -383,5 +420,59 @@ def update_bars(new_data, row_height=row_height, height=height, duration=0):
 
 update_bars(data)
 
+# Legend
+
+legend = gantt.append("g").attr(
+    "transform", f"translate({rect_size / 2}, {rect_size / 2})"
+)
+
+data = cm.get_domain()
+lengths = list(map(len, data))
+
+
+def clamp_total(total):
+    def f(x):
+        return 1 - exp(-x / total)
+
+    return f
+
+
+clamp = clamp_total(max(lengths))
+weights = list(map(clamp, lengths))
+w_max = max(weights)
+weights = [w / w_max for w in weights]
+
+spaces = [0] + list(
+    accumulate(
+        map(lambda w: w * 170 + rect_size, weights[:-1]),
+        iadd,
+    )
+)
+
+g = (
+    legend.select_all("g")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("transform", lambda _, i: f"translate({spaces[i]}, 0)")
+)
+(
+    g.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", rect_size)
+    .attr("height", rect_size)
+    .attr("fill", lambda d: cm(d))
+    .attr("stroke", "none")
+)
+(
+    g.append("text")
+    .attr("x", rect_size + 5)
+    .attr("y", rect_size * 0.85)
+    .attr("fill", "black")
+    .attr("stroke", "none")
+    .text(lambda d: d)
+)
+
 with open("gantt.svg", "w") as file:
-    file.write(str(svg))
+    file.write(str(gantt))
