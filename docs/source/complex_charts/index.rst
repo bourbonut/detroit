@@ -8,3 +8,4 @@ Complex charts
    impulse
    pca
    hertz_russel
+   gantt
