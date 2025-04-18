@@ -14,6 +14,7 @@ import polars as pl
 
 URL = "https://static.observableusercontent.com/files/30316fb45e0a9f6658d43ea6d1def6cb18e0508b9e8b150cb07e55923bace4a91c4fbcbef26c3875ffea810f2334847bd3a2b757181bde9619fec76fd763c8bf?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27archigos.csv"
 
+# Selected countries to display
 SELECTED_COUNTRIES = [
     "United States of America",
     "United Kingdom",
@@ -26,6 +27,7 @@ SELECTED_COUNTRIES = [
     "Japan",
 ]
 
+# Load data with selected countries
 archigos = (
     pl.read_csv(URL)
     .filter(
@@ -42,6 +44,7 @@ archigos = (
     )
 )
 
+# Prepare objects for convenient syntax
 Margin = namedtuple("Margin", ["top", "right", "bottom", "left", "lane_gutter"])
 Row = make_dataclass(
     "Row",
@@ -54,6 +57,7 @@ Row = make_dataclass(
 )
 Reference = namedtuple("Reference", ["start", "label", "color"])
 
+# Color mapping
 cm = d3.scale_ordinal(d3.SCHEME_DARK_2).set_domain(
     archigos.group_by("exit")
     .len()
@@ -99,6 +103,7 @@ rect_size = 15
 legend_width = width
 legend_height = rect_size * 2
 
+# Transform data into list[Row]
 data = list(starmap(Row, archigos.iter_rows()))
 
 
@@ -148,12 +153,17 @@ def assign_lanes(data, monotonic=False):
     return new_data
 
 
+# Create the svg container
 gantt = d3.create("svg").attr("class", "gantt").attr("width", width)
+if not fixed_row_height:
+    gantt.attr("height", height + legend_height)
+
+# Gantt part
+
+# SVG container (<g>...</g>) for gantt elements
 svg = gantt.append("g").attr("transform", f"translate(0, {legend_height})")
 
-if not fixed_row_height:
-    svg.attr("height", height)
-
+# Prepare groups where separated gantt elements will be stored
 axis_group = (
     svg.append("g")
     .attr("class", "gantt_group-axis")
@@ -163,6 +173,7 @@ bars_group = svg.append("g").attr("class", "gantt_group-bars")
 lanes_group = svg.append("g").attr("class", "gantt__group-lanes")
 reference_lines_group = svg.append("g").attr("class", "gantt_group-reference-lines")
 
+# Create the x and y scales
 range_min = margin.left + (margin.lane_gutter if show_lane_labels == "left" else 0)
 range_max = (
     width - margin.right - (margin.lane_gutter if show_lane_labels == "right" else 0)
@@ -219,9 +230,9 @@ def update_reference_lines(reference_lines):
 def update_bars(new_data, duration=0):
     global height
     global row_height
-    # Persist data|
+    # Persist data
     data = new_data
-    # Create x scales using our raw data. Since we need a scale to map it with assignLanes
+    # Create x scales using our raw data. Since we need a scale to map it with assign_lanes
     start = attrgetter("startdate")
     end = attrgetter("enddate")
     x_domain_data = [
@@ -237,9 +248,12 @@ def update_bars(new_data, duration=0):
     # Calculate the height of our chart if not specified exactly.
     if fixed_row_height:
         height = (row_height * n_rows) + margin.top + margin.bottom
-        svg.attr("height", height)
+        # svg.attr("height", height)
     else:
         row_height = (height - margin.top - margin.bottom) / n_rows
+
+    if fixed_row_height:
+        gantt.attr("height", height + legend_height)
 
     # Update the y domain
     y_domain = sorted(set(map(lambda d: d.row_no, data)))
@@ -418,33 +432,36 @@ def update_bars(new_data, duration=0):
     update_reference_lines(reference_lines)
 
 
+# Generates the gantt elements
 update_bars(data)
 
-# Legend
+# Legend part
 
 legend = gantt.append("g").attr(
     "transform", f"translate({rect_size / 2}, {rect_size / 2})"
 )
 
+# Labels of the legend
 data = cm.get_domain()
-lengths = list(map(len, data))
 
 
+# Function to clamp input between 0 and 1
 def clamp_total(total):
     def f(x):
         return 1 - exp(-x / total)
-
     return f
 
 
+lengths = list(map(len, data))
 clamp = clamp_total(max(lengths))
 weights = list(map(clamp, lengths))
 w_max = max(weights)
-weights = [w / w_max for w in weights]
+weights = [w / w_max for w in weights] # normalize weights
 
+# Spaces between labels
 spaces = [0] + list(
     accumulate(
-        map(lambda w: w * 170 + rect_size, weights[:-1]),
+        map(lambda w: w * 150 + rect_size, weights[:-1]),
         iadd,
     )
 )
@@ -471,8 +488,16 @@ g = (
     .attr("y", rect_size * 0.85)
     .attr("fill", "black")
     .attr("stroke", "none")
+    .attr("font-size", "0.75em")
     .text(lambda d: d)
 )
+
+# Uncomment these lines for dark mode
+# gantt.style("background", "black")
+# svg.select_all("text").attr("fill", "white")
+# svg.select_all("line").attr("stroke", "white")
+# svg.select_all("path").attr("stroke", "white")
+# g.select_all("text").attr("fill", "white")
 
 with open("gantt.svg", "w") as file:
     file.write(str(gantt))
