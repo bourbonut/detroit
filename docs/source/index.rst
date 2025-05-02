@@ -54,7 +54,7 @@ Then, you can create a scaler:
    margin_top = 20
    margin_bottom = 30
 
-   # Several signature accepted
+   # Several signatures accepted
    # d3.scale_linear()
    # d3.scale_linear(range)
    # d3.scale_linear(domain, range)
