@@ -428,7 +428,6 @@ def update_bars(new_data, duration=0):
             # .duration(duration)
         )
 
-    # IndexError: list index out of range
     update_reference_lines(reference_lines)
 
 

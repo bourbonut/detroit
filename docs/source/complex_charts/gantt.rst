@@ -478,7 +478,6 @@ Gantt Chart
                # .duration(duration)
            )
 
-       # IndexError: list index out of range
        update_reference_lines(reference_lines)
 
 
