@@ -170,8 +170,8 @@ def interpolate(a: T, b: T) -> Callable[[float], T]:
 
         .. math::
 
-            interpolator: [0, 1] & \longrightarrow \mathbb [a, b] \\\\
-                               x & \longmapsto y
+            interpolator: [0, 1] & \\longrightarrow \\mathbb [a, b] \\\\
+                               x & \\longmapsto y
 
     Examples
     --------
