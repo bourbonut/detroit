@@ -168,3 +168,5 @@ cython_debug/
 .ignore
 
 examples/*.svg
+.envrc
+.python-version
