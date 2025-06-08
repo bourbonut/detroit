@@ -1,7 +1,7 @@
 from ..series import Series
 
 def offset_none(series: list[Series], order: list[int]):
-    if len(series) == 0:
+    if len(series) <= 1:
         return
     s1: Series = series[order[0]]
     m = len(s1)
