@@ -1,17 +1,26 @@
 from typing import Generic
 from collections.abc import Iterator
-from ..types import U, V
+from ..types import T
 
-class Serie(Generic[U, V]):
-    
-    def __init__(self, values: list[U], data: V):
+class Serie(Generic[T]):
+    """
+    Point of a :code:`Series`
+
+    Parameters
+    ----------
+    values : list[float]
+        Point coordinates
+    data : T
+        Data value associated to this point
+    """
+    def __init__(self, values: list[float], data: T):
         self._values = values
         self.data = data
 
-    def __getitem__(self, index: int) -> U:
+    def __getitem__(self, index: int) -> float:
         return self._values[index]
 
-    def __setitem__(self, index: int, value: U):
+    def __setitem__(self, index: int, value: float):
         self._values[index] = value
 
     def __len__(self) -> int:
@@ -29,7 +38,9 @@ class Serie(Generic[U, V]):
         return str(self)
 
 class Series:
-
+    """
+    List of :code:`Serie` associated to a :code:`key` and an :code:`index`
+    """
     def __init__(self, series: list[Serie] | None = None):
         self._series = series or []
         self.key = None

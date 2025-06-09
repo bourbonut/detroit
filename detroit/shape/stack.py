@@ -46,6 +46,9 @@ def stack_series(key: T) -> Series:
     return series
 
 class Stack(Generic[T]):
+    """
+    Builds a new stack generator with the default settings. 
+    """
     def __init__(self):
         self._keys = constant([])
         self._order = order_none
@@ -53,6 +56,22 @@ class Stack(Generic[T]):
         self._value = stack_value
 
     def __call__(self, data: list[T], *args) -> list[Series]:
+        """
+        Generates a stack for the given array of data and returns an array
+        representing each series.
+
+        Parameters
+        ----------
+        data : list[T]
+            List of data
+        *args
+            Additional arguments passed to :code:`keys` method.
+
+        Returns
+        -------
+        list[Series]
+            List of series
+        """
         nargs = len(signature(self._keys).parameters)
         args = [data] + list(args)
         sz: list[Series] = list(map(stack_series, self._keys(*args[:nargs])))
@@ -75,7 +94,25 @@ class Stack(Generic[T]):
         self._offset(sz, oz)
         return sz
 
-    def set_keys(self, keys: Callable[[], str] | list[str]) -> TStack:
+    def set_keys(self, keys: Callable[[...], list[str]] | list[str]) -> TStack:
+        """
+        Sets the :code:`keys` method and returns itself.
+
+        Parameters
+        ----------
+        keys : Callable[[...], str] | list[str]
+            List of keys or function which returns a list of keys
+
+        Returns
+        -------
+        TStack
+            Itself
+
+        Notes
+        -----
+        The arguments of the function are the same as the additional arguments
+        of :code:`Stack.__call__` method.
+        """
         if callable(keys):
             self._keys = keys
         else:
@@ -83,10 +120,28 @@ class Stack(Generic[T]):
         return self
 
     @property
-    def keys(self) -> Callable[[], str]:
+    def keys(self) -> Callable[[...], str]:
         return self._keys
 
     def set_value(self, value: Callable[[T, str, int, list[T]], float] | float) -> TStack:
+        """
+        Sets the :code:`value` method and returns itself.
+
+        Parameters
+        ----------
+        value : Callable[[T, str, int, list[T]], float] | float
+            Value number or function which takes the optional argument: data,
+            key, index, list of data. The function must returns a float value.
+
+        Returns
+        -------
+        TStack
+            Itself
+
+        Notes
+        -----
+        You can pass a function with only the data and key arguments for example.
+        """
         if callable(value):
             self._value = value
         else:
@@ -98,6 +153,20 @@ class Stack(Generic[T]):
         return self._value
 
     def set_order(self, order: Callable[[list[Series]], list[int]] | list[int] | None = None) -> TStack:
+        """
+        Sets the :code:`order` method and returns itself.
+
+        Parameters
+        ----------
+        order : Callable[[list[Series]], list[int]] | list[int] | None
+            If none value, resets the method. List of indices or function which
+            takes in argument a list of series and returns the order list.
+
+        Returns
+        -------
+        TStack
+            Itself
+        """
         if order is None:
             self._order = order_none
         elif callable(order):
@@ -111,6 +180,21 @@ class Stack(Generic[T]):
         return self._order
     
     def set_offset(self, offset: Callable[[list[Series], list[int]], None] | None = None) -> TStack:
+        """
+        Sets the :code:`offset` and returns itself.
+
+        Parameters
+        ----------
+        offset : Callable[[list[Series], list[int]], None] | None
+            If none value, resets the method. Function which takes in arguments
+            a list of series and the order list and updates lower and upper
+            values int the series list.
+
+        Returns
+        -------
+        TStack
+            Itself
+        """
         if offset is None:
             self._offset = offset_none
         else:

@@ -2,6 +2,17 @@ from .none import offset_none
 from ..series import Series
 
 def offset_expand(series: list[Series], order: list[int]):
+    """
+    Applies a zero baseline and normalizes the values for each point such that
+    the topline is always one.
+
+    Parameters
+    ----------
+    series : list[Series]
+        List of series
+    order : list[int]
+        Order list
+    """
     if len(series) == 0:
         return
     j = 0
