@@ -18,6 +18,15 @@ from .symbols import (
     symbol_triangle2,
     symbol_wye,
 )
+from .offset import (
+    offset_expand,
+    offset_none,
+)
+from .order import (
+    order_none,
+    order_reverse,
+)
+from .stack import Stack
 
 __all__ = [
     "Arc",
@@ -26,7 +35,12 @@ __all__ = [
     "Pie",
     "SYMBOLS_FILL",
     "SYMBOLS_STROKE",
+    "Stack",
     "Symbol",
+    "offset_expand",
+    "offset_none",
+    "order_none",
+    "order_reverse",
     "symbol_asterisk",
     "symbol_circle",
     "symbol_cross",
