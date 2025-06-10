@@ -23,5 +23,6 @@ This line generator can then be used to compute the :code:`d` attribute of an SV
    arcs
    areas
    lines
-   symbols
    pies
+   stack
+   symbols
