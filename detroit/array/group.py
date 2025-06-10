@@ -1,13 +1,13 @@
 from inspect import signature
 from collections.abc import Callable
-from ..types import T
+from ..types import T, U, V
 
 def nest(
-    values: list[T],
+    values: list[U],
     map_function: Callable[[dict], list],
-    reduce_function: Callable[[list[T]], dict],
-    keys: list[Callable[[T, int, list[T]], str]]
-):
+    reduce_function: Callable[[list[U]], dict],
+    keys: list[Callable[[U, int, list[U]], V]]
+) -> list:
     if len(keys) == 0:
         raise ValueError("At least one key must be declared.")
     def regroup(values, i):
@@ -43,39 +43,143 @@ def array_from(groups: dict) -> list:
     return list(groups.items())
 
 def index(
-    values: list[T],
-    *keys: list[Callable[[T, int, list[T]], str]],
+    values: list[U],
+    *keys: list[Callable[[U, int, list[U]], V]],
 ) -> dict:
+    """
+    Groups and reduces the specified list of values into a nested dictionary.
+    The reducer extracts the first element from each group.
+
+    Parameters
+    ----------
+    values : list[U]
+        List of values
+    keys : list[Callable[[U, int, list[U]], V]]
+        List of functions which take in arguments data, index and list of data
+        and returns the key value of the data.
+
+    Returns
+    -------
+    dict
+        Nested dictionary.
+    """
     return nest(values, identity, unique, keys)
 
 def indexes(
-    values: list[T],
-    *keys: list[Callable[[T, int, list[T]], str]],
-) -> dict:
+    values: list[U],
+    *keys: list[Callable[[U, int, list[U]], V]],
+) -> list:
+    """
+    Equivalent to `d3.index`, returns a list of collections [key, array of
+    values]. The reducer extracts the first element from each group.
+
+    Parameters
+    ----------
+    values : list[U]
+        List of values
+    keys : list[Callable[[U, int, list[U]], V]]
+        List of functions which take in arguments data, index and list of data
+        and returns the key value of the data.
+
+    Returns
+    -------
+    list
+        Nested list of collections [key; array of values].
+    """
     return nest(values, array_from, unique, keys)
 
 def group(
-    values: list[T],
-    *keys: list[Callable[[T, int, list[T]], str]],
+    values: list[U],
+    *keys: list[Callable[[U, int, list[U]], V]],
 ) -> dict:
+    """
+    Groups the specified list of values into a nested dictionary given keys.
+
+    Parameters
+    ----------
+    values : list[U]
+        List of values
+    keys : list[Callable[[U, int, list[U]], V]]
+        List of functions which take in arguments data, index and list of data
+        and returns the key value of the data.
+
+    Returns
+    -------
+    dict
+        Nested dictionary
+    """
     return nest(values, identity, identity, keys)
 
 def groups(
-    values: list[T],
-    *keys: list[Callable[[T, int, list[T]], str]],
-) -> dict:
+    values: list[U],
+    *keys: list[Callable[[U, int, list[U]], V]],
+) -> list:
+    """
+    Equivalent to `d3.group`, returns a list of collections [key; array of
+    values].
+
+    Parameters
+    ----------
+    values : list[U]
+        List of values
+    keys : list[Callable[[U, int, list[U]], V]]
+        List of functions which take in arguments data, index and list of data
+        and returns the key value of the data.
+
+    Returns
+    -------
+    list
+        Nested list of collections [key; array of values].
+    """
     return nest(values, array_from, identity, keys)
 
 def rollup(
-    values: list[T],
-    reduce_function: Callable[[list[T]], dict],
-    *keys: list[Callable[[T, int, list[T]], str]],
+    values: list[U],
+    reduce_function: Callable[[list[U]], dict],
+    *keys: list[Callable[[U, int, list[U]], V]],
 ) -> dict:
+    """
+    Groups and reduces the specified list of values into a nested dictionary.
+
+    Parameters
+    ----------
+    values : list[U]
+        List of values
+    reduce_function : Callable[[list[U]], dict]
+        Reducer function
+    keys : list[Callable[[U, int, list[U]], V]]
+        List of functions which take in arguments data, index and list of data
+        and returns the key value of the data.
+
+    Returns
+    -------
+    dict
+        Nested dictionary
+    """
     return nest(values, identity, reduce_function, keys)
 
 def rollups(
-    values: list[T],
-    reduce_function: Callable[[list[T]], dict],
-    *keys: list[Callable[[T, int, list[T]], str]],
-) -> dict:
+    values: list[U],
+    reduce_function: Callable[[list[U]], dict],
+    *keys: list[Callable[[U, int, list[U]], V]],
+) -> list:
+    """
+    Equivalent to `d3.rollup`, returns a list of collections [key; array of
+    values].
+
+    Parameters
+    ----------
+    values : list[U]
+        List of values
+    reduce_function : Callable[[list[U]], dict]
+        Reducer function
+    keys : list[Callable[[U, int, list[U]], V]]
+        List of functions which take in arguments data, index and list of data
+        and returns the key value of the data.
+
+    Returns
+    -------
+    list
+        Nested list of collections [key; array of values].
+    """
     return nest(values, array_from, reduce_function, keys)
