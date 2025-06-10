@@ -8,6 +8,10 @@ body {
   margin-inline: 5px;
 }
 
+.sidebar-tree {
+  font-size: 14px;
+}
+
 .sidebar-search-container:focus-within, .sidebar-search-container:hover {
   background: transparent;
 }
