@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 from itertools import starmap
 from collections.abc import Callable, Iterable
 from inspect import signature
@@ -44,7 +45,7 @@ def extent(
 
     def is_valid(value):
         """Check if the value is valid"""
-        return value is not None and (isinstance(value, str) or not math.isnan(value))
+        return value is not None and (isinstance(value, (str, datetime)) or not math.isnan(value))
 
     if accessor is not None:
         nargs = len(signature(accessor).parameters)
