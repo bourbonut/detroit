@@ -7,9 +7,11 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import detroit
+from datetime import datetime
 
+last_year = datetime.now().year
 project = 'detroit'
-copyright = '2024, bourbonut'
+copyright = f'2024-{last_year}, bourbonut'
 author = 'bourbonut'
 release = detroit.__version__
 
