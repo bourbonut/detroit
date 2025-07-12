@@ -5,7 +5,7 @@ from inspect import signature
 
 from ..selection.selection import Selection
 from .constant import constant
-from .curves.linear import LinearCurve
+from .curves import curve_linear
 from .line import Line
 from .path import WithPath
 from .point import x as point_x
@@ -45,7 +45,7 @@ class Area(WithPath):
         self._x1 = None
         self._defined = constant(True)
         self._context = None
-        self._curve = LinearCurve
+        self._curve = curve_linear
         self._output = None
 
         if x0 is None:

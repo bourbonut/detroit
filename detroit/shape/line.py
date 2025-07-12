@@ -5,7 +5,7 @@ from inspect import signature
 
 from ..selection.selection import Selection
 from .constant import constant
-from .curves.linear import LinearCurve
+from .curves import curve_linear
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
@@ -34,7 +34,7 @@ class Line(WithPath):
         super().__init__()
         self._defined = constant(True)
         self._context = None
-        self._curve = LinearCurve
+        self._curve = curve_linear
         self._output = None
 
         if x is None:

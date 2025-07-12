@@ -35,3 +35,6 @@ class LinearCurve:
             self._context.line_to(x, y)
         else:
             self._context.line_to(x, y)
+
+def curve_linear(context):
+    return LinearCurve(context)

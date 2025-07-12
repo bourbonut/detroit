@@ -3,7 +3,7 @@ import math
 import pytest
 
 import detroit as d3
-from detroit.shape.curves.linear import LinearCurve
+from detroit.shape.curves.linear import curve_linear
 
 
 def test_line_1():
@@ -11,7 +11,7 @@ def test_line_1():
     assert l.fx([42, 34]) == 42
     assert l.fy([42, 34]) == 34
     assert l.accessor_defined([42, 34]) is True
-    assert l.fcurve == LinearCurve
+    assert l.fcurve == curve_linear
     assert l.own_context is None
     assert str(l([[0, 1], [2, 3], [4, 5]])) == "M0,1L2,3L4,5"
 
