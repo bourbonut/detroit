@@ -30,20 +30,21 @@ class BasisCurve:
                 (2 * self._y0 + self._y1) / 3,
                 (self._x0 + 2 * self._x1) / 3,
                 (self._y0 + 2 * self._y1) / 3,
-                (self._x0 + 4 * self._x1 + x) / 6,
-                (self._y0 + 4 * self._y1 + y) / 6,
+                (self._x0 + 4 * self._x1 + self._x1) / 6,
+                (self._y0 + 4 * self._y1 + self._y1) / 6,
             )
+            self._context.line_to(self._x1, self._y1)
         elif self._point == 2:
             self._context.line_to(self._x1, self._y1)
 
-        if (self._line is not None and not math.nan(self._line) and self._line) or (self._line != 0 and self._point == 1):
+        if (self._line is not None and not math.isnan(self._line) and self._line) or (self._line != 0 and self._point == 1):
             self._context.close_path()
         self._line = 1 - self._line
 
     def point(self, x, y):
         if self._point == 0:
             self._point = 1
-            if self._line is not None and not math.nan(self._line) and self._line:
+            if self._line is not None and not math.isnan(self._line) and self._line:
                 self._context.line_to(x, y)
             else:
                 self._context.move_to(x, y)
@@ -71,7 +72,7 @@ class BasisCurve:
             )
         self._x0 = self._x1
         self._x1 = x
-        self._y0 = self.y1
+        self._y0 = self._y1
         self._y1 = y
 
 
