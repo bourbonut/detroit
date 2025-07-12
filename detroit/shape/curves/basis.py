@@ -1,6 +1,17 @@
 import math
 
-class BasisCurve:
+class BezierTrait:
+    def _bezier_curve_to(self, x, y):
+        self._context.bezier_curve_to(
+            (2 * self._x0 + self._x1) / 3,
+            (2 * self._y0 + self._y1) / 3,
+            (self._x0 + 2 * self._x1) / 3,
+            (self._y0 + 2 * self._y1) / 3,
+            (self._x0 + 4 * self._x1 + x) / 6,
+            (self._y0 + 4 * self._y1 + y) / 6,
+        )
+
+class BasisCurve(BezierTrait):
 
     def __init__(self, context):
         self._context = context
@@ -25,14 +36,7 @@ class BasisCurve:
 
     def line_end(self):
         if self._point == 3:
-            self._context.bezier_curve_to(
-                (2 * self._x0 + self._x1) / 3,
-                (2 * self._y0 + self._y1) / 3,
-                (self._x0 + 2 * self._x1) / 3,
-                (self._y0 + 2 * self._y1) / 3,
-                (self._x0 + 4 * self._x1 + self._x1) / 6,
-                (self._y0 + 4 * self._y1 + self._y1) / 6,
-            )
+            self._bezier_curve_to(self._x1, self._y1)
             self._context.line_to(self._x1, self._y1)
         elif self._point == 2:
             self._context.line_to(self._x1, self._y1)
@@ -53,23 +57,9 @@ class BasisCurve:
         elif self._point == 2:
             self._point = 3
             self._context.line_to((5 * self._x0 + self._x1) / 6, (5 * self._y0 + self._y1) / 6)
-            self._context.bezier_curve_to(
-                (2 * self._x0 + self._x1) / 3,
-                (2 * self._y0 + self._y1) / 3,
-                (self._x0 + 2 * self._x1) / 3,
-                (self._y0 + 2 * self._y1) / 3,
-                (self._x0 + 4 * self._x1 + x) / 6,
-                (self._y0 + 4 * self._y1 + y) / 6,
-            )
+            self._bezier_curve_to(x, y)
         else:
-            self._context.bezier_curve_to(
-                (2 * self._x0 + self._x1) / 3,
-                (2 * self._y0 + self._y1) / 3,
-                (self._x0 + 2 * self._x1) / 3,
-                (self._y0 + 2 * self._y1) / 3,
-                (self._x0 + 4 * self._x1 + x) / 6,
-                (self._y0 + 4 * self._y1 + y) / 6,
-            )
+            self._bezier_curve_to(x, y)
         self._x0 = self._x1
         self._x1 = x
         self._y0 = self._y1
