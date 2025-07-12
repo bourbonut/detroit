@@ -1,7 +1,7 @@
 from .linear import curve_linear
 from math import cos, sin
 
-class Radial:
+class RadialCurve:
 
     def __init__(self, curve):
         self._curve = curve
@@ -24,7 +24,7 @@ class Radial:
 
 def curve_radial(curve):
     def radial(context):
-        return Radial(curve(context))
+        return RadialCurve(curve(context))
 
     return radial
 
