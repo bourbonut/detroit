@@ -4,6 +4,7 @@ from .basis import curve_basis
 from .basis_open import curve_basis_open
 from .basis_closed import curve_basis_closed
 from .bump import curve_bump_x, curve_bump_y, curve_bump_radial
+from .bundle import curve_bundle
 
 __all__ = [
     "curve_linear",
@@ -16,4 +17,5 @@ __all__ = [
     "curve_bump_x",
     "curve_bump_y",
     "curve_bump_radial",
+    "curve_bundle",
 ]
