@@ -1,4 +1,5 @@
 import math
+from .common import isvaluable
 
 class BezierTrait:
     def _bezier_curve_to(self, x, y):
@@ -41,14 +42,14 @@ class BasisCurve(BezierTrait):
         elif self._point == 2:
             self._context.line_to(self._x1, self._y1)
 
-        if (self._line is not None and not math.isnan(self._line) and self._line) or (self._line != 0 and self._point == 1):
+        if isvaluable(self._line) or (self._line != 0 and self._point == 1):
             self._context.close_path()
         self._line = 1 - self._line
 
     def point(self, x, y):
         if self._point == 0:
             self._point = 1
-            if self._line is not None and not math.isnan(self._line) and self._line:
+            if isvaluable(self._line):
                 self._context.line_to(x, y)
             else:
                 self._context.move_to(x, y)

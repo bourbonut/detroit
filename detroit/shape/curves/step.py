@@ -1,4 +1,5 @@
 import math
+from .common import isvaluable
 
 class StepCurve:
 
@@ -23,9 +24,7 @@ class StepCurve:
     def line_end(self):
         if 0 < self._t < 1 and self._point == 2:
             self._context.line_to(self._x, self._y)
-        if (
-            (self._line is not None and not math.isnan(self._line) and self._line) or (self._line != 0 and self._point == 1)
-        ):
+        if isvaluable(self._line) or (self._line != 0 and self._point == 1):
             self._context.close_path()
         if self._line >= 0:
             self._t = 1 - self._t
@@ -34,7 +33,7 @@ class StepCurve:
     def point(self, x, y):
         if self._point == 0:
             self._point = 1
-            if self._line is not None and not math.isnan(self._line) and self._line:
+            if isvaluable(self._line):
                 self._context.line_to(x, y)
             else:
                 self._context.move_to(x, y)

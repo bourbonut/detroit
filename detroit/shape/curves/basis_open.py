@@ -1,4 +1,5 @@
 from .basis import BezierTrait
+from .common import isvaluable
 import math
 
 class BasisOpenCurve(BezierTrait):
@@ -21,7 +22,7 @@ class BasisOpenCurve(BezierTrait):
         self._point = 0
 
     def line_end(self):
-        if (self._line is not None and not math.isnan(self._line) and self._line) or (self._line != 0 and self._point == 3):
+        if isvaluable(self._line) or (self._line != 0 and self._point == 3):
             self._context.close_path()
         self._line = 1 - self._line
 
@@ -34,7 +35,7 @@ class BasisOpenCurve(BezierTrait):
             self._point = 3
             x0 = (self._x0 + 4 * self._x1 + x) / 6
             y0 = (self._y0 + 4 * self._y1 + y) / 6
-            if self._line is not None and not math.isnan(self._line) and self._line:
+            if isvaluable(self._line):
                 self._context.line_to(x0, y0)
             else:
                 self._context.move_to(x0, y0)
