@@ -1,0 +1,127 @@
+from .common import isvaluable, sign, fdiv
+import math
+
+class HermiteInterpolation:
+
+    def _slope3(self, x2, y2):
+        h0 = self._x1 - self._x0
+        h1 = x2 - self._x1
+        s0 = fdiv(self._y1 - self._y0, h0)
+        s0 = -s0 if h1 < 0 else s0
+        s1 = fdiv(y2 - self._y1, h1)
+        s1 = -s1 if h0 < 0 else s1
+        p = fdiv(s0 * h1 + s1 * h0, h0 + h1)
+        r = (sign(s0) + sign(s1)) * min(abs(s0), abs(s1), 0.5 * abs(p))
+        return 0.0 if math.isnan(r) or math.isinf(r) else r
+
+    def _slope2(self, t):
+        h = self._x1 - self._x0
+        return (3 * (self._y1 - self._y0) / h - t) * 0.5 if h else t
+
+    def _hermite_point(self, t0, t1):
+        x0 = self._x0
+        y0 = self._y0
+        x1 = self._x1
+        y1 = self._y1
+        dx = (x1 - x0) / 3
+        self._context.bezier_curve_to(x0 + dx, y0 + dx * t0, x1 - dx, y1 - dx * t1, x1, y1)
+
+class Monotone(HermiteInterpolation):
+
+    def __init__(self, context):
+        self._context = context
+        self._line = math.nan
+        self._x0 = math.nan
+        self._y0 = math.nan
+        self._x1 = math.nan
+        self._y1 = math.nan
+        self._t0 = math.nan
+
+    def area_start(self):
+        self._line = 0
+
+    def area_end(self):
+        self._line = math.nan
+
+    def line_start(self):
+        self._x0 = math.nan
+        self._y0 = math.nan
+        self._x1 = math.nan
+        self._y1 = math.nan
+        self._t0 = math.nan
+        self._point = 0
+
+    def line_end(self):
+        if self._point == 2:
+            self._context.line_to(self._x1, self._y1)
+        elif self._point == 3:
+            self._hermite_point(self._t0, self._slope2(self._t0))
+
+        if isvaluable(self._line) or (self._line != 0 and self._point == 1):
+            self._context.close_path()
+
+        self._line = 1 - self._line
+
+    def point(self, x, y):
+        t1 = math.nan
+        if x == self._x1 and y == self._y1:
+            return
+
+        if self._point == 0:
+            self._point = 1
+            if isvaluable(self._line):
+                self._context.line_to(x, y)
+            else:
+                self._context.move_to(x, y)
+        elif self._point == 1:
+            self._point = 2
+        elif self._point == 2:
+            self._point = 3
+            t1 = self._slope3(x, y)
+            self._hermite_point(self._slope2(t1), t1)
+        else:
+            t1 = self._slope3(x, y)
+            self._hermite_point(self._t0, t1)
+
+        self._x0 = self._x1
+        self._x1 = x
+        self._y0 = self._y1
+        self._y1 = y
+        self._t0 = t1
+
+class ReflectContext:
+
+    def __init__(self, context):
+        self._context = context
+
+    def move_to(self, x, y):
+        self._context.move_to(y, x)
+
+    def line_to(self, x, y):
+        self._context.line_to(y, x)
+
+    def close_path(self):
+        self._context.close_path()
+
+    def bezier_curve_to(self, x1, y1, x2, y2, x, y):
+        self._context.bezier_curve_to(y1, x1, y2, x2, y, x)
+
+class MonotoneX(Monotone):
+
+    def __init__(self, context):
+        Monotone.__init__(self, context)
+
+class MonotoneY(Monotone):
+
+    def __init__(self, context):
+        Monotone.__init__(self, ReflectContext(context))
+
+    def point(self, x, y):
+        super().point(y, x)
+
+
+def curve_monotone_x(context):
+    return MonotoneX(context)
+
+def curve_monotone_y(context):
+    return MonotoneY(context)

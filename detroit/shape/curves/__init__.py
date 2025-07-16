@@ -9,6 +9,7 @@ from .cardinal import curve_cardinal
 from .cardinal_open import curve_cardinal_open
 from .cardinal_closed import curve_cardinal_closed
 from .linear_closed import curve_linear_closed
+from .monotone import curve_monotone_x, curve_monotone_y
 
 __all__ = [
     "curve_linear",
@@ -26,4 +27,6 @@ __all__ = [
     "curve_cardinal_open",
     "curve_cardinal_closed",
     "curve_linear_closed",
+    "curve_monotone_x",
+    "curve_monotone_y",
 ]
