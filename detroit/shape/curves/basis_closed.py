@@ -83,4 +83,19 @@ class BasisClosedCurve(Curve, BezierTrait):
 
 
 def curve_basis_closed(context: Selection) -> Curve:
+    """
+    Produces a closed cubic basis spline using the specified control points.
+    When a line segment ends, the first three control points are repeated,
+    producing a closed loop with :math:`C^2` continuity.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return BasisClosedCurve(context)

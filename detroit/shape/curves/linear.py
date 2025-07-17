@@ -38,4 +38,17 @@ class LinearCurve(Curve):
 
 
 def curve_linear(context: Selection) -> Curve:
+    """
+    Produces a polyline through the specified points.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return LinearCurve(context)

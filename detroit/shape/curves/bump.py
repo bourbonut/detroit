@@ -80,10 +80,38 @@ class BumpRadialCurve(Curve):
 
 
 def curve_bump_x(context: Selection) -> Curve:
+    """
+    Produces a Bézier curve between each pair of points, with horizontal
+    tangents at each point.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return BumpCurve(context, True)
 
 
 def curve_bump_y(context: Selection) -> Curve:
+    """
+    Produces a Bézier curve between each pair of points, with vertical tangents
+    at each point.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return BumpCurve(context, False)
 
 

@@ -28,4 +28,18 @@ class LinearClosedCurve(Curve):
 
 
 def curve_linear_closed(context: Selection) -> Curve:
+    """
+    Produces a closed polyline through the specified points by repeating the
+    first point when the line segment ends.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return LinearClosedCurve(context)

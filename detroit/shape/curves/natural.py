@@ -86,4 +86,18 @@ def control_points(x):
 
 
 def curve_natural(context: Selection) -> Curve:
+    """
+    Produces a natural cubic spline with the second derivative of the spline
+    set to zero at the endpoints.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return NaturalCurve(context)

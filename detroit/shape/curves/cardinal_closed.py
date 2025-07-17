@@ -84,6 +84,25 @@ class CardinalClosedCurve(Curve, BezierTrait):
 def curve_cardinal_closed(
     context_or_tension: Selection | Number,
 ) -> Callable[[Selection], Curve] | Curve:
+    """
+    Produces a closed cubic cardinal spline using the specified control points.
+    When a line segment ends, the first three control points are repeated,
+    producing a closed loop.
+    The default tension is :code:`0`.
+
+    Parameters
+    ----------
+    context_or_tension : Selection | Number
+        Context or tension value in range :math:`[0, 1]` determining the length
+        of the tangents. A tension of one yields all zero tangents, equivalent
+        to :func:`curve_linear`
+
+    Returns
+    -------
+    Callable[[Selection], Curve] | Curve
+        Curve object or function which makes a curve object with tension value
+        set
+    """
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
 

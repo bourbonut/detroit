@@ -34,4 +34,17 @@ def curve_radial(curve: Curve) -> Callable[[Selection], Curve]:
 
 
 def curve_radial_linear(context: Selection) -> Curve:
+    """
+    Produces a polyline through the specified polar points.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return curve_radial(curve_linear)

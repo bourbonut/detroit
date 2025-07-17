@@ -104,6 +104,29 @@ class CatmullRomCurve(Curve, BezierTrait):
 def curve_catmull_rom(
     context_or_alpha: Selection | Number,
 ) -> Callable[[Selection], Curve] | Curve:
+    """
+    Produces a cubic Catmull–Rom spline using the specified control points and
+    the parameter alpha, as proposed by Yuksel et al. in On the
+    Parameterization of Catmull–Rom Curves, with one-sided differences used for
+    the first and last piece.
+    Default alpha value is :code:`0.5`.
+
+
+    Parameters
+    ----------
+    context_or_alpha : Selection | Number
+        Context or alpha value in range :math:`[0, 1]`. If alpha is zero,
+        produces a uniform spline, equivalent to curveCardinal with a tension
+        of zero; if alpha is one, produces a chordal spline; if alpha is 0.5,
+        produces a centripetal spline. Centripetal splines are recommended to
+        avoid self-intersections and overshoot.
+
+    Returns
+    -------
+    Callable[[Selection], Curve] | Curve
+        Curve object or function which makes a curve object with alpha value
+        set
+    """
     if isinstance(context_or_alpha, (int, float)):
         alpha = context_or_alpha
         if alpha == 0.0:

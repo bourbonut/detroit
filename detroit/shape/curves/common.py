@@ -25,17 +25,56 @@ def fdiv(y: float, x: float) -> float:
 
 
 class Curve(ABC):
+    """
+    Curves are typically not used directly, instead being passed to line.curve
+    and area.curve. However, you can define your own curve implementation
+    should none of the built-in curves satisfy your needs using the following
+    interface; see the curveLinear source for an example implementation. You
+    can also use this low-level interface with a built-in curve type as an
+    alternative to the line and area generators.
+    """
     @abstractclassmethod
-    def area_start(self): ...
+    def area_start(self):
+        """
+        Indicates the start of a new area segment. Each area segment consists
+        of exactly two line segments: the topline, followed by the baseline,
+        with the baseline points in reverse order.
+
+        """
+        ...
 
     @abstractclassmethod
-    def area_end(self): ...
+    def area_end(self):
+        """
+        Indicates the end of the current area segment.
+        """
+        ...
 
     @abstractclassmethod
-    def line_start(self): ...
+    def line_start(self):
+        """
+        Indicates the start of a new line segment. Zero or more points will
+        follow.
+        """
+        ...
 
     @abstractclassmethod
-    def line_end(self): ...
+    def line_end(self):
+        """
+        Indicates the end of the current line segment.
+        """
+        ...
 
     @abstractclassmethod
-    def point(self, x, y): ...
+    def point(self, x: float, y: float):
+        """
+        Indicates a new point in the current line segment with the given x- and y-values.
+
+        Parameters
+        ----------
+        x : float
+            x value
+        y : float
+            y value
+        """
+        ...

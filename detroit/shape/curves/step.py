@@ -61,12 +61,57 @@ class StepCurve(Curve):
 
 
 def curve_step(context: Selection) -> Curve:
+    """
+    Produces a piecewise constant function (a step function) consisting of
+    alternating horizontal and vertical lines. The y-value changes at the
+    midpoint of each pair of adjacent x-values.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return StepCurve(context, 0.5)
 
 
 def curve_step_before(context: Selection) -> Curve:
+    """
+    Produces a piecewise constant function (a step function) consisting of
+    alternating horizontal and vertical lines. The y-value changes before the
+    x-value.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return StepCurve(context, 0.0)
 
 
 def curve_step_after(context: Selection) -> Curve:
+    """
+    Produces a piecewise constant function (a step function) consisting of
+    alternating horizontal and vertical lines. The y-value changes after the
+    x-value.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return StepCurve(context, 1.0)

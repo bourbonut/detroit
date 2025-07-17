@@ -56,6 +56,25 @@ class BundleCurve(Curve):
 def curve_bundle(
     context_or_beta: Selection | Number,
 ) -> Callable[[Selection], Curve] | Curve:
+    """
+    Produces a straightened cubic basis spline using the specified control
+    points, with the spline straightened according to the curve's beta. This
+    curve is typically used in hierarchical edge bundling to disambiguate
+    connections, as proposed by Danny Holten in Hierarchical Edge Bundles:
+    Visualization of Adjacency Relations in Hierarchical Data.
+    Default value of beta is :code:`0.85`.
+
+    Parameters
+    ----------
+    context_or_beta : Selection | Number
+        Context or beta value in range :math:`[0, 1]` representing the bundle
+        strength
+
+    Returns
+    -------
+    Callable[[Selection], Curve] | Curve
+        Curve object or function which makes a curve object with beta value set
+    """
     if isinstance(context_or_beta, (int, float)):
         beta = context_or_beta
         if beta == 1:

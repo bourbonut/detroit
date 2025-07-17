@@ -125,8 +125,44 @@ class MonotoneY(Monotone):
 
 
 def curve_monotone_x(context: Selection) -> Curve:
+    """
+    Produces a cubic spline that preserves monotonicity in y, assuming
+    monotonicity in x, as proposed by Steffen in A simple method for monotonic
+    interpolation in one dimension: "a smooth curve with continuous first-order
+    derivatives that passes through any given set of data points without
+    spurious oscillations. Local extrema can occur only at grid points where
+    they are given by the data, but not in between two adjacent grid points."
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return MonotoneX(context)
 
 
 def curve_monotone_y(context: Selection) -> Curve:
+    """
+    Produces a cubic spline that preserves monotonicity in x, assuming
+    monotonicity in y, as proposed by Steffen in A simple method for monotonic
+    interpolation in one dimension: "a smooth curve with continuous first-order
+    derivatives that passes through any given set of data points without
+    spurious oscillations. Local extrema can occur only at grid points where
+    they are given by the data, but not in between two adjacent grid points."
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return MonotoneY(context)

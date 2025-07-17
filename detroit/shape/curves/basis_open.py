@@ -53,4 +53,19 @@ class BasisOpenCurve(Curve, BezierTrait):
 
 
 def curve_basis_open(context: Selection) -> Curve:
+    """
+    Produces a cubic basis spline using the specified control points. Unlike
+    basis, the first and last points are not repeated, and thus the curve
+    typically does not intersect these points.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return BasisOpenCurve(context)

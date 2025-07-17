@@ -60,6 +60,26 @@ class CardinalOpenCurve(Curve, BezierTrait):
 def curve_cardinal_open(
     context_or_tension: Selection | Number,
 ) -> Callable[[Selection], Curve] | Curve:
+    """
+    Produces a cubic cardinal spline using the specified control points. Unlike
+    curveCardinal, one-sided differences are not used for the first and last
+    piece, and thus the curve starts at the second point and ends at the
+    penultimate point.
+    The default tension is :math:`0`.
+
+    Parameters
+    ----------
+    context_or_tension : Selection | Number
+        Context or tension value in range :math:`[0, 1]` determining the length
+        of the tangents. A tension of one yields all zero tangents, equivalent
+        to :func:`curve_linear`
+
+    Returns
+    -------
+    Callable[[Selection], Curve] | Curve
+        Curve object or function which makes a curve object with tension value
+        set
+    """
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
 

@@ -73,4 +73,21 @@ class BasisCurve(Curve, BezierTrait):
 
 
 def curve_basis(context: Selection) -> Curve:
+    """
+    Produces a cubic basis spline using the specified control points. The first
+    and last points are triplicated such that the spline starts at the first
+    point and ends at the last point, and is tangent to the line between the
+    first and second points, and to the line between the penultimate and last
+    points.
+
+    Parameters
+    ----------
+    context : Selection
+        Context
+
+    Returns
+    -------
+    Curve
+        Curve object
+    """
     return BasisCurve(context)
