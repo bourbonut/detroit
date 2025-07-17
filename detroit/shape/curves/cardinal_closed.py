@@ -1,7 +1,11 @@
 from .cardinal import BezierTrait
+from .common import Curve
+from ...selection import Selection
+from ...types import Number
+from collections.abc import Callable
 import math
 
-class CardinalClosedCurve(BezierTrait):
+class CardinalClosedCurve(Curve, BezierTrait):
 
     def __init__(self, context, tension):
         self._context = context
@@ -76,7 +80,7 @@ class CardinalClosedCurve(BezierTrait):
         self._y2 = y
 
 
-def curve_cardinal_closed(context_or_tension):
+def curve_cardinal_closed(context_or_tension: Selection | Number) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
         def local_curve(context):

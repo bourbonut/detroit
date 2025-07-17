@@ -1,7 +1,8 @@
 import math
-from .common import isvaluable
+from .common import isvaluable, Curve
+from ...selection import Selection
 
-class LinearCurve:
+class LinearCurve(Curve):
     def __init__(self, context):
         self._context = context
         self._line = math.nan
@@ -33,5 +34,5 @@ class LinearCurve:
         else:
             self._context.line_to(x, y)
 
-def curve_linear(context):
+def curve_linear(context: Selection) -> Curve:
     return LinearCurve(context)

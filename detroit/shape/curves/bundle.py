@@ -1,11 +1,21 @@
 from .basis import BasisCurve, curve_basis
+from .common import Curve
+from ...types import Number
+from ...selection import Selection
+from collections.abc import Callable
 
-class BundleCurve:
+class BundleCurve(Curve):
     def __init__(self, context, beta):
         self._basis = BasisCurve(context)
         self._beta = beta
         self._x = None
         self._y = None
+
+    def area_start(self):
+        return
+
+    def area_end(self):
+        return
 
     def line_start(self):
         self._x = []
@@ -41,7 +51,7 @@ class BundleCurve:
         self._x.append(x)
         self._y.append(y)
 
-def curve_bundle(context_or_beta):
+def curve_bundle(context_or_beta: Selection | Number) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_beta, (int, float)):
         beta = context_or_beta
         if beta == 1:

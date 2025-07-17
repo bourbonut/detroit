@@ -1,5 +1,8 @@
-from .common import isvaluable
+from .common import isvaluable, Curve
 from .cardinal import curve_cardinal
+from ...selection import Selection
+from ...types import Number
+from collections.abc import Callable
 import math
 EPSILON = 1e-12
 
@@ -26,7 +29,7 @@ class BezierTrait:
 
         self._context.bezier_curve_to(x1, y1, x2, y2, self._x2, self._y2)
 
-class CatmullRomCurve(BezierTrait):
+class CatmullRomCurve(Curve, BezierTrait):
 
     def __init__(self, context, alpha):
         self._context = context
@@ -95,7 +98,7 @@ class CatmullRomCurve(BezierTrait):
         self._y1 = self._y2
         self._y2 = y
 
-def curve_catmull_rom(context_or_alpha):
+def curve_catmull_rom(context_or_alpha: Selection | Number) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_alpha, (int, float)):
         alpha = context_or_alpha
         if alpha == 0.0:

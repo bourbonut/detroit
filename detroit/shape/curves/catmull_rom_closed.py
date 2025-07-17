@@ -1,8 +1,12 @@
 from .cardinal_closed import curve_cardinal_closed
+from .common import Curve
 from .catmull_rom import BezierTrait
+from ...selection import Selection
+from ...types import Number
+from collections.abc import Callable
 import math
 
-class CatmullRomClosedCurve(BezierTrait):
+class CatmullRomClosedCurve(Curve, BezierTrait):
 
     def __init__(self, context, alpha):
         self._context = context
@@ -82,7 +86,7 @@ class CatmullRomClosedCurve(BezierTrait):
         self._y1 = self._y2
         self._y2 = y
 
-def curve_catmull_rom_closed(context_or_alpha):
+def curve_catmull_rom_closed(context_or_alpha: Selection | Number) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_alpha, (int, float)):
         alpha = context_or_alpha
         if alpha == 0.0:

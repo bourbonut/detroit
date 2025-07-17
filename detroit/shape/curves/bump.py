@@ -1,7 +1,8 @@
-from .common import point_radial, isvaluable
+from .common import point_radial, isvaluable, Curve
+from ...selection import Selection
 import math
 
-class BumpCurve:
+class BumpCurve(Curve):
 
     def __init__(self, context, x):
         self._context = context
@@ -51,7 +52,7 @@ class BumpCurve:
         self._y0 = y
 
 
-class BumpRadialCurve:
+class BumpRadialCurve(Curve):
 
     def __init__(self, context):
         self._context = context
@@ -79,11 +80,11 @@ class BumpRadialCurve:
         self._y0 = y
 
 
-def curve_bump_x(context):
+def curve_bump_x(context: Selection) -> Curve:
     return BumpCurve(context, True)
 
-def curve_bump_y(context):
+def curve_bump_y(context: Selection) -> Curve:
     return BumpCurve(context, False)
 
-def curve_bump_radial(context):
+def curve_bump_radial(context: Selection) -> Curve:
     return BumpRadialCurve(context)

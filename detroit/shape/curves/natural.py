@@ -1,7 +1,8 @@
-from .common import isvaluable
+from .common import isvaluable, Curve
+from ...selection import Selection
 import math
 
-class NaturalCurve:
+class NaturalCurve(Curve):
 
     def __init__(self, context):
         self._context = context
@@ -81,5 +82,5 @@ def control_points(x):
     return [a, b]
 
 
-def curve_natural(context):
+def curve_natural(context: Selection) -> Curve:
     return NaturalCurve(context)

@@ -1,4 +1,5 @@
-from .common import isvaluable, sign, fdiv
+from .common import isvaluable, sign, fdiv, Curve
+from ...selection import Selection
 import math
 
 class HermiteInterpolation:
@@ -26,7 +27,7 @@ class HermiteInterpolation:
         dx = (x1 - x0) / 3
         self._context.bezier_curve_to(x0 + dx, y0 + dx * t0, x1 - dx, y1 - dx * t1, x1, y1)
 
-class Monotone(HermiteInterpolation):
+class Monotone(Curve, HermiteInterpolation):
 
     def __init__(self, context):
         self._context = context
@@ -120,8 +121,8 @@ class MonotoneY(Monotone):
         super().point(y, x)
 
 
-def curve_monotone_x(context):
+def curve_monotone_x(context: Selection) -> Curve:
     return MonotoneX(context)
 
-def curve_monotone_y(context):
+def curve_monotone_y(context: Selection) -> Curve:
     return MonotoneY(context)

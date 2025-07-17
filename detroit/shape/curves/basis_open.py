@@ -1,8 +1,9 @@
 from .basis import BezierTrait
-from .common import isvaluable
+from .common import isvaluable, Curve
+from ...selection import Selection
 import math
 
-class BasisOpenCurve(BezierTrait):
+class BasisOpenCurve(Curve, BezierTrait):
 
     def __init__(self, context):
         self._context = context
@@ -49,5 +50,5 @@ class BasisOpenCurve(BezierTrait):
         self._y0 = self._y1
         self._y1 = y
 
-def curve_basis_open(context):
+def curve_basis_open(context: Selection) -> Curve:
     return BasisOpenCurve(context)

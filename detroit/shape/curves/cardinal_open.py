@@ -1,8 +1,11 @@
 from .cardinal import BezierTrait
-from .common import isvaluable
+from .common import isvaluable, Curve
+from ...selection import Selection
+from ...types import Number
+from collections.abc import Callable
 import math
 
-class CardinalOpenCurve(BezierTrait):
+class CardinalOpenCurve(Curve, BezierTrait):
 
     def __init__(self, context, tension):
         self._context = context
@@ -52,7 +55,7 @@ class CardinalOpenCurve(BezierTrait):
         self._y1 = self._y2
         self._y2 = y
 
-def curve_cardinal_open(context_or_tension):
+def curve_cardinal_open(context_or_tension: Selection | Number) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
         def local_curve(context):

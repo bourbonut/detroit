@@ -1,4 +1,6 @@
-class LinearClosedCurve:
+from .common import Curve
+from ...selection import Selection
+class LinearClosedCurve(Curve):
 
     def __init__(self, context):
         self._context = context
@@ -24,5 +26,5 @@ class LinearClosedCurve:
             self._context.move_to(x, y)
 
 
-def curve_linear_closed(context):
+def curve_linear_closed(context: Selection) -> Curve:
     return LinearClosedCurve(context)

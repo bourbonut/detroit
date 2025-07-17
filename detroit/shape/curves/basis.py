@@ -1,5 +1,6 @@
 import math
-from .common import isvaluable
+from .common import isvaluable, Curve
+from ...selection import Selection
 
 class BezierTrait:
     def _bezier_curve_to(self, x, y):
@@ -12,7 +13,7 @@ class BezierTrait:
             (self._y0 + 4 * self._y1 + y) / 6,
         )
 
-class BasisCurve(BezierTrait):
+class BasisCurve(Curve, BezierTrait):
 
     def __init__(self, context):
         self._context = context
@@ -67,5 +68,5 @@ class BasisCurve(BezierTrait):
         self._y1 = y
 
 
-def curve_basis(context):
+def curve_basis(context: Selection) -> Curve:
     return BasisCurve(context)
