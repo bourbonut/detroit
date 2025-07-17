@@ -1,8 +1,7 @@
 import detroit as d3
-from detroit.shape.curves import curve_basis_closed
 
 def test_basis_closed_1():
-  line = d3.line().curve(curve_basis_closed)
+  line = d3.line().curve(d3.curve_basis_closed)
   assert line([]) is None
   assert line([[0, 0]]) == "M0,0Z"
   assert line([[0, 0], [0, 10]]) == "M0,6.667L0,3.333Z"

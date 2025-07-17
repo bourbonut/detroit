@@ -1,8 +1,7 @@
 import detroit as d3
-from detroit.shape.curves import curve_natural
 
 def test_natural_1():
-  line = d3.line().curve(curve_natural)
+  line = d3.line().curve(d3.curve_natural)
   assert line([]) is None
   assert line([[0, 1]]) == "M0,1Z"
   assert line([[0, 1], [1, 3]]) == "M0,1L1,3"
@@ -10,7 +9,7 @@ def test_natural_1():
   assert line([[0, 1], [1, 3], [2, 1], [3, 3]]) == "M0,1C0.333,2.111,0.667,3.222,1,3C1.333,2.778,1.667,1.222,2,1C2.333,0.778,2.667,1.889,3,3"
 
 def test_natural_2():
-  area = d3.area().curve(curve_natural)
+  area = d3.area().curve(d3.curve_natural)
   assert area([]) is None
   assert area([[0, 1]]) == "M0,1L0,0Z"
   assert area([[0, 1], [1, 3]]) == "M0,1L1,3L1,0L0,0Z"
