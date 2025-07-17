@@ -1,5 +1,6 @@
 from ..series import Series
 
+
 def offset_none(series: list[Series], order: list[int]):
     """
     Default offset function for updating the lower and upper values in the

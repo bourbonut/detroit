@@ -1,5 +1,6 @@
 from math import sqrt
 
+
 def symbol_cross(context, size):
     r = sqrt(size / 5) / 2
     context.move_to(-3 * r, -r)

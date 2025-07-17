@@ -33,6 +33,7 @@ class Curve(ABC):
     can also use this low-level interface with a built-in curve type as an
     alternative to the line and area generators.
     """
+
     @abstractclassmethod
     def area_start(self):
         """

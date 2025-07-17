@@ -1,5 +1,6 @@
-from .none import offset_none
 from ..series import Series
+from .none import offset_none
+
 
 def offset_expand(series: list[Series], order: list[int]):
     """

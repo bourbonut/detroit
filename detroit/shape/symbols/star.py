@@ -1,4 +1,4 @@
-from math import sin, cos, sqrt, pi
+from math import cos, pi, sin, sqrt
 
 KA = 0.89081309152928522810
 KR = sin(pi / 10) / sin(7 * pi / 10)

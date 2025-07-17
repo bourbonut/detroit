@@ -5,6 +5,7 @@ S = sqrt(3) / 2
 K = 1 / sqrt(12)
 A = (K / 2 + 1) * 3
 
+
 def symbol_wye(context, size):
     r = sqrt(size / A)
     x0 = r / 2

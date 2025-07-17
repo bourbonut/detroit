@@ -1,5 +1,9 @@
-from .path import WithPath
+from collections.abc import Callable
+from typing import TypeVar
+
+from ..path import Path
 from .constant import constant
+from .path import WithPath
 from .symbols import (
     symbol_asterisk,
     symbol_circle,
@@ -15,10 +19,6 @@ from .symbols import (
     symbol_triangle2,
     symbol_wye,
 )
-from ..path import Path
-
-from collections.abc import Callable
-from typing import TypeVar
 
 # Symbols which are designed to be filled
 SYMBOLS_FILL = [
@@ -44,6 +44,7 @@ SYMBOLS_STROKE = [
 
 TSymbol = TypeVar("Symbol", bound="Symbol")
 
+
 class Symbol(WithPath):
     """
     Builds a new symbol generator of the specified symbol type and size.
@@ -55,10 +56,11 @@ class Symbol(WithPath):
     size : Callable[[], int | float] | int | float | None
         Size - Default :code:`64`
     """
+
     def __init__(
         self,
         symbol_type: Callable[[Path, int | float], None] | None = None,
-        size: Callable[[], int | float] | int | float | None = None
+        size: Callable[[], int | float] | int | float | None = None,
     ):
         super().__init__()
         self._context = None
@@ -86,7 +88,9 @@ class Symbol(WithPath):
             self._context = None
             return str(buffer)
 
-    def set_symbol_type(self, symbol_type: Callable[[Path, int | float], None]) -> TSymbol:
+    def set_symbol_type(
+        self, symbol_type: Callable[[Path, int | float], None]
+    ) -> TSymbol:
         """
         Sets the symbol type and returns this symbol generator.
 
@@ -123,7 +127,7 @@ class Symbol(WithPath):
         """
         self._size = size if callable(size) else constant(size)
         return self
-        
+
     @property
     def size(self):
         return self._size

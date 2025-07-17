@@ -1,17 +1,18 @@
 from collections.abc import Callable, Iterable
-from typing import Generic, TypeVar
 from inspect import signature
+from typing import Generic, TypeVar
 
 from ..selection.selection import Selection
+from ..types import Accessor, Number, T
 from .constant import constant
-from .curves import curve_linear, Curve
+from .curves import Curve, curve_linear
 from .line import Line
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
-from ..types import Accessor, Number, T
 
 TArea = TypeVar("Area", bound="Area")
+
 
 class Area(Generic[T], WithPath):
     """
@@ -37,6 +38,7 @@ class Area(Generic[T], WithPath):
     Area
         New area generator
     """
+
     def __init__(
         self,
         x0: Accessor[T, float] | None = None,
@@ -111,7 +113,7 @@ class Area(Generic[T], WithPath):
         y1nargs = len(signature(self._y1).parameters) if self._y1 is not None else 0
         for i in range(n + 1):
             d = data[i] if i < n else None
-            if not(i < n and self._defined(d, i, data) == defined0):
+            if not (i < n and self._defined(d, i, data) == defined0):
                 defined0 = not defined0
                 if defined0:
                     j = i

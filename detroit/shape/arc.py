@@ -1,9 +1,10 @@
+from collections.abc import Callable
+from math import acos, asin, atan2, cos, nan, pi, sin, sqrt
+from typing import Any, TypeVar
+
 from ..selection.selection import Selection
 from .constant import constant
 from .path import WithPath
-from math import atan2, sqrt, pi, asin, cos, sin, acos, nan
-from collections.abc import Callable
-from typing import Any, TypeVar
 
 TArc = TypeVar("Arc", bound="Arc")
 
@@ -98,6 +99,7 @@ class Arc(WithPath):
     ...     .set_start_angle(0)
     ...     .set_end_angle(pi / 2)
     """
+
     def __init__(self):
         super().__init__()
         self._inner_radius = arc_inner_radius
@@ -168,8 +170,11 @@ class Arc(WithPath):
             da1 = da
             ap = self._pad_angle(*args) / 2
             rp = (
-                self._pad_radius(*args) if self._pad_radius else sqrt(r0 * r0 + r1 * r1)
-                if ap > EPSILON else 0
+                self._pad_radius(*args)
+                if self._pad_radius
+                else sqrt(r0 * r0 + r1 * r1)
+                if ap > EPSILON
+                else 0
             )
             rc = min(abs(r1 - r0) / 2, self._corner_radius(*args))
             rc0 = rc
@@ -436,7 +441,9 @@ class Arc(WithPath):
             self._pad_radius = constant(pad_radius)
         return self
 
-    def set_start_angle(self, start_angle: Callable[[...], float] | float | int) -> TArc:
+    def set_start_angle(
+        self, start_angle: Callable[[...], float] | float | int
+    ) -> TArc:
         """
         If angle is specified, sets the start angle to the specified
         function or number and returns this arc generator.
@@ -444,7 +451,7 @@ class Arc(WithPath):
         Parameters
         ----------
         start_angle : Callable[[...], float] | float | int
-            Start angle    
+            Start angle
 
         Returns
         -------

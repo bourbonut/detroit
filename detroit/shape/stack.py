@@ -1,13 +1,15 @@
+from collections.abc import Callable
 from inspect import signature
 from typing import Generic, TypeVar
-from collections.abc import Callable
+
+from ..types import T, U, V
+from .constant import constant
 from .offset import offset_none
 from .order import order_none
-from .constant import constant
-from .series import Series, Serie
-from ..types import T, U, V
+from .series import Serie, Series
 
 TStack = TypeVar("Stack", bound="Stack")
+
 
 def stack_value(d: U, key: V) -> T:
     """
@@ -27,6 +29,7 @@ def stack_value(d: U, key: V) -> T:
     """
     return d[key]
 
+
 def stack_series(key: T) -> Series:
     """
     Default function to make a stack series
@@ -45,10 +48,12 @@ def stack_series(key: T) -> Series:
     series.key = key
     return series
 
+
 class Stack(Generic[T]):
     """
-    Builds a new stack generator with the default settings. 
+    Builds a new stack generator with the default settings.
     """
+
     def __init__(self):
         self._keys = constant([])
         self._order = order_none
@@ -123,7 +128,9 @@ class Stack(Generic[T]):
     def keys(self) -> Callable[[...], str]:
         return self._keys
 
-    def set_value(self, value: Callable[[T, str, int, list[T]], float] | float) -> TStack:
+    def set_value(
+        self, value: Callable[[T, str, int, list[T]], float] | float
+    ) -> TStack:
         """
         Sets the :code:`value` method and returns itself.
 
@@ -152,7 +159,9 @@ class Stack(Generic[T]):
     def value(self) -> Callable[[T, str, int, list[T]], float]:
         return self._value
 
-    def set_order(self, order: Callable[[list[Series]], list[int]] | list[int] | None = None) -> TStack:
+    def set_order(
+        self, order: Callable[[list[Series]], list[int]] | list[int] | None = None
+    ) -> TStack:
         """
         Sets the :code:`order` method and returns itself.
 
@@ -178,8 +187,10 @@ class Stack(Generic[T]):
     @property
     def order(self) -> Callable[[list[Series]], list[int]]:
         return self._order
-    
-    def set_offset(self, offset: Callable[[list[Series], list[int]], None] | None = None) -> TStack:
+
+    def set_offset(
+        self, offset: Callable[[list[Series], list[int]], None] | None = None
+    ) -> TStack:
         """
         Sets the :code:`offset` and returns itself.
 

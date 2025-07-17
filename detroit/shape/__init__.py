@@ -24,8 +24,17 @@ from .curves import (
     curve_step_before,
 )
 from .line import Line
+from .offset import (
+    offset_expand,
+    offset_none,
+)
+from .order import (
+    order_none,
+    order_reverse,
+)
 from .pie import Pie
-from .symbol import Symbol, SYMBOLS_FILL, SYMBOLS_STROKE
+from .stack import Stack
+from .symbol import SYMBOLS_FILL, SYMBOLS_STROKE, Symbol
 from .symbols import (
     symbol_asterisk,
     symbol_circle,
@@ -41,15 +50,6 @@ from .symbols import (
     symbol_triangle2,
     symbol_wye,
 )
-from .offset import (
-    offset_expand,
-    offset_none,
-)
-from .order import (
-    order_none,
-    order_reverse,
-)
-from .stack import Stack
 
 __all__ = [
     "Arc",

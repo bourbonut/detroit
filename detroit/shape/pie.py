@@ -1,16 +1,19 @@
-from dataclasses import dataclass, asdict
+from collections.abc import Callable, Iterable
+from dataclasses import asdict, dataclass
 from inspect import signature
 from math import pi
 from typing import Any, Generic, TypeVar
-from collections.abc import Iterable, Callable
 
-from .constant import constant
 from ..types import Accessor, Number, T
+from .constant import constant
+
 
 def identity(x):
     return x
 
+
 TPie = TypeVar("Pie", bound="Pie")
+
 
 @dataclass
 class Arc:
@@ -28,6 +31,7 @@ class Pie(Generic[T]):
     dataset as a pie or donut chart; these angles can then be passed to an
     arc generator. (The pie generator does not produce a shape directly.)
     """
+
     def __init__(self):
         self._value = identity
         self._sort_values = lambda x: -x
@@ -105,7 +109,6 @@ class Pie(Generic[T]):
             index = sorted(index, key=lambda i: self._sort_values(arcs[i]))
         elif self._sort is not None:
             index = sorted(index, key=lambda i: self._sort(data[i]))
-
 
         k = (da - n * pa) / sum if sum else 0
         for i in range(n):

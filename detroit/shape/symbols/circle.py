@@ -1,4 +1,5 @@
-from math import sqrt, pi
+from math import pi, sqrt
+
 
 def symbol_circle(context, size):
     r = sqrt(size / pi)

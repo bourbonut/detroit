@@ -1,16 +1,17 @@
 from collections.abc import Callable, Iterable
-from typing import Generic, TypeVar
 from inspect import signature
+from typing import Generic, TypeVar
 
 from ..selection.selection import Selection
+from ..types import Accessor, Number, T
 from .constant import constant
-from .curves import curve_linear, Curve
+from .curves import Curve, curve_linear
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
-from ..types import Accessor, Number, T
 
 TLine = TypeVar("Line", bound="Line")
+
 
 class Line(Generic[T], WithPath):
     """
@@ -31,7 +32,9 @@ class Line(Generic[T], WithPath):
         New line generator
     """
 
-    def __init__(self, x: Accessor[T, float] | None = None, y: Accessor[T, float] | None = None):
+    def __init__(
+        self, x: Accessor[T, float] | None = None, y: Accessor[T, float] | None = None
+    ):
         super().__init__()
         self._defined = constant(True)
         self._context = None
@@ -86,7 +89,7 @@ class Line(Generic[T], WithPath):
         ynargs = len(signature(self._y).parameters)
         for i in range(n + 1):
             d = data[i] if i < n else None
-            if not(i < n and self._defined(d, i, data) == defined0):
+            if not (i < n and self._defined(d, i, data) == defined0):
                 defined0 = not defined0
                 if defined0:
                     self._output.line_start()

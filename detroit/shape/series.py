@@ -1,6 +1,8 @@
-from typing import Generic
 from collections.abc import Iterator
+from typing import Generic
+
 from ..types import T
+
 
 class Serie(Generic[T]):
     """
@@ -13,6 +15,7 @@ class Serie(Generic[T]):
     data : T
         Data value associated to this point
     """
+
     def __init__(self, values: list[float], data: T):
         self._values = values
         self.data = data
@@ -37,10 +40,12 @@ class Serie(Generic[T]):
     def __repr__(self):
         return str(self)
 
+
 class Series:
     """
     List of :code:`Serie` associated to a :code:`key` and an :code:`index`
     """
+
     def __init__(self, series: list[Serie] | None = None):
         self._series = series or []
         self.key = None
@@ -59,9 +64,9 @@ class Series:
         if not isinstance(series, Series):
             return False
         return (
-            self._series == series._series and
-            self.key == series.key and
-            self.index == series.index
+            self._series == series._series
+            and self.key == series.key
+            and self.index == series.index
         )
 
     def __iter__(self) -> Iterator[Serie]:
