@@ -12,6 +12,8 @@ from .linear_closed import curve_linear_closed
 from .monotone import curve_monotone_x, curve_monotone_y
 from .natural import curve_natural
 from .catmull_rom import curve_catmull_rom
+from .catmull_rom_open import curve_catmull_rom_open
+from .catmull_rom_closed import curve_catmull_rom_closed
 
 __all__ = [
     "curve_linear",
@@ -33,4 +35,6 @@ __all__ = [
     "curve_monotone_y",
     "curve_natural",
     "curve_catmull_rom",
+    "curve_catmull_rom_open",
+    "curve_catmull_rom_closed",
 ]
