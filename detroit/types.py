@@ -255,7 +255,7 @@ class SequentialScaler(Scaler[U, V], Generic[U, V]):
         """
         ...
 
-class Accessor(Protocol):
+class Accessor(Generic[U, V], Protocol):
     """
     Protocol which describes how an accessor is defined.
 

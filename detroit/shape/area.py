@@ -1,17 +1,19 @@
-from __future__ import annotations
-
 from collections.abc import Callable, Iterable
+from typing import Generic, TypeVar
 from inspect import signature
 
 from ..selection.selection import Selection
 from .constant import constant
-from .curves import curve_linear
+from .curves import curve_linear, Curve
 from .line import Line
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
+from ..types import Accessor, Number, T
 
-class Area(WithPath):
+TArea = TypeVar("Area", bound="Area")
+
+class Area(Generic[T], WithPath):
     """
     The area generator produces an area defined by a topline and a baseline as in
     an area chart. Typically, the two lines share the same x-values (x0 = x1),
@@ -23,11 +25,11 @@ class Area(WithPath):
 
     Parameters
     ----------
-    x0 : Callable | None
+    x0 : Accessor[T, float] | None
         x0 accessor function for data points
-    y0 : Callable | None
+    y0 : Accessor[T, float] | None
         y0 accessor function for data points
-    y1 : Callable | None
+    y1 : Accessor[T, float] | None
         y1 accessor function for data points
 
     Returns
@@ -37,9 +39,9 @@ class Area(WithPath):
     """
     def __init__(
         self,
-        x0: Callable | None = None,
-        y0: Callable | None = None,
-        y1: Callable | None = None,
+        x0: Accessor[T, float] | None = None,
+        y0: Accessor[T, float] | None = None,
+        y1: Accessor[T, float] | None = None,
     ):
         super().__init__()
         self._x1 = None
@@ -69,13 +71,13 @@ class Area(WithPath):
         else:
             self._y1 = constant(y1)
 
-    def __call__(self, data: Iterable) -> str | None:
+    def __call__(self, data: Iterable[T]) -> str | None:
         """
         Generates an area for the given array of data.
 
         Parameters
         ----------
-        data : Iterable
+        data : Iterable[T]
             Data values
 
         Returns
@@ -147,14 +149,14 @@ class Area(WithPath):
         """
         return Line().defined(self._defined).curve(self._curve).context(self._context)
 
-    def x(self, x: Callable | int | float) -> Area:
+    def x(self, x: Accessor[T, float] | Number) -> TArea:
         """
         Sets x0 accessor function and sets x1
         accessor function to :code:`None`
 
         Parameters
         ----------
-        x : Callable | int | float
+        x : Accessor[T, float] | Number
             x accessor function
 
         Returns
@@ -169,13 +171,13 @@ class Area(WithPath):
         self._x1 = None
         return self
 
-    def x0(self, x0: Callable | int | float) -> Area:
+    def x0(self, x0: Accessor[T, float] | Number) -> TArea:
         """
         Sets x0 accessor function
 
         Parameters
         ----------
-        x0 : Callable | int | float
+        x0 : Accessor[T, float] | Number
             x0 accessor function
 
         Returns
@@ -193,13 +195,13 @@ class Area(WithPath):
     def fx0(self):
         return self._x0
 
-    def x1(self, x1: Callable | int | float) -> Area:
+    def x1(self, x1: Accessor[T, float] | Number) -> TArea:
         """
         Sets x1 accessor function
 
         Parameters
         ----------
-        x1 : Callable | int | float
+        x1 : Accessor[T, float] | Number
             x1 accessor function
 
         Returns
@@ -217,14 +219,14 @@ class Area(WithPath):
     def fx1(self):
         return self._x1
 
-    def y(self, y: Callable | int | float) -> Area:
+    def y(self, y: Accessor[T, float] | Number) -> TArea:
         """
         Sets y0 accessor function and sets y1
         accessor function to :code:`None`
 
         Parameters
         ----------
-        y : Callable | int | float
+        y : Accessor[T, float] | Number
             y accessor function
 
         Returns
@@ -239,13 +241,13 @@ class Area(WithPath):
         self._y1 = None
         return self
 
-    def y0(self, y0: Callable | int | float) -> Area:
+    def y0(self, y0: Accessor[T, float] | Number) -> TArea:
         """
         Sets y accessor function
 
         Parameters
         ----------
-        y0 : Callable | int | float
+        y0 : Accessor[T, float] | Number
             y0 accessor function
 
         Returns
@@ -263,13 +265,13 @@ class Area(WithPath):
     def fy0(self):
         return self._y0
 
-    def y1(self, y1: Callable | int | float) -> Area:
+    def y1(self, y1: Accessor[T, float] | Number) -> TArea:
         """
         Sets y accessor function
 
         Parameters
         ----------
-        y1 : Callable | int | float
+        y1 : Accessor[T, float] | Number
             y1 accessor function
 
         Returns
@@ -287,7 +289,7 @@ class Area(WithPath):
     def fy1(self):
         return self._y1
 
-    def defined(self, defined: Callable | int | float) -> Area:
+    def defined(self, defined: Accessor[T, float] | Number) -> TArea:
         """
         Sets defined accessor
 
@@ -306,7 +308,7 @@ class Area(WithPath):
 
         Parameters
         ----------
-        defined : Callable | int | float
+        defined : Accessor[T, float] | Number
             defined accessor function
 
         Returns
@@ -328,13 +330,13 @@ class Area(WithPath):
     def fcurve(self):
         return self._curve
 
-    def curve(self, curve: Callable | None = None) -> Area:
+    def curve(self, curve: Callable[[Selection], Curve] | None = None) -> TArea:
         """
         Sets curve factory.
 
         Parameters
         ----------
-        curve : Callable | None
+        curve : Callable[[Selection], Curve] | None
             Curve factory function
 
         Returns
@@ -347,7 +349,7 @@ class Area(WithPath):
             self._output = self._curve(self._context)
         return self
 
-    def context(self, context: Selection | None = None) -> Area:
+    def context(self, context: Selection | None = None) -> TArea:
         """
         Sets the context.
 

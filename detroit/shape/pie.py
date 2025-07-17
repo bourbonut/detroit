@@ -1,15 +1,16 @@
-from __future__ import annotations
 from dataclasses import dataclass, asdict
 from inspect import signature
 from math import pi
-from typing import Any
+from typing import Any, Generic, TypeVar
 from collections.abc import Iterable, Callable
 
 from .constant import constant
+from ..types import Accessor, Number, T
 
 def identity(x):
     return x
 
+TPie = TypeVar("Pie", bound="Pie")
 
 @dataclass
 class Arc:
@@ -21,7 +22,7 @@ class Arc:
     pad_angle: float
 
 
-class Pie:
+class Pie(Generic[T]):
     """
     The pie generator computes the necessary angles to represent a tabular
     dataset as a pie or donut chart; these angles can then be passed to an
@@ -35,16 +36,16 @@ class Pie:
         self._end_angle = constant(2 * pi)
         self._pad_angle = constant(0)
 
-    def __call__(self, data: Iterable, *args: Any) -> list[dict]:
+    def __call__(self, data: Iterable[T], *args: Any) -> list[dict]:
         """
         Generates a pie for the given array of data, returning an array of
         objects representing each datum's arc angles.
 
         Parameters
         ----------
-        data : Iterable
+        data : Iterable[T]
             Data input
-        *args : Any
+        args : Any
             Additional arguments propagated to the pie's accessor functions
 
         Returns
@@ -116,15 +117,15 @@ class Pie:
 
         return arcs
 
-    def value(self, value: Callable | int | float) -> Pie:
+    def value(self, value: Accessor[T, float] | Number) -> TPie:
         """
         If value is specified, sets the value accessor to the
         specified function or number and returns this pie generator.
 
         Parameters
         ----------
-        value : Callable | int | float
-            Value input
+        value : Accessor[T, float] | Number
+            Number or accessor function
 
         Returns
         -------
@@ -137,14 +138,14 @@ class Pie:
             self._value = constant(value)
         return self
 
-    def sort_values(self, sort_values: Callable) -> Pie:
+    def sort_values(self, sort_values: Callable[[float], float]) -> TPie:
         """
         If sort_values is specified, sets the value comparator to
         the specified function and returns this pie generator.
 
         Parameters
         ----------
-        sort_values : Callable | int | float
+        sort_values : Callable[[float], float]
             Value input
 
         Returns
@@ -156,14 +157,14 @@ class Pie:
         self._sort = None
         return self
 
-    def sort(self, sort: Callable) -> Pie:
+    def sort(self, sort: Callable[[float], float]) -> TPie:
         """
         If sort is specified, sets the data comparator to
         the specified function and returns this pie generator.
 
         Parameters
         ----------
-        sort : Callable
+        sort : Callable[[float], float]
             Sort function
 
         Returns
@@ -175,14 +176,14 @@ class Pie:
         self._sort_values = None
         return self
 
-    def start_angle(self, start_angle: Callable | int | float) -> Pie:
+    def start_angle(self, start_angle: Callable[[Any], float] | Number) -> TPie:
         """
         If start_angle is specified, sets the overall start angle of the
         pie to the specified function or number and returns this pie generator.
 
         Parameters
         ----------
-        start_value : Callable | int | float
+        start_value : Callable[[Any, float]] | Number
             Start angle input
 
         Returns
@@ -196,7 +197,7 @@ class Pie:
             self._start_angle = constant(start_angle)
         return self
 
-    def end_angle(self, end_angle: Callable | int | float) -> Pie:
+    def end_angle(self, end_angle: Callable[[Any], float] | Number) -> TPie:
         """
         If end_angle is specified, sets the overall end angle
         of the pie to the specified function or number and
@@ -204,7 +205,7 @@ class Pie:
 
         Parameters
         ----------
-        end_angle : Callable | int | float
+        end_angle : Callable[[Any], float] | Number
             End angle input
 
         Returns
@@ -218,7 +219,7 @@ class Pie:
             self._end_angle = constant(end_angle)
         return self
 
-    def pad_angle(self, pad_angle: Callable | int | float) -> Pie:
+    def pad_angle(self, pad_angle: Callable[[Any], float] | Number) -> TPie:
         """
         If pad_angle is specified, sets the pad angle to
         the specified function or number and returns this
@@ -226,7 +227,7 @@ class Pie:
 
         Parameters
         ----------
-        pad_angle : Callable | int | float
+        pad_angle : Callable[[Any], float] | Number
             Pad angle input
 
         Returns

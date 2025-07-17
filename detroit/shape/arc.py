@@ -1,10 +1,11 @@
-from __future__ import annotations
 from ..selection.selection import Selection
 from .constant import constant
 from .path import WithPath
 from math import atan2, sqrt, pi, asin, cos, sin, acos, nan
 from collections.abc import Callable
-from typing import Any
+from typing import Any, TypeVar
+
+TArc = TypeVar("Arc", bound="Arc")
 
 EPSILON = 1e-12
 
@@ -343,7 +344,7 @@ class Arc(WithPath):
 
     def set_inner_radius(
         self, inner_radius: Callable[[...], float] | float | int
-    ) -> Arc:
+    ) -> TArc:
         """
         If radius is specified, sets the inner radius to the specified
         function or number and returns this arc generator.
@@ -366,7 +367,7 @@ class Arc(WithPath):
 
     def set_outer_radius(
         self, outer_radius: Callable[[...], float] | float | int
-    ) -> Arc:
+    ) -> TArc:
         """
         If radius is specified, sets the outer radius to the specified
         function or number and returns this arc generator.
@@ -389,7 +390,7 @@ class Arc(WithPath):
 
     def set_corner_radius(
         self, corner_radius: Callable[[...], float] | float | int
-    ) -> Arc:
+    ) -> TArc:
         """
         If angle is specified, sets the corner angle to the specified
         function or number and returns this arc generator.
@@ -412,7 +413,7 @@ class Arc(WithPath):
 
     def set_pad_radius(
         self, pad_radius: Callable[[...], float] | float | int | None = None
-    ) -> Arc:
+    ) -> TArc:
         """
         If angle is specified, sets the pad radius to the specified
         function or number and returns this arc generator.
@@ -435,7 +436,7 @@ class Arc(WithPath):
             self._pad_radius = constant(pad_radius)
         return self
 
-    def set_start_angle(self, start_angle: Callable[[...], float] | float | int) -> Arc:
+    def set_start_angle(self, start_angle: Callable[[...], float] | float | int) -> TArc:
         """
         If angle is specified, sets the start angle to the specified
         function or number and returns this arc generator.
@@ -456,7 +457,7 @@ class Arc(WithPath):
             self._start_angle = constant(start_angle)
         return self
 
-    def set_end_angle(self, end_angle: Callable[[...], float] | float | int) -> Arc:
+    def set_end_angle(self, end_angle: Callable[[...], float] | float | int) -> TArc:
         """
         If angle is specified, sets the end angle to the specified
         function or number and returns this arc generator.
@@ -477,7 +478,7 @@ class Arc(WithPath):
             self._end_angle = constant(end_angle)
         return self
 
-    def set_pad_angle(self, pad_angle: Callable[[...], float] | float | int) -> Arc:
+    def set_pad_angle(self, pad_angle: Callable[[...], float] | float | int) -> TArc:
         """
         If angle is specified, sets the pad angle to the specified
         function or number and returns this arc generator.
@@ -498,7 +499,7 @@ class Arc(WithPath):
             self._pad_angle = constant(pad_angle)
         return self
 
-    def set_context(self, context: Selection | None = None) -> Arc:
+    def set_context(self, context: Selection | None = None) -> TArc:
         """
         If context is specified, sets the context and
         returns this arc generator.

@@ -1,4 +1,3 @@
-from __future__ import annotations
 from .path import WithPath
 from .constant import constant
 from .symbols import (
@@ -19,6 +18,7 @@ from .symbols import (
 from ..path import Path
 
 from collections.abc import Callable
+from typing import TypeVar
 
 # Symbols which are designed to be filled
 SYMBOLS_FILL = [
@@ -41,6 +41,8 @@ SYMBOLS_STROKE = [
     symbol_times,
     symbol_triangle2,
 ]
+
+TSymbol = TypeVar("Symbol", bound="Symbol")
 
 class Symbol(WithPath):
     """
@@ -84,7 +86,7 @@ class Symbol(WithPath):
             self._context = None
             return str(buffer)
 
-    def set_symbol_type(self, symbol_type: Callable[[Path, int | float], None]) -> Symbol:
+    def set_symbol_type(self, symbol_type: Callable[[Path, int | float], None]) -> TSymbol:
         """
         Sets the symbol type and returns this symbol generator.
 
@@ -105,7 +107,7 @@ class Symbol(WithPath):
     def symbol_type(self):
         return self._symbol_type
 
-    def set_size(self, size: Callable[[], int | float] | int | float) -> Symbol:
+    def set_size(self, size: Callable[[], int | float] | int | float) -> TSymbol:
         """
         Sets the size of the symbol and returns this symbol generator.
 
@@ -126,7 +128,7 @@ class Symbol(WithPath):
     def size(self):
         return self._size
 
-    def set_context(self, context: Path) -> Symbol:
+    def set_context(self, context: Path) -> TSymbol:
         """
         Sets the context and returns this symbol generator.
 

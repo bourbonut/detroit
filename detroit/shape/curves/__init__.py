@@ -9,6 +9,7 @@ from .cardinal_open import curve_cardinal_open
 from .catmull_rom import curve_catmull_rom
 from .catmull_rom_closed import curve_catmull_rom_closed
 from .catmull_rom_open import curve_catmull_rom_open
+from .common import Curve
 from .linear import curve_linear
 from .linear_closed import curve_linear_closed
 from .monotone import curve_monotone_x, curve_monotone_y
@@ -16,6 +17,7 @@ from .natural import curve_natural
 from .step import curve_step, curve_step_after, curve_step_before
 
 __all__ = [
+    "Curve",
     "curve_basis",
     "curve_basis_closed",
     "curve_basis_open",

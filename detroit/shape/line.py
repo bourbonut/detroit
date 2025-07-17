@@ -1,17 +1,18 @@
-from __future__ import annotations
-
 from collections.abc import Callable, Iterable
+from typing import Generic, TypeVar
 from inspect import signature
 
 from ..selection.selection import Selection
 from .constant import constant
-from .curves import curve_linear
+from .curves import curve_linear, Curve
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
+from ..types import Accessor, Number, T
 
+TLine = TypeVar("Line", bound="Line")
 
-class Line(WithPath):
+class Line(Generic[T], WithPath):
     """
     The line generator produces a spline or polyline as in a line chart.
     Lines also appear in many other visualization types, such as the links
@@ -19,9 +20,9 @@ class Line(WithPath):
 
     Parameters
     ----------
-    x : Callable | None
+    x : Accessor[T, float] | None
         x accessor function for data points
-    y : Callable | None
+    y : Accessor[T, float] | None
         y accessor function for data points
 
     Returns
@@ -30,7 +31,7 @@ class Line(WithPath):
         New line generator
     """
 
-    def __init__(self, x: Callable | None = None, y: Callable | None = None):
+    def __init__(self, x: Accessor[T, float] | None = None, y: Accessor[T, float] | None = None):
         super().__init__()
         self._defined = constant(True)
         self._context = None
@@ -51,13 +52,13 @@ class Line(WithPath):
         else:
             self._y = constant(y)
 
-    def __call__(self, data: Iterable) -> str | None:
+    def __call__(self, data: Iterable[T]) -> str | None:
         """
         Generate a line for the given list of data
 
         Parameters
         ----------
-        data : Iterable
+        data : Iterable[T]
             Data values
 
         Returns
@@ -100,13 +101,13 @@ class Line(WithPath):
             self._output = None
             return str(buffer) or None
 
-    def x(self, x: Callable | int | float) -> Line:
+    def x(self, x: Accessor[T, float] | Number) -> TLine:
         """
         Sets x accessor function
 
         Parameters
         ----------
-        x : Callable | int | float
+        x : Accessor[T, float] | Number
             x accessor function
 
         Returns
@@ -124,13 +125,13 @@ class Line(WithPath):
     def fx(self):
         return self._x
 
-    def y(self, y: Callable | int | float) -> Line:
+    def y(self, y: Accessor[T, float] | Number) -> TLine:
         """
         Sets y accessor function
 
         Parameters
         ----------
-        y : Callable | int | float
+        y : Accessor[T, float] | Number
             y accessor function
 
         Returns
@@ -148,7 +149,7 @@ class Line(WithPath):
     def fy(self):
         return self._y
 
-    def defined(self, defined: Callable | int | float) -> Line:
+    def defined(self, defined: Accessor[T, float] | Number) -> TLine:
         """
         Sets defined accessor
 
@@ -164,7 +165,7 @@ class Line(WithPath):
 
         Parameters
         ----------
-        defined : Callable | int | float
+        defined : Accessor[T, float] | Number
             defined accessor function
 
         Returns
@@ -184,13 +185,13 @@ class Line(WithPath):
     def accessor_defined(self):
         return self._defined
 
-    def curve(self, curve: Callable | None = None) -> Line:
+    def curve(self, curve: Callable[[Selection], Curve] | None = None) -> TLine:
         """
         Sets curve factory.
 
         Parameters
         ----------
-        curve : Callable | None
+        curve : Callable[[Selection], Curve] | None
             Curve factory function
 
         Returns
@@ -207,7 +208,7 @@ class Line(WithPath):
     def fcurve(self):
         return self._curve
 
-    def context(self, context: Selection | None = None) -> Line:
+    def context(self, context: Selection | None = None) -> TLine:
         """
         Sets the context.
 
