@@ -1,0 +1,107 @@
+from .common import isvaluable
+from .cardinal import curve_cardinal
+import math
+EPSILON = 1e-12
+
+class BezierTrait:
+
+    def _bezier_curve_to(self, x, y):
+        x1 = self._x1
+        y1 = self._y1
+        x2 = self._x2
+        y2 = self._y2
+
+        if self._l01_a > EPSILON:
+            a = 2 * self._l01_2a + 3 * self._l01_a * self._l12_a + self._l12_2a
+            n = 3 * self._l01_a * (self._l01_a + self._l12_a)
+            x1 = (x1 * a - self._x0 * self._l12_2a + self._x2 * self._l01_2a) / n
+            y1 = (y1 * a - self._y0 * self._l12_2a + self._y2 * self._l01_2a) / n
+
+        if self._l23_a > EPSILON:
+            b = 2 * self._l23_2a + 3 * self._l23_a * self._l12_a + self._l12_2a
+            m = 3 * self._l23_a * (self._l23_a + self._l12_a)
+
+            x2 = (x2 * b + self._x1 * self._l23_2a - x * self._l12_2a) / m
+            y2 = (y2 * b + self._y1 * self._l23_2a - y * self._l12_2a) / m
+
+        self._context.bezier_curve_to(x1, y1, x2, y2, self._x2, self._y2)
+
+class CatmullRomCurve(BezierTrait):
+
+    def __init__(self, context, alpha):
+        self._context = context
+        self._alpha = alpha
+        self._line = math.nan
+
+    def area_start(self):
+        self._line = 0
+
+    def area_end(self):
+        self._line = math.nan
+
+    def line_start(self):
+        self._x0 = math.nan
+        self._y0 = math.nan
+        self._x1 = math.nan
+        self._y1 = math.nan
+        self._x2 = math.nan
+        self._y2 = math.nan
+        self._l01_a = math.nan
+        self._l12_a = math.nan
+        self._l23_a = math.nan
+        self._l01_2a = math.nan
+        self._l12_2a = math.nan
+        self._l23_2a = math.nan
+        self._point = 0
+
+    def line_end(self):
+        if self._point == 2:
+            self._context.line_to(self._x2, self._y2)
+        elif self._point == 3:
+            self.point(self._x2, self._y2)
+        if isvaluable(self._line) or (self._line != 0 and self._point == 1):
+            self._context.close_path()
+        self._line = 1 - self._line
+
+    def point(self, x, y):
+        if self._point != 0:
+            x23 = self._x2 - x
+            y23 = self._y2 - y
+            self._l23_2a = math.pow(x23 * x23 + y23 * y23, self._alpha)
+            self._l23_a = math.sqrt(self._l23_2a)
+
+        if self._point == 0:
+            self._point = 1
+            if isvaluable(self._line):
+                self._context.line_to(x, y)
+            else:
+                self._context.move_to(x, y)
+        elif self._point == 1:
+            self._point = 2
+        elif self._point == 2:
+            self._point = 3
+            self._bezier_curve_to(x, y)
+        else:
+            self._bezier_curve_to(x, y)
+
+        self._l01_a = self._l12_a
+        self._l12_a = self._l23_a
+        self._l01_2a = self._l12_2a
+        self._l12_2a = self._l23_2a
+        self._x0 = self._x1
+        self._x1 = self._x2
+        self._x2 = x
+        self._y0 = self._y1
+        self._y1 = self._y2
+        self._y2 = y
+
+def curve_catmull_rom(context_or_alpha):
+    if isinstance(context_or_alpha, (int, float)):
+        alpha = context_or_alpha
+        if alpha == 0.0:
+            return curve_cardinal
+        def local_curve(context):
+            return CatmullRomCurve(context, alpha)
+        return local_curve
+    context = context_or_alpha
+    return CatmullRomCurve(context, 0.5)
