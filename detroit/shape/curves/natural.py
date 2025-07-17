@@ -1,0 +1,85 @@
+from .common import isvaluable
+import math
+
+class NaturalCurve:
+
+    def __init__(self, context):
+        self._context = context
+        self._line = math.nan
+        self._x = []
+        self._y = []
+
+    def area_start(self):
+        self._line = 0
+
+    def area_end(self):
+        self._line = math.nan
+
+    def line_start(self):
+        self._x = []
+        self._y = []
+
+    def line_end(self):
+        x = self._x
+        y = self._y
+        n = len(x)
+
+        if n != 0:
+            if isvaluable(self._line):
+                self._context.line_to(x[0], y[0])
+            else:
+                self._context.move_to(x[0], y[0])
+
+            if n == 2:
+                self._context.line_to(x[1], y[1])
+            else:
+                px = control_points(x)
+                py = control_points(y)
+                for i1 in range(1, n):
+                    i0 = i1 - 1
+                    self._context.bezier_curve_to(px[0][i0], py[0][i0], px[1][i0], py[1][i0], x[i1], y[i1])
+
+        if isvaluable(self._line) or (self._line != 0 and n == 1):
+            self._context.close_path()
+        self._line = 1 - self._line
+        self._x = math.nan
+        self._y = math.nan
+
+    def point(self, x, y):
+        self._x.append(x)
+        self._y.append(y)
+
+
+def control_points(x):
+    n = len(x) - 1
+    if n == 0:
+        return [[0], [2]]
+    a = [None] * n
+    b = [None] * n
+    r = [None] * n
+
+    a[0] = 0
+    b[0] = 2
+    r[0] = x[0] + 2 * x[1]
+    for i in range(1, n - 1):
+        a[i] = 1
+        b[i] = 4
+        r[i] = 4 * x[i] + 2 * x[i + 1]
+    a[n - 1] = 2
+    b[n - 1] = 7
+    r[n - 1] = 8 * x[n - 1] + x[n]
+    for i in range(1, n):
+        m = a[i] / b[i - 1]
+        b[i] -= m
+        r[i] -= m * r[i - 1]
+    a[n - 1] = r[n - 1] / b[n - 1]
+    for i in range(n - 2, -1, -1):
+        a[i] = (r[i] - a[i + 1]) / b[i]
+    b[n - 1] = (x[n] + a[n - 1]) / 2
+    for i in range(0, n - 1):
+        b[i] = 2 * x[i + 1] - a[i + 1]
+    return [a, b]
+
+
+def curve_natural(context):
+    return NaturalCurve(context)
