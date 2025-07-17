@@ -1,11 +1,12 @@
 import math
-from .common import isvaluable, Curve
-from ...selection import Selection
-from ...types import Number
 from collections.abc import Callable
 
-class BezierTrait:
+from ...selection import Selection
+from ...types import Number
+from .common import Curve, isvaluable
 
+
+class BezierTrait:
     def _bezier_curve_to(self, x, y):
         self._context.bezier_curve_to(
             self._x1 + self._k * (self._x2 - self._x0),
@@ -13,11 +14,11 @@ class BezierTrait:
             self._x2 + self._k * (self._x1 - x),
             self._y2 + self._k * (self._y1 - y),
             self._x2,
-            self._y2
+            self._y2,
         )
 
-class CardinalCurve(Curve, BezierTrait):
 
+class CardinalCurve(Curve, BezierTrait):
     def __init__(self, context, tension):
         self._context = context
         self._k = (1 - tension) / 6
@@ -79,11 +80,15 @@ class CardinalCurve(Curve, BezierTrait):
         self._y2 = y
 
 
-def curve_cardinal(context_or_tension: Selection | Number) -> Callable[[Selection], Curve] | Curve:
+def curve_cardinal(
+    context_or_tension: Selection | Number,
+) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
+
         def local_curve(context):
             return CardinalCurve(context, tension)
+
         return local_curve
     context = context_or_tension
     return CardinalCurve(context, 0.0)

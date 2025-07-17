@@ -1,7 +1,8 @@
-from .common import Curve
 from ...selection import Selection
-class LinearClosedCurve(Curve):
+from .common import Curve
 
+
+class LinearClosedCurve(Curve):
     def __init__(self, context):
         self._context = context
 

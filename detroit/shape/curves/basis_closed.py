@@ -1,10 +1,11 @@
 import math
+
+from ...selection import Selection
 from .basis import BezierTrait
 from .common import Curve
-from ...selection import Selection
+
 
 class BasisClosedCurve(Curve, BezierTrait):
-    
     def __init__(self, context):
         self._context = context
         self._x0 = math.nan
@@ -79,6 +80,7 @@ class BasisClosedCurve(Curve, BezierTrait):
         self._x1 = x
         self._y0 = self._y1
         self._y1 = y
+
 
 def curve_basis_closed(context: Selection) -> Curve:
     return BasisClosedCurve(context)

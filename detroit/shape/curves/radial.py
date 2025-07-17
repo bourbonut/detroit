@@ -1,11 +1,12 @@
-from .linear import curve_linear
-from .common import Curve
-from ...selection import Selection
 from collections.abc import Callable
 from math import cos, sin
 
-class RadialCurve(Curve):
+from ...selection import Selection
+from .common import Curve
+from .linear import curve_linear
 
+
+class RadialCurve(Curve):
     def __init__(self, curve):
         self._curve = curve
 
@@ -20,7 +21,7 @@ class RadialCurve(Curve):
 
     def line_end(self):
         self._curve.line_end()
-    
+
     def point(self, a, r):
         self._curve.point(r * sin(a), -r * cos(a))
 
@@ -30,6 +31,7 @@ def curve_radial(curve: Curve) -> Callable[[Selection], Curve]:
         return RadialCurve(curve(context))
 
     return radial
+
 
 def curve_radial_linear(context: Selection) -> Curve:
     return curve_radial(curve_linear)

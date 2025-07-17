@@ -1,9 +1,10 @@
 import math
+
 from ...selection import Selection
-from .common import isvaluable, Curve
+from .common import Curve, isvaluable
+
 
 class StepCurve(Curve):
-
     def __init__(self, context, t):
         self._context = context
         self._t = t
@@ -58,11 +59,14 @@ class StepCurve(Curve):
         self._x = x
         self._y = y
 
+
 def curve_step(context: Selection) -> Curve:
     return StepCurve(context, 0.5)
 
+
 def curve_step_before(context: Selection) -> Curve:
     return StepCurve(context, 0.0)
+
 
 def curve_step_after(context: Selection) -> Curve:
     return StepCurve(context, 1.0)

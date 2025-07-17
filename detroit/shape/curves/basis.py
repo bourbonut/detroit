@@ -1,6 +1,8 @@
 import math
-from .common import isvaluable, Curve
+
 from ...selection import Selection
+from .common import Curve, isvaluable
+
 
 class BezierTrait:
     def _bezier_curve_to(self, x, y):
@@ -13,8 +15,8 @@ class BezierTrait:
             (self._y0 + 4 * self._y1 + y) / 6,
         )
 
-class BasisCurve(Curve, BezierTrait):
 
+class BasisCurve(Curve, BezierTrait):
     def __init__(self, context):
         self._context = context
         self._line = math.nan
@@ -58,7 +60,9 @@ class BasisCurve(Curve, BezierTrait):
             self._point = 2
         elif self._point == 2:
             self._point = 3
-            self._context.line_to((5 * self._x0 + self._x1) / 6, (5 * self._y0 + self._y1) / 6)
+            self._context.line_to(
+                (5 * self._x0 + self._x1) / 6, (5 * self._y0 + self._y1) / 6
+            )
             self._bezier_curve_to(x, y)
         else:
             self._bezier_curve_to(x, y)

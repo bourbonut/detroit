@@ -1,13 +1,14 @@
-from .common import isvaluable, Curve
-from .cardinal_open import curve_cardinal_open
-from .catmull_rom import BezierTrait
+import math
+from collections.abc import Callable
+
 from ...selection import Selection
 from ...types import Number
-from collections.abc import Callable
-import math
+from .cardinal_open import curve_cardinal_open
+from .catmull_rom import BezierTrait
+from .common import Curve, isvaluable
+
 
 class CatmullRomOpenCurve(Curve, BezierTrait):
-
     def __init__(self, context, alpha):
         self._context = context
         self._alpha = alpha
@@ -73,13 +74,18 @@ class CatmullRomOpenCurve(Curve, BezierTrait):
         self._y1 = self._y2
         self._y2 = y
 
-def curve_catmull_rom_open(context_or_alpha: Selection | Number) -> Callable[[Selection], Curve] | Curve:
+
+def curve_catmull_rom_open(
+    context_or_alpha: Selection | Number,
+) -> Callable[[Selection], Curve] | Curve:
     if isinstance(context_or_alpha, (int, float)):
         alpha = context_or_alpha
         if alpha == 0.0:
             return curve_cardinal_open(0.0)
+
         def local_curve(context):
             return CatmullRomOpenCurve(context, alpha)
+
         return local_curve
     context = context_or_alpha
     return CatmullRomOpenCurve(context, 0.5)

@@ -1,9 +1,10 @@
-from .common import isvaluable, sign, fdiv, Curve
-from ...selection import Selection
 import math
 
-class HermiteInterpolation:
+from ...selection import Selection
+from .common import Curve, fdiv, isvaluable, sign
 
+
+class HermiteInterpolation:
     def _slope3(self, x2, y2):
         h0 = self._x1 - self._x0
         h1 = x2 - self._x1
@@ -25,10 +26,12 @@ class HermiteInterpolation:
         x1 = self._x1
         y1 = self._y1
         dx = (x1 - x0) / 3
-        self._context.bezier_curve_to(x0 + dx, y0 + dx * t0, x1 - dx, y1 - dx * t1, x1, y1)
+        self._context.bezier_curve_to(
+            x0 + dx, y0 + dx * t0, x1 - dx, y1 - dx * t1, x1, y1
+        )
+
 
 class Monotone(Curve, HermiteInterpolation):
-
     def __init__(self, context):
         self._context = context
         self._line = math.nan
@@ -90,8 +93,8 @@ class Monotone(Curve, HermiteInterpolation):
         self._y1 = y
         self._t0 = t1
 
-class ReflectContext:
 
+class ReflectContext:
     def __init__(self, context):
         self._context = context
 
@@ -107,13 +110,13 @@ class ReflectContext:
     def bezier_curve_to(self, x1, y1, x2, y2, x, y):
         self._context.bezier_curve_to(y1, x1, y2, x2, y, x)
 
-class MonotoneX(Monotone):
 
+class MonotoneX(Monotone):
     def __init__(self, context):
         Monotone.__init__(self, context)
 
-class MonotoneY(Monotone):
 
+class MonotoneY(Monotone):
     def __init__(self, context):
         Monotone.__init__(self, ReflectContext(context))
 
@@ -123,6 +126,7 @@ class MonotoneY(Monotone):
 
 def curve_monotone_x(context: Selection) -> Curve:
     return MonotoneX(context)
+
 
 def curve_monotone_y(context: Selection) -> Curve:
     return MonotoneY(context)

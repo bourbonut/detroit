@@ -1,9 +1,10 @@
-from .common import isvaluable, Curve
-from ...selection import Selection
 import math
 
-class NaturalCurve(Curve):
+from ...selection import Selection
+from .common import Curve, isvaluable
 
+
+class NaturalCurve(Curve):
     def __init__(self, context):
         self._context = context
         self._line = math.nan
@@ -38,7 +39,9 @@ class NaturalCurve(Curve):
                 py = control_points(y)
                 for i1 in range(1, n):
                     i0 = i1 - 1
-                    self._context.bezier_curve_to(px[0][i0], py[0][i0], px[1][i0], py[1][i0], x[i1], y[i1])
+                    self._context.bezier_curve_to(
+                        px[0][i0], py[0][i0], px[1][i0], py[1][i0], x[i1], y[i1]
+                    )
 
         if isvaluable(self._line) or (self._line != 0 and n == 1):
             self._context.close_path()
