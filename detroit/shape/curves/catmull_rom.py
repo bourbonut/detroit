@@ -99,7 +99,7 @@ def curve_catmull_rom(context_or_alpha):
     if isinstance(context_or_alpha, (int, float)):
         alpha = context_or_alpha
         if alpha == 0.0:
-            return curve_cardinal
+            return curve_cardinal(0.0)
         def local_curve(context):
             return CatmullRomCurve(context, alpha)
         return local_curve
