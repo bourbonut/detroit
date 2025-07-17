@@ -46,12 +46,12 @@ class CatmullRomCurve(BezierTrait):
         self._y1 = math.nan
         self._x2 = math.nan
         self._y2 = math.nan
-        self._l01_a = math.nan
-        self._l12_a = math.nan
-        self._l23_a = math.nan
-        self._l01_2a = math.nan
-        self._l12_2a = math.nan
-        self._l23_2a = math.nan
+        self._l01_a = 0
+        self._l12_a = 0
+        self._l23_a = 0
+        self._l01_2a = 0
+        self._l12_2a = 0
+        self._l23_2a = 0
         self._point = 0
 
     def line_end(self):
