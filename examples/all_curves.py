@@ -17,11 +17,11 @@ start_color = "#999999"
 prefix = "dark"
 
 # Uncomment these lines for light theme
-rect_color = "#d4d4d1"
-line_color = "#f8f8f8"
-font_color = curve_color = point_color = "black"
-start_color = "#303030"
-prefix = "light"
+# rect_color = "#d4d4d1"
+# line_color = "#f8f8f8"
+# font_color = curve_color = point_color = "black"
+# start_color = "#303030"
+# prefix = "light"
 
 curves = [
     ("basis", d3.curve_basis),
@@ -161,10 +161,7 @@ for name, curve, variable_name in parametric_curves:
     scaler = d3.scale_linear([0, legend_width], minmax)
     axis_scaler = d3.scale_linear(minmax, [0, legend_width])
 
-    legend = (
-        svg.append("g")
-        .attr("class", "legend")
-    )
+    legend = svg.append("g").attr("class", "legend")
 
     (
         legend.append("text")
@@ -176,7 +173,9 @@ for name, curve, variable_name in parametric_curves:
 
     (
         legend.append("g")
-        .attr("transform", f"translate({square_length * 0.4}, {3 * square_length // 4})")
+        .attr(
+            "transform", f"translate({square_length * 0.4}, {3 * square_length // 4})"
+        )
         .select_all("rect")
         .data(list(range(0, legend_width, 2)))
         .join("rect")
@@ -189,7 +188,9 @@ for name, curve, variable_name in parametric_curves:
 
     (
         legend.append("g")
-        .attr("transform", f"translate({square_length * 0.4}, {3 * square_length // 4})")
+        .attr(
+            "transform", f"translate({square_length * 0.4}, {3 * square_length // 4})"
+        )
         .call(
             d3.axis_bottom(axis_scaler)
             .set_ticks(k)
@@ -261,7 +262,13 @@ for name, curve, variable_name in parametric_curves:
         .select_all("path")
         .data(values)
         .join("path")
-        .attr("d", lambda d: d3.line().curve(curve(d)).x(lambda d: x(d[0])).y(lambda d: y(d[1]))(points))
+        .attr(
+            "d",
+            lambda d: d3.line()
+            .curve(curve(d))
+            .x(lambda d: x(d[0]))
+            .y(lambda d: y(d[1]))(points),
+        )
         .attr("stroke", lambda d: color(d))
         .attr("fill", "none")
     )
