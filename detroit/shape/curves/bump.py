@@ -58,6 +58,12 @@ class BumpRadialCurve(Curve):
         self._x0 = math.nan
         self._y0 = math.nan
 
+    def area_start(self):
+        return
+
+    def area_end(self):
+        return
+
     def line_start(self):
         self._point = 0
 

@@ -42,7 +42,7 @@ class StepCurve(Curve):
         elif self._point == 1:
             self._point = 2
             if self._t <= 0:
-                self._context.line_to(self.x, y)
+                self._context.line_to(self._x, y)
                 self._context.line_to(x, y)
             else:
                 x1 = self._x * (1 - self._t) + x * self._t
@@ -50,7 +50,7 @@ class StepCurve(Curve):
                 self._context.line_to(x1, y)
         else:
             if self._t <= 0:
-                self._context.line_to(self.x, y)
+                self._context.line_to(self._x, y)
                 self._context.line_to(x, y)
             else:
                 x1 = self._x * (1 - self._t) + x * self._t

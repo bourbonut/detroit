@@ -14,18 +14,19 @@ rect_color = "#2b2b2e"
 line_color = "#202020"
 font_color = curve_color = point_color = "white"
 start_color = "#999999"
+prefix = "dark"
 
-# Uncomment these lines for white theme
+# Uncomment these lines for light theme
 rect_color = "#d4d4d1"
 line_color = "#f8f8f8"
 font_color = curve_color = point_color = "black"
 start_color = "#303030"
+prefix = "light"
 
 curves = [
     ("basis", d3.curve_basis),
     ("basis_closed", d3.curve_basis_closed),
     ("basis_open", d3.curve_basis_open),
-    ("bump_radial", d3.curve_bump_radial),
     ("bump_x", d3.curve_bump_x),
     ("bump_y", d3.curve_bump_y),
     ("linear", d3.curve_linear),
@@ -62,7 +63,9 @@ points = [
     [38, 2],
 ]
 
-for name, curve in curves[:1]:
+# Curves
+
+for name, curve in curves:
     svg = (
         d3.create("svg")
         .attr("width", width)
@@ -132,19 +135,22 @@ for name, curve in curves[:1]:
         .attr("fill", "none")
     )
 
-    with open(f"curve_{name}.svg", "w") as file:
+    with open(f"{prefix}_curve_{name}.svg", "w") as file:
         file.write(str(svg))
+
+# Parametric curves
 
 k = 4
 values = [i / k for i in range(k + 1)]
 rect_size = 2
 
-for name, curve, variable_name in parametric_curves[:1]:
+for name, curve, variable_name in parametric_curves:
+    offset_height = 80 if name == "catmull_rom_closed" else 0
     svg = (
         d3.create("svg")
         .attr("width", width)
-        .attr("height", legend_height + height)
-        .attr("viewBox", f"0 0 {width} {legend_height + height}")
+        .attr("height", legend_height + height + offset_height)
+        .attr("viewBox", f"0 0 {width} {legend_height + height + offset_height}")
     )
 
     x = d3.scale_linear([0, x_max], [margin_left, width - margin_right])
@@ -260,5 +266,5 @@ for name, curve, variable_name in parametric_curves[:1]:
         .attr("fill", "none")
     )
 
-    with open(f"curve_{name}.svg", "w") as file:
+    with open(f"{prefix}_curve_{name}.svg", "w") as file:
         file.write(str(svg))
