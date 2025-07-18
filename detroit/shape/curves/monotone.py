@@ -142,6 +142,36 @@ def curve_monotone_x(context: Selection) -> Curve:
     -------
     Curve
         Curve object
+
+    Examples
+    --------
+
+    >>> points = [
+    ...     [2, 2],
+    ...     [6, 8],
+    ...     [10, 10],
+    ...     [12, 10],
+    ...     [14, 4],
+    ...     [20, 4],
+    ...     [24, 8],
+    ...     [29, 6],
+    ...     [32, 4],
+    ...     [35, 5],
+    ...     [38, 2],
+    ... ]
+    >>> line = d3.line().curve(d3.curve_monotone_x)
+    >>> line(points)
+    'M2,2C3.333,4.333,4.667,6.667,6,8C7.333,9.333,8.667,10,10,10C10.667,10,11.333,10,12,10C12.667,10,13.333,4,14,4C16,4,18,4,20,4C21.333,4,22.667,8,24,8C25.667,8,27.333,6.944,29,6C30,5.433,31,4,32,4C33,4,34,5,35,5C36,5,37,3.500,38,2'
+
+    **Result**
+
+    .. image:: ../../figures/light_curve_monotone_x.svg
+       :align: center
+       :class: only-light
+
+    .. image:: ../../figures/dark_curve_monotone_x.svg
+       :align: center
+       :class: only-dark
     """
     return MonotoneX(context)
 
@@ -164,5 +194,35 @@ def curve_monotone_y(context: Selection) -> Curve:
     -------
     Curve
         Curve object
+
+    Examples
+    --------
+
+    >>> points = [
+    ...     [2, 2],
+    ...     [6, 8],
+    ...     [10, 10],
+    ...     [12, 10],
+    ...     [14, 4],
+    ...     [20, 4],
+    ...     [24, 8],
+    ...     [29, 6],
+    ...     [32, 4],
+    ...     [35, 5],
+    ...     [38, 2],
+    ... ]
+    >>> line = d3.line().curve(d3.curve_monotone_y)
+    >>> line(points)
+    'M2,2C2.667,4,3.333,6,6,8C6.889,8.667,7.333,9.333,10,10C10,10,12,10,12,10C13.333,8,12.667,6,14,4C14,4,20,4,20,4C22.667,5.333,26.667,6.667,24,8C25.333,7.333,30.333,6.667,29,6C27.667,5.333,30,4.667,32,4C31,4.333,35.667,4.667,35,5C37,4,37.500,3,38,2'
+
+    **Result**
+
+    .. image:: ../../figures/light_curve_monotone_y.svg
+       :align: center
+       :class: only-light
+
+    .. image:: ../../figures/dark_curve_monotone_y.svg
+       :align: center
+       :class: only-dark
     """
     return MonotoneY(context)

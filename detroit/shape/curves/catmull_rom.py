@@ -126,6 +126,38 @@ def curve_catmull_rom(
     Callable[[Selection], Curve] | Curve
         Curve object or function which makes a curve object with alpha value
         set
+
+    Examples
+    --------
+
+    >>> points = [
+    ...     [2, 2],
+    ...     [6, 8],
+    ...     [10, 10],
+    ...     [12, 10],
+    ...     [14, 4],
+    ...     [20, 4],
+    ...     [24, 8],
+    ...     [29, 6],
+    ...     [32, 4],
+    ...     [35, 5],
+    ...     [38, 2],
+    ... ]
+    >>> line(points)
+    'M2,2C2,2,4.465,6.645,6,8C7.209,9.067,8.868,9.733,10,10C10.757,10.179,11.438,10.405,12,10C12.999,9.280,12.631,4.987,14,4C15.334,3.039,18.318,3.303,20,4C21.633,4.676,22.477,7.687,24,8C25.486,8.305,27.578,6.748,29,6C30.164,5.388,30.965,4.139,32,4C32.969,3.870,34.063,5.221,35,5C36.085,4.744,38,2,38,2'
+    >>> line = d3.line().curve(d3.curve_catmull_rom(0.2))
+    >>> line(points)
+    'M2,2C2,2,4.597,6.663,6,8C7.275,9.215,8.964,9.693,10,10C10.882,10.261,11.394,10.703,12,10C12.763,9.115,12.653,4.995,14,4C15.333,3.016,18.327,3.321,20,4C21.653,4.671,22.491,7.675,24,8C25.494,8.322,27.637,6.696,29,6C30.258,5.358,30.987,4.156,32,4C32.987,3.848,34.028,5.286,35,5C36.031,4.697,38,2,38,2'
+
+    **Result**
+
+    .. image:: ../../figures/light_curve_catmull_rom.svg
+       :align: center
+       :class: only-light
+
+    .. image:: ../../figures/dark_curve_catmull_rom.svg
+       :align: center
+       :class: only-dark
     """
     if isinstance(context_or_alpha, (int, float)):
         alpha = context_or_alpha

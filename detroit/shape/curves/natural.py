@@ -99,5 +99,35 @@ def curve_natural(context: Selection) -> Curve:
     -------
     Curve
         Curve object
+
+    Examples
+    --------
+
+    >>> points = [
+    ...     [2, 2],
+    ...     [6, 8],
+    ...     [10, 10],
+    ...     [12, 10],
+    ...     [14, 4],
+    ...     [20, 4],
+    ...     [24, 8],
+    ...     [29, 6],
+    ...     [32, 4],
+    ...     [35, 5],
+    ...     [38, 2],
+    ... ]
+    >>> line = d3.line().curve(d3.curve_natural)
+    >>> line(points)
+    'M2,2C3.293,4.356,4.587,6.711,6,8C7.413,9.289,8.946,9.511,10,10C11.054,10.489,11.630,11.247,12,10C12.370,8.753,12.535,5.503,14,4C15.465,2.497,18.230,2.742,20,4C21.770,5.258,22.546,7.531,24,8C25.454,8.469,27.586,7.136,29,6C30.414,4.864,31.112,3.925,32,4C32.888,4.075,33.968,5.164,35,5C36.032,4.836,37.016,3.418,38,2'
+
+    **Result**
+
+    .. image:: ../../figures/light_curve_natural.svg
+       :align: center
+       :class: only-light
+
+    .. image:: ../../figures/dark_curve_natural.svg
+       :align: center
+       :class: only-dark
     """
     return NaturalCurve(context)

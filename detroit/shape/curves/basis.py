@@ -89,5 +89,35 @@ def curve_basis(context: Selection) -> Curve:
     -------
     Curve
         Curve object
+
+    Examples
+    --------
+
+    >>> points = [
+    ...     [2, 2],
+    ...     [6, 8],
+    ...     [10, 10],
+    ...     [12, 10],
+    ...     [14, 4],
+    ...     [20, 4],
+    ...     [24, 8],
+    ...     [29, 6],
+    ...     [32, 4],
+    ...     [35, 5],
+    ...     [38, 2],
+    ... ]
+    >>> line = d3.line().curve(d3.curve_basis)
+    >>> line(points)
+    'M2,2L2.667,3C3.333,4,4.667,6,6,7.333C7.333,8.667,8.667,9.333,9.667,9.667C10.667,10,11.333,10,12,9C12.667,8,13.333,6,14.667,5C16,4,18,4,19.667,4.667C21.333,5.333,22.667,6.667,24.167,7C25.667,7.333,27.333,6.667,28.667,6C30,5.333,31,4.667,32,4.500C33,4.333,34,4.667,35,4.333C36,4,37,3,37.500,2.500L38,2'
+
+    **Result**
+
+    .. image:: ../../figures/light_curve_basis.svg
+       :align: center
+       :class: only-light
+
+    .. image:: ../../figures/dark_curve_basis.svg
+       :align: center
+       :class: only-dark
     """
     return BasisCurve(context)
