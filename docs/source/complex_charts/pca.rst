@@ -153,7 +153,10 @@ Principal Component Analysis on MNIST dataset
 
    (
        legend.append("g")
-       .attr("transform", lambda _, i: f"translate({i * offset + margin.left - symbol_size * 4}, {30 - symbol_size * 1.5})")
+       .attr(
+           "transform",
+           lambda _, i: f"translate({i * offset + margin.left - symbol_size * 4}, {30 - symbol_size * 1.5})"
+       )
        .append("path")
        .attr("d", lambda d: d3.symbol(symbol_type(d))())
        .style("stroke-width", 1.5)

@@ -114,7 +114,11 @@ legend = svg.select_all("legend").data(labels.to_list()).enter().append("g")
 
 (
     legend.append("g")
-    .attr("transform", lambda _, i: f"translate({i * offset + margin.left - symbol_size * 4}, {30 - symbol_size * 1.5})")
+    .attr(
+        "transform",
+        lambda _,
+        i: f"translate({i * offset + margin.left - symbol_size * 4}, {30 - symbol_size * 1.5})",
+    )
     .append("path")
     .attr("d", lambda d: d3.symbol(symbol_type(d))())
     .style("stroke-width", 1.5)
@@ -127,7 +131,7 @@ legend = svg.select_all("legend").data(labels.to_list()).enter().append("g")
     .attr("x", lambda _, i: i * offset + margin.left)
     .attr("y", 30)
     .text(lambda d: str(d))
-    .style("fill", "black") # change "black" to "white" for white text
+    .style("fill", "black")  # change "black" to "white" for white text
     .style("font-size", 15)
 )
 
