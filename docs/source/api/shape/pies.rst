@@ -6,9 +6,9 @@ Pies
 .. autoclass:: detroit.shape.pie.Pie
 
    .. automethod:: __call__
-   .. automethod:: value
-   .. automethod:: sort_values
-   .. automethod:: sort
-   .. automethod:: start_angle
-   .. automethod:: end_angle
-   .. automethod:: pad_angle
+   .. automethod:: set_value
+   .. automethod:: set_sort_values
+   .. automethod:: set_sort
+   .. automethod:: set_start_angle
+   .. automethod:: set_end_angle
+   .. automethod:: set_pad_angle

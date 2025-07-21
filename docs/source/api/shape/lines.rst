@@ -8,6 +8,6 @@ Lines
    .. automethod:: __call__
    .. automethod:: x
    .. automethod:: y
-   .. automethod:: defined
-   .. automethod:: curve
-   .. automethod:: context
+   .. automethod:: set_defined
+   .. automethod:: set_curve
+   .. automethod:: set_context

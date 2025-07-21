@@ -14,7 +14,6 @@ Pie chart
 .. code:: python
 
    # Source : https://observablehq.com/@d3/donut-chart/2
-   from collections import namedtuple
    import polars as pl # for data manipulation
    import detroit as d3
 
@@ -56,7 +55,7 @@ Pie chart
    arc = d3.arc().set_inner_radius(radius * 0.67).set_outer_radius(radius - 1)
 
    # Declare pie generator with its dimensions.
-   pie = d3.pie().pad_angle(1 / radius).sort(None).value(lambda d: d[1])
+   pie = d3.pie().set_pad_angle(1 / radius).set_sort(None).set_value(lambda d: d[1])
 
    # Declare color scale.
    color = (
@@ -64,7 +63,8 @@ Pie chart
        .set_domain(data["name"].to_list())
        .set_range(
            d3.quantize(
-               lambda t: d3.interpolate_spectral(t * 0.8 + 0.1), data.height
+               lambda t: d3.interpolate_spectral(t * 0.8 + 0.1),
+               data.height,
            )[::-1]
        )
    )
@@ -100,7 +100,9 @@ Pie chart
        .data(pie(data.iter_rows()))
        .join("g")
        # .attr("fill", "white") # white text
-       .attr("transform", lambda d: f"translate({arc.centroid(d)[0]}, {arc.centroid(d)[1]})")
+       .attr(
+            "transform", lambda d: f"translate({arc.centroid(d)[0]}, {arc.centroid(d)[1]})"
+       )
        .call(
            lambda g: (
                g.append("text")

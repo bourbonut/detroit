@@ -12,6 +12,11 @@ Areas
    .. automethod:: y
    .. automethod:: y0
    .. automethod:: y1
-   .. automethod:: defined
-   .. automethod:: curve
-   .. automethod:: context
+   .. automethod:: area_line
+   .. automethod:: line_x0
+   .. automethod:: line_y0
+   .. automethod:: line_x1
+   .. automethod:: line_y1
+   .. automethod:: set_defined
+   .. automethod:: set_curve
+   .. automethod:: set_context

@@ -124,7 +124,7 @@ for name, curve in curves:
         .attr("fill", "none")
     )
 
-    line = d3.line().curve(curve).x(lambda d: x(d[0])).y(lambda d: y(d[1]))
+    line = d3.line().set_curve(curve).x(lambda d: x(d[0])).y(lambda d: y(d[1]))
 
     (
         svg.append("g")
@@ -265,7 +265,7 @@ for name, curve, variable_name in parametric_curves:
         .attr(
             "d",
             lambda d: d3.line()
-            .curve(curve(d))
+            .set_curve(curve(d))
             .x(lambda d: x(d[0]))
             .y(lambda d: y(d[1]))(points),
         )
