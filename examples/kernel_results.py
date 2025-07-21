@@ -8,6 +8,21 @@ margin_right = 50
 margin_bottom = 10
 margin_left = 120
 
+color = "black"
+reverse_color = "white"
+
+
+def change_color(color):
+    return color.brighter(1.5)
+
+
+# Uncomment these lines for white color
+# color = "#cfd0d0"
+# reverse_color = "#202020"
+# def change_color(color):
+#     return color.darker(1.5)
+
+# Data
 numba = [
     (97.52, "macroscopic"),
     (93.8, "equilibrium"),
@@ -29,6 +44,7 @@ cupy = [
     (5.84, "outflow"),
 ]
 
+# Initialize the content of the SVG
 svg = (
     d3.create("svg")
     .attr("width", width)
@@ -38,13 +54,16 @@ svg = (
     .style("height", "auto")
 )
 
+# Make a x scaler
 access = itemgetter(0)
 x_max = max(max(map(access, cupy)), max(map(access, numba)))
 x = d3.scale_linear([0, x_max], [margin_left, width - margin_right])
 
+# Make a y scaler
 domain = reversed(list(map(itemgetter(1), numba)))
 y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
 
+# Append horizontal bars
 (
     svg.append("g")
     .select_all()
@@ -54,7 +73,7 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .attr("y", lambda d: y(d[1]) + y.get_bandwidth() * 0.1)
     .attr("width", lambda d: x(d[0]) - x(0))
     .attr("height", y.get_bandwidth())
-    .attr("fill", d3.hsl("blue").brighter(1.5))
+    .attr("fill", change_color(d3.hsl("blue")))  # check change_color
     .attr("stroke", "blue")
 )
 
@@ -68,10 +87,11 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .attr("y", lambda d: y(d[1]) - y.get_bandwidth() * 1.1)
     .attr("width", lambda d: x(d[0]) - x(0))
     .attr("height", y.get_bandwidth())
-    .attr("fill", d3.hsl("red").brighter(1.5))
+    .attr("fill", change_color(d3.hsl("red")))  # check change_color
     .attr("stroke", "red")
 )
 
+# Append text values on right side of bars
 
 (
     svg.append("g")
@@ -97,13 +117,18 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .text(lambda d: str(d[0]))
 )
 
+# Append y labels on left side of the chart
+
 (
     svg.append("g")
     .attr("transform", f"translate({margin_left}, 0)")
     .call(d3.axis_left(y).set_tick_size(0).set_tick_padding(8))
     .call(lambda g: g.select(".domain").remove())
     .attr("font-size", "14px")
+    .call(lambda g: g.select_all("text").attr("fill", color))
 )
+
+# Make a legend
 
 g = svg.append("g").attr("transform", f"translate({width * 0.75}, 10)")
 
@@ -113,8 +138,8 @@ g = svg.append("g").attr("transform", f"translate({width * 0.75}, 10)")
     .attr("y", -5)
     .attr("width", 75)
     .attr("height", 42)
-    .attr("fill", "white")
-    .attr("stroke", "black")
+    .attr("fill", reverse_color)
+    .attr("stroke", color)
 )
 
 (
@@ -123,7 +148,7 @@ g = svg.append("g").attr("transform", f"translate({width * 0.75}, 10)")
     .attr("y", 0)
     .attr("width", 10)
     .attr("height", 10)
-    .attr("fill", d3.hsl("blue").brighter(1.5))
+    .attr("fill", change_color(d3.hsl("blue")))
     .attr("stroke", "blue")
 )
 
@@ -133,12 +158,14 @@ g = svg.append("g").attr("transform", f"translate({width * 0.75}, 10)")
     .attr("y", 20)
     .attr("width", 10)
     .attr("height", 10)
-    .attr("fill", d3.hsl("red").brighter(1.5))
+    .attr("fill", change_color(d3.hsl("red")))
     .attr("stroke", "red")
 )
 
-g.append("text").attr("x", 15).attr("y", 10).text("Numba")
-g.append("text").attr("x", 15).attr("y", 30).text("Cupy")
+g.append("text").attr("x", 15).attr("y", 10).attr("fill", color).text("Numba")
+g.append("text").attr("x", 15).attr("y", 30).attr("fill", color).text("Cupy")
+
+# Save the SVG content
 
 with open("kernel_results.svg", "w") as file:
     file.write(str(svg))
