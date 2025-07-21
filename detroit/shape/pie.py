@@ -2,7 +2,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
 from inspect import signature
 from math import pi
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from ..types import Accessor, Number, T
 from .constant import constant
@@ -40,7 +40,7 @@ class Pie(Generic[T]):
         self._end_angle = constant(2 * pi)
         self._pad_angle = constant(0)
 
-    def __call__(self, data: Iterable[T], *args: Any) -> list[dict]:
+    def __call__(self, data: Iterable[T], *args) -> list[dict]:
         """
         Generates a pie for the given array of data, returning an array of
         objects representing each datum's arc angles.
@@ -120,7 +120,7 @@ class Pie(Generic[T]):
 
         return arcs
 
-    def value(self, value: Accessor[T, float] | Number) -> TPie:
+    def set_value(self, value: Accessor[T, float] | Number) -> TPie:
         """
         If value is specified, sets the value accessor to the
         specified function or number and returns this pie generator.
@@ -141,7 +141,7 @@ class Pie(Generic[T]):
             self._value = constant(value)
         return self
 
-    def sort_values(self, sort_values: Callable[[float], float]) -> TPie:
+    def set_sort_values(self, sort_values: Callable[[float], float]) -> TPie:
         """
         If sort_values is specified, sets the value comparator to
         the specified function and returns this pie generator.
@@ -160,7 +160,7 @@ class Pie(Generic[T]):
         self._sort = None
         return self
 
-    def sort(self, sort: Callable[[float], float]) -> TPie:
+    def set_sort(self, sort: Callable[[float], float]) -> TPie:
         """
         If sort is specified, sets the data comparator to
         the specified function and returns this pie generator.
@@ -179,14 +179,14 @@ class Pie(Generic[T]):
         self._sort_values = None
         return self
 
-    def start_angle(self, start_angle: Callable[[Any], float] | Number) -> TPie:
+    def set_start_angle(self, start_angle: Callable[..., float] | Number) -> TPie:
         """
         If start_angle is specified, sets the overall start angle of the
         pie to the specified function or number and returns this pie generator.
 
         Parameters
         ----------
-        start_value : Callable[[Any, float]] | Number
+        start_value : Callable[[..., float]] | Number
             Start angle input
 
         Returns
@@ -200,7 +200,7 @@ class Pie(Generic[T]):
             self._start_angle = constant(start_angle)
         return self
 
-    def end_angle(self, end_angle: Callable[[Any], float] | Number) -> TPie:
+    def set_end_angle(self, end_angle: Callable[..., float] | Number) -> TPie:
         """
         If end_angle is specified, sets the overall end angle
         of the pie to the specified function or number and
@@ -208,7 +208,7 @@ class Pie(Generic[T]):
 
         Parameters
         ----------
-        end_angle : Callable[[Any], float] | Number
+        end_angle : Callable[..., float] | Number
             End angle input
 
         Returns
@@ -222,7 +222,7 @@ class Pie(Generic[T]):
             self._end_angle = constant(end_angle)
         return self
 
-    def pad_angle(self, pad_angle: Callable[[Any], float] | Number) -> TPie:
+    def set_pad_angle(self, pad_angle: Callable[..., float] | Number) -> TPie:
         """
         If pad_angle is specified, sets the pad angle to
         the specified function or number and returns this
@@ -230,7 +230,7 @@ class Pie(Generic[T]):
 
         Parameters
         ----------
-        pad_angle : Callable[[Any], float] | Number
+        pad_angle : Callable[..., float] | Number
             Pad angle input
 
         Returns
@@ -243,3 +243,21 @@ class Pie(Generic[T]):
         else:
             self._pad_angle = constant(pad_angle)
         return self
+
+    def get_value(self) -> Accessor[T, float]:
+        return self._value
+
+    def get_sort(self) -> Callable[[float], float]:
+        return self._sort
+
+    def get_sort_values(self) -> Callable[[float], float]:
+        return self._sort_values
+
+    def get_start_angle(self) -> Callable[..., float]:
+        return self._start_angle
+
+    def get_end_angle(self) -> Callable[..., float]:
+        return self._end_angle
+
+    def get_pad_angle(self) -> Callable[..., float]:
+        return self._pad_angle

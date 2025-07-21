@@ -2,7 +2,7 @@ import detroit as d3
 
 
 def test_catmull_rom_1():
-    line = d3.line().curve(d3.curve_catmull_rom)
+    line = d3.line().set_curve(d3.curve_catmull_rom)
     assert line([]) is None
     assert line([[0, 1]]) == "M0,1Z"
     assert line([[0, 1], [1, 3]]) == "M0,1L1,3"
@@ -14,7 +14,7 @@ def test_catmull_rom_1():
 
 
 def test_catmull_rom_2():
-    line = d3.line().curve(d3.curve_catmull_rom(1))
+    line = d3.line().set_curve(d3.curve_catmull_rom(1))
     assert line([]) is None
     assert line([[0, 1]]) == "M0,1Z"
     assert line([[0, 1], [1, 3]]) == "M0,1L1,3"
@@ -26,21 +26,21 @@ def test_catmull_rom_2():
 
 
 def test_catmull_rom_3():
-    line = d3.line().curve(d3.curve_catmull_rom(0.5))
-    assert d3.line().curve(d3.curve_catmull_rom)(
+    line = d3.line().set_curve(d3.curve_catmull_rom(0.5))
+    assert d3.line().set_curve(d3.curve_catmull_rom)(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == line([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_catmull_rom_4():
-    line = d3.line().curve(d3.curve_catmull_rom(0.5))
-    assert d3.line().curve(d3.curve_catmull_rom(0.5))(
+    line = d3.line().set_curve(d3.curve_catmull_rom(0.5))
+    assert d3.line().set_curve(d3.curve_catmull_rom(0.5))(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == line([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_catmull_rom_5():
-    a = d3.area().curve(d3.curve_catmull_rom(0))
+    a = d3.area().set_curve(d3.curve_catmull_rom(0))
     assert a([]) is None
     assert a([[0, 1]]) == "M0,1L0,0Z"
     assert a([[0, 1], [1, 3]]) == "M0,1L1,3L1,0L0,0Z"
@@ -55,14 +55,14 @@ def test_catmull_rom_5():
 
 
 def test_catmull_rom_6():
-    area = d3.area().curve(d3.curve_catmull_rom(0.5))
-    assert d3.area().curve(d3.curve_catmull_rom)(
+    area = d3.area().set_curve(d3.curve_catmull_rom(0.5))
+    assert d3.area().set_curve(d3.curve_catmull_rom)(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == area([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_catmull_rom_7():
-    area = d3.area().curve(d3.curve_catmull_rom(0.5))
-    assert d3.area().curve(d3.curve_catmull_rom(0.5))(
+    area = d3.area().set_curve(d3.curve_catmull_rom(0.5))
+    assert d3.area().set_curve(d3.curve_catmull_rom(0.5))(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == area([[0, 1], [1, 3], [2, 1], [3, 3]])

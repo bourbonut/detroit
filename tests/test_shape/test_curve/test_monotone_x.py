@@ -2,7 +2,7 @@ import detroit as d3
 
 
 def test_monotone_x_1():
-    line = d3.line().curve(d3.curve_monotone_x)
+    line = d3.line().set_curve(d3.curve_monotone_x)
     assert line([]) is None
     assert line([[0, 1]]) == "M0,1Z"
     assert line([[0, 1], [1, 3]]) == "M0,1L1,3"
@@ -16,7 +16,7 @@ def test_monotone_x_1():
 
 
 def test_monotone_x_2():
-    line = d3.line().curve(d3.curve_monotone_x)
+    line = d3.line().set_curve(d3.curve_monotone_x)
     assert (
         line([[0, 200], [100, 100], [200, 100], [300, 300], [400, 300]])
         == "M0,200C33.333,150,66.667,100,100,100C133.333,100,166.667,100,200,100C233.333,100,266.667,300,300,300C333.333,300,366.667,300,400,300"
@@ -24,7 +24,7 @@ def test_monotone_x_2():
 
 
 def test_monotone_x_3():
-    line = d3.line().curve(d3.curve_monotone_x)
+    line = d3.line().set_curve(d3.curve_monotone_x)
     assert (
         line([[0, 200], [0, 100], [100, 100], [200, 0]])
         == "M0,200C0,200,0,100,0,100C33.333,100,66.667,100,100,100C133.333,100,166.667,50,200,0"
@@ -40,7 +40,7 @@ def test_monotone_x_3():
 
 
 def test_monotone_x_4():
-    line = d3.line().curve(d3.curve_monotone_x)
+    line = d3.line().set_curve(d3.curve_monotone_x)
     assert (
         line([[0, 200], [100, 150], [100, 50], [200, 0]])
         == "M0,200C33.333,191.667,66.667,183.333,100,150C100,150,100,50,100,50C133.333,16.667,166.667,8.333,200,0"
@@ -52,7 +52,7 @@ def test_monotone_x_4():
 
 
 def test_monotone_x_5():
-    line = d3.line().curve(d3.curve_monotone_x)
+    line = d3.line().set_curve(d3.curve_monotone_x)
     p = line([[0, 200], [50, 200], [100, 100], [150, 0], [200, 0]])
     assert line([[0, 200], [0, 200], [50, 200], [100, 100], [150, 0], [200, 0]]) == p
     assert line([[0, 200], [50, 200], [50, 200], [100, 100], [150, 0], [200, 0]]) == p
@@ -62,7 +62,7 @@ def test_monotone_x_5():
 
 
 def test_monotone_x_6():
-    area = d3.area().curve(d3.curve_monotone_x)
+    area = d3.area().set_curve(d3.curve_monotone_x)
     assert area([]) is None
     assert area([[0, 1]]) == "M0,1L0,0Z"
     assert area([[0, 1], [1, 3]]) == "M0,1L1,3L1,0L0,0Z"

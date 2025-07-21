@@ -2,7 +2,7 @@ import detroit as d3
 
 
 def test_basis_open_1():
-    line = d3.line().curve(d3.curve_basis_open)
+    line = d3.line().set_curve(d3.curve_basis_open)
     assert line([]) is None
     assert line([[0, 0]]) is None
     assert line([[0, 0], [0, 10]]) is None
@@ -18,7 +18,7 @@ def test_basis_open_1():
 
 
 def test_basis_open_2():
-    area = d3.area().curve(d3.curve_basis_open)
+    area = d3.area().set_curve(d3.curve_basis_open)
     assert area([]) is None
     assert area([[0, 1]]) is None
     assert area([[0, 1], [1, 3]]) is None

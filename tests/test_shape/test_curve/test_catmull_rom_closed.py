@@ -2,7 +2,7 @@ import detroit as d3
 
 
 def test_catmull_rom_closed_1():
-    line = d3.line().curve(d3.curve_catmull_rom_closed)
+    line = d3.line().set_curve(d3.curve_catmull_rom_closed)
     assert line([]) is None
     assert line([[0, 1]]) == "M0,1Z"
     assert line([[0, 1], [1, 3]]) == "M1,3L0,1Z"
@@ -17,7 +17,7 @@ def test_catmull_rom_closed_1():
 
 
 def test_catmull_rom_closed_2():
-    line = d3.line().curve(d3.curve_catmull_rom_closed(0))
+    line = d3.line().set_curve(d3.curve_catmull_rom_closed(0))
     assert line([]) is None
     assert line([[0, 1]]) == "M0,1Z"
     assert line([[0, 1], [1, 3]]) == "M1,3L0,1Z"
@@ -32,7 +32,7 @@ def test_catmull_rom_closed_2():
 
 
 def test_catmull_rom_closed_3():
-    line = d3.line().curve(d3.curve_catmull_rom_closed(1))
+    line = d3.line().set_curve(d3.curve_catmull_rom_closed(1))
     assert line([]) is None
     assert line([[0, 1]]) == "M0,1Z"
     assert line([[0, 1], [1, 3]]) == "M1,3L0,1Z"
@@ -47,21 +47,21 @@ def test_catmull_rom_closed_3():
 
 
 def test_catmull_rom_closed_4():
-    line = d3.line().curve(d3.curve_catmull_rom_closed(0.5))
-    assert d3.line().curve(d3.curve_catmull_rom_closed)(
+    line = d3.line().set_curve(d3.curve_catmull_rom_closed(0.5))
+    assert d3.line().set_curve(d3.curve_catmull_rom_closed)(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == line([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_catmull_rom_closed_5():
-    line = d3.line().curve(d3.curve_catmull_rom_closed(0.5))
-    assert d3.line().curve(d3.curve_catmull_rom_closed(0.5))(
+    line = d3.line().set_curve(d3.curve_catmull_rom_closed(0.5))
+    assert d3.line().set_curve(d3.curve_catmull_rom_closed(0.5))(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == line([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_catmull_rom_closed_6():
-    area = d3.area().curve(d3.curve_catmull_rom_closed(0.5))
-    assert d3.area().curve(d3.curve_catmull_rom_closed(0.5))(
+    area = d3.area().set_curve(d3.curve_catmull_rom_closed(0.5))
+    assert d3.area().set_curve(d3.curve_catmull_rom_closed(0.5))(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
     ) == area([[0, 1], [1, 3], [2, 1], [3, 3]])

@@ -124,10 +124,6 @@ class Line(Generic[T], WithPath):
             self._x = constant(x)
         return self
 
-    @property
-    def fx(self):
-        return self._x
-
     def y(self, y: Accessor[T, float] | Number) -> TLine:
         """
         Sets y accessor function
@@ -148,11 +144,7 @@ class Line(Generic[T], WithPath):
             self._y = constant(y)
         return self
 
-    @property
-    def fy(self):
-        return self._y
-
-    def defined(self, defined: Accessor[T, float] | Number) -> TLine:
+    def set_defined(self, defined: Accessor[T, bool] | Number) -> TLine:
         """
         Sets defined accessor
 
@@ -168,7 +160,7 @@ class Line(Generic[T], WithPath):
 
         Parameters
         ----------
-        defined : Accessor[T, float] | Number
+        defined : Accessor[T, bool] | Number
             defined accessor function
 
         Returns
@@ -184,11 +176,7 @@ class Line(Generic[T], WithPath):
             self._defined = constant(bool(defined))
         return self
 
-    @property
-    def accessor_defined(self):
-        return self._defined
-
-    def curve(self, curve: Callable[[Selection], Curve] | None = None) -> TLine:
+    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> TLine:
         """
         Sets curve factory.
 
@@ -207,11 +195,7 @@ class Line(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    @property
-    def fcurve(self):
-        return self._curve
-
-    def context(self, context: Selection | None = None) -> TLine:
+    def set_context(self, context: Selection | None = None) -> TLine:
         """
         Sets the context.
 
@@ -233,6 +217,17 @@ class Line(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    @property
-    def own_context(self):
+    def get_x(self) -> Accessor[T, float]:
+        return self._x
+
+    def get_y(self) -> Accessor[T, float]:
+        return self._y
+
+    def get_defined(self) -> Accessor[T, bool]:
+        return self._defined
+
+    def get_curve(self) -> Callable[[Selection], Curve]:
+        return self._curve
+
+    def get_context(self) -> Selection:
         return self._context

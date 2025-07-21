@@ -8,11 +8,11 @@ from detroit.shape.curves.linear import curve_linear
 
 def test_line_1():
     l = d3.line()
-    assert l.fx([42, 34]) == 42
-    assert l.fy([42, 34]) == 34
-    assert l.accessor_defined([42, 34]) is True
-    assert l.fcurve == curve_linear
-    assert l.own_context is None
+    assert l.get_x()([42, 34]) == 42
+    assert l.get_y()([42, 34]) == 34
+    assert l.get_defined()([42, 34]) is True
+    assert l.get_curve() == curve_linear
+    assert l.get_context() is None
     assert str(l([[0, 1], [2, 3], [4, 5]])) == "M0,1L2,3L4,5"
 
 
@@ -23,10 +23,10 @@ def test_line_2():
     def y(*args):
         return
 
-    assert d3.line(x).fx == x
-    assert d3.line(x, y).fy == y
-    assert d3.line(3, 2).fx("aa") == 3
-    assert d3.line(3, 2).fy("aa") == 2
+    assert d3.line(x).get_x() == x
+    assert d3.line(x, y).get_y() == y
+    assert d3.line(3, 2).get_x()("aa") == 3
+    assert d3.line(3, 2).get_y()("aa") == 2
 
 
 def test_line_3():
@@ -55,8 +55,9 @@ def test_line_4():
         actual.append(list(args))
         return True
 
-    c = lambda d, i, data: 0
-    d3.line().x(c).y(c).defined(f)(data)
+    def c(d, i, data):
+        return 0
+    d3.line().x(c).y(c).set_defined(f)(data)
     assert actual == [["a", 0, data], ["b", 1, data]]
 
 
@@ -86,9 +87,8 @@ def test_line_8():
     assert str(l([{0: 0}, {0: 2}, {0: 4}])) == "M0,0L2,0L4,0"
 
 
-@pytest.mark.skip
 def test_line_9():
-    l = d3.line().curve(None)  # replace None by curveLinearClosed
+    l = d3.line().set_curve(d3.curve_linear_closed)
     assert l([]) is None
     assert str(l([[0, 1], [2, 3]])) == "M0,1L2,3Z"
 

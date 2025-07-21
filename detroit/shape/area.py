@@ -19,7 +19,7 @@ class Area(Generic[T], WithPath):
     The area generator produces an area defined by a topline and a baseline as in
     an area chart. Typically, the two lines share the same x-values (x0 = x1),
     differing only in y-value (y0 and y1); most commonly, y0 is defined as a
-    constant representing zero (the y scale’s output for zero). The topline
+    constant representing zero (the y scale's output for zero). The topline
     is defined by x1 and y1 and is rendered first; the baseline is defined by
     x0 and y0 and is rendered second with the points in reverse order. With a
     curveLinear curve, this produces a clockwise polygon. See also radial areas.
@@ -149,7 +149,67 @@ class Area(Generic[T], WithPath):
         Line
             Line generator based on the area parameters
         """
-        return Line().defined(self._defined).curve(self._curve).context(self._context)
+        return (
+            Line().set_defined(self._defined)
+            .set_curve(self._curve)
+            .set_context(self._context)
+        )
+
+    def line_x0(self) -> Line:
+        """
+        Returns a new line generator that has this area generator's current
+        defined accessor, curve and context. The line's x-accessor is this
+        area's x0-accessor, and the line's y-accessor is this area's
+        y0-accessor.
+
+        Returns
+        -------
+        Line
+            Line generator based on the area parameters
+        """
+        return self.area_line().x(self._x0).y(self._y0)
+
+    def line_y0(self) -> Line:
+        """
+        Returns a new line generator that has this area generator's current
+        defined accessor, curve and context. The line's x-accessor is this
+        area's x0-accessor, and the line's y-accessor is this area's
+        y0-accessor.
+
+        Returns
+        -------
+        Line
+            Line generator based on the area parameters
+        """
+        return self.area_line().x(self._x0).y(self._y0)
+
+    def line_x1(self) -> Line:
+        """
+        Returns a new line generator that has this area generator's current
+        defined accessor, curve and context. The line's x-accessor is this
+        area's x1-accessor, and the line's y-accessor is this area's
+        y0-accessor.
+
+        Returns
+        -------
+        Line
+            Line generator based on the area parameters
+        """
+        return self.area_line().x(self._x1).y(self._y0)
+
+    def line_y1(self) -> Line:
+        """
+        Returns a new line generator that has this area generator's current
+        defined accessor, curve and context. The line's x-accessor is this
+        area's x0-accessor, and the line's y-accessor is this area's
+        y1-accessor.
+
+        Returns
+        -------
+        Line
+            Line generator based on the area parameters
+        """
+        return self.area_line().x(self._x0).y(self._y1)
 
     def x(self, x: Accessor[T, float] | Number) -> TArea:
         """
@@ -193,10 +253,6 @@ class Area(Generic[T], WithPath):
             self._x0 = constant(x0)
         return self
 
-    @property
-    def fx0(self):
-        return self._x0
-
     def x1(self, x1: Accessor[T, float] | Number) -> TArea:
         """
         Sets x1 accessor function
@@ -216,10 +272,6 @@ class Area(Generic[T], WithPath):
         else:
             self._x1 = constant(x1)
         return self
-
-    @property
-    def fx1(self):
-        return self._x1
 
     def y(self, y: Accessor[T, float] | Number) -> TArea:
         """
@@ -263,10 +315,6 @@ class Area(Generic[T], WithPath):
             self._y0 = constant(y0)
         return self
 
-    @property
-    def fy0(self):
-        return self._y0
-
     def y1(self, y1: Accessor[T, float] | Number) -> TArea:
         """
         Sets y accessor function
@@ -287,11 +335,7 @@ class Area(Generic[T], WithPath):
             self._y1 = constant(y1)
         return self
 
-    @property
-    def fy1(self):
-        return self._y1
-
-    def defined(self, defined: Accessor[T, float] | Number) -> TArea:
+    def set_defined(self, defined: Accessor[T, bool] | Number) -> TArea:
         """
         Sets defined accessor
 
@@ -310,7 +354,7 @@ class Area(Generic[T], WithPath):
 
         Parameters
         ----------
-        defined : Accessor[T, float] | Number
+        defined : Accessor[T, bool] | Number
             defined accessor function
 
         Returns
@@ -324,15 +368,7 @@ class Area(Generic[T], WithPath):
             self._defined = constant(bool(defined))
         return self
 
-    @property
-    def accessor_defined(self):
-        return self._defined
-
-    @property
-    def fcurve(self):
-        return self._curve
-
-    def curve(self, curve: Callable[[Selection], Curve] | None = None) -> TArea:
+    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> TArea:
         """
         Sets curve factory.
 
@@ -351,7 +387,7 @@ class Area(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    def context(self, context: Selection | None = None) -> TArea:
+    def set_context(self, context: Selection | None = None) -> TArea:
         """
         Sets the context.
 
@@ -373,6 +409,29 @@ class Area(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    @property
-    def own_context(self):
+    def get_x(self) -> Accessor[T, float]:
+        return self._x0
+
+    def get_y(self) -> Accessor[T, float]:
+        return self._y0
+
+    def get_x0(self) -> Accessor[T, float]:
+        return self._x0
+
+    def get_x1(self) -> Accessor[T, float]:
+        return self._x1
+
+    def get_y0(self) -> Accessor[T, float]:
+        return self._y0
+
+    def get_y1(self) -> Accessor[T, float]:
+        return self._y1
+
+    def get_defined(self) -> Accessor[T, float]:
+        return self._defined
+
+    def get_curve(self) -> Callable[[Selection], Curve]:
+        return self._curve
+
+    def get_context(self) -> Selection:
         return self._context
