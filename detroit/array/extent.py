@@ -1,13 +1,13 @@
 import math
 from datetime import datetime
 from itertools import starmap
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from inspect import signature
-from ..types import T
+from ..types import Accessor, T
 
 
 def extent(
-    values: Iterable[T], accessor: Callable[[T, int, Iterable[T]], T] | None = None
+    values: Iterable[T], accessor: Accessor[T, T] | None = None
 ) -> tuple[T, T]:
     """
     Returns the minimum and maximum value in
@@ -17,7 +17,7 @@ def extent(
     ----------
     values : Iterable[T]
         Iterator
-    accessor : Callable[[T, int, Iterable[T]], T] | None
+    accessor : Accessor[T, T] | None
         Accessor function
 
     Returns
@@ -30,8 +30,10 @@ def extent(
 
     >>> a = [1, 4, -2, 8]
     >>> d3.extent(a)
+    [-2, 8]
     >>> b = [{"a": 8}, {"a": 1}, {"a": 16}]
     >>> d3.extent(b, lambda x: x["a"])
+    [1, 16]
 
     Notes
     -----

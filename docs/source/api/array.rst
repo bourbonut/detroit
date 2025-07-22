@@ -2,16 +2,27 @@ Array
 =====
 
 .. autofunction:: detroit.extent
+.. autofunction:: detroit.nice
+
+Tick functions
+--------------
+
+.. autofunction:: detroit.tick_increment
+.. autofunction:: detroit.tick_step
+.. autofunction:: detroit.ticks
+
+Group functions
+---------------
+
 .. autofunction:: detroit.group
 .. autofunction:: detroit.groups
 .. autofunction:: detroit.index
 .. autofunction:: detroit.indexes
-.. autofunction:: detroit.nice
 .. autofunction:: detroit.rollup
 .. autofunction:: detroit.rollups
-.. autofunction:: detroit.tick_increment
-.. autofunction:: detroit.tick_step
-.. autofunction:: detroit.ticks
+
+Bin functions
+-------------
 
 .. autofunction:: detroit.bin
 
