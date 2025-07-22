@@ -8,19 +8,18 @@ margin_right = 50
 margin_bottom = 10
 margin_left = 120
 
+prefix = "light"
 color = "black"
 reverse_color = "white"
+blue_color = "blue"
+red_color = "red"
 
-
-def change_color(color):
-    return color.brighter(1.5)
-
-
-# Uncomment these lines for white color
+# # Uncomment these lines for white color
+# prefix = "dark"
 # color = "#cfd0d0"
 # reverse_color = "#202020"
-# def change_color(color):
-#     return color.darker(1.5)
+# blue_color = d3.hsl("blue").brighter(1.5)
+# red_color = d3.hsl("red").brighter(1.5)
 
 # Data
 numba = [
@@ -73,7 +72,7 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .attr("y", lambda d: y(d[1]) + y.get_bandwidth() * 0.1)
     .attr("width", lambda d: x(d[0]) - x(0))
     .attr("height", y.get_bandwidth())
-    .attr("fill", change_color(d3.hsl("blue")))  # check change_color
+    .attr("fill", d3.hsl("blue").brighter(1.5))
     .attr("stroke", "blue")
 )
 
@@ -87,7 +86,7 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .attr("y", lambda d: y(d[1]) - y.get_bandwidth() * 1.1)
     .attr("width", lambda d: x(d[0]) - x(0))
     .attr("height", y.get_bandwidth())
-    .attr("fill", change_color(d3.hsl("red")))  # check change_color
+    .attr("fill", d3.hsl("red").brighter(1.5))
     .attr("stroke", "red")
 )
 
@@ -101,7 +100,7 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .attr("x", lambda d: x(d[0]) + 5)
     .attr("y", lambda d: y(d[1]) + y.get_bandwidth() * 0.9)
     .attr("stroke", "none")
-    .attr("fill", "blue")
+    .attr("fill", blue_color)
     .text(lambda d: str(d[0]))
 )
 
@@ -113,7 +112,7 @@ y = d3.scale_band(domain, [height - margin_bottom, margin_top]).set_padding(0.7)
     .attr("x", lambda d: x(d[0]) + 5)
     .attr("y", lambda d: y(d[1]) - y.get_bandwidth() * 0.3)
     .attr("stroke", "none")
-    .attr("fill", "red")
+    .attr("fill", red_color)
     .text(lambda d: str(d[0]))
 )
 
@@ -148,7 +147,7 @@ g = svg.append("g").attr("transform", f"translate({width * 0.75}, 10)")
     .attr("y", 0)
     .attr("width", 10)
     .attr("height", 10)
-    .attr("fill", change_color(d3.hsl("blue")))
+    .attr("fill", d3.hsl("blue").brighter(1.5))
     .attr("stroke", "blue")
 )
 
@@ -158,7 +157,7 @@ g = svg.append("g").attr("transform", f"translate({width * 0.75}, 10)")
     .attr("y", 20)
     .attr("width", 10)
     .attr("height", 10)
-    .attr("fill", change_color(d3.hsl("red")))
+    .attr("fill", d3.hsl("red").brighter(1.5))
     .attr("stroke", "red")
 )
 
@@ -167,5 +166,5 @@ g.append("text").attr("x", 15).attr("y", 30).attr("fill", color).text("Cupy")
 
 # Save the SVG content
 
-with open("kernel_results.svg", "w") as file:
+with open(f"{prefix}_kernel_results.svg", "w") as file:
     file.write(str(svg))
