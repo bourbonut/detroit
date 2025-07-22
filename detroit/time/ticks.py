@@ -147,7 +147,7 @@ class Ticker:
     ) -> TimeInterval:
         """
         Returns the time interval that would be used by :func:`d3.time_ticks
-        <detroit.time_ticks>` given the same arguments
+        <time_ticks>` given the same arguments
 
         Parameters
         ----------
@@ -162,7 +162,7 @@ class Ticker:
         -------
         TimeInterval
             Time interval chosen used by :func:`d3.time_ticks
-            <detroit.time_ticks>`
+            <time_ticks>`
         """
         target = abs(stop - start) / count
         i = bisect_right([step for _, _, step in self.tick_intervals], target)

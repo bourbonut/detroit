@@ -109,7 +109,7 @@ def generic_array(a: list[T], b: list[T]) -> Callable[[float], T]:
 
     Notes
     -----
-    Use :func:`interpolate_array` instead of this function.
+    Use :func:`d3.interpolate_array <interpolate_array>` instead of this function.
     """
     nb = len(b) if b else 0
     na = min(nb, len(a)) if a else 0
@@ -134,26 +134,26 @@ def interpolate(a: T, b: T) -> Callable[[float], T]:
         *   - :code:`bool`
             - Returns a constant function based on b value
         *   - :code:`int` 
-            - See :func:`interpolate_number`
+            - See :func:`d3.interpolate_number <interpolate_number>`
         *   - :code:`float`
-            - See :func:`interpolate_number`
+            - See :func:`d3.interpolate_number <interpolate_number>`
         *   - :code:`str`
-            - See :func:`interpolate_rgb` if string can be \
-            formatted as a color else for a generic string, see \
-            :func:`interpolate_string`
+            - See :func:`d3.interpolate_rgb <interpolate_rgb>` if string can be \
+              formatted as a color else for a generic string, see \
+              :func:`d3.interpolate_string <interpolate_string>`
         *   - :class:`Color <detroit.color.color.Color>`
-            - See :func:`interpolate_rgb`
+            - See :func:`d3.interpolate_rgb <interpolate_rgb>`
         *   - :code:`datetime`
-            - See :func:`interpolate_date`
+            - See :func:`d3.interpolate_date <interpolate_date>`
         *   - :code:`list[int | float]`
-            - See :func:`interpolate_number_array`
+            - See :func:`d3.interpolate_number_array <interpolate_number_array>`
         *   - :code:`list[T] | tuple[T]`
             - Returns an interpolator which recursively interpolates based on \
               :code:`T` values
         *   - :code:`dict[U, V]`
-            - See :func:`interpolate_object`
+            - See :func:`d3.interpolate_object <interpolate_object>`
         *   - :code:`Any`
-            - See :func:`interpolate_number`
+            - See :func:`d3.interpolate_number <interpolate_number>`
 
     Parameters
     ----------

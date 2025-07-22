@@ -111,7 +111,7 @@ def iso_parse(string: str) -> datetime:
 def time_format_locale(language: str) -> Callable[[str], Formatter[str]]:
     """
     Change the locale language and return a formatter function
-    (see `time_format <detroit.time_format>`).
+    (see :func:`d3.time_format <time_format>`).
 
     Parameters
     ----------

@@ -95,7 +95,7 @@ def curve_cardinal_closed(
     context_or_tension : Selection | Number
         Context or tension value in range :math:`[0, 1]` determining the length
         of the tangents. A tension of one yields all zero tangents, equivalent
-        to :func:`curve_linear`
+        to :func:`d3.curve_linear <curve_linear>`
 
     Returns
     -------

@@ -70,7 +70,7 @@ def indexes(
     *keys: list[Callable[[U, int, list[U]], V]],
 ) -> list:
     """
-    Equivalent to :func:`index`, returns a list of collections [key, array of
+    Equivalent to :func:`d3.index <index>`, returns a list of collections [key, array of
     values]. The reducer extracts the first element from each group.
 
     Parameters
@@ -115,7 +115,7 @@ def groups(
     *keys: list[Callable[[U, int, list[U]], V]],
 ) -> list:
     """
-    Equivalent to :func:`group`, returns a list of collections [key; array of
+    Equivalent to :func:`d3.group <group>`, returns a list of collections [key; array of
     values].
 
     Parameters
