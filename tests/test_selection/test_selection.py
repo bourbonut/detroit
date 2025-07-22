@@ -533,3 +533,35 @@ def test_selection_41():
     svg2 = svg.clone()
     svg.append("g")
     assert str(svg) != str(svg2)
+
+def test_selection_42():
+    svg = d3.create("svg")
+    svg.append("g").attr("class", "group1")
+    svg.append("g").attr("aria-label", "group2")
+    svg.append("g").attr("aria-label", "group2")
+    s = svg.select("g[aria-label='group2']")
+    assert s.node().tag == "g"
+    assert s.node().attrib.get("aria-label") == "group2"
+
+    s = svg.select_all("g[aria-label='group3']")
+    assert len(s.nodes()) == 0
+
+    s = svg.select_all("g[aria-label='group2']")
+    assert len(s.nodes()) == 2
+
+def test_selection_43():
+    svg = d3.create("svg")
+    svg.append("g").attr("aria-label", "group2").attr("transform", "translate(1, 0)")
+    svg.append("g").attr("aria-label", "group2").attr("transform", "translate(0, 1)")
+
+    s = svg.select_all("g[aria-label='group2']:last-of-type")
+    assert len(s.nodes()) == 1
+    assert s.node().attrib.get("transform") == "translate(0, 1)"
+
+def test_selection_44():
+    svg = d3.create("svg")
+    svg.append("g").attr("aria-label", "group2")
+    svg.append("rect").attr("aria-label", "group2")
+
+    s = svg.select_all("[aria-label='group2']")
+    assert len(s.nodes()) == 2

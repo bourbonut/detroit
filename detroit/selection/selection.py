@@ -27,6 +27,36 @@ def selector(
     """
     Searchs recursively :code:`selection` where the root node is :code:`element`.
 
+    Supported forms are:
+
+    - :code:`{tag_name}{.class_name}{:last-of-type}`
+    - :code:`{tag_name}{[attribute_name="value"]}{:last-of-type}`
+
+    The :code:`tag_name` is any SVG element tag (ex: :code:`g`,
+    :code:`rect`, :code:`line`, ...).
+
+    The :code:`.class_name` is specified when a element is created such as:
+
+    .. code:: python
+
+        svg.append("g").attr("class", "my_class")
+
+    In this example, the value of :code:`.class_name` is :code:`.my_class`
+
+    The :code:`:last-of-type` option is useful when you only need the last
+    element.
+
+    Using :code:`[attribute_name="value"]` allows you to get any element
+    associated to a specific attribute. For instance, in the following
+    code:
+
+    .. code:: python
+
+        svg.append("g").attr("aria-label", "my_group")
+
+    To access this element, the value of :code:`[attribute_name="value"]`
+    must be :code:`[aria-label="my_group"]`.
+
     Parameters
     ----------
     element : etree.Element
@@ -38,13 +68,6 @@ def selector(
     -------
     list[etree.Element]
         List of found nodes.
-
-    Notes
-    -----
-
-    Supported strings are :code:`<tag_name>.<class_name>` or
-    :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
-    order, you can use :code:`<tag_name>:last-of-type`.
     """
     if selection is None:
         return element
@@ -60,6 +83,13 @@ def selector(
         class_name = f"[@class='{class_name}']" if class_name else ""
         return element.xpath(f"./*//{tag}{order}{class_name}") + element.xpath(
             f"./{tag}{order}{class_name}"
+        )
+    elif "[" in selection and "]" in selection:
+        tag, specifier = selection.split("[")
+        tag = tag or "*"
+        specifier = f"[@{specifier}" if specifier else ""
+        return element.xpath(f"./*//{tag}{order}{specifier}") + element.xpath(
+            f"./{tag}{order}{specifier}"
         )
     return element.xpath(f"./*//{selection}{order}") + element.xpath(
         f"./{selection}{order}"
@@ -169,6 +199,36 @@ class Selection:
         """
         Selects the first element that matches the specified :code:`selection` string.
 
+        Supported forms are:
+
+        - :code:`{tag_name}{.class_name}{:last-of-type}`
+        - :code:`{tag_name}{[attribute_name="value"]}{:last-of-type}`
+
+        The :code:`tag_name` is any SVG element tag (ex: :code:`g`,
+        :code:`rect`, :code:`line`, ...).
+
+        The :code:`.class_name` is specified when a element is created such as:
+
+        .. code:: python
+
+            svg.append("g").attr("class", "my_class")
+
+        In this example, the value of :code:`.class_name` is :code:`.my_class`
+
+        The :code:`:last-of-type` option is useful when you only need the last
+        element.
+
+        Using :code:`[attribute_name="value"]` allows you to get any element
+        associated to a specific attribute. For instance, in the following
+        code:
+
+        .. code:: python
+
+            svg.append("g").attr("aria-label", "my_group")
+
+        To access this element, the value of :code:`[attribute_name="value"]`
+        must be :code:`[aria-label="my_group"]`.
+
         Parameters
         ----------
         selection : str | None
@@ -215,13 +275,6 @@ class Selection:
             exit=None,
             data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
         )
-
-        Notes
-        -----
-
-        Supported strings are :code:`<tag_name>.<class_name>` or
-        :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
-        order, you can use :code:`<tag_name>:last-of-type`.
         """
         groups = defaultdict(list)
         nodes = (node for group in self._groups for node in group)
@@ -244,6 +297,36 @@ class Selection:
     def select_all(self, selection: str | None = None) -> TSelection:
         """
         Selects all elements that match the specified :code:`selection` string.
+
+        Supported forms are:
+
+        - :code:`{tag_name}{.class_name}{:last-of-type}`
+        - :code:`{tag_name}{[attribute_name="value"]}{:last-of-type}`
+
+        The :code:`tag_name` is any SVG element tag (ex: :code:`g`,
+        :code:`rect`, :code:`line`, ...).
+
+        The :code:`.class_name` is specified when a element is created such as:
+
+        .. code:: python
+
+            svg.append("g").attr("class", "my_class")
+
+        In this example, the value of :code:`.class_name` is :code:`.my_class`
+
+        The :code:`:last-of-type` option is useful when you only need the last
+        element.
+
+        Using :code:`[attribute_name="value"]` allows you to get any element
+        associated to a specific attribute. For instance, in the following
+        code:
+
+        .. code:: python
+
+            svg.append("g").attr("aria-label", "my_group")
+
+        To access this element, the value of :code:`[attribute_name="value"]`
+        must be :code:`[aria-label="my_group"]`.
 
         Parameters
         ----------
@@ -292,13 +375,6 @@ class Selection:
             exit=None,
             data={},
         )
-
-        Notes
-        -----
-
-        Supported strings are :code:`<tag_name>.<class_name>` or
-        :code:`.<class_name>` or :code:`<tag_name>`. To get element in reverse
-        order, you can use :code:`<tag_name>:last-of-type`.
         """
         groups = defaultdict(list)
         nodes = (node for group in self._groups for node in group)
