@@ -7,5 +7,6 @@ Complex charts
 
    impulse
    pca
+   kernel_comparison
    hertz_russel
    gantt
