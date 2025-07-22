@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from collections.abc import Callable
 from inspect import signature
-from typing import Literal
+from typing import Literal, TypeVar
 
 from ..scale.continuous import Transformer
 from ..scale.diverging import Diverging
@@ -16,6 +14,7 @@ BOTTOM = 3
 LEFT = 4
 EPSILON = 1e-6
 
+TAxis = TypeVar("Axis", bound="Axis")
 
 def translate_x(x):
     return f"translate({x}, 0)"
@@ -282,7 +281,7 @@ class Axis:
             )
         )
 
-    def set_scale(self, scale: ContinuousScaler | SequentialScaler) -> Axis:
+    def set_scale(self, scale: ContinuousScaler | SequentialScaler) -> TAxis:
         """
         Sets scale value
 
@@ -327,10 +326,7 @@ class Axis:
         self._scale = scale
         return self
 
-    def get_scale(self) -> ContinuousScaler | SequentialScaler:
-        return self._scale
-
-    def set_ticks(self, *ticks: int | str) -> Axis:
+    def set_ticks(self, *ticks: int | str) -> TAxis:
         """
         Tick values will be passed to :code:`scale.ticks` and
         :code:`scale.tick_format` when :code:`Axis.__call__` is called
@@ -430,7 +426,7 @@ class Axis:
         self._tick_arguments = list(ticks)
         return self
 
-    def set_tick_arguments(self, tick_arguments: list[int | str]) -> Axis:
+    def set_tick_arguments(self, tick_arguments: list[int | str]) -> TAxis:
         """
         Tick arguments will be passed to :code:`scale.ticks` and
         :code:`scale.tick_format` when :code:`Axis.__call__` is called
@@ -466,10 +462,7 @@ class Axis:
         self._tick_arguments = list(tick_arguments)
         return self
 
-    def get_tick_arguments(self) -> list[int | str | Callable]:
-        return self._tick_arguments.copy()
-
-    def set_tick_values(self, tick_values: list[int | float]) -> Axis:
+    def set_tick_values(self, tick_values: list[int | float]) -> TAxis:
         """
         Ticks values are used for ticks rather than the scale’s
         automatic tick generator.
@@ -525,10 +518,7 @@ class Axis:
         self._tick_values = tick_values
         return self
 
-    def get_tick_values(self) -> list[int | float]:
-        return self._tick_values
-
-    def set_tick_format(self, tick_format: Callable[[int | float], str]) -> Axis:
+    def set_tick_format(self, tick_format: Callable[[int | float], str]) -> TAxis:
         """
         Sets the tick format function and returns the axis.
 
@@ -586,10 +576,7 @@ class Axis:
         self._tick_format = tick_format
         return self
 
-    def get_tick_format(self) -> Callable:
-        return self._tick_format
-
-    def set_tick_size(self, tick_size: int) -> Axis:
+    def set_tick_size(self, tick_size: int) -> TAxis:
         """
         Sets the inner and outer tick size to the specified
         value and returns the axis.
@@ -643,7 +630,7 @@ class Axis:
         self._tick_size_inner = self._tick_size_outer = tick_size
         return self
 
-    def set_tick_size_inner(self, tick_size_inner: int) -> Axis:
+    def set_tick_size_inner(self, tick_size_inner: int) -> TAxis:
         """
         Sets the inner tick size to the specified value and
         returns the axis.
@@ -702,10 +689,7 @@ class Axis:
         self._tick_size_inner = tick_size_inner
         return self
 
-    def get_tick_size_inner(self) -> int:
-        return self._tick_size_inner
-
-    def set_tick_size_outer(self, tick_size_outer: int) -> Axis:
+    def set_tick_size_outer(self, tick_size_outer: int) -> TAxis:
         """
         Sets the outer tick size to the specified value and
         returns the axis.
@@ -764,10 +748,7 @@ class Axis:
         self._tick_size_outer = tick_size_outer
         return self
 
-    def get_tick_size_outer(self) -> Axis:
-        return self._tick_size_outer
-
-    def set_tick_padding(self, tick_padding: int) -> Axis:
+    def set_tick_padding(self, tick_padding: int) -> TAxis:
         """
         Sets the padding to the specified value in pixels.
 
@@ -826,10 +807,7 @@ class Axis:
         self._tick_padding = tick_padding
         return self
 
-    def get_tick_padding(self) -> Axis:
-        return self._tick_padding
-
-    def set_offset(self, offset: int | float) -> Axis:
+    def set_offset(self, offset: int | float) -> TAxis:
         """
         Sets the pixel offset to the specified value in pixels.
 
@@ -882,7 +860,28 @@ class Axis:
         self._offset = offset
         return self
 
-    def get_offset(self) -> int | float:
+    def get_scale(self) -> ContinuousScaler | SequentialScaler:
+        return self._scale
+
+    def get_tick_arguments(self) -> list[int | str]:
+        return self._tick_arguments.copy()
+
+    def get_tick_values(self) -> list[int | float]:
+        return self._tick_values
+
+    def get_tick_format(self) -> Callable[[int | float], str]:
+        return self._tick_format
+
+    def get_tick_size_inner(self) -> float:
+        return self._tick_size_inner
+
+    def get_tick_size_outer(self) -> float:
+        return self._tick_size_outer
+
+    def get_tick_padding(self) -> float:
+        return self._tick_padding
+
+    def get_offset(self) -> float:
         return self._offset
 
     def __str__(self) -> str:
@@ -909,7 +908,7 @@ class Axis:
         return f"<{name} at {hex(addr)}>"
 
 
-def axis_top(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_top(scale: ContinuousScaler | SequentialScaler) -> TAxis:
     """
     Builds a new top-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -928,7 +927,7 @@ def axis_top(scale: ContinuousScaler | SequentialScaler) -> Axis:
     return Axis(TOP, scale)
 
 
-def axis_right(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_right(scale: ContinuousScaler | SequentialScaler) -> TAxis:
     """
     Builds a new right-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -947,7 +946,7 @@ def axis_right(scale: ContinuousScaler | SequentialScaler) -> Axis:
     return Axis(RIGHT, scale)
 
 
-def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> TAxis:
     """
     Builds a new bottom-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -966,7 +965,7 @@ def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> Axis:
     return Axis(BOTTOM, scale)
 
 
-def axis_left(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_left(scale: ContinuousScaler | SequentialScaler) -> TAxis:
     """
     Builds a new left-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
