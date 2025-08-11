@@ -25,16 +25,19 @@ from .curves import (
 )
 from .line import Line
 from .offset import (
+    offset_diverging,
     offset_expand,
     offset_none,
+    offset_silhouette,
+    offset_wiggle,
 )
 from .order import (
-    order_none,
-    order_reverse,
     order_appearance,
     order_ascending,
     order_descending,
     order_inside_out,
+    order_none,
+    order_reverse,
 )
 from .pie import Pie
 from .stack import Stack
@@ -85,8 +88,11 @@ __all__ = [
     "curve_step",
     "curve_step_after",
     "curve_step_before",
+    "offset_diverging",
     "offset_expand",
     "offset_none",
+    "offset_silhouette",
+    "offset_wiggle",
     "order_appearance",
     "order_ascending",
     "order_descending",

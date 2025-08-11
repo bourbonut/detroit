@@ -1,5 +1,6 @@
 from ..series import Series
 from .none import offset_none
+from math import isnan
 
 
 def offset_expand(series: list[Series], order: list[int]):
@@ -14,15 +15,15 @@ def offset_expand(series: list[Series], order: list[int]):
     order : list[int]
         Order list
     """
-    if len(series) == 0:
-        return
-    j = 0
     n = len(series)
+    if n == 0:
+        return
     m = len(series[0])
     for j in range(m):
         y = 0
         for i in range(n):
-            y += series[i][j][1] or 0
+            x = series[i][j][1]
+            y += 0.0 if isnan(x) else x 
         if y:
             for i in range(n):
                 series[i][j][1] /= y
