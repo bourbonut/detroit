@@ -31,6 +31,10 @@ from .offset import (
 from .order import (
     order_none,
     order_reverse,
+    order_appearance,
+    order_ascending,
+    order_descending,
+    order_inside_out,
 )
 from .pie import Pie
 from .stack import Stack
@@ -83,6 +87,10 @@ __all__ = [
     "curve_step_before",
     "offset_expand",
     "offset_none",
+    "order_appearance",
+    "order_ascending",
+    "order_descending",
+    "order_inside_out",
     "order_none",
     "order_reverse",
     "symbol_asterisk",
