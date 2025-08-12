@@ -3,7 +3,7 @@ from functools import reduce
 from operator import iand, ior
 from ..types import T
 
-def union(*iterables: Iterable[Hashable]) -> set[T]:
+def union(*iterables: Iterable[Hashable]) -> set[Hashable]:
     """
     Returns a new set containing every distinct value that appears in any of
     the givven iterables.
@@ -15,12 +15,17 @@ def union(*iterables: Iterable[Hashable]) -> set[T]:
 
     Returns
     -------
-    set[T]
+    set[Hashable]
         Set of all united values from iterables
+
+    Examples
+    --------
+    >>> d3.union([1, 2], [3, 4], [5])
+    {1, 2, 3, 4, 5}
     """
     return reduce(ior, map(set, iterables))
 
-def difference(iterable: Iterable[Hashable], *others: Iterable[Hashable]) -> set[T]:
+def difference(iterable: Iterable[Hashable], *others: Iterable[Hashable]) -> set[Hashable]:
     """
     Returns a new set containing every value of iterable that is not in any of
     the other iterables.
@@ -34,12 +39,17 @@ def difference(iterable: Iterable[Hashable], *others: Iterable[Hashable]) -> set
 
     Returns
     -------
-    set[T]
+    set[Hashable]
         Set of the iterable differenciated with other iterables
+
+    Examples
+    --------
+    >>> d3.difference([1, 2, 3], [2, 5], [3])
+    {1}
     """
     return set(iterable) - union(*others)
 
-def intersection(*iterables: Iterable[Hashable]) -> set[T]:
+def intersection(*iterables: Iterable[Hashable]) -> set[Hashable]:
     """
     Returns a new set containing every distinct value that appears in all of
     the given iterables.
@@ -51,8 +61,13 @@ def intersection(*iterables: Iterable[Hashable]) -> set[T]:
 
     Returns
     -------
-    set[T]
+    set[Hashable]
         Set of all intersected iterables
+
+    Examples
+    --------
+    >>> d3.intersection([1, 2, 3], [3, 4], [2, 3])
+    {3}
     """
     return reduce(iand, map(set, iterables))
 
@@ -72,6 +87,13 @@ def superset(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     -------
     bool
         True if a is a superset of b
+
+    Examples
+    --------
+    >>> d3.superset([1, 2, 3], [1, 2])
+    True
+    >>> d3.superset([1, 2, 3], [4, 2])
+    False
     """
     return not(bool(len(set(b) - set(a))))
 
@@ -91,6 +113,13 @@ def subset(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     -------
     bool
         True if a is a subset of b
+
+    Examples
+    --------
+    >>> d3.subset([1, 2], [1, 2, 3])
+    True
+    >>> d3.subset([4, 2], [1, 2, 3])
+    False
     """
     return not(bool(len(set(a) - set(b))))
 
@@ -109,5 +138,12 @@ def disjoint(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     -------
     bool
         True if a and b are disjoint
+
+    Examples
+    --------
+    >>> d3.disjoint([1, 3], [2, 4])
+    True
+    >>> d3.disjoint([1, 3], [3, 4])
+    False
     """
     return not(bool(len(set(a) & set(b))))

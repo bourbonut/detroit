@@ -4,6 +4,16 @@ Array
 .. autofunction:: detroit.extent
 .. autofunction:: detroit.nice
 
+Set operations
+--------------
+
+.. autofunction:: detroit.difference
+.. autofunction:: detroit.union
+.. autofunction:: detroit.intersection
+.. autofunction:: detroit.superset
+.. autofunction:: detroit.subset
+.. autofunction:: detroit.disjoint
+
 Tick functions
 --------------
 
