@@ -1,7 +1,8 @@
 from ..series import Series
+from ...types import T
 
 
-def order_reverse(series: list[Series]) -> list[int]:
+def order_reverse(series: list[Series[T]]) -> list[int]:
     """
     Returns the reverse of the given series order :math:`[n - 1, n - 2, ...,
     0]` where :math:`n` is the number of elements in series. Thus, the stack
@@ -10,7 +11,7 @@ def order_reverse(series: list[Series]) -> list[int]:
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
 
     Returns

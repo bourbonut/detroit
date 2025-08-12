@@ -1,17 +1,18 @@
 from math import isnan
 
+from ...types import T
 from ..series import Series
 from .none import offset_none
 
 
-def offset_expand(series: list[Series], order: list[int]):
+def offset_expand(series: list[Series[T]], order: list[int]):
     """
     Applies a zero baseline and normalizes the values for each point such that
     the topline is always one.
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
     order : list[int]
         List of ordered indices

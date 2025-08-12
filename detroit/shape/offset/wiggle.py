@@ -1,10 +1,11 @@
 from math import isnan
 
+from ...types import T
 from ..series import Series
 from .none import offset_none
 
 
-def offset_wiggle(series: list[Series], order: list[int]):
+def offset_wiggle(series: list[Series[T]], order: list[int]):
     """
     Shifts the baseline so as to minimize the weighted wiggle of layers. This
     offset is recommended for streamgraphs in conjunction with
@@ -12,7 +13,7 @@ def offset_wiggle(series: list[Series], order: list[int]):
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
     order : list[int]
         List of ordered indices

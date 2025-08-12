@@ -1,9 +1,10 @@
+from ...types import T
 from ..series import Series
 from .appearance import order_appearance
 from .ascending import _sum
 
 
-def order_inside_out(series: list[Series]) -> list[int]:
+def order_inside_out(series: list[Series[T]]) -> list[int]:
     """
     Returns a series order such that the earliest series (according to the
     maximum value) are on the inside and the later series are on the outside.
@@ -12,7 +13,7 @@ def order_inside_out(series: list[Series]) -> list[int]:
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
 
     Returns

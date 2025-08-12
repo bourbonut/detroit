@@ -29,3 +29,25 @@ Stack offsets
 .. autofunction:: detroit.stack_offset_none
 .. autofunction:: detroit.stack_offset_silhouette
 .. autofunction:: detroit.stack_offset_wiggle
+
+
+Series
+------
+
+.. autoclass:: detroit.shape.series.Serie
+
+   .. automethod:: __getitem__
+   .. automethod:: __setitem__
+   .. automethod:: __len__
+   .. automethod:: __eq__
+   .. automethod:: __str__
+   .. automethod:: __repr__
+
+.. autoclass:: detroit.shape.series.Series
+
+   .. automethod:: __getitem__
+   .. automethod:: __setitem__
+   .. automethod:: __len__
+   .. automethod:: __eq__
+   .. automethod:: __str__
+   .. automethod:: __repr__

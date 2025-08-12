@@ -1,17 +1,18 @@
 from math import isnan
 
+from ...types import T
 from ..series import Series
 from .none import offset_none
 
 
-def offset_silhouette(series: list[Series], order: list[int]):
+def offset_silhouette(series: list[Series[T]], order: list[int]):
     """
     Shifts the baseline down such that the center of the streamgraph is always
     at zero.
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
     order : list[int]
         List of ordered indices

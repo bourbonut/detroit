@@ -1,7 +1,8 @@
 from ..series import Series
+from ...types import T
 
 
-def order_none(series: list[Series]) -> list[int]:
+def order_none(series: list[Series[T]]) -> list[int]:
     """
     Returns the given series order :math:`[0, 1, ..., n - 1]` where :math:`n`
     is the number of elements in series. Thus the stack is given by the key
@@ -9,7 +10,7 @@ def order_none(series: list[Series]) -> list[int]:
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
 
     Returns

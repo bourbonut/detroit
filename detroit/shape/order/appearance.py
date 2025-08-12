@@ -1,10 +1,11 @@
 from math import inf
 
+from ...types import T
 from ..series import Series
 from .none import order_none
 
 
-def order_appearance(series: list[Series]) -> list[int]:
+def order_appearance(series: list[Series[T]]) -> list[int]:
     """
     Returns a series order such that the earliest series (according to the
     maximum value) is at the bottom.
@@ -12,7 +13,7 @@ def order_appearance(series: list[Series]) -> list[int]:
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
 
     Returns

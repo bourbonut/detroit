@@ -1,17 +1,18 @@
 from math import isnan
 
+from ...types import T
 from ..series import Series
 from .none import order_none
 
 
-def order_ascending(series: list[Series]) -> list[int]:
+def order_ascending(series: list[Series[T]]) -> list[int]:
     """
     Returns a series order such that the smallest series (according to the sum
     of values) is at the bottom.
 
     Parameters
     ----------
-    series : list[Series]
+    series : list[Series[T]]
         List of series
 
     Returns
@@ -23,7 +24,7 @@ def order_ascending(series: list[Series]) -> list[int]:
     return sorted(order_none(series), key=lambda i: sums[i])
 
 
-def _sum(series: list[Series]) -> float:
+def _sum(series: list[Series[T]]) -> float:
     s = 0
     for i in range(len(series)):
         v = float(series[i][1])
