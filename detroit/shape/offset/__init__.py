@@ -1,6 +1,6 @@
+from .diverging import offset_diverging
 from .expand import offset_expand
 from .none import offset_none
-from .diverging import offset_diverging
 from .silhouette import offset_silhouette
 from .wiggle import offset_wiggle
 

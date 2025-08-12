@@ -1,18 +1,18 @@
-from ..series import Series
 from math import isnan
+
+from ..series import Series
 
 
 def offset_none(series: list[Series], order: list[int]):
     """
-    Default offset function for updating the lower and upper values in the
-    series list.
+    Applies a zero baseline.
 
     Parameters
     ----------
     series : list[Series]
         List of series
     order : list[int]
-        Order list
+        List of ordered indices
     """
     n = len(series)
     if n == 0:

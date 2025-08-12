@@ -1,10 +1,27 @@
-from .none import order_none
-from ..series import Series
 from math import isnan
 
-def order_ascending(series):
+from ..series import Series
+from .none import order_none
+
+
+def order_ascending(series: list[Series]) -> list[int]:
+    """
+    Returns a series order such that the smallest series (according to the sum
+    of values) is at the bottom.
+
+    Parameters
+    ----------
+    series : list[Series]
+        List of series
+
+    Returns
+    -------
+    list[int]
+        List of ordered indices
+    """
     sums = list(map(_sum, series))
     return sorted(order_none(series), key=lambda i: sums[i])
+
 
 def _sum(series: list[Series]) -> float:
     s = 0

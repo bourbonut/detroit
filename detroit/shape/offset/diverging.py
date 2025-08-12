@@ -1,4 +1,18 @@
-def offset_diverging(series, order):
+from ..series import Series
+
+
+def offset_diverging(series: list[Series], order: list[int]):
+    """
+    Positive values are stacked above zero, negative values are stacked below
+    zero, and zero values are stacked at zero.
+
+    Parameters
+    ----------
+    series : list[Series]
+        List of series
+    order : list[int]
+        List of ordered indices
+    """
     n = len(series)
     if n == 0:
         return

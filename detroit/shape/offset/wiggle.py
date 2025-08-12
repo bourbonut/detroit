@@ -1,7 +1,22 @@
-from .none import offset_none
 from math import isnan
 
-def offset_wiggle(series, order):
+from ..series import Series
+from .none import offset_none
+
+
+def offset_wiggle(series: list[Series], order: list[int]):
+    """
+    Shifts the baseline so as to minimize the weighted wiggle of layers. This
+    offset is recommended for streamgraphs in conjunction with
+    :func:`d3.stack_order_inside_out <stack_order_inside_out>`.
+
+    Parameters
+    ----------
+    series : list[Series]
+        List of series
+    order : list[int]
+        List of ordered indices
+    """
     n = len(series)
     if n == 0:
         return

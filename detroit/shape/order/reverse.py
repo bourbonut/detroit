@@ -3,7 +3,10 @@ from ..series import Series
 
 def order_reverse(series: list[Series]) -> list[int]:
     """
-    Returns the reverse order of a given list of series.
+    Returns the reverse of the given series order :math:`[n - 1, n - 2, ...,
+    0]` where :math:`n` is the number of elements in series. Thus, the stack
+    order is given by the reverse of the key accessor.
+
 
     Parameters
     ----------

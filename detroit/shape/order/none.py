@@ -3,8 +3,9 @@ from ..series import Series
 
 def order_none(series: list[Series]) -> list[int]:
     """
-    Default order function which generates a list of indices representing stack
-    order.
+    Returns the given series order :math:`[0, 1, ..., n - 1]` where :math:`n`
+    is the number of elements in _series_. Thus the stack is given by the key
+    accessor.
 
     Parameters
     ----------
@@ -14,6 +15,6 @@ def order_none(series: list[Series]) -> list[int]:
     Returns
     -------
     list[int]
-        Order list
+        List of ordered indices
     """
     return list(range(len(series)))
