@@ -6,8 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import detroit
 from datetime import datetime
+
+import detroit
 
 last_year = datetime.now().year
 project = 'detroit'

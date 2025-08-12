@@ -1,5 +1,5 @@
 import detroit as d3
-from detroit.shape.series import Series, Serie
+from detroit.shape.series import Serie, Series
 
 
 def make_series(series, data, key, index):

@@ -1,7 +1,8 @@
-from datetime import datetime
 from collections.abc import Callable
+from datetime import datetime
 from math import isnan
-from ..types import T, GenValue
+
+from ..types import GenValue, T
 
 
 def is_null(x: float | None) -> bool:

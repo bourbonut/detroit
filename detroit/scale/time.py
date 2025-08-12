@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from datetime import datetime
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
 from ..time import (
     time_day,
@@ -14,8 +14,8 @@ from ..time import (
     time_year,
 )
 from ..time_format import time_format
+from ..types import Formatter, T
 from .continuous import Transformer, copy, identity
-from ..types import T, Formatter
 from .init import init_range
 from .nice import nice
 

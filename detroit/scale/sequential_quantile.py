@@ -2,7 +2,7 @@ import math
 from bisect import bisect
 from collections.abc import Callable
 from statistics import quantiles
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
 from .continuous import identity
 from .init import init_interpolator

@@ -1,6 +1,8 @@
 from collections.abc import Callable
 from typing import TypeVar
+
 from ..types import T
+
 
 def interpolate_discrete(range_: list[T]) -> Callable[[float], T]:
     """

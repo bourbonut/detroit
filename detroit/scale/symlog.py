@@ -1,10 +1,10 @@
 import math
 from typing import TypeVar, overload
 
+from ..types import Number, T
 from .continuous import Transformer, copy
 from .init import init_range
 from .linear import LinearBase
-from ..types import T, Number
 
 TScaleSymlog = TypeVar("Itself", bound="ScaleSymlog")
 

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import math
 from bisect import bisect
-from typing import Any, TypeVar, overload, Generic
-from ..types import T
+from typing import Any, Generic, TypeVar, overload
 
+from ..types import T
 from .init import init_range
 
 TScaleThreshold = TypeVar("Itself", bound="ScaleThreshold")

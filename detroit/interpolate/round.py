@@ -1,6 +1,9 @@
 from collections.abc import Callable
 
-def interpolate_round(a: int | float | str, b: int |float | str) -> Callable[[float], int]:
+
+def interpolate_round(
+    a: int | float | str, b: int | float | str
+) -> Callable[[float], int]:
     """
     Returns an interpolator between the two numbers a and b.
 

@@ -1,6 +1,7 @@
 from collections.abc import Callable
-from .object_to_value import interpolate as interpolate_value
+
 from ..types import U, V
+from .object_to_value import interpolate as interpolate_value
 
 
 def piecewise(

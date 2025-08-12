@@ -1,7 +1,9 @@
 from datetime import datetime
 
-import detroit as d3
 import pytest
+
+import detroit as d3
+
 
 @pytest.mark.skip
 def test_time_format_locale():

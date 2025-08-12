@@ -8,7 +8,7 @@ def format_decimal(x, _):
 def format_decimal_parts(x, p):
     try:
         if p is not None:
-            x_str = f"{x:.{p-1}e}"
+            x_str = f"{x:.{p - 1}e}"
         else:
             x_str = f"{x:e}"
 

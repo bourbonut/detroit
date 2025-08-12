@@ -1,8 +1,9 @@
 from datetime import datetime
 from itertools import starmap
 
-import detroit as d3
 import pytest
+
+import detroit as d3
 
 
 def entries(map_obj, depth):

@@ -1,5 +1,7 @@
+from math import inf, pi
+
 import detroit as d3
-from math import pi, inf
+
 
 def test_pie_1():
     p = d3.pie()

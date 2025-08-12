@@ -14,9 +14,7 @@ from .array import (
     tick_step,
     ticks,
 )
-
 from .axis import axis_bottom, axis_left, axis_right, axis_top
-
 from .color import (
     color,
     cubehelix,
@@ -27,7 +25,6 @@ from .color import (
     lch,
     rgb,
 )
-
 from .format import (
     format_default_locale,
     format_prefix,
@@ -35,11 +32,9 @@ from .format import (
     precision_prefix,
     precision_round,
 )
-
 from .format import (
     locale_format as format,
 )
-
 from .interpolate import (
     interpolate,
     interpolate_array,
@@ -67,9 +62,7 @@ from .interpolate import (
     piecewise,
     quantize,
 )
-
 from .path import Path as path
-
 from .scale import (
     scale_band,
     scale_diverging,
@@ -98,92 +91,6 @@ from .scale import (
     scale_time,
     tick_format,
 )
-
-from .selection import create
-
-from .shape import (
-    Arc as arc,
-    Area as area,
-    Line as line,
-    Pie as pie,
-    SYMBOLS_FILL,
-    SYMBOLS_STROKE,
-    Stack as stack,
-    Symbol as symbol,
-    curve_basis,
-    curve_basis_closed,
-    curve_basis_open,
-    curve_bump_radial,
-    curve_bump_x,
-    curve_bump_y,
-    curve_bundle,
-    curve_cardinal,
-    curve_cardinal_closed,
-    curve_cardinal_open,
-    curve_catmull_rom,
-    curve_catmull_rom_closed,
-    curve_catmull_rom_open,
-    curve_linear,
-    curve_linear_closed,
-    curve_monotone_x,
-    curve_monotone_y,
-    curve_natural,
-    curve_step,
-    curve_step_after,
-    curve_step_before,
-    offset_expand as stack_offset_expand,
-    offset_none as stack_offset_none,
-    offset_diverging as stack_offset_diverging,
-    offset_silhouette as stack_offset_silhouette,
-    offset_wiggle as stack_offset_wiggle,
-    order_none as stack_order_none,
-    order_reverse as stack_order_reverse,
-    order_appearance as stack_order_appearance,
-    order_ascending as stack_order_ascending,
-    order_descending as stack_order_descending,
-    order_inside_out as stack_order_inside_out,
-    symbol_asterisk,
-    symbol_circle,
-    symbol_cross,
-    symbol_diamond,
-    symbol_diamond2,
-    symbol_plus,
-    symbol_square,
-    symbol_square2,
-    symbol_star,
-    symbol_times,
-    symbol_triangle,
-    symbol_triangle2,
-    symbol_wye,
-)
-
-from .time import (
-    time_day,
-    time_friday,
-    time_hour,
-    time_millisecond,
-    time_minute,
-    time_monday,
-    time_month,
-    time_saturday,
-    time_second,
-    time_sunday,
-    time_thursday,
-    time_ticks,
-    time_tuesday,
-    time_wednesday,
-    time_week,
-    time_year,
-)
-
-from .time_format import (
-    iso_format,
-    iso_parse,
-    time_format,
-    time_format_locale,
-    time_parse,
-)
-
 from .scale_chromatic import (
     SCHEME_ACCENT,
     SCHEME_BLUES,
@@ -261,6 +168,121 @@ from .scale_chromatic import (
     interpolate_ylgnbu,
     interpolate_ylorbr,
     interpolate_ylorrd,
+)
+from .selection import create
+from .shape import (
+    SYMBOLS_FILL,
+    SYMBOLS_STROKE,
+    curve_basis,
+    curve_basis_closed,
+    curve_basis_open,
+    curve_bump_radial,
+    curve_bump_x,
+    curve_bump_y,
+    curve_bundle,
+    curve_cardinal,
+    curve_cardinal_closed,
+    curve_cardinal_open,
+    curve_catmull_rom,
+    curve_catmull_rom_closed,
+    curve_catmull_rom_open,
+    curve_linear,
+    curve_linear_closed,
+    curve_monotone_x,
+    curve_monotone_y,
+    curve_natural,
+    curve_step,
+    curve_step_after,
+    curve_step_before,
+    symbol_asterisk,
+    symbol_circle,
+    symbol_cross,
+    symbol_diamond,
+    symbol_diamond2,
+    symbol_plus,
+    symbol_square,
+    symbol_square2,
+    symbol_star,
+    symbol_times,
+    symbol_triangle,
+    symbol_triangle2,
+    symbol_wye,
+)
+from .shape import (
+    Arc as arc,
+)
+from .shape import (
+    Area as area,
+)
+from .shape import (
+    Line as line,
+)
+from .shape import (
+    Pie as pie,
+)
+from .shape import (
+    Stack as stack,
+)
+from .shape import (
+    Symbol as symbol,
+)
+from .shape import (
+    offset_diverging as stack_offset_diverging,
+)
+from .shape import (
+    offset_expand as stack_offset_expand,
+)
+from .shape import (
+    offset_none as stack_offset_none,
+)
+from .shape import (
+    offset_silhouette as stack_offset_silhouette,
+)
+from .shape import (
+    offset_wiggle as stack_offset_wiggle,
+)
+from .shape import (
+    order_appearance as stack_order_appearance,
+)
+from .shape import (
+    order_ascending as stack_order_ascending,
+)
+from .shape import (
+    order_descending as stack_order_descending,
+)
+from .shape import (
+    order_inside_out as stack_order_inside_out,
+)
+from .shape import (
+    order_none as stack_order_none,
+)
+from .shape import (
+    order_reverse as stack_order_reverse,
+)
+from .time import (
+    time_day,
+    time_friday,
+    time_hour,
+    time_millisecond,
+    time_minute,
+    time_monday,
+    time_month,
+    time_saturday,
+    time_second,
+    time_sunday,
+    time_thursday,
+    time_ticks,
+    time_tuesday,
+    time_wednesday,
+    time_week,
+    time_year,
+)
+from .time_format import (
+    iso_format,
+    iso_parse,
+    time_format,
+    time_format_locale,
+    time_parse,
 )
 
 __version__ = importlib.metadata.version(__package__)

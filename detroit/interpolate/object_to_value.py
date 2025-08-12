@@ -2,13 +2,13 @@ from collections.abc import Callable
 from datetime import datetime
 
 from ..color.color import Color, color
+from ..types import T, U, V
 from .constant import constant
 from .date import interpolate_date
 from .number import interpolate_number
 from .number_array import interpolate_number_array, is_number_array
 from .rgb import interpolate_rgb
 from .string import interpolate_string
-from ..types import T, U, V
 
 
 def interpolate_object(a: dict[U, V], b: dict[U, V]) -> Callable[[float], dict[U, V]]:

@@ -1,8 +1,8 @@
 # Step Response of a Second Order System (Control Theory)
 from collections import namedtuple
 from math import exp, sin, sqrt
-import detroit as d3
 
+import detroit as d3
 
 Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
 

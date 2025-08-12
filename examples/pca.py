@@ -1,11 +1,13 @@
 # pip install scikit-learn
-import detroit as d3
-import polars as pl
-from itertools import cycle
 from collections import namedtuple
+from itertools import cycle
+
+import polars as pl
 from sklearn.datasets import load_digits
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+
+import detroit as d3
 
 # Prepare data
 mnist = load_digits()

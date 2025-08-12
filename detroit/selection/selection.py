@@ -1,25 +1,25 @@
-from time import perf_counter
-
 from collections import defaultdict
 from collections.abc import Callable, Iterator
-from itertools import zip_longest
 from inspect import signature
+from itertools import zip_longest
+from time import perf_counter
 from typing import Any, Protocol, TypeAlias, TypeVar, overload
 
 from lxml import etree
 
+from ..types import Accessor, Data, Value
 from .attr import attr_constant, attr_function
 from .bind import bind_index, bind_key
 from .clone import clone
 from .constant import constant
 from .enter import EnterNode
-from .namespace import namespace
 from .matcher import matcher
+from .namespace import namespace
 from .style import style_constant, style_function, style_value
 from .text import text_constant, text_function
-from ..types import Data, Value, Accessor
 
 TSelection = TypeVar("Selection", bound="Selection")
+
 
 def selector(
     element: etree.Element, selection: str | None = None
@@ -96,9 +96,7 @@ def selector(
     )
 
 
-def creator(
-    node: etree.Element, fullname: dict | None = None
-) -> etree.SubElement:
+def creator(node: etree.Element, fullname: dict | None = None) -> etree.SubElement:
     """
     Creates a subnode associated to :code:`node`.
 
@@ -391,7 +389,7 @@ class Selection:
 
         subgroups = list(groups.values())
         parents = list(groups)
-                
+
         return Selection(subgroups, parents, data=self._data)
 
     def enter(self) -> TSelection:
@@ -593,7 +591,6 @@ class Selection:
                     subgroup.append(node)
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
-
 
     def append(self, name: str) -> TSelection:
         """
@@ -828,7 +825,7 @@ class Selection:
           <text>Hello - index 0</text>
           <text>world - index 1</text>
         </svg>
-        
+
         """
         if value is None:
             return self.node().text
@@ -881,7 +878,9 @@ class Selection:
         self._data[self.node()] = value
         return self
 
-    def data(self, values: list[Data] | Accessor, key: Accessor | None = None) -> TSelection:
+    def data(
+        self, values: list[Data] | Accessor, key: Accessor | None = None
+    ) -> TSelection:
         """
         Binds the specified list of data with the selected elements, returning
         a new selection that represents the update selection: the elements

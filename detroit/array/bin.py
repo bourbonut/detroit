@@ -11,6 +11,7 @@ from .ticks import tick_increment, ticks
 
 Tbin = TypeVar("Itself", bound="bin")
 
+
 def identity(x, *args):
     return x
 
@@ -164,7 +165,9 @@ class bin:
 
         return bins
 
-    def set_value(self, value: Callable[[int | float, int, Iterable[int | float]], float] | Any) -> Tbin:
+    def set_value(
+        self, value: Callable[[int | float, int, Iterable[int | float]], float] | Any
+    ) -> Tbin:
         """
         Sets value
 
@@ -181,7 +184,9 @@ class bin:
         self._value = value if callable(value) else constant(value)
         return self
 
-    def set_domain(self, domain: Callable[[float], float] | tuple[float, float]) -> Tbin:
+    def set_domain(
+        self, domain: Callable[[float], float] | tuple[float, float]
+    ) -> Tbin:
         """
         Sets domain
 
@@ -198,7 +203,9 @@ class bin:
         self._domain = domain if callable(domain) else constant(domain[0], domain[1])
         return self
 
-    def set_thresholds(self, thresholds: Callable[[list[float | None]], float] | Any) -> Tbin:
+    def set_thresholds(
+        self, thresholds: Callable[[list[float | None]], float] | Any
+    ) -> Tbin:
         """
         Sets thresholds
 

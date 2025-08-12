@@ -1,6 +1,6 @@
-from typing import Any, TypeVar, overload, Generic
-from ..types import U, V
+from typing import Any, Generic, TypeVar, overload
 
+from ..types import U, V
 from .init import init_range
 
 TScaleOrdinal = TypeVar("Itself", bound="ScaleOrdinal")

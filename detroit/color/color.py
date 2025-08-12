@@ -1,6 +1,6 @@
 import math
 import re
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
 TRGB = TypeVar("RGB", bound="RGB")
 THSL = TypeVar("HSL", bound="HSL")
@@ -183,6 +183,7 @@ class Color:
     Color base class used by :code:`RGB`, :code:`HSL`, :code:`Cubehelix`,
     :code:`LAB` and :code:`HCL`.
     """
+
     def format_hex(self) -> str:
         """
         Returns the color formatted as hex color.

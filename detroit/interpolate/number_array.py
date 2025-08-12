@@ -1,9 +1,12 @@
 from collections.abc import Callable
 from typing import TypeVar
+
 from ..types import T
 
 
-def interpolate_number_array(a: list[T], b: list[T] | None) -> Callable[[float], list[T]]:
+def interpolate_number_array(
+    a: list[T], b: list[T] | None
+) -> Callable[[float], list[T]]:
     """
     Returns an interpolator between the two arbitrary values a and b.
 

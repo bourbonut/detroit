@@ -1,5 +1,5 @@
 import math
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
 from .color import RGB, Color, rgb_convert
 

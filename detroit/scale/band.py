@@ -1,8 +1,8 @@
-from typing import TypeVar, overload, Generic
+from typing import Generic, TypeVar, overload
 
+from ..types import Number, T
 from .init import init_range
 from .ordinal import ScaleOrdinal
-from ..types import T, Number
 
 TScaleBand = TypeVar("Itself", bound="ScaleBand")
 

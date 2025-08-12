@@ -1,5 +1,6 @@
-import detroit as d3
 from operator import itemgetter
+
+import detroit as d3
 
 width = 480
 height = 400

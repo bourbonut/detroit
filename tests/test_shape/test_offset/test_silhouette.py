@@ -1,5 +1,7 @@
+from math import isnan, nan
+
 import detroit as d3
-from math import nan, isnan
+
 
 def test_silhouette_1():
   series = [

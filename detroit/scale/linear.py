@@ -1,11 +1,11 @@
 import math
-from typing import Callable, TypeVar, overload, Generic
+from typing import Callable, Generic, TypeVar, overload
 
 from ..array import tick_increment, ticks
+from ..types import Number, T
 from .continuous import Transformer, copy
 from .init import init_range
 from .tick_format import tick_format
-from ..types import T, Number
 
 TLinearBase = TypeVar("Itself", bound="LinearBase")
 

@@ -1,5 +1,7 @@
-import detroit as d3
 from math import nan
+
+import detroit as d3
+
 
 def test_ascending_1():
   assert d3.stack_order_ascending([

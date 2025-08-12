@@ -1,5 +1,7 @@
 from collections.abc import Callable
+
 from ..types import Number
+
 
 def interpolate_number(a: Number, b: Number) -> Callable[[float], float]:
     """

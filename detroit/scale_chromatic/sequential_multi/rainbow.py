@@ -1,9 +1,14 @@
-from ...interpolate import interpolate_cubehelix_long
-from ...color import cubehelix
 from math import floor
 
-interpolate_warm = interpolate_cubehelix_long(cubehelix(-100, 0.75, 0.35), cubehelix(80, 1.50, 0.8))
-interpolate_cool = interpolate_cubehelix_long(cubehelix(260, 0.75, 0.35), cubehelix(80, 1.50, 0.8))
+from ...color import cubehelix
+from ...interpolate import interpolate_cubehelix_long
+
+interpolate_warm = interpolate_cubehelix_long(
+    cubehelix(-100, 0.75, 0.35), cubehelix(80, 1.50, 0.8)
+)
+interpolate_cool = interpolate_cubehelix_long(
+    cubehelix(260, 0.75, 0.35), cubehelix(80, 1.50, 0.8)
+)
 
 
 def interpolate_rainbow(t):

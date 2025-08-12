@@ -1,7 +1,7 @@
-from math import isnan, nan
 from bisect import bisect
 from collections.abc import Callable
 from datetime import datetime
+from math import isnan, nan
 from typing import Any, Generic, TypeVar
 
 from ..interpolate import (
@@ -11,8 +11,8 @@ from ..interpolate import (
     interpolate_number,
     interpolate_round,
 )
-from ..types import Number, GenValue, T
-from .utils import constant, identity, as_float
+from ..types import GenValue, Number, T
+from .utils import as_float, constant, identity
 
 TTransformer = TypeVar("Itself", bound="Transformer")
 

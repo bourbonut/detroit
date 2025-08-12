@@ -99,8 +99,8 @@ class Ticker:
         <class 'list'>
         >>> for d in dates:
         ...     print(d)
-        ...     
-        ... 
+        ...
+        ...
         2011-01-01 00:00:00
         2011-01-02 00:00:00
         2011-01-03 00:00:00
@@ -120,8 +120,8 @@ class Ticker:
         <class 'list'>
         >>> for d in dates:
         ...     print(d)
-        ...     
-        ... 
+        ...
+        ...
         2011-01-02 00:00:00
         2011-01-03 00:00:00
         2011-01-04 00:00:00
@@ -172,7 +172,8 @@ class Ticker:
                     start.timestamp() / duration_year,
                     stop.timestamp() / duration_year,
                     count,
-                ) * 1000
+                )
+                * 1000
             )
         if i == 0:
             return time_millisecond.every(

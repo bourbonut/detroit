@@ -3,16 +3,16 @@ from __future__ import annotations
 import math
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, TypeVar, overload, Generic
+from typing import Any, Generic, TypeVar, overload
 
 from ..interpolate import interpolate, interpolate_round
+from ..types import Number, T
 from .continuous import identity
 from .init import init_interpolator
 from .linear import LinearBase
 from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .symlog import transform_symlog
-from ..types import T, Number
 
 TSequential = TypeVar("Itself", bound="Sequential")
 TSequentialPow = TypeVar("Itself", bound="SequentialPow")

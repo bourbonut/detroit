@@ -16,6 +16,7 @@ EPSILON = 1e-6
 
 TAxis = TypeVar("Axis", bound="Axis")
 
+
 def translate_x(x):
     return f"translate({x}, 0)"
 
@@ -800,7 +801,7 @@ class Axis:
 
         Notes
         -----
-        
+
         The value :code:`y` is computing as :code:`max(self._tick_size_inner,
         0) + self._tick_padding`.
         """

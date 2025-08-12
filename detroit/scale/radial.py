@@ -1,12 +1,12 @@
 import math
 from collections.abc import Callable
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
+from ..types import Number
 from .continuous import Transformer, identity
 from .init import init_range
 from .linear import LinearBase
 from .utils import as_float
-from ..types import Number
 
 TScaleRadial = TypeVar("Itself", bound="ScaleRadial")
 

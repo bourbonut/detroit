@@ -5,6 +5,7 @@ from typing import TypeVar
 
 TTimeInterval = TypeVar("TimeInterval", bound="TimeInterval")
 
+
 class TimeInterval:
     def __call__(self, date: datetime | None = None) -> datetime:
         """
@@ -77,8 +78,8 @@ class TimeInterval:
         >>> r = every.range(datetime(2010, 1, 1), datetime(2010, 1, 8))
         >>> for d in r:
         ...     print(d)
-        ...     
-        ... 
+        ...
+        ...
         2010-01-01 00:00:00
         2010-01-04 00:00:00
         2010-01-07 00:00:00
@@ -171,8 +172,8 @@ class TimeInterval:
         >>> r = d3.time_day.range(datetime(2010, 1, 1), datetime(2010, 1, 5), step=1)
         >>> for d in r:
         ...     print(d)
-        ...     
-        ... 
+        ...
+        ...
         2010-01-01 00:00:00
         2010-01-02 00:00:00
         2010-01-03 00:00:00
@@ -180,8 +181,8 @@ class TimeInterval:
         >>> r = d3.time_day.range(datetime(2010, 1, 1), datetime(2010, 1, 5), step=2)
         >>> for d in r:
         ...     print(d)
-        ...     
-        ... 
+        ...
+        ...
         2010-01-01 00:00:00
         2010-01-03 00:00:00
         """

@@ -1,5 +1,6 @@
-from .basis import basis
 from collections.abc import Callable
+
+from .basis import basis
 
 
 def interpolate_basis_closed(values: list[float]) -> Callable[[float], float]:

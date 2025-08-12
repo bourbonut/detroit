@@ -1,5 +1,7 @@
+from math import isnan, nan
+
 import detroit as d3
-from math import nan, isnan
+
 
 def test_expand_1():
   series = [

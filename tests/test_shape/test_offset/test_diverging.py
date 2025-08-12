@@ -1,5 +1,7 @@
-import detroit as d3
 from math import isnan, nan
+
+import detroit as d3
+
 
 def test_diverging_1():
   series = [

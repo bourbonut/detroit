@@ -1,10 +1,10 @@
 import math
 from bisect import bisect
 from statistics import quantiles
-from typing import Any, TypeVar, overload, Generic
+from typing import Any, Generic, TypeVar, overload
 
+from ..types import Number, T
 from .init import init_range
-from ..types import T, Number
 
 TScaleQuantile = TypeVar("Itself", bound="ScaleQuantile")
 

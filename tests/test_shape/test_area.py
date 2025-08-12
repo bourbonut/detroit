@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_area_1():
     a = d3.area()
     assert a.get_x0()([42, 34]) == 42

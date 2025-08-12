@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, TypeVar, overload
 
 from ..interpolate import interpolate, interpolate_round, piecewise
+from ..types import Number, T
 from .continuous import identity
 from .init import init_interpolator
 from .linear import LinearBase
@@ -11,7 +12,6 @@ from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .sequential import copy
 from .symlog import transform_symlog
-from ..types import T, Number
 
 TDiverging = TypeVar("Itself", bound="Diverging")
 TDivergingLinear = TypeVar("Itself", bound="DivergingLinear")

@@ -1,8 +1,9 @@
 import math
 from typing import TypeVar
 
-from .ticks import tick_increment
 from ..types import T
+from .ticks import tick_increment
+
 
 def nice(start: T, stop: T, count: int) -> tuple[T, T]:
     """

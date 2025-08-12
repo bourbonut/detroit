@@ -9,8 +9,9 @@ from itertools import accumulate, chain, starmap
 from math import exp
 from operator import attrgetter, iadd, ior
 
-import detroit as d3
 import polars as pl
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/30316fb45e0a9f6658d43ea6d1def6cb18e0508b9e8b150cb07e55923bace4a91c4fbcbef26c3875ffea810f2334847bd3a2b757181bde9619fec76fd763c8bf?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27archigos.csv"
 

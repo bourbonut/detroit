@@ -1,14 +1,13 @@
 import math
-from datetime import datetime
-from itertools import starmap
 from collections.abc import Iterable
+from datetime import datetime
 from inspect import signature
+from itertools import starmap
+
 from ..types import Accessor, T
 
 
-def extent(
-    values: Iterable[T], accessor: Accessor[T, T] | None = None
-) -> tuple[T, T]:
+def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple[T, T]:
     """
     Returns the minimum and maximum value in
     the given iterable using natural order.
@@ -47,7 +46,9 @@ def extent(
 
     def is_valid(value):
         """Check if the value is valid"""
-        return value is not None and (isinstance(value, (str, datetime)) or not math.isnan(value))
+        return value is not None and (
+            isinstance(value, (str, datetime)) or not math.isnan(value)
+        )
 
     if accessor is not None:
         nargs = len(signature(accessor).parameters)

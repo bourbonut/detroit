@@ -1,5 +1,6 @@
-import detroit as d3
 from datetime import datetime
+
+import detroit as d3
 
 width = 810
 height = 30

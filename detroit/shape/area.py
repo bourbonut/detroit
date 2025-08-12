@@ -150,7 +150,8 @@ class Area(Generic[T], WithPath):
             Line generator based on the area parameters
         """
         return (
-            Line().set_defined(self._defined)
+            Line()
+            .set_defined(self._defined)
             .set_curve(self._curve)
             .set_context(self._context)
         )

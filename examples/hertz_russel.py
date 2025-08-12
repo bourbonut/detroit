@@ -1,8 +1,10 @@
 # Source : https://observablehq.com/@d3/hertzsprung-russell-diagram
 from collections import namedtuple
-import detroit as d3
-import polars as pl
 from math import hypot
+
+import polars as pl
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/a01b08636a1314e9dc329d141684564156cb49190d762542f3b8d09a20f7c3275fe0be93d2ed6f9056af7b27708ed91037b729cf12263e63c0eb98abd43702fc?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27catalog.csv"
 Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])

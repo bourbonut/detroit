@@ -1,14 +1,14 @@
 import math
-from datetime import datetime
-from typing import overload, TypeVar
 from collections.abc import Callable
+from datetime import datetime
+from typing import TypeVar, overload
 
 from ..array import ticks
 from ..format import format_specifier, locale_format
+from ..types import Number
 from .continuous import Transformer, copy
 from .init import init_range
 from .nice import nice
-from ..types import Number
 
 TLogBase = TypeVar("Itself", bound="LogBase")
 TScaleLog = TypeVar("Itself", bound="ScaleLog")

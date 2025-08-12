@@ -1,6 +1,6 @@
-from datetime import datetime
-from typing import TypeVar, TypeAlias, Protocol, Generic, Any, overload
 from collections.abc import Callable
+from datetime import datetime
+from typing import Any, Generic, Protocol, TypeAlias, TypeVar, overload
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -18,10 +18,12 @@ Formatter: TypeAlias = Callable[[str], T]
 Data: TypeAlias = Any
 Value: TypeAlias = Any
 
+
 class Interval(Protocol):
     """
     Protocol class which represents Interval class
     """
+
     @staticmethod
     def floor(x: float) -> float:
         """
@@ -55,6 +57,7 @@ class Interval(Protocol):
             Output
         """
         ...
+
 
 class Scaler(Protocol[U, V]):
     """
@@ -131,10 +134,12 @@ class Scaler(Protocol[U, V]):
         """
         ...
 
+
 class ContinuousScaler(Scaler[U, V], Generic[U, V]):
     """
     Protocol class which represents Continuous Scaler class
     """
+
     def invert(self, y: V) -> U:
         """
         Makes the opposite operation of :code:`__call__`.
@@ -234,6 +239,7 @@ class ContinuousScaler(Scaler[U, V], Generic[U, V]):
         """
         ...
 
+
 class SequentialScaler(Scaler[U, V], Generic[U, V]):
     """
     Protocol class which represents Sequential Scaler class
@@ -254,6 +260,7 @@ class SequentialScaler(Scaler[U, V], Generic[U, V]):
             Itself
         """
         ...
+
 
 class Accessor(Generic[U, V], Protocol):
     """
@@ -280,6 +287,7 @@ class Accessor(Generic[U, V], Protocol):
     >>> lambda d, i: i * d["length"]
     >>> lambda d, _, data: len(data) + d["count"]
     """
+
     @overload
     def __call__(self, d: U) -> V: ...
 

@@ -1,7 +1,9 @@
 import math
 from datetime import datetime
 from functools import partial
+
 import pytest
+
 import detroit as d3
 
 

@@ -1,6 +1,6 @@
-from ...color import rgb
-
 from math import pi, sin
+
+from ...color import rgb
 
 
 def interpolate_sinebow(t):

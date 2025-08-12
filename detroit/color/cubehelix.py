@@ -1,5 +1,5 @@
 import math
-from typing import overload, TypeVar
+from typing import TypeVar, overload
 
 from .color import BRIGHTER, DARKER, RGB, Color, rgb_convert
 from .lab import HCL, hcl_convert

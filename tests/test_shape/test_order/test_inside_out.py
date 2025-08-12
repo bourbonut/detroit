@@ -1,5 +1,7 @@
-import detroit as d3
 from math import nan
+
+import detroit as d3
+
 
 def test_inside_out_1():
   assert d3.stack_order_inside_out([

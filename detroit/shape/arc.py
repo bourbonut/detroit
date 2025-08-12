@@ -441,9 +441,7 @@ class Arc(WithPath):
             self._pad_radius = constant(pad_radius)
         return self
 
-    def set_start_angle(
-        self, start_angle: Callable[..., float] | float | int
-    ) -> TArc:
+    def set_start_angle(self, start_angle: Callable[..., float] | float | int) -> TArc:
         """
         If angle is specified, sets the start angle to the specified
         function or number and returns this arc generator.

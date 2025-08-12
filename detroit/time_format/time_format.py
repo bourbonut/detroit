@@ -1,6 +1,7 @@
 import locale
 from collections.abc import Callable
 from datetime import datetime
+
 from ..types import Formatter
 
 

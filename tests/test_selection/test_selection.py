@@ -1,8 +1,10 @@
+from typing import Union
+
+import pytest
+from lxml import etree
+
 import detroit as d3
 from detroit.selection.enter import EnterNode
-from typing import Union
-from lxml import etree
-import pytest
 
 
 @pytest.fixture

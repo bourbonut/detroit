@@ -32,7 +32,9 @@ def tick_spec(start: float, stop: float, count: int) -> tuple[int, int, int]:
     return [i1, i2, inc]
 
 
-def ticks(start: int | float | str, stop: int | float | str, count: int | float) -> list[float]:
+def ticks(
+    start: int | float | str, stop: int | float | str, count: int | float
+) -> list[float]:
     """
     Returns an array of approximately count + 1 uniformly-spaced,
     nicely-rounded values between start and stop (inclusive).
@@ -43,7 +45,7 @@ def ticks(start: int | float | str, stop: int | float | str, count: int | float)
         Start value which can be converted as float
     stop : int | float | str
         Stop value which can be converted as float
-    count : int | float 
+    count : int | float
         Count value
 
     Returns
@@ -91,7 +93,9 @@ def ticks(start: int | float | str, stop: int | float | str, count: int | float)
     return tick_list
 
 
-def tick_increment(start: int | float | str, stop: int | float | str, count: int | float) -> int:
+def tick_increment(
+    start: int | float | str, stop: int | float | str, count: int | float
+) -> int:
     """
     Returns the negative inverse tick step instead.
 
@@ -127,7 +131,9 @@ def tick_increment(start: int | float | str, stop: int | float | str, count: int
     return tick_spec(start, stop, count)[2]
 
 
-def tick_step(start: int | float | str, stop: int | float | str, count: int | float) -> float:
+def tick_step(
+    start: int | float | str, stop: int | float | str, count: int | float
+) -> float:
     """
     Returns the difference between adjacent tick value.
 

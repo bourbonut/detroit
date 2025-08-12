@@ -1,7 +1,7 @@
 import math
-from typing import Any, TypeVar, Generic
-from ..types import T
+from typing import Any, Generic, TypeVar
 
+from ..types import T
 from .linear import LinearBase
 
 TIdentity = TypeVar("Itself", bound="Identity")

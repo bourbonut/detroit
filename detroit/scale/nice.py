@@ -1,4 +1,4 @@
-from ..types import T, Interval
+from ..types import Interval, T
 
 
 def nice(domain: list[T], interval: Interval) -> list[T]:

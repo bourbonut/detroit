@@ -1,6 +1,6 @@
-import detroit as d3
 import pytest
 
+import detroit as d3
 
 functions = [
     d3.scale_band,
