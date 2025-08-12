@@ -7,7 +7,7 @@ def order_inside_out(series: list[Series]) -> list[int]:
     """
     Returns a series order such that the earliest series (according to the
     maximum value) are on the inside and the later series are on the outside.
-    This order is recommended for streamgraphs in conjunction with the
+    This order is recommended for streamgraphs in conjunction with
     :func:`d3.stack_offset_wiggle <stack_offset_wiggle>`.
 
     Parameters

@@ -4,7 +4,7 @@ from ..series import Series
 def order_none(series: list[Series]) -> list[int]:
     """
     Returns the given series order :math:`[0, 1, ..., n - 1]` where :math:`n`
-    is the number of elements in _series_. Thus the stack is given by the key
+    is the number of elements in series. Thus the stack is given by the key
     accessor.
 
     Parameters
