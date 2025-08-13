@@ -14,6 +14,13 @@ Set operations
 .. autofunction:: detroit.subset
 .. autofunction:: detroit.disjoint
 
+Blur functions
+--------------
+
+.. autofunction:: detroit.blur
+.. autofunction:: detroit.blur2
+.. autofunction:: detroit.blur_image
+
 Tick functions
 --------------
 
