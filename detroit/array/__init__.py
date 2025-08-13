@@ -1,4 +1,5 @@
 from .bin import bin
+from .blur import blur, blur2, blur_image
 from .extent import extent
 from .group import group, groups, index, indexes, rollup, rollups
 from .nice import nice
@@ -14,6 +15,9 @@ from .set_operations import (
 
 __all__ = [
     "bin",
+    "blur",
+    "blur2",
+    "blur_image",
     "difference",
     "disjoint",
     "extent",

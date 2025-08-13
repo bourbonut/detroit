@@ -2,6 +2,9 @@ import importlib.metadata
 
 from .array import (
     bin,
+    blur,
+    blur2,
+    blur_image,
     difference,
     disjoint,
     extent,
@@ -341,6 +344,9 @@ __all__ = [
     "axis_right",
     "axis_top",
     "bin",
+    "blur",
+    "blur2",
+    "blur_image",
     "color",
     "create",
     "cubehelix",
