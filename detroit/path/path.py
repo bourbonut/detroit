@@ -49,9 +49,9 @@ class Path:
 
     def close_path(self):
         """
-        Ends the current subpath and causes an automatic straight line
-        to be drawn from the current point to the initial point of the
-        current subpath.
+        Ends the current subpath and causes an automatic straight line to be
+        drawn from the current point to the initial point of the current
+        subpath.
         """
         if self._x1 is not None:
             self._x1, self._y1 = self._x0, self._y0
@@ -59,7 +59,8 @@ class Path:
 
     def line_to(self, x: int | float, y: int | float):
         """
-        Draws a straight line from the current point to the specified point (x, y).
+        Draws a straight line from the current point to the specified point (x,
+        y).
 
         Parameters
         ----------
@@ -107,8 +108,8 @@ class Path:
     ):
         """
         Draws a cubic Bézier segment from the current point to the specified
-        point (x, y), with the specified control points (cpx1, cpy1) and
-        (cpx2, cpy2).
+        point (x, y), with the specified control points (cpx1, cpy1) and (cpx2,
+        cpy2).
 
         Parameters
         ----------
@@ -139,11 +140,12 @@ class Path:
         r: int | float,
     ):
         """
-        Draws a circular arc segment with the specified radius that starts tangent
-        to the line between the current point and the specified point (x1, y1) and
-        ends tangent to the line between the specified points (x1, y1) and (x2, y2).
-        If the first tangent point is not equal to the current point, a straight line
-        is drawn between the current point and the first tangent point.
+        Draws a circular arc segment with the specified radius that starts
+        tangent to the line between the current point and the specified point
+        (x1, y1) and ends tangent to the line between the specified points (x1,
+        y1) and (x2, y2). If the first tangent point is not equal to the
+        current point, a straight line is drawn between the current point and
+        the first tangent point.
 
         Parameters
         ----------
@@ -219,11 +221,12 @@ class Path:
         ccw: bool = False,
     ):
         """
-        Draws a circular arc segment with the specified center (x, y), radius, start_angle
-        and end_angle. If anticlockwise is true, the arc is drawn in the anticlockwise direction;
-        otherwise, it is drawn in the clockwise direction. If the current point is not equal
-        to the starting point of the arc, a straight line is drawn from the current point
-        to the start of the arc.
+        Draws a circular arc segment with the specified center (x, y), radius,
+        start_angle and end_angle. If anticlockwise is true, the arc is drawn
+        in the anticlockwise direction; otherwise, it is drawn in the clockwise
+        direction. If the current point is not equal to the starting point of
+        the arc, a straight line is drawn from the current point to the start
+        of the arc.
 
         Parameters
         ----------
@@ -288,9 +291,9 @@ class Path:
 
     def rect(self, x: int | float, y: int | float, w: int | float, h: int | float):
         """
-        Creates a new subpath containing just the four points (x, y), (x + w, y),
-        (x + w, y + h), (x, y + h), with those four points connected by straight
-        lines, and then marks the subpath as closed.
+        Creates a new subpath containing just the four points (x, y), (x + w,
+        y), (x + w, y + h), (x, y + h), with those four points connected by
+        straight lines, and then marks the subpath as closed.
 
         Parameters
         ----------

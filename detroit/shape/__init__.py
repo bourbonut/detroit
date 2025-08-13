@@ -24,6 +24,7 @@ from .curves import (
     curve_step_before,
 )
 from .line import Line
+from .link import Link, link_horizontal, link_vertical, link_radial
 from .offset import (
     offset_diverging,
     offset_expand,
@@ -62,6 +63,7 @@ __all__ = [
     "Arc",
     "Area",
     "Line",
+    "Link",
     "Pie",
     "SYMBOLS_FILL",
     "SYMBOLS_STROKE",
@@ -88,6 +90,9 @@ __all__ = [
     "curve_step",
     "curve_step_after",
     "curve_step_before",
+    "link_horizontal",
+    "link_radial",
+    "link_vertical",
     "offset_diverging",
     "offset_expand",
     "offset_none",

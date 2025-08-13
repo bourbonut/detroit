@@ -1,0 +1,237 @@
+from .constant import constant
+from .curves import Curve, curve_bump_x, curve_bump_y, curve_bump_radial
+from .path import WithPath
+from .point import x as point_x, y as point_y
+from inspect import signature
+from typing import TypeVar, Generic, Any
+from collections.abc import Callable
+from ..selection import Selection
+from ..types import Accessor, T, Number
+
+TLink = TypeVar("Link", bound="Link")
+
+def link_source(d):
+    return d["source"]
+
+def link_target(d):
+    return d["target"]
+
+class Link(Generic[T], WithPath):
+    """
+    The link shape generates a smooth cubic Bézier curve from a source point to
+    a target point. The tangents of the curve at the start and end are either
+    vertical or horizontal.
+
+    Parameters
+    ----------
+    curve : Callable[[Selection], Curve]
+        Curve factory function
+
+    Returns
+    -------
+    Link
+        New link generator
+    """
+
+    def __init__(self, curve: Callable[[Selection], Curve]):
+        super().__init__()
+        self._source = link_source
+        self._target = link_target
+        self._x = point_x
+        self._y = point_y
+        self._context = None
+        self._output = None
+        self._curve = curve
+
+    def __call__(self, *args: Any) -> str | None:
+        """
+
+        Parameters
+        ----------
+        args : Any
+            Extra arguments passed through :code:`source` function,
+            :code:`target` function, :code:`x` function and :code:`y` function.
+
+        Returns
+        -------
+        str | None
+            Generated link if the link is not associated to a context
+        """
+        buffer = None
+        args = list(args)
+        snargs = len(signature(self._source).parameters)
+        s = self._source(*args[:snargs])
+        tnargs = len(signature(self._target).parameters)
+        t = self._target(*args[:tnargs])
+        if self._context is None:
+            buffer = self._path()
+            self._output = self._curve(buffer)
+        self._output.line_start()
+        xnargs = len(signature(self._x).parameters)
+        ynargs = len(signature(self._y).parameters)
+        args[0] = s
+        x = self._x(*args[:xnargs])
+        y = self._y(*args[:ynargs])
+        self._output.point(x, y)
+        args[0] = t
+        x = self._x(*args[:xnargs])
+        y = self._y(*args[:ynargs])
+        self._output.point(x, y)
+        self._output.line_end()
+        if buffer:
+            self._output = None
+            return str(buffer) or None
+
+    def set_source(self, source: Accessor[T, float]) -> TLink:
+        """
+        Sets the source function
+
+        Parameters
+        ----------
+        source : Accessor[T, float]
+            Source accessor function
+
+        Returns
+        -------
+        TLink
+            Itself
+        """
+        self._source = source
+        return self
+
+    def set_target(self, target: Accessor[T, float]) -> TLink:
+        """
+        Sets the target function
+
+        Parameters
+        ----------
+        target : Accessor[T, float]
+            Target accessor function
+
+        Returns
+        -------
+        TLink
+            Itself
+        """
+        self._target = target
+        return self
+
+    def x(self, x: Accessor[T, float] | Number) -> TLink:
+        """
+        Sets x accessor function
+
+        Parameters
+        ----------
+        x : Accessor[T, float] | Number
+            x accessor function
+
+        Returns
+        -------
+        Link
+            Itself
+        """
+        if callable(x):
+            self._x = x
+        else:
+            self._x = constant(x)
+        return self
+
+    def y(self, y: Accessor[T, float] | Number) -> TLink:
+        """
+        Sets y accessor function
+
+        Parameters
+        ----------
+        y : Accessor[T, float] | Number
+            y accessor function
+
+        Returns
+        -------
+        Link
+            Itself
+        """
+        if callable(y):
+            self._y = y
+        else:
+            self._y = constant(y)
+        return self
+
+    def set_context(self, context: Selection | None = None) -> TLink:
+        """
+        Sets the context.
+
+        Parameters
+        ----------
+        context : Selection | None
+            Selection
+
+        Returns
+        -------
+        Link
+            Itself
+        """
+        if context is None:
+            self._context = None
+            self._output = None
+        else:
+            self._context = context
+            self._output = self._curve(self._context)
+        return self
+
+    def get_source(self) -> Accessor[T, float]:
+        return self._source
+
+    def get_target(self) -> Accessor[T, float]:
+        return self._target
+
+    def get_x(self) -> Accessor[T, float]:
+        return self._x
+
+    def get_y(self) -> Accessor[T, float]:
+        return self._y
+
+    def get_context(self) -> Selection:
+        return self._context
+
+def link_horizontal() -> Link:
+    """
+    Shorthand for link with :func:`d3.curve_bump_x <curve_bump_x>`; suitable
+    for visualizing links in a tree diagram rooted on the left edge of the
+    display. 
+
+    Returns
+    -------
+    Link
+        Horizontal link generator
+    """
+    return Link(curve_bump_x)
+
+def link_vertical() -> Link:
+    """
+    Shorthand for link :func:`d3.curve_bump_y <curve_bump_y>`; suitable for
+    visualizing links in a tree diagram rooted on the top edge of the display.
+
+    Returns
+    -------
+    Link
+        Vertical link generator
+    """
+    return Link(curve_bump_y)
+
+def link_radial() -> Link:
+    """
+    Returns a new link generator with radial tangents.
+
+    Returns
+    -------
+    Link
+        Radial link generator
+    """
+    link = Link(curve_bump_radial)
+    link.angle = link.x
+    link.radius = link.y
+    link.get_angle = link.get_x
+    link.get_radius = link.get_y
+    # del link.x
+    # del link.y
+    return link

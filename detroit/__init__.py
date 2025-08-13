@@ -203,6 +203,9 @@ from .shape import (
     curve_step,
     curve_step_after,
     curve_step_before,
+    link_horizontal,
+    link_radial,
+    link_vertical,
     symbol_asterisk,
     symbol_circle,
     symbol_cross,
@@ -225,6 +228,9 @@ from .shape import (
 )
 from .shape import (
     Line as line,
+)
+from .shape import (
+    Link as link,
 )
 from .shape import (
     Pie as pie,
@@ -451,6 +457,10 @@ __all__ = [
     "lab",
     "lch",
     "line",
+    "link",
+    "link_horizontal",
+    "link_radial"
+    "link_vertical",
     "nice",
     "path",
     "pie",
