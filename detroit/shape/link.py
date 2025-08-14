@@ -232,6 +232,4 @@ def link_radial() -> Link:
     link.radius = link.y
     link.get_angle = link.get_x
     link.get_radius = link.get_y
-    # del link.x
-    # del link.y
     return link
