@@ -203,6 +203,7 @@ from .shape import (
     curve_step,
     curve_step_after,
     curve_step_before,
+    line_radial,
     link_horizontal,
     link_radial,
     link_vertical,
@@ -457,6 +458,7 @@ __all__ = [
     "lab",
     "lch",
     "line",
+    "line_radial",
     "link",
     "link_horizontal",
     "link_radial"

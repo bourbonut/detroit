@@ -7,7 +7,7 @@ from .linear import curve_linear
 
 
 class RadialCurve(Curve):
-    def __init__(self, curve):
+    def __init__(self, curve: Curve):
         self._curve = curve
 
     def area_start(self):
@@ -22,12 +22,27 @@ class RadialCurve(Curve):
     def line_end(self):
         self._curve.line_end()
 
-    def point(self, a, r):
+    def point(self, a: float, r: float):
         self._curve.point(r * sin(a), -r * cos(a))
 
 
-def curve_radial(curve: Curve) -> Callable[[Selection], Curve]:
-    def radial(context):
+def curve_radial(
+    curve: Callable[[Selection], Curve],
+) -> Callable[[Selection], Curve]:
+    """
+    Converts a curve function into a radial curve function.
+
+    Parameters
+    ----------
+    curve : Callable[[Selection], Curve]
+        Curve function
+
+    Returns
+    -------
+    Callable[[Selection], Curve]
+        Radial curve function
+    """
+    def radial(context: Selection) -> Curve:
         return RadialCurve(curve(context))
 
     return radial
@@ -45,6 +60,6 @@ def curve_radial_linear(context: Selection) -> Curve:
     Returns
     -------
     Curve
-        Curve object
+        Radial curve
     """
-    return curve_radial(curve_linear)
+    return curve_radial(curve_linear)(context)
