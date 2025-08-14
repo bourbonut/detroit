@@ -28,3 +28,5 @@ This line generator can then be used to compute the :code:`d` attribute of an SV
    pies
    stack
    symbols
+   area_radial
+   line_radial
