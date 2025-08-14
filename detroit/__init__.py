@@ -182,6 +182,7 @@ from .selection import create
 from .shape import (
     SYMBOLS_FILL,
     SYMBOLS_STROKE,
+    area_radial,
     curve_basis,
     curve_basis_closed,
     curve_basis_open,
@@ -346,6 +347,7 @@ __all__ = [
     "SYMBOLS_STROKE",
     "arc",
     "area",
+    "area_radial",
     "axis_bottom",
     "axis_left",
     "axis_right",

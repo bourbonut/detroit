@@ -7,7 +7,7 @@ from typing import TypeVar
 
 TLineRadial = TypeVar("LineRadial", bound="LineRadial")
 
-class LineRadial(Line):
+class LineRadial(Line[T]):
 
     def __init__(self):
         Line.__init__(self)
@@ -27,11 +27,11 @@ class LineRadial(Line):
         LineRadial
             Itself
         """
-        super().set_curve(curve_radial(curve))
+        return super().set_curve(curve_radial(curve))
 
     def angle(self, angle: Accessor[T, float] | Number) -> TLineRadial:
         """
-        Sets x accessor function
+        Sets angle accessor function
 
         Parameters
         ----------
@@ -47,7 +47,7 @@ class LineRadial(Line):
 
     def radius(self, radius: Accessor[T, float] | Number) -> TLineRadial:
         """
-        Sets y accessor function
+        Sets radius accessor function
 
         Parameters
         ----------
@@ -67,5 +67,16 @@ class LineRadial(Line):
     def get_radius(self) -> Accessor[T, float]:
         return super().get_y()
 
-def line_radial():
+def line_radial() -> LineRadial:
+    """
+    A radial line generator is like the Cartesian line generator except the x
+    and y accessors are replaced with angle and radius accessors. Radial lines
+    are positioned relative to the origin; use a transform to change the
+    origin.
+
+    Returns
+    -------
+    LineRadial
+        Radial line generator
+    """
     return LineRadial()

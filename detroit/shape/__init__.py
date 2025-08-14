@@ -1,5 +1,6 @@
 from .arc import Arc
 from .area import Area
+from .area_radial import area_radial
 from .curves import (
     curve_basis,
     curve_basis_closed,
@@ -70,6 +71,7 @@ __all__ = [
     "SYMBOLS_STROKE",
     "Stack",
     "Symbol",
+    "area_radial",
     "curve_basis",
     "curve_basis_closed",
     "curve_basis_open",

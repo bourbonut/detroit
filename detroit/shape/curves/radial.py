@@ -43,6 +43,8 @@ def curve_radial(
         Radial curve function
     """
     def radial(context: Selection) -> Curve:
+        if isinstance(curve(None), RadialCurve):
+            return curve(context)
         return RadialCurve(curve(context))
 
     return radial
