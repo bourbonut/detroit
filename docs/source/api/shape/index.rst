@@ -24,6 +24,7 @@ This line generator can then be used to compute the :code:`d` attribute of an SV
    areas
    curves
    lines
+   links
    pies
    stack
    symbols
