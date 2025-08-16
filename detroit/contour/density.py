@@ -299,7 +299,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         self._o = self._r * 3
@@ -318,7 +318,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         if callable(x):
@@ -338,7 +338,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         if callable(y):
@@ -358,7 +358,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         if callable(weight):
@@ -381,7 +381,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         dx = size[0]
@@ -404,7 +404,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         self._k = floor(log(cell_size) / log(2))
@@ -435,7 +435,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         if callable(thresholds):
@@ -456,7 +456,7 @@ class Density(Generic[T]):
 
         Returns
         -------
-        TDensity
+        Density
             Itself
         """
         self._r = (sqrt(4 * bandwidth * bandwidth + 1) - 1) / 2

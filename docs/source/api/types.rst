@@ -31,3 +31,5 @@ Types
 .. autoclass:: detroit.types.Accessor
 
    .. automethod:: __call__
+
+.. autoclass:: detroit.types.GeoJSON

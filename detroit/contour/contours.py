@@ -421,7 +421,7 @@ class Contours:
 
         Returns
         -------
-        TContours
+        Contours
             Itself
         """
         dx = floor(size[0])
@@ -448,7 +448,7 @@ class Contours:
 
         Returns
         -------
-        TContours
+        Contours
             Itself
         """
         if callable(thresholds):
@@ -469,7 +469,7 @@ class Contours:
 
         Returns
         -------
-        TContours
+        Contours
             Itself
         """
         def noop():

@@ -8,6 +8,7 @@ API
    array
    axis
    color
+   contour/index
    format
    interpolate
    path
