@@ -12,6 +12,7 @@ from .set_operations import (
     union,
 )
 from .ticks import tick_increment, tick_step, ticks
+from .threshold import threshold_freedman_diaconis, threshold_scott, threshold_sturges
 
 __all__ = [
     "bin",
@@ -31,6 +32,9 @@ __all__ = [
     "rollups",
     "subset",
     "superset",
+    "threshold_freedman_diaconis",
+    "threshold_scott",
+    "threshold_sturges",
     "tick_increment",
     "tick_step",
     "ticks",

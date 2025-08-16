@@ -51,3 +51,10 @@ Bin functions
    .. automethod:: set_value
    .. automethod:: set_domain
    .. automethod:: set_thresholds
+
+Threshold functions
+-------------------
+
+.. autofunction:: detroit.threshold_freedman_diaconis
+.. autofunction:: detroit.threshold_scott
+.. autofunction:: detroit.threshold_sturges
