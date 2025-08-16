@@ -159,6 +159,7 @@ class Contours:
             t1 = above(get(values, x + 1), value)
             for line in CASES[t0 | t1 << 1]:
                 stitch(line)
+        x += 1
         for line in CASES[t1 << 0]:
             stitch(line)
 
@@ -177,9 +178,11 @@ class Contours:
                 t2 = above(get(values, y * self._dx + x + 1), value)
                 for line in CASES[t0 | t1 << 1 | t2 << 2 | t3 << 3]:
                     stitch(line)
+            x += 1
             for line in CASES[t1 | t2 << 3]:
                 stitch(line)
 
+        y += 1
         x = -1
         t2 = get(values, y * self._dx) >= value
         for line in CASES[t2 << 2]:
@@ -191,6 +194,7 @@ class Contours:
             for line in CASES[t2 << 2 | t3 << 3]:
                 stitch(line)
 
+        x += 1
         for line in CASES[t2 << 3]:
             stitch(line)
 
