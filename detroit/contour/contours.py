@@ -162,7 +162,7 @@ class Contours:
     MultiPolygon geometry object representing the area where the input values
     are greater than or equal to the threshold value. The geometry is in planar
     coordinates, where :math:`(i + 0.5, j + 0.5)` corresponds to element
-    :code:`i + jn` in the input values array.
+    :code:`i + j * n` in the input values array.
     """
     def __init__(self):
         self._dx = 1
@@ -180,7 +180,7 @@ class Contours:
         values : list[float]
             Input grid values which must be an array of length :math:`n \\times
             m` where :math:`[n, m]` is the contour generator's size;
-            furthermore, each values :code:`[i + jn]` must represent the value
+            furthermore, each :code:`values[i + j * n]` must represent the value
             at the position :math:`(i, j)`.
 
         Returns
@@ -210,7 +210,7 @@ class Contours:
         values : list[float]
             Input grid values which must be an array of length :math:`n \\times
             m` where :math:`[n, m]` is the contour generator's size;
-            furthermore, each values :code:`[i + jn]` must represent the value
+            furthermore, each :code:`values[i + j * n]` must represent the value
             at the position :math:`(i, j)`.
         value : float
             Threshold value; the input values are greater than or equal to this
@@ -443,8 +443,8 @@ class Contours:
         Parameters
         ----------
         thresholds : Callable[[list[float], ...], float | list[float]] | list[float] | float
-            Threshold function or array or constant value; default implements
-            Sturges' formula
+            Threshold function or array or constant value; default
+            :func:`d3.threshold_sturges <detroit.threshold_sturges>`
 
         Returns
         -------

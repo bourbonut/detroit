@@ -209,20 +209,21 @@ class Density(Generic[T]):
             .set_thresholds(list(map(lambda d: d * pow4k, tz)))(values)
         )
 
-        def func(pair):
+        def transform(pair: tuple[int, GeoJSON]) -> GeoJSON:
             i, c = pair
             c["value"] = tz[i]
             return self._transform(c)
 
-        return list(map(func, enumerate(density)))
+        return list(map(transform, enumerate(density)))
 
     def contours(self, data: list[T]) -> Contour:
         """
-        Return a :code:`Contour` callable class that can be used to compute an
-        arbitrary contour on the given data without needing to recompute the
-        underlying grid. The returned contour class also exposes a
-        :code:`Contour.max` value which represents the maximum density of the
-        grid.
+        Return a :class:`Contour <detroit.contour.density.Contour>` callable
+        class that can be used to compute an arbitrary contour on the given
+        data without needing to recompute the underlying grid. The returned
+        contour class also exposes a :func:`Contour.max
+        <detroit.contour.density.Contour.max>` value which represents the
+        maximum density of the grid.
 
         Parameters
         ----------

@@ -14,3 +14,8 @@ Density estimation
    .. automethod:: set_cell_size
    .. automethod:: set_thresholds
    .. automethod:: set_bandwidth
+
+.. autoclass:: detroit.contour.density.Contour
+
+   .. automethod:: __call__
+   .. automethod:: max
