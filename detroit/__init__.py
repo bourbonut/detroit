@@ -34,6 +34,7 @@ from .color import (
     lch,
     rgb,
 )
+from .contour import Contours as contours
 from .format import (
     format_default_locale,
     format_prefix,
@@ -357,6 +358,7 @@ __all__ = [
     "blur2",
     "blur_image",
     "color",
+    "contours",
     "create",
     "cubehelix",
     "curve_basis",

@@ -1,11 +1,10 @@
 def contains(ring, hole):
-    i = -1
     n = len(hole)
-    while i < n:
+    for i in range(n):
         i += 1
         if c := ring_contains(ring, hole[i]):
             return c
-    return 0.
+    return 0
 
 def ring_contains(ring, point):
     x = point[0]
@@ -21,7 +20,7 @@ def ring_contains(ring, point):
         xj = pj[0]
         yj = pj[1]
         if segment_contains(pi, pj, point):
-            return 0.
+            return 0
         if (yi > y) != (yj > y) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi):
             contains = -contains
     return contains
@@ -34,4 +33,4 @@ def collinear(a, b, c):
     return (b[0] - a[0]) * (c[1] - a[1]) == (c[0] - a[0]) * (b[1] - a[1])
 
 def within(p, q, r):
-    return p <= q and q <= r or r <= q and q <= p
+    return p <= q <= r or r <= q <= p

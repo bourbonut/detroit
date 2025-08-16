@@ -1,4 +1,4 @@
 def constant(x):
-    def f():
+    def f(*args):
         return x
     return f
