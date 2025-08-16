@@ -14,10 +14,10 @@ def default_weight():
     return 1
 
 class Contour:
-    def __init__(self, data, contours, transform):
-        self._values = self.grid(data)
+    def __init__(self, values, contours, pow4k, transform):
+        self._values = values
         self._contours = contours
-        self._pow4k = pow(2, 2 * self._k)
+        self._pow4k = pow4k
         self._transform = transform
 
     def __call__(self, value):
@@ -95,7 +95,9 @@ class Density:
 
     def contours(self, data):
         contours = Contours().set_size([self._n, self._m])
-        return Contour(data, contours, self.transform)
+        values = self.grid(data)
+        pow4k = pow(2, 2 * self._k)
+        return Contour(values, contours, pow4k, self.transform)
 
     def transform(self, geometry):
         for coordinates in geometry["coordinates"]:

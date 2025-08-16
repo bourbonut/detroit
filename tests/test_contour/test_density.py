@@ -1,6 +1,8 @@
 import detroit as d3
 import pytest
+import polars as pl
 from math import nan
+from pathlib import Path
 
 def in_delta(actual, expected, delta = 1e6):
     if isinstance(expected, list):
@@ -13,6 +15,12 @@ def in_delta(actual, expected, delta = 1e6):
         return True
     else:
         return actual >= expected - delta and actual <= expected + delta
+
+@pytest.fixture
+def faithful():
+    file = Path(__file__).resolve().parent / "data" / "faithful.tsv"
+    return pl.read_csv(file, separator="\t").to_dicts()
+
 
 def test_density_1():
     assert d3.contour_density().set_size([1, 2]).get_size() == [1, 2]
@@ -59,11 +67,8 @@ def test_density_6():
     values2 = list(map(lambda d: d["value"], c2))
     assert values1 == values2
 
-@pytest.mark.skip
-def test_density_7():
-    faithful = tsv("data/faithful.tsv")
-
-    width = 960,
+def test_density_7(faithful):
+    width = 960
     height = 500
     margin_top = 20
     margin_right = 30
@@ -86,19 +91,16 @@ def test_density_7():
 
     contour = (
         d3.contour_density()
-        .x(lambda d: x(d.waiting))
-        .y(lambda d: y(d.eruptions))
+        .x(lambda d: x(d["waiting"]))
+        .y(lambda d: y(d["eruptions"]))
         .set_size([width, height])
         .set_bandwidth(30)
         (faithful)
     )
 
-    assert list(map(lambda c: c.value, contour)) == d3.ticks(0.0002, 0.0059, 30)
+    assert list(map(lambda c: c["value"], contour)) == d3.ticks(0.0002, 0.0059, 30)
 
-@pytest.mark.skip
-def test_density_8():
-    faithful = tsv("data/faithful.tsv")
-
+def test_density_8(faithful):
     width = 960
     height = 500
     margin_top = 20
@@ -108,25 +110,25 @@ def test_density_8():
 
     x = (
         d3.scale_linear()
-        .set_domain(d3.extent(faithful, lambda d: d.waiting))
+        .set_domain(d3.extent(faithful, lambda d: d["waiting"]))
         .nice()
         .set_range_round([margin_left, width - margin_right])
     )
 
     y = (
         d3.scale_linear()
-        .set_domain(d3.extent(faithful, lambda d: d.eruptions))
+        .set_domain(d3.extent(faithful, lambda d: d["eruptions"]))
         .nice()
         .set_range_round([height - margin_bottom, margin_top])
     )
 
     contour = (
         d3.contour_density()
-        .x(lambda d: x(d.waiting))
-        .y(lambda d: y(d.eruptions))
+        .x(lambda d: x(d["waiting"]))
+        .y(lambda d: y(d["eruptions"]))
         .set_size([width, height])
         .set_bandwidth(30)
-        .set_contours(faithful)
+        .contours(faithful)
     )
 
     for value in d3.ticks(0.0002, 0.006, 30):
