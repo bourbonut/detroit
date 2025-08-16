@@ -16,7 +16,7 @@ def in_delta(actual, expected, delta = 1e6):
     else:
         return actual >= expected - delta and actual <= expected + delta
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def faithful():
     file = Path(__file__).resolve().parent / "data" / "faithful.tsv"
     return pl.read_csv(file, separator="\t").to_dicts()
@@ -67,6 +67,39 @@ def test_density_6():
     values2 = list(map(lambda d: d["value"], c2))
     assert values1 == values2
 
+@pytest.fixture(scope="session")
+def contour(faithful):
+    width = 960
+    height = 500
+    margin_top = 20
+    margin_right = 30
+    margin_bottom = 30
+    margin_left = 40
+
+    x = (
+        d3.scale_linear()
+        .set_domain(d3.extent(faithful, lambda d: d["waiting"]))
+        .nice()
+        .set_range_round([margin_left, width - margin_right])
+    )
+
+    y = (
+        d3.scale_linear()
+        .set_domain(d3.extent(faithful, lambda d: d["eruptions"]))
+        .nice()
+        .set_range_round([height - margin_bottom, margin_top])
+    )
+
+    contour = (
+        d3.contour_density()
+        .x(lambda d: x(d["waiting"]))
+        .y(lambda d: y(d["eruptions"]))
+        .set_size([width, height])
+        .set_bandwidth(30)
+        .contours(faithful)
+    )
+    return contour
+
 def test_density_7(faithful):
     width = 960
     height = 500
@@ -100,36 +133,8 @@ def test_density_7(faithful):
 
     assert list(map(lambda c: c["value"], contour)) == d3.ticks(0.0002, 0.0059, 30)
 
-def test_density_8(faithful):
-    width = 960
-    height = 500
-    margin_top = 20
-    margin_right = 30
-    margin_bottom = 30
-    margin_left = 40
-
-    x = (
-        d3.scale_linear()
-        .set_domain(d3.extent(faithful, lambda d: d["waiting"]))
-        .nice()
-        .set_range_round([margin_left, width - margin_right])
-    )
-
-    y = (
-        d3.scale_linear()
-        .set_domain(d3.extent(faithful, lambda d: d["eruptions"]))
-        .nice()
-        .set_range_round([height - margin_bottom, margin_top])
-    )
-
-    contour = (
-        d3.contour_density()
-        .x(lambda d: x(d["waiting"]))
-        .y(lambda d: y(d["eruptions"]))
-        .set_size([width, height])
-        .set_bandwidth(30)
-        .contours(faithful)
-    )
-
-    for value in d3.ticks(0.0002, 0.006, 30):
-        assert contour(value)["value"] == value
+@pytest.mark.parametrize(
+    "value", d3.ticks(0.0002, 0.006, 30)
+)
+def test_density_8(value, contour):
+    assert contour(value)["value"] == value
