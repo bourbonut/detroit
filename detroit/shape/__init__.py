@@ -26,7 +26,7 @@ from .curves import (
 )
 from .line import Line
 from .line_radial import line_radial
-from .link import Link, link_horizontal, link_vertical, link_radial
+from .link import Link, link_horizontal, link_radial, link_vertical
 from .offset import (
     offset_diverging,
     offset_expand,

@@ -6,6 +6,7 @@ def contains(ring, hole):
             return c
     return 0
 
+
 def ring_contains(ring, point):
     x = point[0]
     y = point[1]
@@ -25,12 +26,15 @@ def ring_contains(ring, point):
             contains = -contains
     return contains
 
+
 def segment_contains(a, b, c):
     i = int(a[0] == b[0])
     return collinear(a, b, c) and within(a[i], c[i], b[i])
 
+
 def collinear(a, b, c):
     return (b[0] - a[0]) * (c[1] - a[1]) == (c[0] - a[0]) * (b[1] - a[1])
+
 
 def within(p, q, r):
     return p <= q <= r or r <= q <= p

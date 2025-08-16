@@ -1,5 +1,6 @@
-from math import floor
 from collections.abc import Callable
+from math import floor
+
 
 def blur(values: list[float], r: float) -> list[float]:
     """
@@ -36,6 +37,7 @@ def blur(values: list[float], r: float) -> list[float]:
     blur(values, tmp, 0, length, 1)
     return values
 
+
 def blurf(
     radius: float,
 ) -> Callable[[list[float], list[float], int, int, int], None]:
@@ -44,6 +46,7 @@ def blurf(
         return bluri(radius)
     t = radius - radius0
     w = 2 * radius + 1
+
     def local_blur(T, S, start, stop, step):
         stop -= step
         if stop < start:
@@ -57,16 +60,18 @@ def blurf(
             sum += S[min(stop, i + s0)]
             T[i] = (sum + t * (S[max(start, i - s1)] + S[min(stop, i + s1)])) / w
             sum -= S[max(start, i - s0)]
+
     return local_blur
 
+
 def blur2d(
-    blur: Callable[[float], Callable[[list[float], list[float], int, int, int], None]]
+    blur: Callable[[float], Callable[[list[float], list[float], int, int, int], None]],
 ) -> Callable[[dict, float, float | None], dict]:
     def local_blur2(data: dict, rx: float, ry: float | None = None):
         ry = rx if ry is None else ry
-        if rx < 0.:
+        if rx < 0.0:
             raise ValueError("rx cannot be negative")
-        if ry < 0.:
+        if ry < 0.0:
             raise ValueError("ry cannot be negative")
         values = data["data"]
         width = floor(data["width"])
@@ -96,7 +101,9 @@ def blur2d(
             blurv(blury, tmp, values, width, height)
             blurv(blury, values, tmp, width, height)
         return {"data": values, "width": width, "height": height}
+
     return local_blur2
+
 
 def blurh(
     blur: Callable[[list[float], list[float], int, int, int], None],
@@ -107,6 +114,7 @@ def blurh(
 ):
     for y in range(0, w * h, w):
         blur(T, S, y, y + w, 1)
+
 
 def blurv(
     blur: Callable[[list[float], list[float], int, int, int], None],
@@ -119,10 +127,12 @@ def blurv(
     for x in range(w):
         blur(T, S, x, x + n, w)
 
+
 def blurf_image(
-    radius: float
+    radius: float,
 ) -> Callable[[list[float], list[float], int, int, int], None]:
     blur = blurf(radius)
+
     def local_blur(
         T: list[float],
         S: list[float],
@@ -137,12 +147,15 @@ def blurf_image(
         blur(T, S, start + 1, stop + 1, step)
         blur(T, S, start + 2, stop + 2, step)
         blur(T, S, start + 3, stop + 3, step)
+
     return local_blur
+
 
 def bluri(
     radius: float,
 ) -> Callable[[list[float], list[float], int, int, int], None]:
     w = 2 * radius + 1
+
     def local_blur(
         T: list[float],
         S: list[float],
@@ -161,7 +174,9 @@ def bluri(
             sum += S[min(stop, int(i + s))]
             T[i] = sum / w
             sum -= S[max(start, int(i - s))]
+
     return local_blur
+
 
 blur2 = blur2d(blurf)
 blur2.__doc__ = """

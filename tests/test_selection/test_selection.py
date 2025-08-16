@@ -307,6 +307,7 @@ def test_selection_27(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_28():
     svg = d3.create("svg")
     text = (
@@ -338,6 +339,7 @@ def test_selection_29(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_30():
     svg = d3.create("svg")
     text = (
@@ -367,6 +369,7 @@ def test_selection_31(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_32():
     svg = d3.create("svg")
     g1 = svg.append("g").attr("class", "g1")
@@ -374,6 +377,7 @@ def test_selection_32():
     g = svg.select_all("g")
     g.datum("Hello, world")
     assert g._data[g1.node()] == "Hello, world"
+
 
 def test_selection_33():
     data = ["Hello", "world"]
@@ -393,6 +397,7 @@ def test_selection_33():
         assert key.tag == "g"
         assert d is None
 
+
 def test_selection_34():
     data = ["Hello", "world"]
     svg = d3.create("svg")
@@ -408,7 +413,7 @@ def test_selection_34():
     for key, d in g._data.items():
         assert key.tag == "g"
         assert d in data
-    
+
 
 def test_selection_35(root):
     data = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
@@ -433,6 +438,7 @@ def test_selection_35(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_36(root):
     svg = d3.create("svg")
     data = [None] * 3
@@ -442,7 +448,7 @@ def test_selection_36(root):
         .data(data)
         .join(
             onenter=lambda enter: enter.append("circle").attr("fill", "green"),
-            onupdate=lambda update: update.attr("fill", "blue")
+            onupdate=lambda update: update.attr("fill", "blue"),
         )
         .attr("stroke", "black")
     )
@@ -458,15 +464,10 @@ def test_selection_36(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_37(root):
     svg = d3.create("svg")
-    (
-        svg.select_all("g")
-        .data([None, None])
-        .enter()
-        .append("g")
-        .append("text")
-    )
+    (svg.select_all("g").data([None, None]).enter().append("g").append("text"))
     svg.insert("circle", "text")
 
     for i in range(2):
@@ -475,6 +476,7 @@ def test_selection_37(root):
         subnode(g, "text")
 
     assert str(svg) == to_string(root)
+
 
 def test_selection_38(root):
     svg = d3.create("svg")
@@ -498,6 +500,7 @@ def test_selection_38(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_39(root):
     svg = d3.create("svg")
     g = (
@@ -516,18 +519,21 @@ def test_selection_39(root):
 
     assert str(svg) == to_string(root)
 
+
 def test_selection_40():
     svg = d3.create("svg")
     box = []
+
     def test(svg, a, b, c):
         box.append(a)
         box.append(b)
         box.append(c)
-    
+
     assert svg.call(test, 1, 2, 3) == svg
     assert box[0] == 1
     assert box[1] == 2
     assert box[2] == 3
+
 
 @pytest.mark.skip
 def test_selection_41():
@@ -535,6 +541,7 @@ def test_selection_41():
     svg2 = svg.clone()
     svg.append("g")
     assert str(svg) != str(svg2)
+
 
 def test_selection_42():
     svg = d3.create("svg")
@@ -551,6 +558,7 @@ def test_selection_42():
     s = svg.select_all("g[aria-label='group2']")
     assert len(s.nodes()) == 2
 
+
 def test_selection_43():
     svg = d3.create("svg")
     svg.append("g").attr("aria-label", "group2").attr("transform", "translate(1, 0)")
@@ -559,6 +567,7 @@ def test_selection_43():
     s = svg.select_all("g[aria-label='group2']:last-of-type")
     assert len(s.nodes()) == 1
     assert s.node().attrib.get("transform") == "translate(0, 1)"
+
 
 def test_selection_44():
     svg = d3.create("svg")

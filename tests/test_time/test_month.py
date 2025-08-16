@@ -134,12 +134,12 @@ def test_time_month_range():
         datetime(2011, 1, 1),
         datetime(2011, 2, 1),
     ]
-    assert d3.time_month.range(datetime(2010, 11, 30), datetime(2011, 3, 1))[
-        0
-    ], datetime(2010, 12, 1)
-    assert d3.time_month.range(datetime(2010, 11, 30), datetime(2011, 3, 1))[
-        2
-    ], datetime(2011, 2, 1)
+    assert d3.time_month.range(datetime(2010, 11, 30), datetime(2011, 3, 1))[0], (
+        datetime(2010, 12, 1)
+    )
+    assert d3.time_month.range(datetime(2010, 11, 30), datetime(2011, 3, 1))[2], (
+        datetime(2011, 2, 1)
+    )
     assert d3.time_month.range(datetime(2011, 2, 1), datetime(2012, 2, 1), 3) == [
         datetime(2011, 2, 1),
         datetime(2011, 5, 1),

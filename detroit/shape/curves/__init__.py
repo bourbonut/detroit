@@ -12,9 +12,9 @@ from .catmull_rom_open import curve_catmull_rom_open
 from .common import Curve
 from .linear import curve_linear
 from .linear_closed import curve_linear_closed
-from .radial import curve_radial, curve_radial_linear
 from .monotone import curve_monotone_x, curve_monotone_y
 from .natural import curve_natural
+from .radial import curve_radial, curve_radial_linear
 from .step import curve_step, curve_step_after, curve_step_before
 
 __all__ = [

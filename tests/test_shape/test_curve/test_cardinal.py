@@ -15,9 +15,9 @@ def test_cardinal_1():
 
 def test_cardinal_2():
     line = d3.line().set_curve(d3.curve_cardinal(0))
-    assert d3.line().set_curve(d3.curve_cardinal)([[0, 1], [1, 3], [2, 1], [3, 3]]) == line(
+    assert d3.line().set_curve(d3.curve_cardinal)(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
-    )
+    ) == line([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_cardinal_3():
@@ -51,9 +51,9 @@ def test_cardinal_5():
 
 def test_cardinal_6():
     area = d3.area().set_curve(d3.curve_cardinal(0))
-    assert d3.area().set_curve(d3.curve_cardinal)([[0, 1], [1, 3], [2, 1], [3, 3]]) == area(
+    assert d3.area().set_curve(d3.curve_cardinal)(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
-    )
+    ) == area([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_cardinal_7():

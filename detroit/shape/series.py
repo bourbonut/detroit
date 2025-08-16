@@ -1,10 +1,11 @@
 from collections.abc import Iterator
-from typing import Generic, Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 from ..types import T
 
 TSerie = TypeVar("Serie", bound="Serie")
 TSeries = TypeVar("Series", bound="Series")
+
 
 class Serie(Generic[T]):
     """

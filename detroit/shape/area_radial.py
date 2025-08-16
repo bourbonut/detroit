@@ -1,15 +1,16 @@
-from .curves import Curve, curve_radial, curve_radial_linear
-from .area import Area
-from .line_radial import LineRadial
 from collections.abc import Callable
-from ..selection import Selection
-from ..types import Accessor, T, Number
 from typing import TypeVar
+
+from ..selection import Selection
+from ..types import Accessor, Number, T
+from .area import Area
+from .curves import Curve, curve_radial, curve_radial_linear
+from .line_radial import LineRadial
 
 TAreaRadial = TypeVar("AreaRadial", bound="AreaRadial")
 
-class AreaRadial(Area[T]):
 
+class AreaRadial(Area[T]):
     def __init__(self):
         Area.__init__(self)
         super().set_curve(curve_radial_linear)
@@ -232,6 +233,7 @@ class AreaRadial(Area[T]):
 
     def get_outer_radius(self) -> Accessor[T, float]:
         return super().get_y1()
+
 
 def area_radial() -> AreaRadial:
     """

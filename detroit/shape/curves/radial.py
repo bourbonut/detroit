@@ -42,6 +42,7 @@ def curve_radial(
     Callable[[Selection], Curve]
         Radial curve function
     """
+
     def radial(context: Selection) -> Curve:
         if isinstance(curve(None), RadialCurve):
             return curve(context)

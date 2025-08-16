@@ -1,20 +1,25 @@
-from .constant import constant
-from .curves import Curve, curve_bump_x, curve_bump_y, curve_bump_radial
-from .path import WithPath
-from .point import x as point_x, y as point_y
-from inspect import signature
-from typing import TypeVar, Generic, Any
 from collections.abc import Callable
+from inspect import signature
+from typing import Any, Generic, TypeVar
+
 from ..selection import Selection
-from ..types import Accessor, T, Number
+from ..types import Accessor, Number, T
+from .constant import constant
+from .curves import Curve, curve_bump_radial, curve_bump_x, curve_bump_y
+from .path import WithPath
+from .point import x as point_x
+from .point import y as point_y
 
 TLink = TypeVar("Link", bound="Link")
+
 
 def link_source(d):
     return d["source"]
 
+
 def link_target(d):
     return d["target"]
+
 
 class Link(Generic[T], WithPath):
     """
@@ -193,11 +198,12 @@ class Link(Generic[T], WithPath):
     def get_context(self) -> Selection:
         return self._context
 
+
 def link_horizontal() -> Link:
     """
     Shorthand for link with :func:`d3.curve_bump_x <curve_bump_x>`; suitable
     for visualizing links in a tree diagram rooted on the left edge of the
-    display. 
+    display.
 
     Returns
     -------
@@ -205,6 +211,7 @@ def link_horizontal() -> Link:
         Horizontal link generator
     """
     return Link(curve_bump_x)
+
 
 def link_vertical() -> Link:
     """
@@ -217,6 +224,7 @@ def link_vertical() -> Link:
         Vertical link generator
     """
     return Link(curve_bump_y)
+
 
 def link_radial() -> Link:
     """

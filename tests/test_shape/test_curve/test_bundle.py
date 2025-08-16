@@ -3,9 +3,9 @@ import detroit as d3
 
 def test_bundle_1():
     line = d3.line().set_curve(d3.curve_bundle(0.85))
-    assert d3.line().set_curve(d3.curve_bundle)([[0, 1], [1, 3], [2, 1], [3, 3]]) == line(
+    assert d3.line().set_curve(d3.curve_bundle)(
         [[0, 1], [1, 3], [2, 1], [3, 3]]
-    )
+    ) == line([[0, 1], [1, 3], [2, 1], [3, 3]])
 
 
 def test_bundle_2():

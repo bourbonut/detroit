@@ -303,7 +303,10 @@ def test_linear_35():
     with pytest.raises(ValueError):
         assert d3.scale_linear().set_domain([0, 0]).nice(10).get_domain() == [0, 0]
     with pytest.raises(ValueError):
-        assert d3.scale_linear().set_domain([0.5, 0.5]).nice(10).get_domain() == [0.5, 0.5]
+        assert d3.scale_linear().set_domain([0.5, 0.5]).nice(10).get_domain() == [
+            0.5,
+            0.5,
+        ]
 
 
 def test_linear_36():
@@ -314,7 +317,9 @@ def test_linear_36():
         3,
         11,
     ]
-    assert d3.scale_linear().set_domain([123.1, 1, 2, 3, -0.9]).nice(10).get_domain() == [
+    assert d3.scale_linear().set_domain([123.1, 1, 2, 3, -0.9]).nice(
+        10
+    ).get_domain() == [
         130,
         1,
         2,

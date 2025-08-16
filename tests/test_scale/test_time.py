@@ -7,7 +7,9 @@ import detroit as d3
 
 def test_time_1():
     x = d3.scale_time().set_domain({datetime(2009, 1, 1), datetime(2010, 1, 1)})
-    assert sorted(x.get_domain()) == sorted([datetime(2009, 1, 1), datetime(2010, 1, 1)])
+    assert sorted(x.get_domain()) == sorted(
+        [datetime(2009, 1, 1), datetime(2010, 1, 1)]
+    )
 
 
 def test_time_2():
@@ -57,7 +59,10 @@ def test_time_7():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 12), datetime(2009, 1, 1, 23, 48)]
     )
-    assert x.nice(d3.time_day).get_domain() == [datetime(2009, 1, 1), datetime(2009, 1, 2)]
+    assert x.nice(d3.time_day).get_domain() == [
+        datetime(2009, 1, 1),
+        datetime(2009, 1, 2),
+    ]
     assert x.nice(d3.time_week).get_domain() == [
         datetime(2008, 12, 28),
         datetime(2009, 1, 4),
@@ -66,14 +71,20 @@ def test_time_7():
         datetime(2008, 12, 1),
         datetime(2009, 2, 1),
     ]
-    assert x.nice(d3.time_year).get_domain() == [datetime(2008, 1, 1), datetime(2010, 1, 1)]
+    assert x.nice(d3.time_year).get_domain() == [
+        datetime(2008, 1, 1),
+        datetime(2010, 1, 1),
+    ]
 
 
 def test_time_8():
     x = d3.scale_time().set_domain(
         [datetime(2009, 1, 1, 0, 12), datetime(2009, 1, 1, 0, 12)]
     )
-    assert x.nice(d3.time_day).get_domain() == [datetime(2009, 1, 1), datetime(2009, 1, 2)]
+    assert x.nice(d3.time_day).get_domain() == [
+        datetime(2009, 1, 1),
+        datetime(2009, 1, 2),
+    ]
 
 
 def test_time_9():

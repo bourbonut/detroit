@@ -1,5 +1,5 @@
-from ..series import Series
 from ...types import T
+from ..series import Series
 
 
 def offset_diverging(series: list[Series[T]], order: list[int]):

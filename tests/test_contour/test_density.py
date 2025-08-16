@@ -1,20 +1,26 @@
-import detroit as d3
-import pytest
-import polars as pl
 from math import nan
 from pathlib import Path
 
-def in_delta(actual, expected, delta = 1e6):
+import polars as pl
+import pytest
+
+import detroit as d3
+
+
+def in_delta(actual, expected, delta=1e6):
     if isinstance(expected, list):
         n = len(expected)
         if len(actual) != n:
             return False
         for i in range(n):
-            if not(actual[i] >= expected[i] - delta and actual[i] <= expected[i] + delta):
+            if not (
+                actual[i] >= expected[i] - delta and actual[i] <= expected[i] + delta
+            ):
                 return False
         return True
     else:
         return actual >= expected - delta and actual <= expected + delta
+
 
 @pytest.fixture(scope="session")
 def faithful():
@@ -29,9 +35,11 @@ def test_density_1():
     with pytest.raises(ValueError):
         d3.contour_density().set_size([0, -1])
 
+
 def test_density_2():
     c = d3.contour_density()
     assert c([]) == []
+
 
 @pytest.mark.skip
 def test_density_3():
@@ -44,6 +52,7 @@ def test_density_3():
             assert in_delta(a[0], p[0], 0.1)
             assert in_delta(a[1], p[1], 0.1)
 
+
 def test_density_4():
     points = [[1, 0], [0, 1], [1, 1]]
     c = d3.contour_density().set_size([1, 1])
@@ -53,10 +62,12 @@ def test_density_4():
     values2 = list(map(lambda d: d["value"], c2))
     assert values1 == values2
 
+
 def test_density_5():
     points = [[1, 0, 1], [0, 1, -2], [1, 1, nan]]
     c = d3.contour_density().set_size([1, 1]).set_weight(lambda d: d[2])(points)
     assert len(c) == 27
+
 
 def test_density_6():
     points = [[1, 0], [0, 1], [1, 1]]
@@ -66,6 +77,7 @@ def test_density_6():
     c2 = c.set_thresholds(values1)(points)
     values2 = list(map(lambda d: d["value"], c2))
     assert values1 == values2
+
 
 @pytest.fixture(scope="session")
 def contour(faithful):
@@ -100,6 +112,7 @@ def contour(faithful):
     )
     return contour
 
+
 def test_density_7(faithful):
     width = 960
     height = 500
@@ -127,14 +140,12 @@ def test_density_7(faithful):
         .x(lambda d: x(d["waiting"]))
         .y(lambda d: y(d["eruptions"]))
         .set_size([width, height])
-        .set_bandwidth(30)
-        (faithful)
+        .set_bandwidth(30)(faithful)
     )
 
     assert list(map(lambda c: c["value"], contour)) == d3.ticks(0.0002, 0.0059, 30)
 
-@pytest.mark.parametrize(
-    "value", d3.ticks(0.0002, 0.006, 30)
-)
+
+@pytest.mark.parametrize("value", d3.ticks(0.0002, 0.006, 30))
 def test_density_8(value, contour):
     assert contour(value)["value"] == value

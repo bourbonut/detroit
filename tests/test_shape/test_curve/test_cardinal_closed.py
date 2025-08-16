@@ -25,7 +25,9 @@ def test_cardinal_closed_2():
 
 def test_cardinal_closed_3():
     assert (
-        d3.line().set_curve(d3.curve_cardinal_closed(0.5))([[0, 1], [1, 3], [2, 1], [3, 3]])
+        d3.line().set_curve(d3.curve_cardinal_closed(0.5))(
+            [[0, 1], [1, 3], [2, 1], [3, 3]]
+        )
         == "M1,3C1.167,3,1.833,1,2,1C2.167,1,3.167,3,3,3C2.833,3,0.167,1,0,1C-0.167,1,0.833,3,1,3"
     )
 
@@ -61,7 +63,9 @@ def test_cardinal_closed_6():
 
 def test_cardinal_closed_7():
     assert (
-        d3.area().set_curve(d3.curve_cardinal_closed(0.5))([[0, 1], [1, 3], [2, 1], [3, 3]])
+        d3.area().set_curve(d3.curve_cardinal_closed(0.5))(
+            [[0, 1], [1, 3], [2, 1], [3, 3]]
+        )
         == "M1,3C1.167,3,1.833,1,2,1C2.167,1,3.167,3,3,3C2.833,3,0.167,1,0,1C-0.167,1,0.833,3,1,3M2,0C1.833,0,1.167,0,1,0C0.833,0,-0.167,0,0,0C0.167,0,2.833,0,3,0C3.167,0,2.167,0,2,0"
     )
 

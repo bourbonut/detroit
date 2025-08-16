@@ -1,35 +1,39 @@
-from ..array import ticks, extent, nice
+from inspect import signature
+from math import floor, inf, isfinite, isnan, nan
+
+from ..array import extent, nice, ticks
 from ..array.threshold import threshold_sturges
 from .area import area
 from .constant import constant
 from .contains import contains
-from math import isnan, inf, isfinite, nan, floor
-from inspect import signature
 
 CASES = [
-  [],
-  [[[1.0, 1.5], [0.5, 1.0]]],
-  [[[1.5, 1.0], [1.0, 1.5]]],
-  [[[1.5, 1.0], [0.5, 1.0]]],
-  [[[1.0, 0.5], [1.5, 1.0]]],
-  [[[1.0, 1.5], [0.5, 1.0]], [[1.0, 0.5], [1.5, 1.0]]],
-  [[[1.0, 0.5], [1.0, 1.5]]],
-  [[[1.0, 0.5], [0.5, 1.0]]],
-  [[[0.5, 1.0], [1.0, 0.5]]],
-  [[[1.0, 1.5], [1.0, 0.5]]],
-  [[[0.5, 1.0], [1.0, 0.5]], [[1.5, 1.0], [1.0, 1.5]]],
-  [[[1.5, 1.0], [1.0, 0.5]]],
-  [[[0.5, 1.0], [1.5, 1.0]]],
-  [[[1.0, 1.5], [1.5, 1.0]]],
-  [[[0.5, 1.0], [1.0, 1.5]]],
-  []
+    [],
+    [[[1.0, 1.5], [0.5, 1.0]]],
+    [[[1.5, 1.0], [1.0, 1.5]]],
+    [[[1.5, 1.0], [0.5, 1.0]]],
+    [[[1.0, 0.5], [1.5, 1.0]]],
+    [[[1.0, 1.5], [0.5, 1.0]], [[1.0, 0.5], [1.5, 1.0]]],
+    [[[1.0, 0.5], [1.0, 1.5]]],
+    [[[1.0, 0.5], [0.5, 1.0]]],
+    [[[0.5, 1.0], [1.0, 0.5]]],
+    [[[1.0, 1.5], [1.0, 0.5]]],
+    [[[0.5, 1.0], [1.0, 0.5]], [[1.5, 1.0], [1.0, 1.5]]],
+    [[[1.5, 1.0], [1.0, 0.5]]],
+    [[[0.5, 1.0], [1.5, 1.0]]],
+    [[[1.0, 1.5], [1.5, 1.0]]],
+    [[[0.5, 1.0], [1.0, 1.5]]],
+    [],
 ]
+
 
 def sign(x):
     return -1 if x < 0 else 1
 
+
 def finite(x):
     return x if isfinite(x) else nan
+
 
 def valid(v):
     if v is None or isnan(v):
@@ -37,12 +41,15 @@ def valid(v):
     else:
         return v
 
+
 def above(x, value):
     return False if x is None else (x >= value)
+
 
 def get(values, index):
     index = int(index)
     return values[index] if index < len(values) else None
+
 
 def smooth1(x, v0, v1, value):
     a = value - v0
@@ -54,8 +61,8 @@ def smooth1(x, v0, v1, value):
         d = sign(a) / sign(b)
     return x if isnan(d) else x + d - 0.5
 
-class Contours:
 
+class Contours:
     def __init__(self):
         self._dx = 1
         self._dy = 1
@@ -106,7 +113,6 @@ class Contours:
             "coordinates": polygons,
         }
 
-
     def isorings(self, values, value, callback):
         fragment_by_start = {}
         fragment_by_end = {}
@@ -126,7 +132,11 @@ class Contours:
                         f["ring"].append(end)
                         callback(f["ring"])
                     else:
-                        fragment_by_start[f["start"]] = fragment_by_end[g["end"]] = {"start": f["start"], "end": g["end"], "ring": f["ring"] + g["ring"]}
+                        fragment_by_start[f["start"]] = fragment_by_end[g["end"]] = {
+                            "start": f["start"],
+                            "end": g["end"],
+                            "ring": f["ring"] + g["ring"],
+                        }
                 else:
                     fragment_by_end.pop(f["end"])
                     f["ring"].append(end)
@@ -140,14 +150,22 @@ class Contours:
                         f["ring"].append(end)
                         callback(f["ring"])
                     else:
-                        fragment_by_start[g["start"]] = fragment_by_end[f["end"]] = {"start": g["start"], "end": f["end"], "ring": g["ring"] + f["ring"]}
+                        fragment_by_start[g["start"]] = fragment_by_end[f["end"]] = {
+                            "start": g["start"],
+                            "end": f["end"],
+                            "ring": g["ring"] + f["ring"],
+                        }
                 else:
                     fragment_by_start.pop(f["start"])
                     f["ring"].insert(0, start)
                     f["start"] = start_index
                     fragment_by_start[start_index] = f
             else:
-                fragment_by_start[start_index] = fragment_by_end[end_index] = {"start": start_index, "end": end_index, "ring": [start, end]}
+                fragment_by_start[start_index] = fragment_by_end[end_index] = {
+                    "start": start_index,
+                    "end": end_index,
+                    "ring": [start, end],
+                }
 
         t1 = above(get(values, 0), value)
         for line in CASES[t1 << 1]:
@@ -206,9 +224,13 @@ class Contours:
             yt = int(y)
             v1 = valid(get(values, yt * self._dx + xt))
             if x > 0 and x < self._dx and xt == x:
-                point[0] = smooth1(x, valid(get(values, yt * self._dx + xt - 1)), v1, value)
+                point[0] = smooth1(
+                    x, valid(get(values, yt * self._dx + xt - 1)), v1, value
+                )
             if y > 0 and y < self._dy and yt == y:
-                point[1] = smooth1(y, valid(get(values, (yt - 1) * self._dx + xt)), v1, value)
+                point[1] = smooth1(
+                    y, valid(get(values, (yt - 1) * self._dx + xt)), v1, value
+                )
 
     def index(self, point):
         return int(point[0] * 2 + point[1] * (self._dx + 1) * 4)
@@ -216,7 +238,7 @@ class Contours:
     def set_size(self, size):
         dx = floor(size[0])
         dy = floor(size[1])
-        if dx < 0. or dy < 0.:
+        if dx < 0.0 or dy < 0.0:
             raise ValueError("Invalid size: negative values")
         self._dx = dx
         self._dy = dy
@@ -232,6 +254,7 @@ class Contours:
     def set_smooth(self, smooth):
         def noop():
             return
+
         self._smooth = self.smooth_linear if smooth else noop
         return self
 

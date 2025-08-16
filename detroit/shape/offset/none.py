@@ -1,7 +1,7 @@
 from math import isnan
 
-from ..series import Series
 from ...types import T
+from ..series import Series
 
 
 def offset_none(series: list[Series[T]], order: list[int]):

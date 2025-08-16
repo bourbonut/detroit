@@ -1,7 +1,9 @@
-from collections.abc import Iterable, Hashable
+from collections.abc import Hashable, Iterable
 from functools import reduce
 from operator import iand, ior
+
 from ..types import T
+
 
 def union(*iterables: Iterable[Hashable]) -> set[Hashable]:
     """
@@ -25,7 +27,10 @@ def union(*iterables: Iterable[Hashable]) -> set[Hashable]:
     """
     return reduce(ior, map(set, iterables))
 
-def difference(iterable: Iterable[Hashable], *others: Iterable[Hashable]) -> set[Hashable]:
+
+def difference(
+    iterable: Iterable[Hashable], *others: Iterable[Hashable]
+) -> set[Hashable]:
     """
     Returns a new set containing every value of iterable that is not in any of
     the other iterables.
@@ -49,6 +54,7 @@ def difference(iterable: Iterable[Hashable], *others: Iterable[Hashable]) -> set
     """
     return set(iterable) - union(*others)
 
+
 def intersection(*iterables: Iterable[Hashable]) -> set[Hashable]:
     """
     Returns a new set containing every distinct value that appears in all of
@@ -70,6 +76,7 @@ def intersection(*iterables: Iterable[Hashable]) -> set[Hashable]:
     {3}
     """
     return reduce(iand, map(set, iterables))
+
 
 def superset(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     """
@@ -95,7 +102,8 @@ def superset(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     >>> d3.superset([1, 2, 3], [4, 2])
     False
     """
-    return not(bool(len(set(b) - set(a))))
+    return not (bool(len(set(b) - set(a))))
+
 
 def subset(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     """
@@ -121,7 +129,8 @@ def subset(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     >>> d3.subset([4, 2], [1, 2, 3])
     False
     """
-    return not(bool(len(set(a) - set(b))))
+    return not (bool(len(set(a) - set(b))))
+
 
 def disjoint(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     """
@@ -146,4 +155,4 @@ def disjoint(a: Iterable[Hashable], b: Iterable[Hashable]) -> bool:
     >>> d3.disjoint([1, 3], [3, 4])
     False
     """
-    return not(bool(len(set(a) & set(b))))
+    return not (bool(len(set(a) & set(b))))

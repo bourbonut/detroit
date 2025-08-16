@@ -3,7 +3,6 @@ from .blur import blur, blur2, blur_image
 from .extent import extent
 from .group import group, groups, index, indexes, rollup, rollups
 from .nice import nice
-from .ticks import tick_increment, tick_step, ticks
 from .set_operations import (
     difference,
     disjoint,
@@ -12,6 +11,7 @@ from .set_operations import (
     superset,
     union,
 )
+from .ticks import tick_increment, tick_step, ticks
 
 __all__ = [
     "bin",

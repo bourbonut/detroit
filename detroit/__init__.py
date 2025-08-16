@@ -467,8 +467,7 @@ __all__ = [
     "line_radial",
     "link",
     "link_horizontal",
-    "link_radial"
-    "link_vertical",
+    "link_radiallink_vertical",
     "nice",
     "path",
     "pie",

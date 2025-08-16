@@ -57,6 +57,7 @@ def test_line_4():
 
     def c(d, i, data):
         return 0
+
     d3.line().x(c).y(c).set_defined(f)(data)
     assert actual == [["a", 0, data], ["b", 1, data]]
 

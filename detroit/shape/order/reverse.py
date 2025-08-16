@@ -1,5 +1,5 @@
-from ..series import Series
 from ...types import T
+from ..series import Series
 
 
 def order_reverse(series: list[Series[T]]) -> list[int]:

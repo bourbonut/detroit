@@ -57,12 +57,12 @@ def test_time_week_range():
         datetime(2011, 1, 2),
         datetime(2011, 1, 9),
     ]
-    assert d3.time_week.range(datetime(2010, 12, 21), datetime(2011, 1, 12))[
-        0
-    ], datetime(2010, 12, 26)
-    assert d3.time_week.range(datetime(2010, 12, 21), datetime(2011, 1, 12))[
-        2
-    ], datetime(2011, 1, 9)
+    assert d3.time_week.range(datetime(2010, 12, 21), datetime(2011, 1, 12))[0], (
+        datetime(2010, 12, 26)
+    )
+    assert d3.time_week.range(datetime(2010, 12, 21), datetime(2011, 1, 12))[2], (
+        datetime(2011, 1, 9)
+    )
 
     assert d3.time_week.range(datetime(2011, 1, 1), datetime(2011, 4, 1), 4), [
         datetime(2011, 1, 2),

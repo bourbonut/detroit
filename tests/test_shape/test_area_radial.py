@@ -1,5 +1,6 @@
 import detroit as d3
-from detroit.shape.curves import curve_radial_linear, curve_radial
+from detroit.shape.curves import curve_radial, curve_radial_linear
+
 
 def test_area_radial_1():
     a = d3.area_radial()
@@ -12,17 +13,23 @@ def test_area_radial_1():
     assert a.get_context() is None
     assert a([[0, 1], [2, 3], [4, 5]]) == "M0,-1L2.728,1.248L-3.784,3.268L0,0L0,0L0,0Z"
 
+
 def test_area_radial_2():
     def defined():
         return True
+
     curve = d3.curve_cardinal
     context = {}
+
     def start_angle():
         return
+
     def end_angle():
         return
+
     def radius():
         return
+
     a = (
         d3.area_radial()
         .set_defined(defined)
@@ -39,17 +46,23 @@ def test_area_radial_2():
     assert l.get_angle() == start_angle
     assert l.get_radius() == radius
 
+
 def test_area_radial_3():
     def defined():
         return True
+
     curve = d3.curve_cardinal
     context = {}
+
     def start_angle():
         return
+
     def end_angle():
         return
+
     def radius():
         return
+
     a = (
         d3.area_radial()
         .set_defined(defined)
@@ -66,17 +79,23 @@ def test_area_radial_3():
     assert l.get_angle() == end_angle
     assert l.get_radius() == radius
 
+
 def test_area_radial_4():
     def defined():
         return True
+
     curve = d3.curve_cardinal
     context = {}
+
     def angle():
         return
+
     def inner_radius():
         return
+
     def outer_radius():
         return
+
     a = (
         d3.area_radial()
         .set_defined(defined)
@@ -93,17 +112,23 @@ def test_area_radial_4():
     assert l.get_angle() == angle
     assert l.get_radius() == inner_radius
 
+
 def test_area_radial_5():
     def defined():
         return True
+
     curve = d3.curve_cardinal
     context = {}
+
     def angle():
         return
+
     def inner_radius():
         return
+
     def outer_radius():
         return
+
     a = (
         d3.area_radial()
         .set_defined(defined)

@@ -68,9 +68,9 @@ def test_hcl_8():
     assert str(d3.hcl("#000")) == "rgb(0, 0, 0)"
     assert str(d3.hcl("#ccc")) == "rgb(204, 204, 204)"
     assert str(d3.hcl("#fff")) == "rgb(255, 255, 255)"
-    assert str(
-        d3.hcl(math.nan, 20, 40)
-    ), "rgb(94, 94, 94)"  # equivalent to hcl(*, *, 40)
+    assert str(d3.hcl(math.nan, 20, 40)), (
+        "rgb(94, 94, 94)"
+    )  # equivalent to hcl(*, *, 40)
     assert str(d3.hcl(120, math.nan, 40)), "rgb(94, 94, 94)"
     assert str(d3.hcl(0, math.nan, 40)), "rgb(94, 94, 94)"
     assert str(d3.hcl(120, 50, math.nan)), "rgb(0, 0, 0)"  # equivalent to hcl(*, *, 0)

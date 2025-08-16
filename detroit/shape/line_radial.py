@@ -1,14 +1,15 @@
+from collections.abc import Callable
+from typing import TypeVar
+
+from ..selection import Selection
+from ..types import Accessor, Number, T
 from .curves import Curve, curve_radial, curve_radial_linear
 from .line import Line
-from collections.abc import Callable
-from ..selection import Selection
-from ..types import Accessor, T, Number
-from typing import TypeVar
 
 TLineRadial = TypeVar("LineRadial", bound="LineRadial")
 
-class LineRadial(Line[T]):
 
+class LineRadial(Line[T]):
     def __init__(self):
         Line.__init__(self)
         super().set_curve(curve_radial_linear)
@@ -66,6 +67,7 @@ class LineRadial(Line[T]):
 
     def get_radius(self) -> Accessor[T, float]:
         return super().get_y()
+
 
 def line_radial() -> LineRadial:
     """

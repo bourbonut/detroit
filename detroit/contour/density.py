@@ -1,17 +1,22 @@
+from inspect import signature
+from math import floor, isnan, log, sqrt, ulp
+
 from ..array import blur2, ticks
 from .constant import constant
 from .contours import Contours
-from math import floor, ulp, log, sqrt, isnan
-from inspect import signature
+
 
 def default_x(d):
     return d[0]
 
+
 def default_y(d):
     return d[1]
 
+
 def default_weight():
     return 1
+
 
 class Contour:
     def __init__(self, values, contours, pow4k, transform):
@@ -28,8 +33,8 @@ class Contour:
     def max(self):
         return max(self._values) / self._pow4k
 
-class Density:
 
+class Density:
     def __init__(self):
         self._x = default_x
         self._y = default_y
@@ -58,14 +63,21 @@ class Density:
             yi = (self._y(*args[:ynargs]) + self._o) * pow2k
             wnargs = len(signature(self._weight).parameters)
             wi = self._weight(*args[:wnargs])
-            if wi and not isnan(wi) and xi >= 0. and xi < self._n and yi >= 0. and yi < self._m:
+            if (
+                wi
+                and not isnan(wi)
+                and xi >= 0.0
+                and xi < self._n
+                and yi >= 0.0
+                and yi < self._m
+            ):
                 x0 = floor(xi)
                 y0 = floor(yi)
                 xt = xi - x0 - 0.5
                 yt = yi - y0 - 0.5
                 values[x0 + y0 * self._n] += (1 - xt) * (1 - yt) * wi
                 values[x0 + 1 + y0 * self._n] += xt * (1 - yt) * wi
-                values[x0 + 1  + (y0 + 1) * self._n] += xt * yt * wi
+                values[x0 + 1 + (y0 + 1) * self._n] += xt * yt * wi
                 values[x0 + (y0 + 1) * self._n] += (1 - xt) * yt * wi
 
         blur2({"data": values, "width": self._n, "height": self._m}, self._r * pow2k)
@@ -83,9 +95,9 @@ class Density:
         density = (
             Contours()
             .set_size([self._n, self._m])
-            .set_thresholds(list(map(lambda d: d * pow4k, tz)))
-            (values)
+            .set_thresholds(list(map(lambda d: d * pow4k, tz)))(values)
         )
+
         def func(pair):
             i, c = pair
             c["value"] = tz[i]
@@ -111,7 +123,7 @@ class Density:
     def transform_ring(self, ring):
         for point in ring:
             self.transform_point(point)
- 
+
     def transform_point(self, coordinates):
         coordinates[0] = coordinates[0] * pow(2, self._k) - self._o
         coordinates[1] = coordinates[1] * pow(2, self._k) - self._o
@@ -146,14 +158,14 @@ class Density:
     def set_size(self, size):
         dx = size[0]
         dy = size[1]
-        if dx < 0. or dy < 0.:
+        if dx < 0.0 or dy < 0.0:
             raise ValueError("Invalid size: negative values")
         self._dx = dx
         self._dy = dy
         return self.resize()
 
     def set_cell_size(self, cell_size):
-        self._k = floor(log(cell_size)/ log(2))
+        self._k = floor(log(cell_size) / log(2))
         return self.resize()
 
     def set_thresholds(self, thresholds):

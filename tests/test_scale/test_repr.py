@@ -35,9 +35,11 @@ functions = [
     d3.scale_time,
 ]
 
+
 @pytest.mark.parametrize("function", functions)
 def test_str(function):
     assert "<detroit.scale" not in str(function())
+
 
 @pytest.mark.parametrize("function", functions)
 def test_repr(function):
