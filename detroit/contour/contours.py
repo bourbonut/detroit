@@ -1,11 +1,16 @@
+from collections.abc import Callable
 from inspect import signature
 from math import floor, inf, isfinite, isnan, nan
+from typing import TypeVar
 
 from ..array import extent, nice, ticks
 from ..array.threshold import threshold_sturges
+from ..types import GeoJSON, Point2D
 from .area import area
 from .constant import constant
 from .contains import contains
+
+TContours = TypeVar("Contours", bound="Contours")
 
 CASES = [
     [],
@@ -27,31 +32,120 @@ CASES = [
 ]
 
 
-def sign(x):
+def sign(x: float) -> int:
+    """
+    Returns the sign of the input.
+
+    Parameters
+    ----------
+    x : float
+        Input value
+
+    Returns
+    -------
+    int
+        Sign value
+    """
     return -1 if x < 0 else 1
 
 
-def finite(x):
+def finite(x: float) -> float:
+    """
+    Returns :code:`x` if it is finite else :code:`nan`
+
+    Parameters
+    ----------
+    x : float
+        Input value
+
+    Returns
+    -------
+    float
+        Output value
+    """
     return x if isfinite(x) else nan
 
 
-def valid(v):
+def valid(v: float | None) -> float:
+    """
+    Returns :code:`v` if it is valid else :code:`-inf`
+
+    Parameters
+    ----------
+    v : float | None
+        Input value
+
+    Returns
+    -------
+    float
+        Output value
+    """
     if v is None or isnan(v):
         return -inf
     else:
         return v
 
 
-def above(x, value):
+def above(x: float | None, value: float) -> bool:
+    """
+    Returns if :code:`x` is above :code:`value`
+
+    Parameters
+    ----------
+    x : float | None
+        Input value
+    value : float
+        Value to compare
+
+    Returns
+    -------
+    bool
+        Output value
+    """
     return False if x is None else (x >= value)
 
 
-def get(values, index):
+def get(values: list[float], index: int) -> float | None:
+    """
+    Getter function for list of float. If the index does not exist, returns
+    :code:`None`
+
+    Parameters
+    ----------
+    values : list[float]
+        List of value
+    index : int
+        Index
+
+    Returns
+    -------
+    float | None
+        Desired value given the index if it exists
+    """
     index = int(index)
     return values[index] if index < len(values) else None
 
 
-def smooth1(x, v0, v1, value):
+def smooth1(x: float, v0: float, v1: float, value: float) -> float:
+    """
+    Smooth function in one dimension
+
+    Parameters
+    ----------
+    x : float
+        Input value
+    v0 : float
+        Min bound value
+    v1 : float
+        Max bound value
+    value : float
+        Target value
+
+    Returns
+    -------
+    float
+        Smooth value
+    """
     a = value - v0
     b = v1 - v0
     d = 0.0
@@ -63,13 +157,37 @@ def smooth1(x, v0, v1, value):
 
 
 class Contours:
+    """
+    For each threshold value, the contour generator constructs a GeoJSON
+    MultiPolygon geometry object representing the area where the input values
+    are greater than or equal to the threshold value. The geometry is in planar
+    coordinates, where :math:`(i + 0.5, j + 0.5)` corresponds to element
+    :code:`i + jn` in the input values array.
+    """
     def __init__(self):
         self._dx = 1
         self._dy = 1
         self._threshold = threshold_sturges
-        self._smooth = self.smooth_linear
+        self._smooth = self._smooth_linear
 
-    def __call__(self, values):
+    def __call__(self, values: list[float]) -> list[GeoJSON]:
+        """
+        Computes the contours for the given array of values, returning an array
+        of GeoJSON MultiPolygon geometry objects.
+
+        Parameters
+        ----------
+        values : list[float]
+            Input grid values which must be an array of length :math:`n \\times
+            m` where :math:`[n, m]` is the contour generator's size;
+            furthermore, each values :code:`[i + jn]` must represent the value
+            at the position :math:`(i, j)`.
+
+        Returns
+        -------
+        list[GeoJSON]
+            Geometry objects
+        """
         tz = self._threshold(values)
         if not isinstance(tz, list):
             e = extent(values, finite)
@@ -83,7 +201,26 @@ class Contours:
 
         return list(map(lambda value: self.contour(values, value), tz))
 
-    def contour(self, values, value):
+    def contour(self, values: list[float], value: float) -> GeoJSON:
+        """
+        Computes a single contour
+
+        Parameters
+        ----------
+        values : list[float]
+            Input grid values which must be an array of length :math:`n \\times
+            m` where :math:`[n, m]` is the contour generator's size;
+            furthermore, each values :code:`[i + jn]` must represent the value
+            at the position :math:`(i, j)`.
+        value : float
+            Threshold value; the input values are greater than or equal to this
+            value.
+
+        Returns
+        -------
+        GeoJSON
+            GeoJSON MultiPolygon geometry object
+        """
         v = nan if value is None else value
         if not isinstance(v, (int, float)) or isnan(v):
             raise ValueError(f"Invalid value: {value}")
@@ -91,7 +228,7 @@ class Contours:
         polygons = []
         holes = []
 
-        def callback(ring):
+        def callback(ring: list[Point2D]):
             args = [ring, values, v]
             nargs = len(signature(self._smooth).parameters)
             self._smooth(*args[:nargs])
@@ -100,7 +237,7 @@ class Contours:
             else:
                 holes.append(ring)
 
-        self.isorings(values, v, callback)
+        self._isorings(values, v, callback)
         for hole in holes:
             for polygon in polygons:
                 if contains(polygon[0], hole) != -1:
@@ -113,17 +250,29 @@ class Contours:
             "coordinates": polygons,
         }
 
-    def isorings(self, values, value, callback):
+    def _isorings(self, values: list[float], value: float, callback: Callable[[list[Point2D]], None]):
+        """
+        Finds contour polygons and passes them to :code:`callback` function.
+
+        Parameters
+        ----------
+        values : list[float]
+            Input grid values
+        value : float
+            Threshold value
+        callback : Callable[[list[Point2D]], None]
+            Callback function called when a ring is found
+        """
         fragment_by_start = {}
         fragment_by_end = {}
 
         x = y = -1
 
-        def stitch(line):
+        def stitch(line: list[Point2D]):
             start = [line[0][0] + x, line[0][1] + y]
             end = [line[1][0] + x, line[1][1] + y]
-            start_index = self.index(start)
-            end_index = self.index(end)
+            start_index = self._index(start)
+            end_index = self._index(end)
             if f := fragment_by_end.get(start_index):
                 if g := fragment_by_start.get(end_index):
                     fragment_by_end.pop(f["end"])
@@ -216,7 +365,19 @@ class Contours:
         for line in CASES[t2 << 3]:
             stitch(line)
 
-    def smooth_linear(self, ring, values, value):
+    def _smooth_linear(self, ring: list[Point2D], values: list[float], value: float):
+        """
+        Function for smoothing contour polygons using linear interpolatation.
+
+        Parameters
+        ----------
+        ring : list[Point2D]
+            Contour polygons
+        values : list[float]
+            Input grid values
+        value : float
+            Threshold value
+        """
         for point in ring:
             x = point[0]
             y = point[1]
@@ -232,10 +393,37 @@ class Contours:
                     y, valid(get(values, (yt - 1) * self._dx + xt)), v1, value
                 )
 
-    def index(self, point):
+    def _index(self, point: Point2D) -> int:
+        """
+        Returns the index given 2D point coordinates
+
+        Parameters
+        ----------
+        point : Point2D
+            2D point coordinates
+
+        Returns
+        -------
+        int
+            Index value
+        """
         return int(point[0] * 2 + point[1] * (self._dx + 1) * 4)
 
-    def set_size(self, size):
+    def set_size(self, size: tuple[float, float]) -> TContours:
+        """
+        Sets the size of the input values to the contour generator and returns
+        itself.
+
+        Parameters
+        ----------
+        size : tuple[float, float]
+            Size of the input values
+
+        Returns
+        -------
+        TContours
+            Itself
+        """
         dx = floor(size[0])
         dy = floor(size[1])
         if dx < 0.0 or dy < 0.0:
@@ -244,25 +432,57 @@ class Contours:
         self._dy = dy
         return self
 
-    def set_thresholds(self, thresholds):
+    def set_thresholds(
+        self,
+        thresholds: Callable[[list[float], ...], float | list[float]] | list[float] | float,
+    ) -> TContours:
+        """
+        Sets the threshold function to the contour generator and returns
+        itself.
+
+        Parameters
+        ----------
+        thresholds : Callable[[list[float], ...], float | list[float]] | list[float] | float
+            Threshold function or array or constant value; default implements
+            Sturges' formula
+
+        Returns
+        -------
+        TContours
+            Itself
+        """
         if callable(thresholds):
             self._threshold = thresholds
         else:
             self._threshold = constant(thresholds)
         return self
 
-    def set_smooth(self, smooth):
+    def set_smooth(self, smooth: bool) -> TContours:
+        """
+        Sets if contour polygons are smoothed using interpolatation and returns
+        itself.
+
+        Parameters
+        ----------
+        smooth : bool
+            Boolean value
+
+        Returns
+        -------
+        TContours
+            Itself
+        """
         def noop():
             return
 
-        self._smooth = self.smooth_linear if smooth else noop
+        self._smooth = self._smooth_linear if smooth else noop
         return self
 
-    def get_size(self):
+    def get_size(self) -> tuple[float, float]:
         return [self._dx, self._dy]
 
-    def get_thresholds(self):
+    def get_thresholds(self) -> Callable[[list[float], ...], float | list[float]]:
         return self._threshold
 
-    def get_smooth(self):
-        return self._smooth
+    def get_smooth(self) -> bool:
+        return self._smooth == self._smooth_linear

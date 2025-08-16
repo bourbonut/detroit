@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Generic, Protocol, TypeAlias, TypeVar, overload
+from typing import Any, Generic, Protocol, TypeAlias, TypedDict, TypeVar, overload
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -10,6 +10,7 @@ TContinuousScaler = TypeVar("Itself", bound="ContinuousScaler")
 TSequentialScaler = TypeVar("Itself", bound="SequentialScaler")
 Number: TypeAlias = int | float
 GenValue: TypeAlias = datetime | str | int | float
+Point2D: TypeAlias = tuple[float, float]
 
 # Type definition for :code:`Formatter`: a function which takes a string to be
 # formatted and returns the formatted value.
@@ -316,3 +317,21 @@ class Accessor(Generic[U, V], Protocol):
             A desired value
         """
         ...
+
+class GeoJSON(TypedDict):
+    """
+    Describes a contour as GeoJSON MultiPolygon geometry objects
+
+    Attributes
+    ----------
+    type : str
+        Type of contour (ex: :code:`"MultiPolygon`)
+    value : str
+        Threshold value; the input values are greater than or equal to this
+        value.
+    coordinates : list[list[tuple[int, int]]]
+        Coordinates of contours
+    """
+    type: str
+    value: float
+    coordinates: list[list[Point2D]]
