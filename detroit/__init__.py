@@ -35,6 +35,7 @@ from .color import (
     rgb,
 )
 from .contour import Contours as contours
+from .contour import Density as contour_density
 from .format import (
     format_default_locale,
     format_prefix,
@@ -358,6 +359,7 @@ __all__ = [
     "blur2",
     "blur_image",
     "color",
+    "contour_density",
     "contours",
     "create",
     "cubehelix",

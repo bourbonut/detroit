@@ -1,7 +1,8 @@
 from ..array import blur2, ticks
 from .constant import constant
 from .contours import Contours
-from math import floor, ulp, log, sqrt
+from math import floor, ulp, log, sqrt, isnan
+from inspect import signature
 
 def default_x(d):
     return d[0]
@@ -13,14 +14,14 @@ def default_weight():
     return 1
 
 class Contour:
-    def __init__(self, transform):
+    def __init__(self, data, contours, transform):
         self._values = self.grid(data)
-        self._contours = Contours().set_size([n, m])
+        self._contours = contours
         self._pow4k = pow(2, 2 * self._k)
         self._transform = transform
 
     def __call__(self, value):
-        c = self._transform(contours.contour(values, value * pow4k))
+        c = self._transform(self._contours.contour(self._values, value * self._pow4k))
         c["value"] = value
         return c
 
@@ -37,32 +38,37 @@ class Density:
         self._dy = 500
         self._r = 20
         self._k = 2
-        self._o = r * 3
+        self._o = self._r * 3
         self._n = (self._dx + self._o * 2) >> self._k
         self._m = (self._dy + self._o * 2) >> self._k
         self._threshold = constant(20)
 
     def grid(self, data):
-        values = [0.0] * (n * m)
+        values = [0.0] * (self._n * self._m)
         pow2k = pow(2, -self._k)
         i = -1
 
         for d in data:
-            xi = (x(d, i, data) + o) * pow2k
+            args = [d, i, data]
+            xnargs = len(signature(self._x).parameters)
+            xi = (self._x(*args[:xnargs]) + self._o) * pow2k
             i += 1
-            yi = (y(d, i, data) + o) * pow2k
-            wi = self._weight(d, i, data)
-            if wi and xi >= 0. and xi < n and yi >= 0. and yi < m:
+            args = [d, i, data]
+            ynargs = len(signature(self._y).parameters)
+            yi = (self._y(*args[:ynargs]) + self._o) * pow2k
+            wnargs = len(signature(self._weight).parameters)
+            wi = self._weight(*args[:wnargs])
+            if wi and not isnan(wi) and xi >= 0. and xi < self._n and yi >= 0. and yi < self._m:
                 x0 = floor(xi)
                 y0 = floor(yi)
                 xt = xi - x0 - 0.5
                 yt = yi - y0 - 0.5
-                values[x0 + y0 * n] += (1 - xt) * (1 - yt) * wi
-                values[x0 + 1 + y0 * n] += xt * (1 - yt) * wi
-                values[x0 + 1  + (y0 + 1) * n] += xt * yt * wi
-                values[x0 + (y0 + 1) * n] += (1 - xt) * yt * wi
+                values[x0 + y0 * self._n] += (1 - xt) * (1 - yt) * wi
+                values[x0 + 1 + y0 * self._n] += xt * (1 - yt) * wi
+                values[x0 + 1  + (y0 + 1) * self._n] += xt * yt * wi
+                values[x0 + (y0 + 1) * self._n] += (1 - xt) * yt * wi
 
-        blur2({"data": values, "width": n, "height": m}, r * pow2k)
+        blur2({"data": values, "width": self._n, "height": self._m}, self._r * pow2k)
         return values
 
     def __call__(self, data):
@@ -71,44 +77,47 @@ class Density:
         pow4k = pow(2, 2 * self._k)
 
         if not isinstance(tz, list):
-            tz = ticks(ulp(0.0), max(values) / pow4k, tz)
+            max_values = max(values)
+            tz = ticks(ulp(0.0), max_values / pow4k, tz) if max_values != 0.0 else []
 
         density = (
             Contours()
-            .set_size([n, m])
-            .set_thresholds(list(map(lambda d: d * pow4k, values)))
+            .set_size([self._n, self._m])
+            .set_thresholds(list(map(lambda d: d * pow4k, tz)))
             (values)
         )
-        def func(c, i):
+        def func(pair):
+            i, c = pair
             c["value"] = tz[i]
-            (c["value"], self.transform(c))
+            return self.transform(c)
 
-        return list(map(func, density))
+        return list(map(func, enumerate(density)))
 
     def contours(self, data):
-        return Contour(self.transform)
+        contours = Contours().set_size([self._n, self._m])
+        return Contour(data, contours, self.transform)
 
     def transform(self, geometry):
         for coordinates in geometry["coordinates"]:
-            transform_polygon(coordinates)
+            self.transform_polygon(coordinates)
         return geometry
 
     def transform_polygon(self, coordinates):
         for ring in coordinates:
-            transform_ring(ring)
+            self.transform_ring(ring)
 
     def transform_ring(self, ring):
         for point in ring:
-            transform_point(point)
+            self.transform_point(point)
  
-    def transform_point(self, point):
+    def transform_point(self, coordinates):
         coordinates[0] = coordinates[0] * pow(2, self._k) - self._o
         coordinates[1] = coordinates[1] * pow(2, self._k) - self._o
 
     def resize(self):
         self._o = self._r * 3
-        self._n = (self._dx + self._o * 2) >> k
-        self._m = (self._dy + self._o * 2) >> k
+        self._n = int(self._dx + self._o * 2) >> self._k
+        self._m = int(self._dy + self._o * 2) >> self._k
         return self
 
     def x(self, x):
@@ -125,7 +134,7 @@ class Density:
             self._y = constant(y)
         return self
 
-    def weight(self, weight):
+    def set_weight(self, weight):
         if callable(weight):
             self._weight = weight
         else:
@@ -133,13 +142,13 @@ class Density:
         return self
 
     def set_size(self, size):
-        dx = floor(size[0])
-        dy = floor(size[1])
+        dx = size[0]
+        dy = size[1]
         if dx < 0. or dy < 0.:
             raise ValueError("Invalid size: negative values")
         self._dx = dx
         self._dy = dy
-        return self
+        return self.resize()
 
     def set_cell_size(self, cell_size):
         self._k = floor(log(cell_size)/ log(2))
