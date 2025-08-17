@@ -34,7 +34,7 @@ def number(scale):
 
 def center(scale, offset):
     offset = max(0, scale.get_bandwidth() - offset * 2) / 2
-    if scale.round:
+    if scale.get_round():
         offset = round(offset)
     return lambda d: float(scale(d)) + offset
 
@@ -175,7 +175,7 @@ class Axis:
         range0 = float(range_values[0]) + self._offset
         range1 = float(range_values[-1]) + self._offset
 
-        if hasattr(self._scale, "bandwidth"):
+        if hasattr(self._scale, "get_bandwidth"):
             position = center(self._scale.copy(), self._offset)
         else:
             position = number(self._scale.copy())
