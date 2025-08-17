@@ -105,7 +105,7 @@ Hertzsprung Russell Diagram
 
 .. code:: python
 
-   # Ceate the scales.
+   # Create the scales.
    x = d3.scale_linear([-0.39, 2.19], [margin.left, width - margin.right])
    y = d3.scale_linear([-7, 19], [margin.top, height - margin.bottom])
    z = bv2rgb
@@ -162,18 +162,18 @@ Hertzsprung Russell Diagram
        .call(d3.axis_bottom(x).set_ticks(None, "+f"))
    )
 
+   def top_axis(temperatures):
+       tick_values = list(map(color, temperatures))
+       return (
+           d3.axis_top(x)
+           .set_tick_values(list(map(color, temperatures)))
+           .set_tick_format(lambda d: str(temperatures[tick_values.index(d)]))
+       )
+
    (
        svg.append("g")
        .attr("transform", f"translate(0, {margin.top})")
-       .call(
-           (
-               lambda temperatures: (
-                   d3.axis_top(x)
-                   .set_tick_values(list(map(color, temperatures)))
-                   .set_tick_format(lambda d, i: str(temperatures[i]))
-               )
-           )(list(range(3_000, 10_001, 1_000)) + [20_000])
-       )
+       .call(top_axis(list(range(3_000, 10_001, 1_000)) + [20_000]))
    )
 
    svg.select_all(".domain").remove()

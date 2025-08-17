@@ -683,10 +683,10 @@ class Selection:
         callback : Callable[[etree.Element, Data, int, list[etree.Element]], None]
             Function to call which takes as argument:
 
-            * **node** (`etree.Element`) - the node element
-            * **data** (`Any`) - current data associated to the node
-            * **index** (`int`) - the index of the node in its group
-            * **group** (`list[etree.Element]`) - the node's group with other nodes.
+            * **node** (:code:`etree.Element`) - the node element
+            * **data** (:code:`Any`) - current data associated to the node
+            * **index** (:code:`int`) - the index of the node in its group
+            * **group** (:code:`list[etree.Element]`) - the node's group with other nodes.
         """
         for group in self._groups:
             for i, node in enumerate(group):
@@ -1531,10 +1531,76 @@ class Selection:
         >>> svg.to_string(False) == str(svg)
         True
         """
+        if len(self._parents) == 0:
+            return ""
         return (
             etree.tostring(self._parents[0], pretty_print=pretty_print)
             .decode("utf-8")
             .removesuffix("\n")
+        )
+
+    def to_repr(self, show_enter: bool = True, show_exit: bool = True, show_data: bool = True) -> str:
+        """
+        Represents the selection with optional parameters.
+
+        Parameters
+        ----------
+        show_enter : bool
+            Show enter elements associated to this selection
+        show_exit : bool
+            Show exit elements associated to this selection
+        show_data : bool
+            Show data associated to this selection
+
+        Returns
+        -------
+        str
+            String
+
+        Examples
+        --------
+
+        >>> svg = d3.create("svg")
+        >>> g = (
+        ...     svg.select_all("g")
+        ...     .data(list(reversed(range(10))))
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("class", lambda d: f"class{d}")
+        ... )
+        >>> print(g.to_repr())
+        Selection(
+            groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
+            parents=[svg],
+            enter=None,
+            exit=None,
+            data={<Element g at 0x7287cf850040>: 9, <Element g at 0x7287cfa50bc0>: 8, <Element g at 0x7287cf883ac0>: 7, <Element g at 0x7287cf8837c0>:
+         6, <Element g at 0x7287cf883e00>: 5, <Element g at 0x7287cf883a40>: 4, <Element g at 0x7287cf882fc0>: 3, <Element g at 0x7287cf883a80>: 2, <E
+        lement g at 0x7287cf880d80>: 1, <Element g at 0x7287cf881000>: 0},
+        )
+        """
+        def node_repr(node):
+            if node is None:
+                return str(node)
+            if isinstance(node, EnterNode):
+                return str(node)
+            tag = node.tag
+            class_name = node.attrib.get("class")
+            if class_name:
+                return f"{tag}.{class_name}"
+            return tag
+
+        groups = [
+            f"[{', '.join(node_repr(node) for node in group)}]"
+            for group in self._groups
+        ]
+        parents = f"[{', '.join(node_repr(parent) for parent in self._parents)}]"
+        enter = f"    enter={self._enter},\n" if show_enter else ""
+        exit = f"    exit={self._exit},\n" if show_exit else ""
+        data = f"    data={self._data},\n" if show_data else ""
+        return (
+            f"Selection(\n    groups=[{', '.join(groups)}],\n    parents={parents},"
+            f"\n{enter}{exit}{data})"
         )
 
     def __str__(self) -> str:
@@ -1573,29 +1639,6 @@ class Selection:
         Selection(
             groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fac2c337240>: 9, <Element g at 0x7fac2cf91980>: 8, <Element g at 0x7fac2cf92680>: 7, <Element g at 0x7fac2cf91680>:6, <Element g at 0x7fac2cf7f100>: 5, <Element g at 0x7fac2cf7e180>: 4, <Element g at 0x7fac2cf7cec0>: 3, <Element g at 0x7fac2cf7c500>: 2, <Element g at 0x7fac2cf7fc80>: 1, <Element g at 0x7fac2cf7f700>: 0},
         )
         """
-
-        def node_repr(node):
-            if node is None:
-                return str(node)
-            if isinstance(node, EnterNode):
-                return str(node)
-            tag = node.tag
-            class_name = node.attrib.get("class")
-            if class_name:
-                return f"{tag}.{class_name}"
-            return tag
-
-        groups = [
-            f"[{', '.join(node_repr(node) for node in group)}]"
-            for group in self._groups
-        ]
-        parents = f"[{', '.join(node_repr(parent) for parent in self._parents)}]"
-        return (
-            f"Selection(\n    groups=[{', '.join(groups)}],\n    parents={parents},"
-            f"\n    enter={self._enter},\n    exit={self._exit},\n    data={self._data},\n)"
-        )
+        return self.to_repr(show_enter=False, show_exit=False, show_data=False)
