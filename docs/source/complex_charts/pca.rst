@@ -149,7 +149,7 @@ Principal Component Analysis on MNIST dataset
    offset = 40  # Space between legend labels
    symbol_size = 3
 
-   legend = svg.select_all("legend").data(labels.to_list()).enter().append("g")
+   legend = svg.append("g").select_all("legend").data(labels.to_list()).enter()
 
    (
        legend.append("g")
