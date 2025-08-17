@@ -1,6 +1,4 @@
-def x(d, i=None, data=None):
-    return d[0]
+from operator import itemgetter
 
-
-def y(d, i=None, data=None):
-    return d[1]
+x = itemgetter(0)
+y = itemgetter(1)

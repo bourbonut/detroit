@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from operator import itemgetter
 from math import floor, isnan, log, sqrt, ulp
 from typing import Generic, TypeVar
 
@@ -9,39 +10,8 @@ from .contours import Contours
 
 TDensity = TypeVar("Density", bound="Density")
 
-def default_x(d: Point2D) -> float:
-    """
-    Default x accessor
-
-    Parameters
-    ----------
-    d : Point2D
-        2D point coordinates
-
-    Returns
-    -------
-    float
-        x coordinate
-    """
-    return d[0]
-
-
-def default_y(d: Point2D) -> float:
-    """
-    Default y accessor
-
-    Parameters
-    ----------
-    d : Point2D
-        2D point coordinates
-
-    Returns
-    -------
-    float
-        y coordinate
-    """
-    return d[1]
-
+default_x = itemgetter(0)
+default_y = itemgetter(1)
 
 def default_weight() -> float:
     """

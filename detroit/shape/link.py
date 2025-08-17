@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from operator import itemgetter
 from typing import Any, Generic, TypeVar
 
 from ..array import argpass
@@ -12,14 +13,8 @@ from .point import y as point_y
 
 TLink = TypeVar("Link", bound="Link")
 
-
-def link_source(d):
-    return d["source"]
-
-
-def link_target(d):
-    return d["target"]
-
+link_source = itemgetter("source")
+link_target = itemgetter("target")
 
 class Link(Generic[T], WithPath):
     """
@@ -42,8 +37,8 @@ class Link(Generic[T], WithPath):
         super().__init__()
         self._source = argpass(link_source)
         self._target = argpass(link_target)
-        self._x = point_x
-        self._y = point_y
+        self._x = argpass(point_x)
+        self._y = argpass(point_y)
         self._context = None
         self._output = None
         self._curve = curve
