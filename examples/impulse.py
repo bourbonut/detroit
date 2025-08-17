@@ -105,5 +105,5 @@ color = (
 # svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
 # svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("dark-impulse.svg", "w") as file:
+with open("impulse.svg", "w") as file:
     file.write(str(svg))
