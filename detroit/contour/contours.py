@@ -1,9 +1,8 @@
 from collections.abc import Callable
-from inspect import signature
 from math import floor, inf, isfinite, isnan, nan
 from typing import TypeVar
 
-from ..array import extent, nice, ticks
+from ..array import argpass, extent, nice, ticks
 from ..array.threshold import threshold_sturges
 from ..types import GeoJSON, Point2D
 from .area import area
@@ -168,7 +167,7 @@ class Contours:
         self._dx = 1
         self._dy = 1
         self._threshold = threshold_sturges
-        self._smooth = self._smooth_linear
+        self._smooth = argpass(self._smooth_linear)
 
     def __call__(self, values: list[float]) -> list[GeoJSON]:
         """
@@ -229,9 +228,7 @@ class Contours:
         holes = []
 
         def callback(ring: list[Point2D]):
-            args = [ring, values, v]
-            nargs = len(signature(self._smooth).parameters)
-            self._smooth(*args[:nargs])
+            self._smooth(ring, values, v)
             if area(ring) > 0:
                 polygons.append([ring])
             else:
@@ -475,7 +472,7 @@ class Contours:
         def noop():
             return
 
-        self._smooth = self._smooth_linear if smooth else noop
+        self._smooth = argpass(self._smooth_linear if smooth else noop)
         return self
 
     def get_size(self) -> tuple[float, float]:

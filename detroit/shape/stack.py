@@ -1,7 +1,7 @@
 from collections.abc import Callable
-from inspect import signature
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
+from ..array import argpass
 from ..types import T, U, V
 from .constant import constant
 from .offset import offset_none
@@ -55,12 +55,12 @@ class Stack(Generic[T]):
     """
 
     def __init__(self):
-        self._keys = constant([])
+        self._keys = argpass(constant([]))
         self._order = order_none
         self._offset = offset_none
-        self._value = stack_value
+        self._value = argpass(stack_value)
 
-    def __call__(self, data: list[T], *args) -> list[Series]:
+    def __call__(self, data: list[T], *args: Any) -> list[Series]:
         """
         Generates a stack for the given array of data and returns an array
         representing each series.
@@ -69,7 +69,7 @@ class Stack(Generic[T]):
         ----------
         data : list[T]
             List of data
-        *args
+        *args : Any
             Additional arguments passed to :code:`keys` method.
 
         Returns
@@ -77,20 +77,16 @@ class Stack(Generic[T]):
         list[Series]
             List of series
         """
-        nargs = len(signature(self._keys).parameters)
         args = [data] + list(args)
-        sz: list[Series] = list(map(stack_series, self._keys(*args[:nargs])))
+        sz: list[Series] = list(map(stack_series, self._keys(*args)))
         n = len(sz)
         j = -1
-
-        nargs = len(signature(self._value).parameters)
 
         for d in data:
             j += 1
             for i in range(n):
                 series = sz[i]
-                args = [d, series.key, j, data]
-                series.append(Serie([0, self._value(*args[:nargs])], d))
+                series.append(Serie([0, self._value(d, series.key, j, data)], d))
 
         oz = list(self._order(sz))
         for i in range(n):
@@ -122,6 +118,7 @@ class Stack(Generic[T]):
             self._keys = keys
         else:
             self._keys = constant(list(keys))
+        self._keys = argpass(self._keys)
         return self
 
     @property
@@ -153,6 +150,7 @@ class Stack(Generic[T]):
             self._value = value
         else:
             self._value = constant(float(value))
+        self._value = argpass(self._value)
         return self
 
     @property

@@ -1,10 +1,7 @@
 from collections.abc import Callable
-from inspect import signature
 from typing import Literal, TypeVar
 
-from ..scale.continuous import Transformer
-from ..scale.diverging import Diverging
-from ..scale.sequential import Sequential
+from ..array import argpass
 from ..selection.selection import Selection
 from ..types import ContinuousScaler, SequentialScaler
 
@@ -153,20 +150,15 @@ class Axis:
         if self._tick_values is not None:
             values = self._tick_values
         elif hasattr(self._scale, "ticks"):
-            nargs = len(signature(self._scale.ticks).parameters)
-            args = self._tick_arguments[:nargs]
-            values = self._scale.ticks(*args)
+            values = argpass(self._scale.ticks)(*self._tick_arguments)
         else:
             values = self._scale.get_domain()
 
         if self._tick_format is not None:
             format_func = self._tick_format
         elif hasattr(self._scale, "tick_format"):
-            nargs = len(signature(self._scale.tick_format).parameters)
-            args = self._tick_arguments[:nargs]
-            format_func = self._scale.tick_format(*args)
+            format_func = argpass(self._scale.tick_format)(*self._tick_arguments)
         else:
-
             def format_func(d):
                 return d
 

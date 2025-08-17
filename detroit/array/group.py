@@ -1,7 +1,7 @@
 from collections.abc import Callable
-from inspect import signature
 
 from ..types import T, U, V
+from .argpass import argpass
 
 
 def nest(
@@ -17,14 +17,12 @@ def nest(
         if i >= len(keys):
             return reduce_function(values)
         groups = {}
-        keyof = keys[i]
+        keyof = argpass(keys[i])
         i += 1
         index = -1
         for value in values:
             index += 1
-            nargs = len(signature(keyof).parameters)
-            args = [value, index, values][:nargs]
-            key = keyof(*args)
+            key = keyof(value, index, values)
             if group := groups.get(key):
                 group.append(value)
             else:

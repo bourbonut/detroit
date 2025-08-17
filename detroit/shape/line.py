@@ -1,7 +1,7 @@
 from collections.abc import Callable, Iterable
-from inspect import signature
 from typing import Generic, TypeVar
 
+from ..array import argpass
 from ..selection.selection import Selection
 from ..types import Accessor, Number, T
 from .constant import constant
@@ -55,6 +55,9 @@ class Line(Generic[T], WithPath):
         else:
             self._y = constant(y)
 
+        self._x = argpass(self._x)
+        self._y = argpass(self._y)
+
     def __call__(self, data: Iterable[T]) -> str | None:
         """
         Generate a line for the given list of data
@@ -85,8 +88,6 @@ class Line(Generic[T], WithPath):
             buffer = self._path()
             self._output = self._curve(buffer)
 
-        xnargs = len(signature(self._x).parameters)
-        ynargs = len(signature(self._y).parameters)
         for i in range(n + 1):
             d = data[i] if i < n else None
             if not (i < n and self._defined(d, i, data) == defined0):
@@ -96,9 +97,7 @@ class Line(Generic[T], WithPath):
                 else:
                     self._output.line_end()
             if defined0:
-                xargs = [d, i, data][:xnargs]
-                yargs = [d, i, data][:ynargs]
-                self._output.point(self._x(*xargs), self._y(*yargs))
+                self._output.point(self._x(d, i, data), self._y(d, i, data))
 
         if buffer:
             self._output = None
@@ -122,6 +121,7 @@ class Line(Generic[T], WithPath):
             self._x = x
         else:
             self._x = constant(x)
+        self._x = argpass(self._x)
         return self
 
     def y(self, y: Accessor[T, float] | Number) -> TLine:
@@ -142,6 +142,7 @@ class Line(Generic[T], WithPath):
             self._y = y
         else:
             self._y = constant(y)
+        self._y = argpass(self._y)
         return self
 
     def set_defined(self, defined: Accessor[T, bool] | Number) -> TLine:

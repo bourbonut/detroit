@@ -1,7 +1,7 @@
 from collections.abc import Callable, Iterable
-from inspect import signature
 from typing import Generic, TypeVar
 
+from ..array import argpass
 from ..selection.selection import Selection
 from ..types import Accessor, Number, T
 from .constant import constant
@@ -73,6 +73,11 @@ class Area(Generic[T], WithPath):
         else:
             self._y1 = constant(y1)
 
+        self._x0 = argpass(self._x0)
+        self._x1 = argpass(self._x1) if self._x1 else None
+        self._y0 = argpass(self._y0)
+        self._y1 = argpass(self._y1) if self._y1 else None
+
     def __call__(self, data: Iterable[T]) -> str | None:
         """
         Generates an area for the given array of data.
@@ -107,10 +112,6 @@ class Area(Generic[T], WithPath):
             self._output = self._curve(buffer)
 
         j = 0
-        x0nargs = len(signature(self._x0).parameters)
-        x1nargs = len(signature(self._x1).parameters) if self._x1 is not None else 0
-        y0nargs = len(signature(self._y0).parameters)
-        y1nargs = len(signature(self._y1).parameters) if self._y1 is not None else 0
         for i in range(n + 1):
             d = data[i] if i < n else None
             if not (i < n and self._defined(d, i, data) == defined0):
@@ -128,12 +129,11 @@ class Area(Generic[T], WithPath):
                     self._output.area_end()
 
             if defined0:
-                args = [d, i, data]
-                x0z[i] = self._x0(*args[:x0nargs])
-                y0z[i] = self._y0(*args[:y0nargs])
+                x0z[i] = self._x0(d, i, data)
+                y0z[i] = self._y0(d, i, data)
                 self._output.point(
-                    self._x1(*args[:x1nargs]) if self._x1 else x0z[i],
-                    self._y1(*args[:y1nargs]) if self._y1 else y0z[i],
+                    self._x1(d, i, data) if self._x1 else x0z[i],
+                    self._y1(d, i, data) if self._y1 else y0z[i],
                 )
 
         if buffer:
@@ -231,6 +231,7 @@ class Area(Generic[T], WithPath):
             self._x0 = x
         else:
             self._x0 = constant(x)
+        self._x0 = argpass(self._x0)
         self._x1 = None
         return self
 
@@ -252,6 +253,7 @@ class Area(Generic[T], WithPath):
             self._x0 = x0
         else:
             self._x0 = constant(x0)
+        self._x0 = argpass(self._x0)
         return self
 
     def x1(self, x1: Accessor[T, float] | Number) -> TArea:
@@ -272,6 +274,7 @@ class Area(Generic[T], WithPath):
             self._x1 = x1
         else:
             self._x1 = constant(x1)
+        self._x1 = argpass(self._x1)
         return self
 
     def y(self, y: Accessor[T, float] | Number) -> TArea:
@@ -293,6 +296,7 @@ class Area(Generic[T], WithPath):
             self._y0 = y
         else:
             self._y0 = constant(y)
+        self._y0 = argpass(self._y0)
         self._y1 = None
         return self
 
@@ -314,6 +318,7 @@ class Area(Generic[T], WithPath):
             self._y0 = y0
         else:
             self._y0 = constant(y0)
+        self._y0 = argpass(self._y0)
         return self
 
     def y1(self, y1: Accessor[T, float] | Number) -> TArea:
@@ -334,6 +339,7 @@ class Area(Generic[T], WithPath):
             self._y1 = y1
         else:
             self._y1 = constant(y1)
+        self._y1 = argpass(self._y1)
         return self
 
     def set_defined(self, defined: Accessor[T, bool] | Number) -> TArea:

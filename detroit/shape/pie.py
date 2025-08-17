@@ -1,9 +1,9 @@
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
-from inspect import signature
 from math import pi
 from typing import Generic, TypeVar
 
+from ..array import argpass
 from ..types import Accessor, Number, T
 from .constant import constant
 
@@ -33,12 +33,12 @@ class Pie(Generic[T]):
     """
 
     def __init__(self):
-        self._value = identity
+        self._value = argpass(identity)
         self._sort_values = lambda x: -x
         self._sort = None
-        self._start_angle = constant(0)
-        self._end_angle = constant(2 * pi)
-        self._pad_angle = constant(0)
+        self._start_angle = argpass(constant(0))
+        self._end_angle = argpass(constant(2 * pi))
+        self._pad_angle = argpass(constant(0))
 
     def __call__(self, data: Iterable[T], *args) -> list[dict]:
         """
@@ -79,27 +79,17 @@ class Pie(Generic[T]):
         data = list(data)
         n = len(data)
 
-        nargs_sa = len(signature(self._start_angle).parameters)
-        nargs_ea = len(signature(self._end_angle).parameters)
-        nargs_pa = len(signature(self._pad_angle).parameters)
-        nargs_v = len(signature(self._value).parameters)
-
-        args_sa = args[:nargs_sa]
-        args_ea = args[:nargs_ea]
-        args_pa = args[:nargs_pa]
-
         sum = 0
         index = [None] * n
         arcs = [None] * n
-        a0 = self._start_angle(*args_sa)
-        da = min(2 * pi, max(-2 * pi, self._end_angle(*args_ea) - a0))
-        p = min(abs(da) / n, self._pad_angle(*args_pa))
+        a0 = self._start_angle(*args)
+        da = min(2 * pi, max(-2 * pi, self._end_angle(*args) - a0))
+        p = min(abs(da) / n, self._pad_angle(*args))
         pa = p * (-1 if da < 0 else 1)
 
         for i in range(n):
             d = data[i]
-            args = [d, i, data][:nargs_v]
-            v = self._value(*args)
+            v = self._value(d, i, data)
             index[i] = i
             arcs[i] = v
             if v > 0:
@@ -139,6 +129,7 @@ class Pie(Generic[T]):
             self._value = value
         else:
             self._value = constant(value)
+        self._value = argpass(self._value)
         return self
 
     def set_sort_values(self, sort_values: Callable[[float], float]) -> TPie:
@@ -198,6 +189,7 @@ class Pie(Generic[T]):
             self._start_angle = start_angle
         else:
             self._start_angle = constant(start_angle)
+        self._start_angle = argpass(self._start_angle)
         return self
 
     def set_end_angle(self, end_angle: Callable[..., float] | Number) -> TPie:
@@ -220,6 +212,7 @@ class Pie(Generic[T]):
             self._end_angle = end_angle
         else:
             self._end_angle = constant(end_angle)
+        self._end_angle = argpass(self._end_angle)
         return self
 
     def set_pad_angle(self, pad_angle: Callable[..., float] | Number) -> TPie:
@@ -242,6 +235,7 @@ class Pie(Generic[T]):
             self._pad_angle = pad_angle
         else:
             self._pad_angle = constant(pad_angle)
+        self._pad_angle = argpass(self._pad_angle)
         return self
 
     def get_value(self) -> Accessor[T, float]:

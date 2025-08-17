@@ -1,13 +1,12 @@
 from collections import defaultdict
 from collections.abc import Callable, Iterator
-from inspect import signature
 from itertools import zip_longest
-from time import perf_counter
-from typing import Any, Protocol, TypeAlias, TypeVar, overload
+from typing import Any, TypeVar
 
 from lxml import etree
 
-from ..types import Accessor, Data, Value
+from ..array import argpass
+from ..types import Accessor, Data
 from .attr import attr_constant, attr_function
 from .bind import bind_index, bind_key
 from .clone import clone
@@ -577,7 +576,7 @@ class Selection:
         >>> result.node().text
         '5'
         """
-        matches, nargs = matcher(match)
+        matches = matcher(match)
         subgroups = []
         for group in self._groups:
             subgroup = []
@@ -586,8 +585,7 @@ class Selection:
                     continue
                 if isinstance(node, EnterNode):
                     node = node._parent
-                args = [self._data.get(node), i, group][:nargs]
-                if matches(*args):
+                if matches(self._data.get(node), i, group):
                     subgroup.append(node)
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
@@ -945,7 +943,7 @@ class Selection:
 
         if not callable(values):
             values = constant(values)
-        nargs = len(signature(values).parameters)
+        values = argpass(values)
 
         update = [None] * len(groups)
         enter = [None] * len(groups)
@@ -953,8 +951,7 @@ class Selection:
         for j in range(len(groups)):
             parent = parents[j]
             group = groups[j]
-            args = [parent, self._data.get(parent), j, parents][:nargs]
-            data = list(values(*args))
+            data = list(values(parent, self._data.get(parent), j, parents))
             enter[j] = enter_group = [None] * len(data)
             update[j] = update_group = [None] * len(data)
             exit[j] = exit_group = [None] * len(group)

@@ -1,10 +1,10 @@
 import math
 from collections.abc import Iterable
 from datetime import datetime
-from inspect import signature
 from itertools import starmap
 
 from ..types import Accessor, T
+from .argpass import argpass
 
 
 def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple[T, T]:
@@ -51,12 +51,11 @@ def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple
         )
 
     if accessor is not None:
-        nargs = len(signature(accessor).parameters)
+        accessor = argpass(accessor)
 
         def access(index, value):
             """Access value given the accessor function"""
-            args = [value, index, values][:nargs]
-            return accessor(*args)
+            return accessor(value, index, values)
 
         values = list(filter(is_valid, starmap(access, enumerate(values))))
     else:

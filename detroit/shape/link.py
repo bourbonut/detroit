@@ -1,7 +1,7 @@
 from collections.abc import Callable
-from inspect import signature
 from typing import Any, Generic, TypeVar
 
+from ..array import argpass
 from ..selection import Selection
 from ..types import Accessor, Number, T
 from .constant import constant
@@ -40,8 +40,8 @@ class Link(Generic[T], WithPath):
 
     def __init__(self, curve: Callable[[Selection], Curve]):
         super().__init__()
-        self._source = link_source
-        self._target = link_target
+        self._source = argpass(link_source)
+        self._target = argpass(link_target)
         self._x = point_x
         self._y = point_y
         self._context = None
@@ -64,23 +64,19 @@ class Link(Generic[T], WithPath):
         """
         buffer = None
         args = list(args)
-        snargs = len(signature(self._source).parameters)
-        s = self._source(*args[:snargs])
-        tnargs = len(signature(self._target).parameters)
-        t = self._target(*args[:tnargs])
+        s = self._source(*args)
+        t = self._target(*args)
         if self._context is None:
             buffer = self._path()
             self._output = self._curve(buffer)
         self._output.line_start()
-        xnargs = len(signature(self._x).parameters)
-        ynargs = len(signature(self._y).parameters)
         args[0] = s
-        x = self._x(*args[:xnargs])
-        y = self._y(*args[:ynargs])
+        x = self._x(*args)
+        y = self._y(*args)
         self._output.point(x, y)
         args[0] = t
-        x = self._x(*args[:xnargs])
-        y = self._y(*args[:ynargs])
+        x = self._x(*args)
+        y = self._y(*args)
         self._output.point(x, y)
         self._output.line_end()
         if buffer:
@@ -101,7 +97,7 @@ class Link(Generic[T], WithPath):
         TLink
             Itself
         """
-        self._source = source
+        self._source = argpass(source)
         return self
 
     def set_target(self, target: Accessor[T, float]) -> TLink:
@@ -118,7 +114,7 @@ class Link(Generic[T], WithPath):
         TLink
             Itself
         """
-        self._target = target
+        self._target = argpass(target)
         return self
 
     def x(self, x: Accessor[T, float] | Number) -> TLink:
@@ -139,6 +135,7 @@ class Link(Generic[T], WithPath):
             self._x = x
         else:
             self._x = constant(x)
+        self._x = argpass(self._x)
         return self
 
     def y(self, y: Accessor[T, float] | Number) -> TLink:
@@ -159,6 +156,7 @@ class Link(Generic[T], WithPath):
             self._y = y
         else:
             self._y = constant(y)
+        self._y = argpass(self._y)
         return self
 
     def set_context(self, context: Selection | None = None) -> TLink:

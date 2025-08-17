@@ -1,12 +1,10 @@
-from inspect import signature
-
+from ..array import argpass
 
 def matcher(match):
     if callable(match):
-        nargs = len(signature(match).parameters)
-        return match, nargs
+        return argpass(match)
 
     def match_func(d):
         return d == match
 
-    return match_func, 1
+    return argpass(match_func)

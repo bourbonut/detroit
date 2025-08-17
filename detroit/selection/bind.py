@@ -1,5 +1,4 @@
-from inspect import signature
-
+from ..array import argpass
 from .enter import EnterNode
 
 
@@ -21,21 +20,19 @@ def bind_index(node_data, parent, group, enter, update, exit, data, _):
 def bind_key(node_data, parent, group, enter, update, exit, data, key):
     node_by_key_value = {}
     key_values = [None] * len(group)
-    nargs = len(signature(key).parameters)
+    key = argpass(key)
 
     for i in range(len(group)):
         node = group[i]
         if node is not None:
-            args = [node_data.get(node), i, group][:nargs]
-            key_value = key(*args)
+            key_value = key(node_data.get(node), i, group)
             if key_value in node_by_key_value:
                 exit[i] = node
             else:
                 node_by_key_value[key_value] = node
 
     for i in range(len(data)):
-        args = [data[i], i, data][:nargs]
-        key_value = key(*args)
+        key_value = key(data[i], i, data)
         node = node_by_key_value.get(key_value)
         if node is not None:
             update[i] = node

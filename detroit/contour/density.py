@@ -1,9 +1,8 @@
 from collections.abc import Callable
-from inspect import signature
 from math import floor, isnan, log, sqrt, ulp
 from typing import Generic, TypeVar
 
-from ..array import blur2, ticks
+from ..array import argpass, blur2, ticks
 from ..types import Accessor, GeoJSON, Point2D, T
 from .constant import constant
 from .contours import Contours
@@ -120,9 +119,9 @@ class Density(Generic[T]):
     Constructs a new density estimator with the default settings.
     """
     def __init__(self):
-        self._x = default_x
-        self._y = default_y
-        self._weight = default_weight
+        self._x = argpass(default_x)
+        self._y = argpass(default_y)
+        self._weight = argpass(default_weight)
         self._dx = 960
         self._dy = 500
         self._r = 20
@@ -151,15 +150,10 @@ class Density(Generic[T]):
         i = -1
 
         for d in data:
-            args = [d, i, data]
-            xnargs = len(signature(self._x).parameters)
-            xi = (self._x(*args[:xnargs]) + self._o) * pow2k
+            xi = (self._x(d, i, data) + self._o) * pow2k
             i += 1
-            args = [d, i, data]
-            ynargs = len(signature(self._y).parameters)
-            yi = (self._y(*args[:ynargs]) + self._o) * pow2k
-            wnargs = len(signature(self._weight).parameters)
-            wi = self._weight(*args[:wnargs])
+            yi = (self._y(d, i, data) + self._o) * pow2k
+            wi = self._weight(d, i, data)
             if (
                 wi
                 and not isnan(wi)
@@ -323,9 +317,9 @@ class Density(Generic[T]):
             Itself
         """
         if callable(x):
-            self._x = x
+            self._x = argpass(x)
         else:
-            self._x = constant(x)
+            self._x = argpass(constant(x))
         return self
 
     def y(self, y: Accessor[T, float] | float) -> TDensity:
@@ -343,9 +337,9 @@ class Density(Generic[T]):
             Itself
         """
         if callable(y):
-            self._y = y
+            self._y = argpass(y)
         else:
-            self._y = constant(y)
+            self._y = argpass(constant(y))
         return self
 
     def set_weight(self, weight: Accessor[T, float] | float) -> TDensity:
@@ -363,9 +357,9 @@ class Density(Generic[T]):
             Itself
         """
         if callable(weight):
-            self._weight = weight
+            self._weight = argpass(weight)
         else:
-            self._weight = constant(weight)
+            self._weight = argpass(constant(weight))
         return self
 
     def set_size(self, size: tuple[float, float]) -> TDensity:

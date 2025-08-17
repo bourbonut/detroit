@@ -1,4 +1,4 @@
-from inspect import signature
+from ..array import argpass
 
 
 def text_constant(value):
@@ -9,10 +9,9 @@ def text_constant(value):
 
 
 def text_function(value):
-    nargs = len(signature(value).parameters)
+    value = argpass(value)
 
     def callback(node, data, i, group):
-        args = [data, i, group][:nargs]
-        node.text = value(*args)
+        node.text = value(data, i, group)
 
     return callback

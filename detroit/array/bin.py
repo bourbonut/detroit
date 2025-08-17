@@ -1,9 +1,9 @@
 import math
 from bisect import bisect
 from collections.abc import Callable, Iterable
-from inspect import signature
 from typing import Any, TypeVar
 
+from .argpass import argpass
 from .extent import extent
 from .nice import nice
 from .threshold import threshold_sturges
@@ -65,7 +65,7 @@ class bin:
     """
 
     def __init__(self):
-        self._value = identity
+        self._value = argpass(identity)
         self._domain = extent
         self._threshold = threshold_sturges
 
@@ -97,10 +97,8 @@ class bin:
         step = math.nan
         values = [None] * n
 
-        nargs = len(signature(self._value).parameters)
         for i in range(n):
-            args = [data[i], i, data][:nargs]
-            values[i] = self._value(*args)
+            values[i] = self._value(data[i], i, data)
 
         xz = self._domain(values)
         x0, x1 = xz[0], xz[1]
@@ -181,7 +179,7 @@ class bin:
         bin
             Itself
         """
-        self._value = value if callable(value) else constant(value)
+        self._value = argpass(value if callable(value) else constant(value))
         return self
 
     def set_domain(

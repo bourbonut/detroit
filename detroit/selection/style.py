@@ -1,13 +1,12 @@
-from inspect import signature
+from ..array import argpass
 
 
 def style_function(name, value):
-    nargs = len(signature(value).parameters)
+    value = argpass(value)
 
     def callback(node, data, i, group):
-        args = [data, i, group][:nargs]
         current_value = node.get("style", "")
-        new_value = value(*args)
+        new_value = value(data, i, group)
         node.set("style", f"{current_value}{name}:{new_value};")
 
     return callback

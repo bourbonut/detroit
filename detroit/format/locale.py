@@ -1,7 +1,7 @@
 import math
 from collections.abc import Callable
-from inspect import signature
 
+from ..array import argpass
 from .exponent import exponent
 from .format_group import format_group
 from .format_numerals import format_numerals
@@ -197,8 +197,7 @@ class Locale:
             else ""
         )
 
-        format_type = format_types[type_]
-        nargs = len(signature(format_type).parameters)
+        format_type = argpass(format_types[type_])
         maybe_suffix = type_ in "defgprs%"
 
         if precision is None:
@@ -222,15 +221,13 @@ class Locale:
                 value_suffix = self.suffix
 
                 if type_ == "c":
-                    args = [value, None][:nargs]
-                    value_suffix = format_type(*args) + self.suffix
+                    value_suffix = format_type(value, None) + self.suffix
                     value = ""
                 else:
                     value = float(value)
                     value_negative = value < 0 or (value != 0 and 1 / value < 0)
 
-                    args = [abs(value), precision][:nargs]
-                    value = self.nan if math.isnan(value) else format_type(*args)
+                    value = self.nan if math.isnan(value) else format_type(abs(value), precision)
 
                     if trim:
                         value = format_trim(value)

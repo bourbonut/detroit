@@ -1,12 +1,11 @@
-from inspect import signature
+from ..array import argpass
 
 
 def attr_function(name, value):
-    nargs = len(signature(value).parameters)
+    value = argpass(value)
 
     def callback(node, data, i, group):
-        args = [data, i, group][:nargs]
-        node.set(name, str(value(*args)))
+        node.set(name, str(value(data, i, group)))
 
     return callback
 
