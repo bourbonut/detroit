@@ -2,6 +2,8 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any, Generic, Protocol, TypeAlias, TypedDict, TypeVar, overload
 
+from lxml import etree
+
 T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
@@ -16,9 +18,7 @@ Point2D: TypeAlias = tuple[float, float]
 # formatted and returns the formatted value.
 Formatter: TypeAlias = Callable[[str], T]
 
-Data: TypeAlias = Any
-Value: TypeAlias = Any
-
+EtreeFunction: TypeAlias = Callable[[etree.Element, U, int, list[etree.Element]], V]
 
 class Interval(Protocol):
     """

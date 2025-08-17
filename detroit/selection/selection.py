@@ -1,12 +1,12 @@
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from itertools import zip_longest
-from typing import Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 from lxml import etree
 
 from ..array import argpass
-from ..types import Accessor, Data
+from ..types import Accessor, EtreeFunction, Number, T
 from .attr import attr_constant, attr_function
 from .bind import bind_index, bind_key
 from .clone import clone
@@ -40,7 +40,7 @@ def selector(
 
         svg.append("g").attr("class", "my_class")
 
-    In this example, the value of :code:`.class_name` is :code:`.my_class`
+    In this example, the value of :code:`.class_name` is :code:`.my_class`.
 
     The :code:`:last-of-type` option is useful when you only need the last
     element.
@@ -119,7 +119,7 @@ def creator(node: etree.Element, fullname: dict | None = None) -> etree.SubEleme
     )
 
 
-class Selection:
+class Selection(Generic[T]):
     """
     A selection is a set of elements from the DOM. Typically these elements are
     identified by selectors such as .fancy for elements with the class fancy,
@@ -143,12 +143,12 @@ class Selection:
         List of groups of selected nodes given its parent.
     parents : list[etree.Element]
         List of parents related to groups.
-    enter : list[EnterNode] | None = None
+    enter : list[EnterNode[T]] | None = None
         List of placeholder nodes for each datum that had no corresponding
         DOM element in the selection.
     exit : list[etree.Element] = None
         List of existing DOM elements in the selection for which no new datum was found.
-    data : dict[etree.Element, Data] | None = None
+    data : dict[etree.Element, T] | None = None
         Association between nodes and its data
 
     Examples
@@ -182,9 +182,9 @@ class Selection:
         self,
         groups: list[list[etree.Element]],
         parents: list[etree.Element],
-        enter: list[EnterNode] | None = None,
+        enter: list[EnterNode[T]] | None = None,
         exit: list[etree.Element] = None,
-        data: dict[etree.Element, Data] | None = None,
+        data: dict[etree.Element, T] | None = None,
     ):
         self._groups = groups
         self._parents = parents
@@ -210,7 +210,7 @@ class Selection:
 
             svg.append("g").attr("class", "my_class")
 
-        In this example, the value of :code:`.class_name` is :code:`.my_class`
+        In this example, the value of :code:`.class_name` is :code:`.my_class`.
 
         The :code:`:last-of-type` option is useful when you only need the last
         element.
@@ -309,7 +309,7 @@ class Selection:
 
             svg.append("g").attr("class", "my_class")
 
-        In this example, the value of :code:`.class_name` is :code:`.my_class`
+        In this example, the value of :code:`.class_name` is :code:`.my_class`.
 
         The :code:`:last-of-type` option is useful when you only need the last
         element.
@@ -528,14 +528,14 @@ class Selection:
 
         return Selection(merges, self._parents, data=self._data | selection._data)
 
-    def filter(self, match: Accessor | int | float | str) -> TSelection:
+    def filter(self, match: Accessor[T, bool] | int | float | str) -> TSelection:
         """
         Filters the selection, returning a new selection that contains only the
         elements for which the specified filter is true.
 
         Parameters
         ----------
-        match : Accessor | int | float | str
+        match : Accessor[T, bool] | int | float | str
             Constant to match or accessor which returns a boolean
 
         Returns
@@ -668,9 +668,7 @@ class Selection:
         parents = list(groups)
         return Selection(subgroups, parents, data=self._data)
 
-    def each(
-        self, callback: Callable[[etree.Element, Data, int, list[etree.Element]], None]
-    ):
+    def each(self, callback: EtreeFunction[T, None]):
         """
         Invokes the specified function for each selected element, in order,
         being passed the current DOM element (nodes[i]), the current datum (d),
@@ -678,7 +676,7 @@ class Selection:
 
         Parameters
         ----------
-        callback : Callable[[etree.Element, Data, int, list[etree.Element]], None]
+        callback : EtreeFunction[T, None]
             Function to call which takes as argument:
 
             * **node** (:code:`etree.Element`) - the node element
@@ -693,7 +691,7 @@ class Selection:
                         node = node._parent
                     callback(node, self._data.get(node), i, group)
 
-    def attr(self, name: str, value: Accessor | str | None = None) -> TSelection:
+    def attr(self, name: str, value: Accessor[T, str | Number] | str | None = None) -> TSelection:
         """
         If a value is specified, sets the attribute with the specified name to
         the specified value on the selected elements and returns this
@@ -707,7 +705,7 @@ class Selection:
         ----------
         name : str
             Name of the attribute
-        value : Accessor | str | None
+        value : Accessor[T, str | Number] | str | None
             Value
 
         Returns
@@ -737,7 +735,7 @@ class Selection:
             self.each(attr_constant(name, value))
         return self
 
-    def style(self, name: str, value: Accessor | str | None = None) -> TSelection:
+    def style(self, name: str, value: Accessor[T, str] | str | None = None) -> TSelection:
         """
         If a value is specified, sets the style with the specified name to the
         specified value on the selected elements and returns this selection.
@@ -750,7 +748,7 @@ class Selection:
         ----------
         name : str
             Name of the style
-        value : Accessor | str | None
+        value : Accessor[T, str] | str | None
             Value constant or function
 
         Returns
@@ -780,7 +778,7 @@ class Selection:
             self.each(style_constant(name, value))
         return self
 
-    def text(self, value: Accessor | str | None = None) -> TSelection:
+    def text(self, value: Accessor[T, str] | str | None = None) -> TSelection:
         """
         If the value is a constant, then all elements are given the same text
         content; otherwise, if the value is a function, it is evaluated for
@@ -789,7 +787,7 @@ class Selection:
 
         Parameters
         ----------
-        value : Accessor | str | None
+        value : Accessor[T, str] | str | None
             Value constant or function
 
         Returns
@@ -833,13 +831,13 @@ class Selection:
             self.each(text_constant(value))
         return self
 
-    def datum(self, value: Data) -> TSelection:
+    def datum(self, value: T) -> TSelection:
         """
         Sets the bound data for the first selected node.
 
         Parameters
         ----------
-        value : Data
+        value : T
             Value
 
         Returns
@@ -877,7 +875,9 @@ class Selection:
         return self
 
     def data(
-        self, values: list[Data] | Accessor, key: Accessor | None = None
+        self,
+        values: list[T] | EtreeFunction[T, list[T]],
+        key: Accessor[T, float | str] | None = None
     ) -> TSelection:
         """
         Binds the specified list of data with the selected elements, returning
@@ -890,9 +890,9 @@ class Selection:
 
         Parameters
         ----------
-        values : list[Data] | Accessor
+        values : list[T] | EtreeFunction[T, list[T]]
             List of data to bind
-        key : Accessor | None
+        key : Accessor[T, float | str] | None
             Optional accessor which returns a key value
 
         Returns
@@ -1343,7 +1343,7 @@ class Selection:
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
 
-    def call(self, func: Callable[[TSelection, ...], Any], *args: Data) -> TSelection:
+    def call(self, func: Callable[[TSelection, ...], Any], *args: Any) -> TSelection:
         """
         Invokes the specified function exactly once, passing in this selection
         along with any optional arguments. Returns this selection.
@@ -1352,7 +1352,7 @@ class Selection:
         ----------
         func : Callable[[Selection, ...], Any]
             Function to call
-        args : Data
+        args : Any
             Arguments for the function to call
 
         Returns

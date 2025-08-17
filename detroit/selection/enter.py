@@ -1,5 +1,21 @@
-class EnterNode:
-    def __init__(self, parent, datum):
+from typing import Generic
+
+from ..types import T
+from lxml import etree
+
+class EnterNode(Generic[T]):
+    """
+    Enter node which holds parent element, a datum and next element in some
+    specific cases.
+
+    Parameters
+    ----------
+    parent : etree.Element
+        Parent node
+    datum : T
+        Data to hold
+    """
+    def __init__(self, parent: etree.Element, datum: T):
         self._next = None
         self._parent = parent
         self.__data__ = datum
