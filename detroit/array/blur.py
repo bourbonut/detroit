@@ -197,7 +197,8 @@ ry : float | None
 
 Returns
 -------
-Returns the blurred matrix
+dict
+    Returns the blurred matrix
 
 Examples
 --------
@@ -230,5 +231,6 @@ ry : float | None
 
 Returns
 -------
-Returns the blurred image
+dict
+    Returns the blurred image
 """
