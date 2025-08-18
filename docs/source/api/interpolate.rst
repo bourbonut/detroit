@@ -1,10 +1,12 @@
 Interpolate
 ===========
 
-Generic function
-----------------
+Generic functions
+-----------------
 
 .. autofunction:: detroit.interpolate
+.. autofunction:: detroit.quantize
+.. autofunction:: detroit.piecewise
 
 
 Typed functions
