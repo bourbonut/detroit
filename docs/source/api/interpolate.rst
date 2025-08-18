@@ -16,6 +16,7 @@ Typed functions
 .. autofunction:: detroit.interpolate_basis
 .. autofunction:: detroit.interpolate_basis_closed
 .. autofunction:: detroit.interpolate_cubehelix
+.. autofunction:: detroit.interpolate_cubehelix.set_gamma
 .. autofunction:: detroit.interpolate_cubehelix_long
 .. autofunction:: detroit.interpolate_date
 .. autofunction:: detroit.interpolate_discrete
@@ -29,8 +30,10 @@ Typed functions
 .. autofunction:: detroit.interpolate_number_array
 .. autofunction:: detroit.interpolate_object
 .. autofunction:: detroit.interpolate_rgb
+.. autofunction:: detroit.interpolate_rgb.set_gamma
 .. autofunction:: detroit.interpolate_rgb_basis
 .. autofunction:: detroit.interpolate_rgb_basis_closed
 .. autofunction:: detroit.interpolate_round
 .. autofunction:: detroit.interpolate_string
 .. autofunction:: detroit.interpolate_zoom
+.. autofunction:: detroit.interpolate_zoom.set_rho

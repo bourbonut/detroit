@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import TypeVar
 
 from ..color import rgb as color_rgb
 from .basis import interpolate_basis
@@ -6,6 +7,7 @@ from .basis_closed import interpolate_basis_closed
 from .color import color as nogamma
 from .color import gamma
 
+TRGBGammaInterpolator = TypeVar("RGBGammaInterpolator", bound="RGBGammaInterpolator")
 
 class RGBGammaInterpolator:
     def __init__(self, y):
@@ -46,7 +48,21 @@ class RGBGammaInterpolator:
 
         return interpolate
 
-    def set_gamma(self, y):
+    def set_gamma(self, y: float) -> TRGBGammaInterpolator:
+        """
+        Sets gamma and returns itself. See `gamma error in picture scaling
+        <http://www.ericbrasseur.org/gamma.html?i=1>`_ for more information.
+
+        Parameters
+        ----------
+        y : float
+            Gamma value
+
+        Returns
+        -------
+        RGBGammaInterpolator
+            Itself
+        """
         self.color = gamma(y)
         return self
 
