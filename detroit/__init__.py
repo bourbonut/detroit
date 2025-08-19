@@ -49,6 +49,10 @@ from .format import (
 from .format import (
     locale_format as format,
 )
+from .geo import (
+    geo_path,
+    geo_stream,
+)
 from .interpolate import (
     interpolate,
     interpolate_array,
@@ -393,6 +397,8 @@ __all__ = [
     "format",
     "format_default_locale",
     "format_prefix",
+    "geo_path",
+    "geo_stream",
     "gray",
     "group",
     "groups",
