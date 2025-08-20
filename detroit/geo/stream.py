@@ -76,7 +76,7 @@ def stream_polygon(coordinates, stream):
         stream_line(coordinate, stream, 1)
     stream.polygon_end()
 
-def stream(obj, stream):
+def geo_stream(obj, stream):
     if obj and hasattr(StreamObjectType, obj["type"]):
         getattr(StreamObjectType, obj["type"])(obj, stream)
     else:
