@@ -183,7 +183,7 @@ class ClipRectangle:
         self._ppy = y
         self._ppv = v
 
-def clip_rectangle(x0, y0, x1, y1):
+def geo_clip_rectangle(x0, y0, x1, y1):
     def wrapper(stream):
         return ClipRectangle(x0, y0, x1, y1, stream)
     return wrapper

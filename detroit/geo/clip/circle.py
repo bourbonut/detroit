@@ -8,11 +8,11 @@ EPSILON = 1e-6
 
 class ClipCircle:
 
-    def __init__(self, radius, stream):
-        self._cr = cos(radius)
-        self._delta = radians(2)
-        self._small_radius = self._cr > 0
-        self._not_hemisphere = abs(self._cr) > EPSILON
+    def __init__(self, cr, delta, small_radius, not_hemisphere, stream):
+        self._cr = cr
+        self._delta = delta
+        self._small_radius = small_radius
+        self._not_hemisphere = not_hemisphere
 
         self._stream = stream
         self._point0 = None
@@ -20,12 +20,6 @@ class ClipCircle:
         self._v0 = None
         self._v00 = None
         self._clean = None
-
-    def _interpolate(self, vfrom, vto, direction, stream):
-        circle_stream(stream, self._radius, self._delta, direction, vfrom, vto)
-
-    def _visible(self, lambda_, phi):
-        return cos(lambda_) * cos(phi) > self._cr
 
     def line_start(self):
         self._v00 = False
@@ -173,7 +167,21 @@ class ClipCircle:
         return code
 
 
-# def clip_circle(radius):
-#     def clip_line(stream):
-#         return ClipCircle(radius, stream)
-#     return clip(point_visible, clip_line, interpolate, start)
+def geo_clip_circle(radius):
+    cr = cos(radius)
+    delta = radians(2)
+    small_radius = cr > 0
+    not_hemisphere = abs(cr) > EPSILON
+
+    start = [0, -radius] if small_radius else [-pi, radius - pi]
+
+    def clip_line(stream):
+        return ClipCircle(cr, delta, small_radius, not_hemisphere, stream)
+
+    def interpolate(self, vfrom, vto, direction, stream):
+        circle_stream(stream, radius, delta, direction, vfrom, vto)
+
+    def visible(self, lambda_, phi):
+        return cos(lambda_) * cos(phi) > cr
+
+    return clip(visible, clip_line, interpolate, start)

@@ -84,6 +84,7 @@ def clip_antimeridian_interpolate(vfrom, vto, direction, stream):
         stream.point(vto[0], vto[1])
 
 
-def always_true():
+def visible():
     return True
-clip_antimeridian = clip(always_true, ClipAntimeridianLine, clip_antimeridian_interpolate, [-pi, -half_pi])
+
+geo_clip_antimeridian = clip(visible, ClipAntimeridianLine, clip_antimeridian_interpolate, [-pi, -half_pi])
