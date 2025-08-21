@@ -113,10 +113,13 @@ class ProjectionMutator:
     def _invert_error(self, point):
         raise NotImplementedError("Projection does not support invert method.")
 
-    def set_stream(self, stream):
+    def stream(self, stream):
+        if self._cache and self._cache_stream == stream:
+            return self._cache
         self._cache_stream = stream
         clipped_stream = self._preclip(self._project_resample(self._postclip(stream)))
         self._cache = transform_radians(transform_rotate(self._rotate)(clipped_stream))
+        return self._cache
 
     def set_preclip(self, preclip):
         self._preclip = preclip
@@ -205,7 +208,7 @@ class ProjectionMutator:
         return fit_height(self, height, obj)
 
     def recenter(self):
-        center = scale_translate_rotate(self._k, 0, 0, self._sx, self._sy, self._alpha)(self._project(self._lambda, self._phi))
+        center = scale_translate_rotate(self._k, 0, 0, self._sx, self._sy, self._alpha)(*self._project(self._lambda, self._phi))
         transform = scale_translate_rotate(self._k, self._x - center[0], self._y - center[1], self._sx, self._sy, self._alpha)
         self._rotate = RotateRadians(self._delta_gamma, self._delta_phi, self._delta_gamma)
         self._project_transform = Compose(self._project, transform)
@@ -217,9 +220,6 @@ class ProjectionMutator:
         self._cache = None
         self._cache_stream = None
         return self
-
-    def get_stream(self):
-        return self._cache
 
     def get_preclip(self):
         return self._preclip

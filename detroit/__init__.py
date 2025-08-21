@@ -52,6 +52,9 @@ from .format import (
 from .geo import (
     geo_path,
     geo_stream,
+    geo_circle,
+    geo_rotation,
+    geo_equirectangular,
 )
 from .interpolate import (
     interpolate,
@@ -568,4 +571,7 @@ __all__ = [
     "time_week",
     "time_year",
     "union",
+    "geo_circle",
+    "geo_rotation",
+    "geo_equirectangular",
 ]

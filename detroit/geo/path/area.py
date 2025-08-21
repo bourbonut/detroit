@@ -49,9 +49,12 @@ class AreaStream:
         self._y0 = y
 
     def _area_point(self, x, y):
-        self.area_ring_sum.append(self._y0 * x - self._x0 * y)
+        self._area_ring_sum.append(self._y0 * x - self._x0 * y)
         self._x0 = x
         self._y0 = y
 
     def _area_ring_end(self):
         self._area_point(self._x00, self._y00)
+
+    def __str__(self):
+        return "AreaStream()"

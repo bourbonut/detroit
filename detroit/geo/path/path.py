@@ -1,4 +1,4 @@
-from ..stream import stream
+from ..stream import geo_stream
 from .area import AreaStream
 from .bounds import BoundsStream
 from .centroid import CentroidStream
@@ -13,10 +13,10 @@ def identity(x):
 
 class GeoPath:
 
-    def __init__(self, projection, context = None):
+    def __init__(self, projection = None, context = None):
         self._digits = 3
         self._point_radius = 4.5
-        self._projection = None
+        self._projection = projection
         self._projection_stream = identity
         self._context = context
         self._context_stream = PathString(self._digits) if context is None else PathContext(context)
@@ -25,29 +25,29 @@ class GeoPath:
         if obj:
             if callable(self._point_radius):
                 self._context_stream.point_radius(self._point_radius(*args))
-            stream(obj, self._projection_stream(self._context_stream))
+            geo_stream(obj, self._projection_stream(self._context_stream))
 
         return self._context_stream.result()
 
 
     def area(self, obj):
         path_area = AreaStream()
-        stream(obj, self._projection_stream(path_area))
+        geo_stream(obj, self._projection_stream(path_area))
         return path_area.result()
 
     def measure(self, obj):
         path_measure = LengthStream()
-        stream(obj, self._projection_stream(path_measure))
+        geo_stream(obj, self._projection_stream(path_measure))
         return path_measure.result()
 
     def bounds(self, obj):
         path_bounds = BoundsStream()
-        stream(obj, self._projection_stream(path_bounds))
+        geo_stream(obj, self._projection_stream(path_bounds))
         return path_bounds.result()
 
     def centroid(self, obj):
         path_centroid = CentroidStream()
-        stream(obj, self._projection_stream(path_centroid))
+        geo_stream(obj, self._projection_stream(path_centroid))
         return path_centroid.result()
 
     def set_projection(self, projection = None):
@@ -80,7 +80,7 @@ class GeoPath:
         if digits is None:
             self._digits = None
         else:
-            d = floor(digits)
+            d = floor(float(digits)) if digits else 0
             if isnan(d) or d < 0:
                 raise ValueError(f"Invalid digits: {digits}")
             self._digits = d

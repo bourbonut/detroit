@@ -47,8 +47,8 @@ class Resample:
         dx = x1 - x0
         dy = y1 - y0
         d2 = dx * dx + dy * dy
-        depth -= 1
         if d2 > 4 * self._delta2 and depth:
+            depth -= 1
             a = a0 + a1
             b = b0 + b1
             c = c0 + c1
@@ -72,9 +72,9 @@ class Resample:
             ):
                 a /= m
                 b /= m
-                self.resample_line_to(x0, y0, lambda0, a0, b0, c0, x2, y2, lambda2, a, b, c, depth, self._stream)
+                self.resample_line_to(x0, y0, lambda0, a0, b0, c0, x2, y2, lambda2, a, b, c, depth)
                 self._stream.point(x2, y2)
-                self.resample_line_to(x2, y2, lambda2, a, b, c, x1, y1, lambda1, a1, b1, c1, depth, self._stream)
+                self.resample_line_to(x2, y2, lambda2, a, b, c, x1, y1, lambda1, a1, b1, c1, depth)
 
     def line_start(self):
         self._line_start()
@@ -99,18 +99,13 @@ class Resample:
 
     def _line_start_default(self):
         self._x0 = nan
+        self._y0 = nan
         self._point = self._line_point
         self._stream.line_start()
 
     def _line_point(self, lambda_, phi):
         c = cartesian([lambda_, phi])
         p = self._project(lambda_, phi)
-        self._x0 = p[0]
-        self._y0 = p[1]
-        self._lambda0 = lambda_
-        self._a0 = c[0]
-        self._b0 = c[1]
-        self._c0 = c[2]
         self.resample_line_to(
             self._x0,
             self._y0,
@@ -118,14 +113,20 @@ class Resample:
             self._a0,
             self._b0,
             self._c0,
-            self._x0,
-            self._y0,
-            self._lambda0,
-            self._a0,
-            self._b0,
-            self._c0,
+            p[0],
+            p[1],
+            lambda_,
+            c[0],
+            c[1],
+            c[2],
             max_depth,
         )
+        self._x0 = p[0]
+        self._y0 = p[1]
+        self._lambda0 = lambda_
+        self._a0 = c[0]
+        self._b0 = c[1]
+        self._c0 = c[2]
         self._stream.point(self._x0, self._y0)
 
     def _line_end_default(self):
@@ -147,7 +148,7 @@ class Resample:
         self._c00 = self._c0
         self._point = self._line_point
 
-    def ring_end(self, lambda_, phi):
+    def ring_end(self):
         self.resample_line_to(
             self._x0,
             self._y0,

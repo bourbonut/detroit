@@ -53,17 +53,17 @@ def polygon_contains(polygon, point):
             antimeridian = abs_delta > pi
             k = sin_phi0 * sin_phi1
             
-            sum.append(atan2(k * sign * sin(abs_delta), cos_phi0 * cos_phi1 + k * cos(abs_delta)))
-            angle += delta + sign * TAU if antimeridian else delta
+            sum.append(atan2(k * sign_ * sin(abs_delta), cos_phi0 * cos_phi1 + k * cos(abs_delta)))
+            angle += delta + sign_ * TAU if antimeridian else delta
 
-            if antimeridian ^ lambda0 >= lambda_ ^ lambda1 >= lambda_:
+            if (antimeridian ^ (lambda0 >= lambda_)) ^ (lambda1 >= lambda_):
                 arc = cartesian_cross(cartesian(point0), cartesian(point1))
                 cartesian_normalize_in_place(arc)
                 intersection = cartesian_cross(normal, arc)
                 cartesian_normalize_in_place(intersection)
-                phi_arc = (-1 if antimeridian ^ delta >= 0 else 1) * asin(intersection[2])
+                phi_arc = (-1 if antimeridian ^ (delta >= 0) else 1) * asin(intersection[2])
                 if phi > phi_arc or phi == phi_arc and (arc[0] or arc[1]):
-                    winding += 1 if antimeridian ^ delta >= 0 else -1
+                    winding += 1 if antimeridian ^ (delta >= 0) else -1
 
             lambda0 = lambda1
             sin_phi0 = sin_phi1

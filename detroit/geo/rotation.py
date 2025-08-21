@@ -18,17 +18,17 @@ class RotateRadians:
         self._rotate = RotationIdentity()
         if delta_lambda:
             if delta_phi or delta_gamma:
-                self._rotate = Compose(RotationLambda(delta_lambda), RotationLambda(delta_phi, delta_gamma))
+                self._rotate = Compose(RotationLambda(delta_lambda), RotationPhiGamma(delta_phi, delta_gamma))
             else:
                 self._rotate = RotationLambda(delta_lambda)
         elif delta_phi or delta_gamma:
             self._rotate = RotationPhiGamma(delta_phi, delta_gamma)
 
-        def __call__(self, lambda_, phi):
-            return self._rotate(lambda_, phi)
+    def __call__(self, lambda_, phi):
+        return self._rotate(lambda_, phi)
 
-        def invert(self, lambda_, phi):
-            return self._rotate.invert(lambda_, phi)
+    def invert(self, lambda_, phi):
+        return self._rotate.invert(lambda_, phi)
 
 class ForwardRotationLambda:
     def __init__(self, delta_lambda):
@@ -84,16 +84,19 @@ class RotationPhiGamma:
 
 class Rotation:
     def __init__(self, rotate):
-        self._rotate = RotateRadians(radians(rotate[0]), radians(rotate[1]), radians(rotate[2]) if len(rotate) else 0)
+        self._rotate = RotateRadians(radians(rotate[0]), radians(rotate[1]), radians(rotate[2]) if len(rotate) > 2 else 0)
 
-    def forward(self, coordinates):
+    def __call__(self, coordinates):
         coordinates = self._rotate(radians(coordinates[0]), radians(coordinates[1]))
-        coordinates[0] *= degrees
-        coordinates[1] *= degrees
+        coordinates[0] = degrees(coordinates[0])
+        coordinates[1] = degrees(coordinates[1])
         return coordinates
 
     def invert(self, coordinates):
         coordinates = self._rotate.invert(radians(coordinates[0]), radians(coordinates[1]))
-        coordinates[0] *= degrees
-        coordinates[1] *= degrees
+        coordinates[0] = degrees(coordinates[0])
+        coordinates[1] = degrees(coordinates[1])
         return coordinates
+
+def geo_rotation(rotate) -> Rotation:
+    return Rotation(rotate)

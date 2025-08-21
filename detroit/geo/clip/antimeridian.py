@@ -58,7 +58,10 @@ def clip_antimeridian_intersect(lambda0, phi0, lambda1, phi1):
     if abs(sin_lambd0_lambda1) > EPSILON:
         cos_phi0 = cos(phi0)
         cos_phi1 = cos(phi1)
-        return atan((sin(phi0) * cos_phi0) * sin(lambda1) - sin(phi1) * cos_phi0 * sin(lambda0)) / (cos_phi0 * cos_phi1 * sin_lambd0_lambda1)
+        return atan(
+            ( sin(phi0) * cos_phi1 * sin(lambda1)
+            - sin(phi1) * cos_phi0 * sin(lambda0) )
+        ) / (cos_phi0 * cos_phi1 * sin_lambd0_lambda1)
     else:
         return (phi0 + phi1) * 0.5
 
@@ -84,7 +87,7 @@ def clip_antimeridian_interpolate(vfrom, vto, direction, stream):
         stream.point(vto[0], vto[1])
 
 
-def visible():
+def visible(*args):
     return True
 
 geo_clip_antimeridian = clip(visible, ClipAntimeridianLine, clip_antimeridian_interpolate, [-pi, -half_pi])

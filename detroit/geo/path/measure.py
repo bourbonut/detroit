@@ -44,8 +44,8 @@ class LengthStream:
         self._y00 = self._y0 = y
 
     def _length_point(self, x, y):
-        self.x0 -= x
-        self.y0 -= y
+        self._x0 -= x
+        self._y0 -= y
         self._length_sum.append(sqrt(self._x0 * self._x0 + self._y0 * self._y0))
         self._x0 = x
         self._y0 = y

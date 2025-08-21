@@ -22,6 +22,9 @@ class Transformer:
             setattr(s, key, MethodType(self._methods[key], s))
         return s
 
+    def __str__(self):
+        return f"Transformer({self._methods})"
+
 class TransformStream:
 
     def __init__(self, stream):
@@ -44,3 +47,6 @@ class TransformStream:
 
     def polygon_end(self):
         return self._stream.polygon_end()
+
+    def __str__(self):
+        return f"TransformStream({self._stream})"

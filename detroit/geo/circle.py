@@ -6,7 +6,7 @@ from math import acos, cos, degrees, radians, sin, pi
 EPISLON = 1e-6
 TAU = 2 * pi
 
-def circle_stream(stream, radius, delta, direction, t0, t1):
+def circle_stream(stream, radius, delta, direction, t0=None, t1=None):
     if not delta:
         return
 
@@ -25,11 +25,13 @@ def circle_stream(stream, radius, delta, direction, t0, t1):
             t0 += direction * TAU
 
     t = t0
-    while t < t1:
-        condition = t < t1 if direction > 0 else t > t1
+    while True:
         point = spherical([cos_radius, -sin_radius * cos(t), -sin_radius * sin(t)])
         stream.point(point[0], point[1])
         t -= step
+        condition = t < t1 if direction > 0 else t > t1
+        if condition:
+            break
 
 def circle_radius(cos_radius, point):
     point = cartesian(point)
@@ -49,13 +51,7 @@ class GeoCircle:
         self._rotate = None
         self._stream = self
 
-    def point(self, x, y):
-        x = self._rotate(x, y)
-        self._ring.append(x)
-        x[0] = degrees(x[0])
-        x[1] = degrees(x[1])
-    
-    def circle(self, *args):
+    def __call__(self, *args):
         c = self._center(*args)
         r = radians(self._radius(*args))
         p = radians(self._precision(*args))
@@ -67,6 +63,12 @@ class GeoCircle:
         self._rotate = None
         return c
 
+    def point(self, x, y):
+        x = self._rotate(x, y)
+        self._ring.append(x)
+        x[0] = degrees(x[0])
+        x[1] = degrees(x[1])
+    
     def set_center(self, center):
         if callable(center):
             self._center = center
@@ -87,3 +89,6 @@ class GeoCircle:
         else:
             self._precision = constant(precision)
         return self
+
+def geo_circle() -> GeoCircle:
+    return GeoCircle()

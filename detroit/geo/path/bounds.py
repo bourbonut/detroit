@@ -40,11 +40,11 @@ class BoundsStream:
         return bounds
 
     def _bounds_point(self, x, y):
-        if self._x < self._x0:
-            self._x0 = self._x
-        if self._x > self._x1:
-            self._x1 = self._x
-        if self._y < self._y0:
-            self._y0 = self._y
-        if self._y > self._y1:
-            self._y1 = self._y
+        if x < self._x0:
+            self._x0 = x
+        if x > self._x1:
+            self._x1 = x
+        if y < self._y0:
+            self._y0 = y
+        if y > self._y1:
+            self._y1 = y

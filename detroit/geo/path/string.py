@@ -5,16 +5,16 @@ from ...path.string_round import string_round
 
 class PathString:
     def __init__(self, digits = None):
-        self._append = self._append_default if digits is None else self._append_round
-        self._radius = 4.5
-        self._string = ""
-        self._line = nan
-        self._point = nan
-
         self._cache_digits = None
         self._cache_append = None
         self._cache_radius = None
         self._cache_circle = None
+
+        self._append = self._append_default if digits is None else self._append_round(digits)
+        self._radius = 4.5
+        self._string = ""
+        self._line = nan
+        self._point = nan
 
     def point_radius(self, radius):
         self._radius = radius
@@ -69,7 +69,7 @@ class PathString:
             return self._append_default
         if d != self._cache_digits:
             self._cache_digits = d
-            def append_round(self, string):
+            def append_round(string):
                 floats = re.findall(r"\d+\.\d+", string)
                 rounds = [string_round(f, d) for f in floats]
                 for (old, new) in zip(floats, rounds):

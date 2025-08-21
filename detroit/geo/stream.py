@@ -6,7 +6,6 @@ def get(values, index):
 def stream_geometry(geometry, stream):
     if geometry and hasattr(StreamGeometryType, geometry["type"]):
         getattr(StreamGeometryType, geometry["type"])(geometry, stream)
-        
 
 class StreamObjectType:
 
@@ -67,7 +66,7 @@ def stream_line(coordinates, stream, closed):
     stream.line_start()
     coordinates = coordinates[:-1] if closed else coordinates
     for coordinate in coordinates:
-        stream.point(coordinate[0], coordinate[1], coordinate[2])
+        argpass(stream.point)(get(coordinate, 0), get(coordinate, 1), get(coordinate, 2))
     stream.line_end()
 
 def stream_polygon(coordinates, stream):

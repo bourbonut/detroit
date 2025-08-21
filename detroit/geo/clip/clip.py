@@ -28,6 +28,7 @@ class Clip:
         self._sink = sink
         self._point_visible = point_visible
         self._interpolate = interpolate
+        self._clip_line = clip_line
 
         self._line_start = self._line_start_default
         self._line_end = self._line_end_default
@@ -64,11 +65,11 @@ class Clip:
             self._sink.line_start()
             self._interpolate(None, None, 1, self._sink)
             self._sink.line_end()
-            if self._polygon_started:
-                self._sink.polygon_end()
-                self._polygon_started = False
-            self._segments = None
-            self._polygon = None
+        if self._polygon_started:
+            self._sink.polygon_end()
+            self._polygon_started = False
+        self._segments = None
+        self._polygon = None
 
     def sphere(self):
         self._sink.polygon_start()
@@ -83,6 +84,9 @@ class Clip:
     def _point_default(self, lambda_, phi):
         if self._point_visible(lambda_, phi):
             self._sink.point(lambda_, phi)
+
+    def _point_line(self, lambda_, phi):
+        self._line.point(lambda_, phi)
 
     def _line_start_default(self):
         self._point = self._point_line
@@ -132,6 +136,9 @@ class Clip:
         if n > 1 and clean & 2:
             ring_segments.append(ring_segments.pop() + ring_segments.pop(0))
         self._segments.append(list(filter(valid_segment, ring_segments)))
+
+    def __str__(self):
+        return f"Clip(point_visible={self._point_visible.__name__}, clip_line={self._clip_line.__name__}, interpolate={self._interpolate.__name__}, start={self._start}, sink={self._sink})"
 
 def clip(point_visible, clip_line, interpolate, start):
     def wrapper(sink):

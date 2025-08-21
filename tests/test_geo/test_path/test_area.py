@@ -6,7 +6,7 @@ from math import pi
 def equirectangular():
     return (
         d3.geo_equirectangular()
-        .set_scale(900 / pi)
+        .scale(900 / pi)
         .set_precision(0)
     )
 

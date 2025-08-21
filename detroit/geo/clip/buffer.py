@@ -10,7 +10,7 @@ class ClipBuffer:
     def line_end(self):
         return
 
-    def point(self, x, y, m):
+    def point(self, x, y, m=None):
         self._line.append([x, y, m])
 
     def rejoin(self):

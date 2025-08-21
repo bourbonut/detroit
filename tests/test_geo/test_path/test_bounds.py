@@ -6,14 +6,14 @@ from math import pi
 def equirectangular():
     return (
         d3.geo_equirectangular()
-        .set_scale(900 / pi)
+        .scale(900 / pi)
         .set_precision(0)
     )
 
 def bounds(projection, obj):
     return (
         d3.geo_path()
-        .projection(projection)
+        .set_projection(projection)
         .bounds(obj)
     )
 

@@ -6,7 +6,7 @@ from math import pi
 def equirectangular():
     return (
         d3.geo_equirectangular()
-        .set_scale(900 / pi)
+        .scale(900 / pi)
         .set_precision(0)
     )
 
@@ -23,7 +23,7 @@ def test_string_1(equirectangular):
     }) == "M165,160m0,4.500000a4.500000,4.500000 0 1,1 0,-9a4.500000,4.500000 0 1,1 0,9z"
 
 def test_string_2(equirectangular):
-    d3.geo_path().projection(equirectangular).point_radius(10)({
+    d3.geo_path().set_projection(equirectangular).set_point_radius(10)({
         "type": "Point",
         "coordinates": [-63, 18]
     }) == "M165,160m0,10a10,10 0 1,1 0,-20a10,10 0 1,1 0,20z"
@@ -77,7 +77,7 @@ def test_string_8(equirectangular):
     }) == "M165,160L170,160L170,165Z"
 
 def test_string_9(equirectangular):
-    path = d3.geo_path().projection(equirectangular)
+    path = d3.geo_path().set_projection(equirectangular)
     path({
         "type": "LineString",
         "coordinates": [[-63, 18], [-62, 18], [-62, 17]]

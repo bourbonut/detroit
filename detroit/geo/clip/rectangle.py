@@ -1,4 +1,4 @@
-from .buffer import Clip_buffer
+from .buffer import ClipBuffer
 from .line import clip_line
 from .rejoin import clip_rejoin, EPSILON
 from itertools import chain
@@ -17,7 +17,7 @@ class ClipRectangle:
         self._stream = stream
 
         self._active_stream = stream
-        self._buffer_stream = Clip_buffer()
+        self._buffer_stream = ClipBuffer()
         self._segments = None
         self._polygon = None
         self._fpx = None
