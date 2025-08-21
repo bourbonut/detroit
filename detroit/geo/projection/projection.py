@@ -210,7 +210,7 @@ class ProjectionMutator:
     def recenter(self):
         center = scale_translate_rotate(self._k, 0, 0, self._sx, self._sy, self._alpha)(*self._project(self._lambda, self._phi))
         transform = scale_translate_rotate(self._k, self._x - center[0], self._y - center[1], self._sx, self._sy, self._alpha)
-        self._rotate = RotateRadians(self._delta_gamma, self._delta_phi, self._delta_gamma)
+        self._rotate = RotateRadians(self._delta_lambda, self._delta_phi, self._delta_gamma)
         self._project_transform = Compose(self._project, transform)
         self._project_rotate_transform = Compose(self._rotate, self._project_transform)
         self._project_resample = resample(self._project_transform, self._delta2)
