@@ -1,27 +1,23 @@
 from ..cartesian import cartesian
 from math import asin, atan2, cos, radians, sqrt, nan
 from ..transform import Transformer
+from ..common import PolygonStream
+from typing import TypeVar
+
+ProjectionMutator = TypeVar("ProjectionMutator")
 
 EPSILON = 1e-6
 max_depth = 16
 cos_min_distance = cos(radians(30))
 
-def resample(project, delta2):
-    if delta2:
-        def resample(stream):
-            return Resample(project, delta2, stream)
-        return resample
-    else:
-        return resample_none(project)
-
-def resample_none(project):
+def resample_none(project: ProjectionMutator) -> Transformer:
     def point(self, x, y):
         x = project(x, y)
         self._stream.point(x[0], x[1])
     return Transformer({"point": point})
 
 class Resample:
-    def __init__(self, project, delta2, stream):
+    def __init__(self, project: ProjectionMutator, delta2: float, stream: PolygonStream):
         self._project = project
         self._delta2 = delta2
         self._stream = stream
@@ -103,7 +99,7 @@ class Resample:
         self._point = self._line_point
         self._stream.line_start()
 
-    def _line_point(self, lambda_, phi):
+    def _line_point(self, lambda_: float, phi: float):
         c = cartesian([lambda_, phi])
         p = self._project(lambda_, phi)
         self.resample_line_to(
@@ -138,7 +134,7 @@ class Resample:
         self._point = self.ring_point
         self._line_end = self.ring_end
 
-    def ring_point(self, lambda_, phi):
+    def ring_point(self, lambda_: float, phi: float):
         self._lambda00 = lambda_
         self._line_point(lambda_, phi)
         self._x00 = self._x0
@@ -169,3 +165,11 @@ class Resample:
 
     def __str__(self):
         return f"Resample({self._stream})"
+
+def resample(project: ProjectionMutator, delta2: float):
+    if delta2:
+        def resample(stream: PolygonStream) -> Resample:
+            return Resample(project, delta2, stream)
+        return resample
+    else:
+        return resample_none(project)

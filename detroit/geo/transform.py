@@ -1,22 +1,93 @@
 from types import MethodType
+from collections.abc import Callable
+from .common import PolygonStream
 
-def noop():
-    return
+class TransformStream(PolygonStream):
+    """
+    Default class where methods don't affect the behavior of the passed stream
+    object if they are not updated.
 
-class Transform:
+    Parameters
+    ----------
+    stream : PolygonStream
+        Stream object
+    """
+    def __init__(self, stream: PolygonStream):
+        self._stream = stream
 
-    def __init__(self, methods):
-        self._methods = methods
+    def point(self, x: float, y: float):
+        """
+        Calls the stream :code:`point` method
 
-    def stream(self):
-        return Transformer(self._methods)
+        Parameters
+        ----------
+        x : float
+            x value
+        y : float
+            y value
+        """
+        return self._stream.point(x, y)
+
+    def sphere(self):
+        """
+        Calls the stream :code:`sphere` method
+        """
+        return self._stream.sphere()
+
+    def line_start(self):
+        """
+        Calls the stream :code:`line_start` method
+        """
+        return self._stream.line_start()
+
+    def line_end(self):
+        """
+        Calls the stream :code:`line_end` method
+        """
+        return self._stream.line_end()
+
+    def polygon_start(self):
+        """
+        Calls the stream :code:`polygon_start` method
+        """
+        return self._stream.polygon_start()
+
+    def polygon_end(self):
+        """
+        Calls the stream :code:`polygon_end` method
+        """
+        return self._stream.polygon_end()
+
+    def __str__(self):
+        return f"TransformStream({self._stream})"
 
 class Transformer:
-    
-    def __init__(self, methods):
+    """
+    Transform a stream object given :code:`methods`
+
+    Parameters
+    ----------
+    methods : dict[str, Callable[..., ...]]
+        Methods applied on a stream object
+    """
+    def __init__(self, methods: dict[str, Callable[..., ...]]):
         self._methods = methods
 
-    def __call__(self, stream):
+    def __call__(self, stream: PolygonStream) -> TransformStream:
+        """
+        Creates a new :code:`TransformStream` with the argument :code:`stream`
+        and updates its methods.
+
+        Parameters
+        ----------
+        stream : PolygonStream
+            Stream object
+
+        Returns
+        -------
+        TransformStream
+            Transformed stream
+        """
         s = TransformStream(stream)
         for key in self._methods:
             setattr(s, key, MethodType(self._methods[key], s))
@@ -25,28 +96,31 @@ class Transformer:
     def __str__(self):
         return f"Transformer({self._methods})"
 
-class TransformStream:
+class GeoTransform:
+    """
+    Defines an arbitrary transform using the methods defined on the specified
+    methods object. Any undefined methods will use pass-through methods that
+    propagate inputs to the output stream.
 
-    def __init__(self, stream):
-        self._stream = stream
+    Parameters
+    ----------
+    methods : dict[str, Callable[..., ...]]
+        Methods applied on a stream object
+    """
+    def __init__(self, methods: dict[str, Callable[..., ...]]):
+        self._methods = methods
 
-    def point(self, x, y):
-        return self._stream.point(x, y)
+    def stream(self) -> Transformer:
+        """
+        Passes :code:`methods` to a new class which transforms the methods of a
+        stream object given the methods and returns it.
 
-    def sphere(self):
-        return self._stream.sphere()
+        Returns
+        -------
+        Transformer
+            Callable object which modifies the behavior of a stream object
+        """
+        return Transformer(self._methods)
 
-    def line_start(self):
-        return self._stream.line_start()
-
-    def line_end(self):
-        return self._stream.line_end()
-
-    def polygon_start(self):
-        return self._stream.polygon_start()
-
-    def polygon_end(self):
-        return self._stream.polygon_end()
-
-    def __str__(self):
-        return f"TransformStream({self._stream})"
+def geo_transform(methods: dict[str, Callable[..., ...]]) -> GeoTransform:
+    return GeoTransform(methods)

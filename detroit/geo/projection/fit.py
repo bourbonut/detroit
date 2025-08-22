@@ -1,7 +1,12 @@
 from ..stream import geo_stream
 from ..path.bounds import BoundsStream
+from ...types import GeoJSON, Point2D
+from collections.abc import Callable
+from typing import TypeVar
 
-def fit(projection, fit_bounds, obj):
+ProjectionMutator = TypeVar("ProjectionMutator")
+
+def fit(projection: ProjectionMutator, fit_bounds: Callable[[float], None], obj: GeoJSON) -> ProjectionMutator:
     clip = projection.get_clip_extent() if hasattr(projection, "get_clip_extent") else None
     projection.scale(150).translate([0, 0])
     if clip is not None:
@@ -13,8 +18,8 @@ def fit(projection, fit_bounds, obj):
         projection.set_clip_extent(clip)
     return projection
 
-def fit_extent(projection, extent, obj):
-    def fit_bounds(b):
+def fit_extent(projection: ProjectionMutator, extent: tuple[Point2D, Point2D], obj: GeoJSON) -> ProjectionMutator:
+    def fit_bounds(b: float):
         w = extent[1][0] - extent[0][0]
         h = extent[1][1] - extent[0][1]
         k = min(w / (b[1][0] - b[0][0]), h / (b[1][1] - b[0][1]))
@@ -23,11 +28,11 @@ def fit_extent(projection, extent, obj):
         projection.scale(150 * k).translate([x, y])
     return fit(projection, fit_bounds, obj)
 
-def fit_size(projection, size, obj):
+def fit_size(projection: ProjectionMutator, size: Point2D, obj: GeoJSON) -> ProjectionMutator:
     return fit_extent(projection, [[0, 0], size], obj)
 
-def fit_width(projection, width, obj):
-    def fit_bounds(b):
+def fit_width(projection: ProjectionMutator, width: float, obj: GeoJSON) -> ProjectionMutator:
+    def fit_bounds(b: float):
         w = width
         k = w / (b[1][0] - b[0][0])
         x = (w - k * (b[1][0] + b[0][0])) / 2
@@ -35,8 +40,8 @@ def fit_width(projection, width, obj):
         projection.scale(150 * k).translate([x, y])
     return fit(projection, fit_bounds, obj)
 
-def fit_height(projection, height, obj):
-    def fit_bounds(b):
+def fit_height(projection: ProjectionMutator, height: float, obj: GeoJSON) -> ProjectionMutator:
+    def fit_bounds(b: float):
         h = height
         k = h / (b[1][1] - b[0][1])
         x = -k * b[0][0]

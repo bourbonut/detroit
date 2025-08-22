@@ -4,7 +4,7 @@ from math import floor, isnan, log, sqrt, ulp
 from typing import Generic, TypeVar
 
 from ..array import argpass, blur2, ticks
-from ..types import Accessor, GeoJSON, Point2D, T
+from ..types import Accessor, MultiPolygonGeoJSON, Point2D, T
 from .constant import constant
 from .contours import Contours
 
@@ -46,14 +46,14 @@ class Contour:
         values: list[float],
         contours: Contours,
         pow4k: float,
-        transform: Callable[[GeoJSON], GeoJSON],
+        transform: Callable[[MultiPolygonGeoJSON], MultiPolygonGeoJSON],
     ):
         self._values = values
         self._contours = contours
         self._pow4k = pow4k
         self._transform = transform
 
-    def __call__(self, value: float) -> GeoJSON:
+    def __call__(self, value: float) -> MultiPolygonGeoJSON:
         """
         Compute an arbitrary contour without needing to recompute the
         underlying grid.
@@ -144,7 +144,7 @@ class Density(Generic[T]):
         blur2({"data": values, "width": self._n, "height": self._m}, self._r * pow2k)
         return values
 
-    def __call__(self, data: list[T]) -> list[GeoJSON]:
+    def __call__(self, data: list[T]) -> list[MultiPolygonGeoJSON]:
         """
         Estimates the density contours for the given array of data, returning
         an array of GeoJSON MultiPolygon geometry objects.
@@ -173,7 +173,7 @@ class Density(Generic[T]):
             .set_thresholds(list(map(lambda d: d * pow4k, tz)))(values)
         )
 
-        def transform(pair: tuple[int, GeoJSON]) -> GeoJSON:
+        def transform(pair: tuple[int, MultiPolygonGeoJSON]) -> MultiPolygonGeoJSON:
             i, c = pair
             c["value"] = tz[i]
             return self._transform(c)
@@ -204,7 +204,7 @@ class Density(Generic[T]):
         pow4k = pow(2, 2 * self._k)
         return Contour(values, contours, pow4k, self._transform)
 
-    def _transform(self, geometry: GeoJSON) -> GeoJSON:
+    def _transform(self, geometry: MultiPolygonGeoJSON) -> MultiPolygonGeoJSON:
         """
         Transforms each coordinate of the geometry given density values.
 

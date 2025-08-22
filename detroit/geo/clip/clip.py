@@ -1,22 +1,32 @@
 from .buffer import ClipBuffer
-from .rejoin import clip_rejoin
+from .rejoin import clip_rejoin, Intersection
 from ..polygon_contains import polygon_contains
+from ..common import Stream, PolygonStream, LineStream
+from ...types import T
+from collections.abc import Callable
 from itertools import chain
 from math import pi
 
 EPSILON = 1e-6
 half_pi = 0.5 * pi
 
-def valid_segment(segment):
+def valid_segment(segment: list[T]) -> bool:
     return len(segment) > 1
 
-def compare_intersection(point):
+def compare_intersection(point: Intersection) -> float:
     point = point.x
     return point[1] - half_pi - EPSILON if point[0] < 0 else half_pi - point[1]
 
-class Clip:
+class Clip(PolygonStream):
 
-    def __init__(self, point_visible, clip_line, interpolate, start, sink):
+    def __init__(
+        self,
+        point_visible: Callable[[float, float], bool],
+        clip_line: Callable[[Stream], LineStream],
+        interpolate: Callable[[float | None, float | None, float, LineStream], None],
+        start: tuple[float, float],
+        sink: PolygonStream,
+    ):
         self._line = clip_line(sink)
         self._ring_buffer = ClipBuffer()
         self._ring_sink = clip_line(self._ring_buffer)
@@ -79,14 +89,14 @@ class Clip:
         self._sink.line_end()
         self._sink.polygon_end()
 
-    def point(self, lambda_, phi):
+    def point(self, lambda_: float, phi: float):
         return self._point(lambda_, phi)
 
-    def _point_default(self, lambda_, phi):
+    def _point_default(self, lambda_: float, phi: float):
         if self._point_visible(lambda_, phi):
             self._sink.point(lambda_, phi)
 
-    def _point_line(self, lambda_, phi):
+    def _point_line(self, lambda_: float, phi: float):
         self._line.point(lambda_, phi)
 
     def _line_start_default(self):
@@ -97,7 +107,7 @@ class Clip:
         self._point = self._point_default
         self._line.line_end()
 
-    def _point_ring(self, lambda_, phi):
+    def _point_ring(self, lambda_: float, phi: float):
         self._ring.append([lambda_, phi])
         self._ring_sink.point(lambda_, phi)
 
@@ -139,9 +149,19 @@ class Clip:
         self._segments.append(list(filter(valid_segment, ring_segments)))
 
     def __str__(self):
-        return f"Clip(point_visible={self._point_visible.__name__}, clip_line={self._clip_line.__name__}, interpolate={self._interpolate.__name__}, start={self._start}, sink={self._sink})"
+        return (
+            f"Clip(point_visible={self._point_visible.__name__}, "
+            f"clip_line={self._clip_line.__name__}, "
+            f"interpolate={self._interpolate.__name__}, start={self._start}, "
+            f"sink={self._sink})"
+        )
 
-def clip(point_visible, clip_line, interpolate, start):
-    def wrapper(sink):
+def clip(
+    point_visible: Callable[[float, float], bool],
+    clip_line: Callable[[Stream], LineStream],
+    interpolate: Callable[[float | None, float | None, float, LineStream], None],
+    start: tuple[float, float],
+) -> Callable[[PolygonStream], Clip]:
+    def wrapper(sink: PolygonStream) -> Clip:
         return Clip(point_visible, clip_line, interpolate, start, sink)
     return wrapper

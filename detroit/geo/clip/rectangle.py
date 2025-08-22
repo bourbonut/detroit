@@ -3,13 +3,15 @@ from .line import clip_line
 from .rejoin import clip_rejoin, EPSILON
 from itertools import chain
 from math import nan
+from collections.abc import Callable
+from ..common import PolygonStream
 
 clip_max = 1e9
 clip_min = -1e9
 
-class ClipRectangle:
+class ClipRectangle(PolygonStream):
 
-    def __init__(self, x0, y0, x1, y1, stream):
+    def __init__(self, x0: float, y0: float, x1: float, y1: float, stream: PolygonStream):
         self._x0 = x0
         self._y0 = y0
         self._x1 = x1
@@ -183,7 +185,33 @@ class ClipRectangle:
         self._ppy = y
         self._ppv = v
 
-def geo_clip_rectangle(x0, y0, x1, y1):
-    def wrapper(stream):
+def geo_clip_rectangle(
+    x0: float,
+    y0: float,
+    x1: float,
+    y1: float,
+) -> Callable[[PolygonStream], ClipRectangle]:
+    """
+    Generates a clipping function which transforms a stream such that
+    geometries are bounded by a rectangle of coordinates :math:`[[x_0, y_0],
+    [x_1, y_1]]`. Typically used for post-clipping.
+
+    Parameters
+    ----------
+    x0 : float
+        :math:`x_0` coordinate of the rectangle
+    y0 : float
+        :math:`y_0` coordinate of the rectangle
+    x1 : float
+        :math:`x_1` coordinate of the rectangle
+    y1 : float
+        :math:`y_1` coordinate of the rectangle
+
+    Returns
+    -------
+    Callable[[PolygonStream], ClipRectangle]
+        Clipping function
+    """
+    def wrapper(stream: PolygonStream) -> ClipRectangle:
         return ClipRectangle(x0, y0, x1, y1, stream)
     return wrapper

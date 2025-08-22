@@ -32,4 +32,4 @@ Types
 
    .. automethod:: __call__
 
-.. autoclass:: detroit.types.GeoJSON
+.. autoclass:: detroit.types.MultiPolygonGeoJSON

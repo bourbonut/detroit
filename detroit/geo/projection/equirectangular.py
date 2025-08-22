@@ -1,11 +1,20 @@
-from .projection import projection, ProjectionMutator
+from .projection import geo_projection, ProjectionMutator
+from ...types import Point2D
 
 class GeoEquirectangularRaw:
-    def __call__(self, lambda_: float, phi: float) -> tuple[float, float]:
+    def __call__(self, lambda_: float, phi: float) -> Point2D:
         return [lambda_, phi]
 
-    def invert(self, lambda_: float, phi: float) -> tuple[float, float]:
+    def invert(self, lambda_: float, phi: float) -> Point2D:
         return [lambda_, phi]
 
 def geo_equirectangular() -> ProjectionMutator:
-    return projection(GeoEquirectangularRaw()).scale(152.63)
+    """
+    The equirectangular (plate carrée) projection
+
+    Returns
+    -------
+    ProjectionMutator
+        Projection object
+    """
+    return geo_projection(GeoEquirectangularRaw()).scale(152.63)

@@ -4,7 +4,7 @@ from typing import TypeVar
 
 from ..array import argpass, extent, nice, ticks
 from ..array.threshold import threshold_sturges
-from ..types import GeoJSON, Point2D
+from ..types import MultiPolygonGeoJSON, Point2D
 from .area import area
 from .constant import constant
 from .contains import contains
@@ -169,7 +169,7 @@ class Contours:
         self._threshold = threshold_sturges
         self._smooth = argpass(self._smooth_linear)
 
-    def __call__(self, values: list[float]) -> list[GeoJSON]:
+    def __call__(self, values: list[float]) -> list[MultiPolygonGeoJSON]:
         """
         Computes the contours for the given array of values, returning an array
         of GeoJSON MultiPolygon geometry objects.
@@ -200,7 +200,7 @@ class Contours:
 
         return list(map(lambda value: self.contour(values, value), tz))
 
-    def contour(self, values: list[float], value: float) -> GeoJSON:
+    def contour(self, values: list[float], value: float) -> MultiPolygonGeoJSON:
         """
         Computes a single contour
 

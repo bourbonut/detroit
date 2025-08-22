@@ -1,14 +1,17 @@
+from .clip import clip, Clip
 from ..cartesian import cartesian, cartesian_add_in_place, cartesian_cross, cartesian_dot, cartesian_scale, spherical
 from ..circle import circle_stream
 from ..point_equal import point_equal
-from .clip import clip
+from ..common import PolygonStream, LineStream, Stream
+from ...types import Point2D
+from collections.abc import Callable
 from math import cos, pi, radians, sqrt
 
 EPSILON = 1e-6
 
-class ClipCircle:
+class ClipCircle(LineStream):
 
-    def __init__(self, cr, delta, small_radius, not_hemisphere, stream):
+    def __init__(self, cr: float, delta: float, small_radius: bool, not_hemisphere: bool, stream: Stream):
         self._cr = cr
         self._delta = delta
         self._small_radius = small_radius
@@ -26,7 +29,7 @@ class ClipCircle:
         self._v0 = False
         self._clean = 1
 
-    def point(self, lambda_, phi):
+    def point(self, lambda_: float, phi: float):
         point1 = [lambda_, phi]
         v = self._visible(lambda_, phi)
         c = 0
@@ -82,10 +85,10 @@ class ClipCircle:
             self._stream.line_end()
             self._point0 = None
 
-    def clean(self):
+    def clean(self) -> int:
         return self._clean | ((self._v00 and self._v0) << 1)
 
-    def _intersect(self, a, b, two=False):
+    def _intersect(self, a: Point2D, b: Point2D, two: bool = False) -> Point2D:
         pa = cartesian(a)
         pb = cartesian(b)
 
@@ -153,7 +156,7 @@ class ClipCircle:
           cartesian_add_in_place(q1, A)
           return [q, spherical(q1)]
 
-    def _code(self, lambda_, phi):
+    def _code(self, lambda_: float, phi: float) -> int:
         r = self._radius if self._small_radius else pi - self._radius
         code = 0
         if lambda_ < -r:
@@ -167,21 +170,37 @@ class ClipCircle:
         return code
 
 
-def geo_clip_circle(radius):
-    cr = cos(radius)
+def geo_clip_circle(angle: float) -> Callable[[PolygonStream], Clip]:
+    """
+    Generates a clipping function which transforms a stream such that
+    geometries are bounded by a small circle of radius angle around the
+    projection's center. Typically used for pre-clipping.
+
+
+    Parameters
+    ----------
+    angle : float
+        Radius Angle value around the projection's center
+
+    Returns
+    -------
+    Callable[[PolygonStream], Clip]
+        Clipping function
+    """
+    cr = cos(angle)
     delta = radians(2)
     small_radius = cr > 0
     not_hemisphere = abs(cr) > EPSILON
 
-    start = [0, -radius] if small_radius else [-pi, radius - pi]
+    start = [0, -angle] if small_radius else [-pi, angle - pi]
 
-    def clip_line(stream):
+    def clip_line(stream: Stream) -> ClipCircle:
         return ClipCircle(cr, delta, small_radius, not_hemisphere, stream)
 
-    def interpolate(self, vfrom, vto, direction, stream):
-        circle_stream(stream, radius, delta, direction, vfrom, vto)
+    def interpolate(vfrom: float | None, vto: float | None, direction: float, stream: LineStream):
+        circle_stream(stream, angle, delta, direction, vfrom, vto)
 
-    def visible(self, lambda_, phi):
+    def visible(lambda_: float, phi: float) -> bool:
         return cos(lambda_) * cos(phi) > cr
 
     return clip(visible, clip_line, interpolate, start)

@@ -1,12 +1,25 @@
 from .cartesian import cartesian, cartesian_normalize_in_place, spherical
+from .common import LineStream
 from .constant import constant
 from .rotation import RotateRadians
+from ..types import Point3D, Point2D, GeoJSON
+from collections.abc import Callable
 from math import acos, cos, degrees, radians, sin, pi
+from typing import Any, TypeVar
+
+TGeoCircle = TypeVar("GeoCircle", bound="GeoCircle")
 
 EPISLON = 1e-6
 TAU = 2 * pi
 
-def circle_stream(stream, radius, delta, direction, t0=None, t1=None):
+def circle_stream(
+    stream: LineStream,
+    radius: float,
+    delta: float,
+    direction: float,
+    t0: float | None = None,
+    t1: float | None = None,
+):
     if not delta:
         return
 
@@ -33,7 +46,7 @@ def circle_stream(stream, radius, delta, direction, t0=None, t1=None):
         if condition:
             break
 
-def circle_radius(cos_radius, point):
+def circle_radius(cos_radius: float, point: Point3D) -> float:
     point = cartesian(point)
     point[0] -= cos_radius
     cartesian_normalize_in_place(point)
@@ -42,7 +55,9 @@ def circle_radius(cos_radius, point):
     return (radius + TAU - EPISLON) % TAU
 
 class GeoCircle:
-
+    """
+    Circle generator
+    """
     def __init__(self):
         self._center = constant([0, 0])
         self._radius = constant(90)
@@ -51,7 +66,23 @@ class GeoCircle:
         self._rotate = None
         self._stream = self
 
-    def __call__(self, *args):
+    def __call__(self, *args: Any) -> GeoJSON:
+        """
+        Returns a new GeoJSON geometry object of type "Polygon" approximating a
+        circle on the surface of a sphere, with the current center, radius and
+        precision. Any arguments are passed to the accessors.
+
+
+        Parameters
+        ----------
+        *args : Any
+            Arguments passed to the accessors
+
+        Returns
+        -------
+        GeoJSON
+            GeoJSON object
+        """
         c = self._center(*args)
         r = radians(self._radius(*args))
         p = radians(self._precision(*args))
@@ -63,27 +94,72 @@ class GeoCircle:
         self._rotate = None
         return c
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         x = self._rotate(x, y)
         self._ring.append(x)
         x[0] = degrees(x[0])
         x[1] = degrees(x[1])
     
-    def set_center(self, center):
+    def set_center(self, center: Callable[..., Point2D] | Point2D) -> TGeoCircle:
+        """
+        If center is specified, sets the circle center to the specified point
+        :code:`[longitude, latitude]` in degrees, and returns this circle
+        generator. The center may also be specified as a function.
+
+        Parameters
+        ----------
+        center : Callable[..., Point2D] | Point2D
+            Center function or constant value
+
+        Returns
+        -------
+        TGeoCircle
+            Itself
+        """
         if callable(center):
             self._center = center
         else:
             self._center = constant(center)
         return self
 
-    def set_radius(self, radius):
+    def set_radius(self, radius: Callable[..., float] | float) -> TGeoCircle:
+        """
+        If radius is specified, sets the circle radius to the specified angle
+        in degrees, and returns this circle generator. The radius may also be
+        specified as a function.
+
+        Parameters
+        ----------
+        radius : Callable[..., float] | float
+            Radius function or constant value
+
+        Returns
+        -------
+        TGeoCircle
+            Itself
+        """
         if callable(radius):
             self._radius = radius
         else:
             self._radius = constant(radius)
         return self
 
-    def set_precision(self, precision):
+    def set_precision(self, precision: Callable[..., float] | float) -> TGeoCircle:
+        """
+        If precision is specified, sets the circle precision to the specified
+        angle in degrees, and returns this circle generator. The precision may
+        also be specified as a function.
+
+        Parameters
+        ----------
+        precision : Callable[..., float] | float
+            Precision function or constant value
+
+        Returns
+        -------
+        TGeoCircle
+            Itself
+        """
         if callable(precision):
             self._precision = precision
         else:
@@ -91,4 +167,12 @@ class GeoCircle:
         return self
 
 def geo_circle() -> GeoCircle:
+    """
+    Returns a new circle generator.
+
+    Returns
+    -------
+    GeoCircle
+        GeoCircle
+    """
     return GeoCircle()

@@ -13,6 +13,10 @@ TSequentialScaler = TypeVar("Itself", bound="SequentialScaler")
 Number: TypeAlias = int | float
 GenValue: TypeAlias = datetime | str | int | float
 Point2D: TypeAlias = tuple[float, float]
+Point3D: TypeAlias = tuple[float, float, float]
+Vec2D: TypeAlias = tuple[float, float]
+Vec3D: TypeAlias = tuple[float, float, float]
+GeoJSON: TypeAlias = dict[str, Any]
 
 # Type definition for :code:`Formatter`: a function which takes a string to be
 # formatted and returns the formatted value.
@@ -318,7 +322,7 @@ class Accessor(Generic[U, V], Protocol):
         """
         ...
 
-class GeoJSON(TypedDict):
+class MultiPolygonGeoJSON(TypedDict):
     """
     Describes a contour as GeoJSON MultiPolygon geometry objects
 

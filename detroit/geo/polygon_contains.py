@@ -1,5 +1,6 @@
 from .cartesian import cartesian, cartesian_cross, cartesian_normalize_in_place
 from math import asin, atan2, cos, sin, pi, fsum
+from ..types import Point2D
 
 EPSILON = 1e-6
 EPSILON2 = 1e-12
@@ -7,16 +8,16 @@ TAU = 2 * pi
 half_pi = pi * 0.5
 quarter_pi = pi * 0.25
 
-def sign(x):
+def sign(x: float) -> float:
     return -1 if x < 0 else 1
 
-def longitude(point):
+def longitude(point: Point2D) -> float:
     if abs(point[0]) <= pi:
         return point[0]
     else:
         return sign(point[0]) * ((abs(point[0]) + pi) % TAU - pi)
 
-def polygon_contains(polygon, point):
+def polygon_contains(polygon: list[list[float]], point: tuple[float, float]) -> int:
     lambda_ = longitude(point)
     phi = point[1]
     sin_phi = sin(phi)

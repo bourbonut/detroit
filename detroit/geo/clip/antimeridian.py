@@ -1,11 +1,12 @@
 from .clip import clip
 from math import atan, cos, pi, sin, nan
+from ..common import LineStream
 
 half_pi = pi * 0.5
 EPSILON = 1e-6
 
-class ClipAntimeridianLine:
-    def __init__(self, stream):
+class ClipAntimeridianLine(LineStream):
+    def __init__(self, stream: LineStream):
         self._lambda0 = nan
         self._phi0 = nan
         self._sign0 = nan
@@ -21,7 +22,7 @@ class ClipAntimeridianLine:
         self._lambda0 = nan
         self._phi0 = nan
 
-    def point(self, lambda1, phi1):
+    def point(self, lambda1: float, phi1: float):
         sign1 = pi if lambda1 > 0 else -pi
         delta = abs(lambda1 - self._lambda0)
 
@@ -50,10 +51,10 @@ class ClipAntimeridianLine:
         self._stream.point(self._lambda0, self._phi0)
         self._sign0 = sign1
 
-    def clean(self):
+    def clean(self) -> int:
         return 2 - self._clean
 
-def clip_antimeridian_intersect(lambda0, phi0, lambda1, phi1):
+def clip_antimeridian_intersect(lambda0: float, phi0: float, lambda1: float, phi1: float) -> float:
     sin_lambd0_lambda1 = sin(lambda0 - lambda1)
     if abs(sin_lambd0_lambda1) > EPSILON:
         cos_phi0 = cos(phi0)
@@ -66,7 +67,12 @@ def clip_antimeridian_intersect(lambda0, phi0, lambda1, phi1):
     else:
         return (phi0 + phi1) * 0.5
 
-def clip_antimeridian_interpolate(vfrom, vto, direction, stream):
+def clip_antimeridian_interpolate(
+    vfrom: float | None,
+    vto: float | None,
+    direction: float,
+    stream: LineStream,
+):
     if vfrom is None:
         phi = direction * half_pi
         stream.point(-pi, phi)
@@ -88,7 +94,17 @@ def clip_antimeridian_interpolate(vfrom, vto, direction, stream):
         stream.point(vto[0], vto[1])
 
 
-def visible(*args):
+def visible(*args) -> bool:
     return True
 
 geo_clip_antimeridian = clip(visible, ClipAntimeridianLine, clip_antimeridian_interpolate, [-pi, -half_pi])
+geo_clip_antimeridian.__doc__ = """
+A clipping function which transforms a stream such that geometries (lines or
+polygons) that cross the antimeridian line are cut in two, one on each side.
+Typically used for pre-clipping.
+
+Returns
+-------
+Callable[[PolygonStream], ClipRectangle]
+    Clipping function
+"""
