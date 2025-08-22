@@ -61,7 +61,8 @@ def clip_antimeridian_intersect(lambda0, phi0, lambda1, phi1):
         return atan(
             ( sin(phi0) * cos_phi1 * sin(lambda1)
             - sin(phi1) * cos_phi0 * sin(lambda0) )
-        ) / (cos_phi0 * cos_phi1 * sin_lambd0_lambda1)
+            / (cos_phi0 * cos_phi1 * sin_lambd0_lambda1)
+        )
     else:
         return (phi0 + phi1) * 0.5
 

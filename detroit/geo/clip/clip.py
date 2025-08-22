@@ -5,13 +5,14 @@ from itertools import chain
 from math import pi
 
 EPSILON = 1e-6
+half_pi = 0.5 * pi
 
 def valid_segment(segment):
     return len(segment) > 1
 
 def compare_intersection(point):
     point = point.x
-    return point[1] - pi * 0.5 - EPSILON if point[0] < 0 else 0.5 * pi - point[1]
+    return point[1] - half_pi - EPSILON if point[0] < 0 else half_pi - point[1]
 
 class Clip:
 

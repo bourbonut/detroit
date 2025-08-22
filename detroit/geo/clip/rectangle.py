@@ -45,7 +45,7 @@ class ClipRectangle:
                 y = self._y1 if a > 1 else self._y0
                 stream.point(x, y)
                 a = (a + direction + 4) % 4
-                if a != a1:
+                if a == a1:
                     break
         else:
             stream.point(vto[0], vto[1])

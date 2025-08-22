@@ -2,6 +2,7 @@ import detroit as d3
 import json
 from math import isnan, pi
 from pytopojson.feature import Feature
+from pathlib import Path
 import pytest
 
 def in_delta(actual, expected, delta=1e6):
@@ -18,13 +19,15 @@ def in_delta(actual, expected, delta=1e6):
 
 @pytest.fixture(scope="session")
 def us():
-    with open("../data/us-10m.json") as file:
+    filepath = Path(__file__).resolve().parents[1] / "data" / "us-10m.json"
+    with open(filepath) as file:
         us_topo = json.load(file)
     return Feature()(us_topo, us_topo["objects"]["land"])
 
 @pytest.fixture(scope="session")
 def world():
-    with open("../data/world-50m.json") as file:
+    filepath = Path(__file__).resolve().parents[1] / "data" / "world-50m.json"
+    with open(filepath) as file:
         world_topo = json.load(file)
     return Feature()(world_topo, world_topo["objects"]["land"])
 
@@ -130,32 +133,36 @@ def test_fit_15(world):
     assert in_delta(projection.get_scale(), 1152.889035, 1e-6)
     assert in_delta(projection.get_translation(), [533.52541, 496.232028], 1e-6)
 
-def test_fit_16(world):
+def test_fit_16():
     projection = d3.geo_equirectangular()
+    projection.fit_extent([[50, 50], [950, 950]], {"type": "Feature", "geometry": None})
     s = projection.get_scale()
     t = projection.get_translation()
     assert not s
     assert isnan(t[0])
     assert isnan(t[1])
 
-def test_fit_17(world):
+def test_fit_17():
     projection = d3.geo_equirectangular()
+    projection.fit_extent([[50, 50], [950, 950]], {"type": "MultiPoint", "coordinates": []})
     s = projection.get_scale()
     t = projection.get_translation()
     assert not s
     assert isnan(t[0])
     assert isnan(t[1])
 
-def test_fit_18(world):
+def test_fit_18():
     projection = d3.geo_equirectangular()
+    projection.fit_extent([[50, 50], [950, 950]], {"type": "MultiLineString", "coordinates": []})
     s = projection.get_scale()
     t = projection.get_translation()
     assert not s
     assert isnan(t[0])
     assert isnan(t[1])
 
-def test_fit_19(world):
+def test_fit_19():
     projection = d3.geo_equirectangular()
+    projection.fit_extent([[50, 50], [950, 950]], {"type": "MultiPolygon", "coordinates": []})
     s = projection.get_scale()
     t = projection.get_translation()
     assert not s
@@ -173,11 +180,11 @@ def test_fit_21(world):
     p1 = d3.geo_equirectangular().fit_size([1000, 1000], world)
     s1 = p1.get_scale()
     t1 = p1.get_translation()
-    c1 = p1.clip_extent()
-    p2 = d3.geo_equirectangular().clip_extent([[100, 200], [700, 600]]).fit_size([1000, 1000], world)
+    c1 = p1.get_clip_extent()
+    p2 = d3.geo_equirectangular().set_clip_extent([[100, 200], [700, 600]]).fit_size([1000, 1000], world)
     s2 = p2.get_scale()
     t2 = p2.get_translation()
-    c2 = p2.clip_extent()
+    c2 = p2.get_clip_extent()
     assert in_delta(s1, s2, 1e-6)
     assert in_delta(t1, t2, 1e-6)
     assert c1 is None

@@ -95,7 +95,7 @@ class Resample:
 
     def _point_default(self, x, y):
         x = self._project(x, y)
-        self._stream(x[0], x[1])
+        self._stream.point(x[0], x[1])
 
     def _line_start_default(self):
         self._x0 = nan
@@ -164,4 +164,8 @@ class Resample:
             self._c00,
             max_depth
         )
+        self._line_end = self._line_end_default
         self._line_end_default()
+
+    def __str__(self):
+        return f"Resample({self._stream})"

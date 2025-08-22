@@ -17,7 +17,7 @@ def clip_rejoin(segments, compare_intersection, start_inside, interpolate, strea
 
     for segment in segments:
         n = len(segment) - 1
-        if n == 0:
+        if n <= 0:
             return
         p0 = segment[0]
         p1 = segment[n]
@@ -32,15 +32,15 @@ def clip_rejoin(segments, compare_intersection, start_inside, interpolate, strea
                 return
             p1[0] += 2 * EPSILON
 
-    x = Intersection(p0, segment, None, True)
-    subject.append(x)
-    x.o = Intersection(p0, None, x, False)
-    clip.append(x.o)
+        x = Intersection(p0, segment, None, True)
+        subject.append(x)
+        x.o = Intersection(p0, None, x, False)
+        clip.append(x.o)
 
-    x = Intersection(p1, segment, None, False)
-    subject.append(x)
-    x.o = Intersection(p1, None, x, True)
-    clip.append(x.o)
+        x = Intersection(p1, segment, None, False)
+        subject.append(x)
+        x.o = Intersection(p1, None, x, True)
+        clip.append(x.o)
 
     if len(subject) == 0:
         return
@@ -77,7 +77,7 @@ def clip_rejoin(segments, compare_intersection, start_inside, interpolate, strea
             else:
                 if is_subject:
                     points = current.p.z
-                    for point in points[::-1]:
+                    for point in reversed(points):
                         stream.point(point[0], point[1])
                 else:
                     interpolate(current.x, current.p.x, -1, stream)
@@ -85,7 +85,7 @@ def clip_rejoin(segments, compare_intersection, start_inside, interpolate, strea
             current = current.o
             points = current.z
             is_subject = not is_subject
-            if not current.v:
+            if current.v:
                 break
         stream.line_end()
         
