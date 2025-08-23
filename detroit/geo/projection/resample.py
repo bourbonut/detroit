@@ -16,7 +16,7 @@ def resample_none(project: ProjectionMutator) -> Transformer:
         self._stream.point(x[0], x[1])
     return Transformer({"point": point})
 
-class Resample:
+class Resample(PolygonStream):
     def __init__(self, project: ProjectionMutator, delta2: float, stream: PolygonStream):
         self._project = project
         self._delta2 = delta2
