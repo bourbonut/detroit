@@ -81,6 +81,11 @@ class ProjectionMutator(Projection):
     - Azimuthal projections
     - Conic projections
     - Cylindrical projections
+
+    Parameters
+    ----------
+    project : RawProjection
+        Projection object
     """
     def __init__(self, project: RawProjection):
         self._project = project
@@ -606,7 +611,7 @@ def geo_projection(project: RawProjection) -> Projection:
     Constructs a new projection from the specified raw projection :code:`project`.
     The :code:`project` function takes the longitude and latitude of a given
     point in radians, often referred to as :code:`lambda` (:math:`\\lambda`)
-    and :code:`phi` (:code:`\\phi`), and returns a two-element array :code:`[x,
+    and :code:`phi` (:math:`\\phi`), and returns a two-element array :code:`[x,
     y]` representing its unit projection. The project function does not need to
     scale or translate the point, as these are applied automatically by
     projection.scale, projection.translate, and projection.center. Likewise,
@@ -615,8 +620,8 @@ def geo_projection(project: RawProjection) -> Projection:
 
     Parameters
     ----------
-    project : Projection
-        Projection object or function
+    project : RawProjection
+        Projection object
 
     Returns
     -------
@@ -635,8 +640,8 @@ def geo_projection_mutator(project: Callable[..., RawProjection], *args: Any) ->
 
     Parameters
     ----------
-    project : Callable[..., Projection]
-        Function which generates a projection object or function
+    project : Callable[..., RawProjection]
+        Function which generates a projection object
     *args : Any
         Arguments passed to the function :code:`project`
 

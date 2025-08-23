@@ -128,7 +128,6 @@ def geo_transform(methods: dict[str, Callable[..., ...]]) -> GeoTransform:
     methods object. Any undefined methods will use pass-through methods that
     propagate inputs to the output stream.
 
-
     Parameters
     ----------
     methods : dict[str, Callable[..., ...]]

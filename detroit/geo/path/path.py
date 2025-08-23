@@ -46,14 +46,14 @@ class GeoPath:
         * :code:`Point` - a single position
         * :code:`MultiPoint` - an array of positions
         * :code:`LineString` - an array of positions forming a continuous line
-        * :code:`MultiLineString` - an array of arrays of positions forming
+        * :code:`MultiLineString` - an array of arrays of positions forming \
         several lines
-        * :code:`Polygon` - an array of arrays of positions forming a polygon
+        * :code:`Polygon` - an array of arrays of positions forming a polygon \
         (possibly with holes)
-        * :code:`MultiPolygon` - a multidimensional array of positions forming
+        * :code:`MultiPolygon` - a multidimensional array of positions forming \
         multiple polygons
         * :code:`GeometryCollection` - an array of geometry objects
-        * :code:`Feature` - a feature containing one of the above geometry
+        * :code:`Feature` - a feature containing one of the above geometry \
         objects
         * :code:`FeatureCollection` - an array of feature objects
 
@@ -94,7 +94,7 @@ class GeoPath:
         Returns
         -------
         float
-            Area in :math:`\\text{px}^2`
+            Area in px²
         """
         path_area = AreaStream()
         geo_stream(obj, self._projection_stream(path_area))
