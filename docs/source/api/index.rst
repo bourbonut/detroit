@@ -10,6 +10,7 @@ API
    color
    contour/index
    format
+   geo/index
    interpolate
    path
    scale/index
