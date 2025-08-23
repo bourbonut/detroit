@@ -630,7 +630,7 @@ def geo_projection(project: RawProjection) -> Projection:
     """
     return ProjectionMutator(project).recenter()
 
-def geo_projection_mutator(project: Callable[..., RawProjection], *args: Any) -> Projection:
+def geo_projection_mutator(project: Callable[..., RawProjection]) -> Callable[..., Projection]:
     """
     Constructs a new projection from the specified raw projection factory and
     returns a mutate function to call whenever the raw projection changes. The
@@ -642,12 +642,12 @@ def geo_projection_mutator(project: Callable[..., RawProjection], *args: Any) ->
     ----------
     project : Callable[..., RawProjection]
         Function which generates a projection object
-    *args : Any
-        Arguments passed to the function :code:`project`
 
     Returns
     -------
-    Projection
+    Callable[..., Projection]
         Projection object
     """
-    return geo_projection(argpass(project)(*args))
+    def projection_constructor(*args: Any) -> Projection:
+        return geo_projection(argpass(project)(*args))
+    return projection_constructor

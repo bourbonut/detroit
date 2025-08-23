@@ -1,7 +1,7 @@
 from .projection import geo_projection, ProjectionMutator
 from ...types import Point2D
 
-class GeoEquirectangularRaw:
+class EquirectangularRaw:
     def __call__(self, lambda_: float, phi: float) -> Point2D:
         return [lambda_, phi]
 
@@ -17,4 +17,4 @@ def geo_equirectangular() -> ProjectionMutator:
     ProjectionMutator
         Projection object
     """
-    return geo_projection(GeoEquirectangularRaw()).scale(152.63)
+    return geo_projection(EquirectangularRaw()).scale(152.63)
