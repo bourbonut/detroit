@@ -1,11 +1,13 @@
 from math import inf
 from ...array import argpass
+from ..common import PolygonStream
+from ...types import Point2D
 
 @argpass
 def noop():
     return
 
-class BoundsStream:
+class BoundsStream(PolygonStream):
 
     def __init__(self):
         self._line_start = noop
@@ -30,16 +32,16 @@ class BoundsStream:
     def polygon_end(self):
         return self._polygon_end()
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         return self._bounds_point(x, y)
 
-    def result(self):
+    def result(self) -> tuple[Point2D, Point2D]:
         bounds = [[self._x0, self._y0], [self._x1, self._y1]]
         self._y0 = self._x0 = inf
         self._x1 = self._y1 = -inf
         return bounds
 
-    def _bounds_point(self, x, y):
+    def _bounds_point(self, x: float, y: float):
         self._iteration += 1
         if x < self._x0:
             self._x0 = x

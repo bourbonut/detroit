@@ -1,9 +1,11 @@
 from math import floor, nan, isnan
+from collections.abc import Callable
 import re
+from ..common import PolygonStream
 
 from ...path.string_round import string_round
 
-class PathString:
+class PathString(PolygonStream):
     def __init__(self, digits = None):
         self._cache_digits = None
         self._cache_append = None
@@ -16,7 +18,7 @@ class PathString:
         self._line = nan
         self._point = nan
 
-    def point_radius(self, radius):
+    def point_radius(self, radius: float):
         self._radius = radius
         return self
 
@@ -34,7 +36,7 @@ class PathString:
             self._string += "Z"
         self._point = nan
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         if self._point == 0:
             self._append(f"M{x},{y}")
             self._point = 1
@@ -53,15 +55,15 @@ class PathString:
                 self._string = s
             self._string += self._cache_circle
 
-    def result(self):
+    def result(self) -> str | None:
         result = self._string
         self._string = ""
         return result if len(result) else None
 
-    def _append_default(self, string):
+    def _append_default(self, string: str):
         self._string += string
 
-    def _append_round(self, digits):
+    def _append_round(self, digits: float) -> Callable[[str], None]:
         d = floor(digits)
         if isnan(d) or d < 0:
             raise ValueError(f"Invalid digits: {digits}")
@@ -69,7 +71,7 @@ class PathString:
             return self._append_default
         if d != self._cache_digits:
             self._cache_digits = d
-            def append_round(string):
+            def append_round(string: str):
                 floats = re.findall(r"\d+\.\d+", string)
                 rounds = [string_round(f, d) for f in floats]
                 for (old, new) in zip(floats, rounds):

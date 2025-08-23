@@ -1,16 +1,17 @@
 from math import pi, nan
+from ..common import PolygonStream, Context
 
 TAU = 2 * pi
 
-class PathContext:
+class PathContext(PolygonStream):
 
-    def __init__(self, context):
+    def __init__(self, context: Context):
         self._context = context
         self._radius = 4.5
         self._line = nan
         self._point = nan
 
-    def point_radius(self, radius):
+    def point_radius(self, radius: float):
         self._radius = radius
         return self
 
@@ -28,7 +29,7 @@ class PathContext:
             self._context.close_path()
         self._point = nan
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         if self._point == 0:
             self._context.move_to(x, y)
             self._point = 1

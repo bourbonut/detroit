@@ -2,7 +2,7 @@ from ..clip import geo_clip_antimeridian, geo_clip_circle, geo_clip_rectangle
 from ..compose import Compose
 from ..rotation import RotateRadians
 from ..transform import Transformer
-from ..common import Projection, SpatialTransform, PolygonStream
+from ..common import RawProjection, SpatialTransform, PolygonStream, Projection
 from .fit import fit_extent, fit_size, fit_height, fit_width
 from .resample import resample
 from ...array import argpass
@@ -73,7 +73,7 @@ def scale_translate_rotate(k: float, dx: float, dy: float, sx: float, sy: float,
 def identity(x):
     return x
 
-class ProjectionMutator:
+class ProjectionMutator(Projection):
     """
     Projections transform spherical polygonal geometry to planar polygonal
     geometry. Several classes of standard projections are provided:
@@ -82,7 +82,7 @@ class ProjectionMutator:
     - Conic projections
     - Cylindrical projections
     """
-    def __init__(self, project: Projection):
+    def __init__(self, project: RawProjection):
         self._project = project
         self._invert = self._invert_default if hasattr(project, "invert") else self._invert_error
         self._k = 150
@@ -133,6 +133,26 @@ class ProjectionMutator:
         return self._project_rotate_transform(radians(point[0]), radians(point[1]))
 
     def invert(self, point: Point2D) -> Point2D:
+        """
+        Returns a new array :code:`[longitude, latitude]` in degrees
+        representing the unprojected point of the given projected point. The
+        point must be specified as a two-element array :code:`[x, y]`
+        (typically in pixels). May return null if the specified point has no
+        defined projected position, such as when the point is outside the
+        clipping bounds of the projection.
+
+        This method is only defined on invertible projections.
+
+        Parameters
+        ----------
+        point : Point2D
+            2D point where coordinates are in pixels
+
+        Returns
+        -------
+        Point2D
+            2D point where coordinates are in degrees
+        """
         return self._invert(point)
 
     def _invert_default(self, point: Point2D) -> Point2D:
@@ -581,7 +601,7 @@ class ProjectionMutator:
         return sqrt(self._delta2)
 
 
-def geo_projection(project: Projection) -> ProjectionMutator:
+def geo_projection(project: RawProjection) -> ProjectionMutator:
     """
     Builds a new projection from the specified raw projection :code:`project`.
     The :code:`project` function takes the longitude and latitude of a given
@@ -605,7 +625,7 @@ def geo_projection(project: Projection) -> ProjectionMutator:
     """
     return ProjectionMutator(project).recenter()
 
-def geo_projection_mutator(project: Callable[..., Projection], *args: Any) -> ProjectionMutator:
+def geo_projection_mutator(project: Callable[..., RawProjection], *args: Any) -> ProjectionMutator:
     """
     Constructs a new projection from the specified raw projection factory and
     returns a mutate function to call whenever the raw projection changes. The
