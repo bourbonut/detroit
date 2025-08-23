@@ -123,4 +123,20 @@ class GeoTransform:
         return Transformer(self._methods)
 
 def geo_transform(methods: dict[str, Callable[..., ...]]) -> GeoTransform:
+    """
+    Defines an arbitrary transform using the methods defined on the specified
+    methods object. Any undefined methods will use pass-through methods that
+    propagate inputs to the output stream.
+
+
+    Parameters
+    ----------
+    methods : dict[str, Callable[..., ...]]
+        Methods applied on a stream object
+
+    Returns
+    -------
+    GeoTransform
+        Class which holds the passed methods
+    """
     return GeoTransform(methods)
