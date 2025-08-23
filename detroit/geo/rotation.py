@@ -84,16 +84,45 @@ class RotationPhiGamma:
         ]
 
 class Rotation:
+    """
+    Rotation class
+    """
     def __init__(self, rotate: tuple[float, float] | tuple[float, float, float]):
         self._rotate = RotateRadians(radians(rotate[0]), radians(rotate[1]), radians(rotate[2]) if len(rotate) > 2 else 0)
 
     def __call__(self, coordinates: Point2D) -> Point2D:
+        """
+        Rotates a 2D point
+
+        Parameters
+        ----------
+        coordinates : Point2D
+            2D point
+
+        Returns
+        -------
+        Point2D
+            Rotated 2D point
+        """
         coordinates = self._rotate(radians(coordinates[0]), radians(coordinates[1]))
         coordinates[0] = degrees(coordinates[0])
         coordinates[1] = degrees(coordinates[1])
         return coordinates
 
     def invert(self, coordinates: Point2D) -> Point2D:
+        """
+        Invert transformation.
+
+        Parameters
+        ----------
+        coordinates : Point2D
+            2D point
+
+        Returns
+        -------
+        Point2D
+            Inverted 2D point
+        """
         coordinates = self._rotate.invert(radians(coordinates[0]), radians(coordinates[1]))
         coordinates[0] = degrees(coordinates[0])
         coordinates[1] = degrees(coordinates[1])

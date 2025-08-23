@@ -18,7 +18,7 @@ def point(self, x: float, y: float):
 
 transform_radians = Transformer({"point": point})
 
-def transform_rotate(rotate: SpatialTransform) -> Transformer:
+def transform_rotate(rotate: RotateRadians) -> Transformer:
     def point(self, x: float, y: float):
         r = rotate(x, y)
         return self._stream.point(r[0], r[1])
@@ -601,9 +601,9 @@ class ProjectionMutator(Projection):
         return sqrt(self._delta2)
 
 
-def geo_projection(project: RawProjection) -> ProjectionMutator:
+def geo_projection(project: RawProjection) -> Projection:
     """
-    Builds a new projection from the specified raw projection :code:`project`.
+    Constructs a new projection from the specified raw projection :code:`project`.
     The :code:`project` function takes the longitude and latitude of a given
     point in radians, often referred to as :code:`lambda` (:math:`\\lambda`)
     and :code:`phi` (:code:`\\phi`), and returns a two-element array :code:`[x,
@@ -620,7 +620,7 @@ def geo_projection(project: RawProjection) -> ProjectionMutator:
 
     Returns
     -------
-    ProjectionMutator
+    Projection
         Projection object
     """
     return ProjectionMutator(project).recenter()

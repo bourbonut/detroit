@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Protocol, TypeAlias, TypeVar
 from ..types import Point2D, GeoJSON, Vec2D
+from collections.abc import Callable
 
 class SpatialTransform(Protocol):
     """
@@ -47,23 +48,33 @@ class LineStream(ABC):
     @abstractmethod
     def line_start(self):
         """
-        Indicates the start of a new line segment. Zero or more points will
-        follow.
+        Indicates the start of a line or ring. Within a polygon, indicates the
+        start of a ring. The first ring of a polygon is the exterior ring, and
+        is typically clockwise. Any subsequent rings indicate holes in the
+        polygon, and are typically counterclockwise.
         """
         ...
 
     @abstractmethod
     def line_end(self):
         """
-        Indicates the end of the current line segment.
+        Indicates the end of a line or ring. Within a polygon, indicates the
+        end of a ring. Unlike GeoJSON, the redundant closing coordinate of a
+        ring is not indicated via point, and instead is implied via lineEnd
+        within a polygon.
         """
         ...
 
     @abstractmethod
     def point(self, x: float, y: float):
         """
-        Indicates a new point in the current line segment with the given x- and
-        y-values.
+        Indicates a point with the specified coordinates x and y (and
+        optionally z). The coordinate system is unspecified and
+        implementation-dependent; for example, projection streams require
+        spherical coordinates in degrees as input. Outside the context of a
+        polygon or line, a point indicates a point geometry object (Point or
+        MultiPoint). Within a line or polygon ring, the point indicates a
+        control point.
 
         Parameters
         ----------
@@ -79,14 +90,15 @@ class PolygonStream(LineStream):
     @abstractmethod
     def polygon_start(self):
         """
-        Indicates the start of a new polygon.
+        Indicates the start of a polygon. The first line of a polygon indicates
+        the exterior ring, and any subsequent lines indicate interior holes.
         """
         ...
 
     @abstractmethod
     def polygon_end(self):
         """
-        Indicates the end of the current polygon.
+        Indicates the end of a polygon.
         """
         ...
 
@@ -265,6 +277,43 @@ class Projection(ABC):
         """
         ...
 
+    def set_preclip(self, preclip: Callable[[PolygonStream], PolygonStream]) -> TProjection:
+        """
+        If preclip is specified, sets the projection's spherical clipping to
+        the specified function and returns the projection; preclip is a
+        function that takes a projection stream and returns a clipped stream.
+
+        Parameters
+        ----------
+        preclip : Callable[[PolygonStream], PolygonStream]
+            Preclip function
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
+        ...
+
+    def set_postclip(self, postclip: Callable[[PolygonStream], PolygonStream]) -> TProjection:
+        """
+        If postclip is specified, sets the projection's Cartesian clipping to
+        the specified function and returns the projection; postclip is a
+        function that takes a projection stream and returns a clipped stream.
+
+        Parameters
+        ----------
+        postclip : Callable[[PolygonStream], PolygonStream]
+            Postclip function
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
+        ...
+
+    @abstractmethod
     def set_clip_extent(self, clip_extent: tuple[Point2D, Point2D] | None = None) -> TProjection:
         """
         If extent is specified, sets the projection's viewport clip extent to
@@ -289,6 +338,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def scale(self, k: float) -> TProjection:
         """
         If scale is specified, sets the projection's scale factor to the
@@ -308,6 +358,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def translate(self, translation: Vec2D) -> TProjection:
         """
         If translate is specified, sets the projection's translation offset to
@@ -346,6 +397,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def rotate(self, angles: tuple[float, float] | tuple[float, float, float]) -> TProjection:
         """
         If angles is specified, sets the projection's three-axis spherical
@@ -366,6 +418,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def set_angle(self, angle: float) -> TProjection:
         """
         If angle is specified, sets the projection's post-projection planar
@@ -384,6 +437,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def set_reflect_x(self, reflect_x: bool) -> TProjection:
         """
         If reflect is specified, sets whether or not the x-dimension is
@@ -403,6 +457,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def set_reflect_y(self, reflect_y: bool) -> TProjection:
         """
         If reflect is specified, sets whether or not the y-dimension is
@@ -423,6 +478,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def set_precision(self, precision: float) -> TProjection:
         """
         If precision is specified, sets the threshold for the projection's
@@ -441,6 +497,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def fit_extent(self, extent: tuple[Point2D, Point2D], obj: GeoJSON) -> TProjection:
         """
         Sets the projection's scale and translate to fit the specified GeoJSON
@@ -467,6 +524,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def fit_size(self, size: Point2D, obj: GeoJSON) -> TProjection:
         """
         A convenience method for projection.fit_extent where the top-left
@@ -486,6 +544,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def fit_width(self, width: float, obj: GeoJSON) -> TProjection:
         """
         A convenience method for projection.fit_size where the height is
@@ -506,6 +565,7 @@ class Projection(ABC):
         """
         ...
 
+    @abstractmethod
     def fit_height(self, height: float, obj: GeoJSON) -> TProjection:
         """
         A convenience method for projection.fit_size where the width is

@@ -59,6 +59,8 @@ from .geo import (
     geo_clip_antimeridian,
     geo_clip_rectangle,
     geo_transform,
+    geo_projection,
+    geo_projection_mutator,
 )
 from .interpolate import (
     interpolate,
@@ -410,6 +412,8 @@ __all__ = [
     "geo_clip_rectangle",
     "geo_equirectangular",
     "geo_path",
+    "geo_projection",
+    "geo_projection_mutator",
     "geo_rotation",
     "geo_stream",
     "geo_transform",
