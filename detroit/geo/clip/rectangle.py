@@ -1,10 +1,11 @@
 from .buffer import ClipBuffer
 from .line import clip_line
-from .rejoin import clip_rejoin, EPSILON
+from .rejoin import clip_rejoin, Intersection, EPSILON
 from itertools import chain
 from math import nan
 from collections.abc import Callable
 from ..common import PolygonStream
+from ...types import Point2D
 
 clip_max = 1e9
 clip_min = -1e9
@@ -17,6 +18,8 @@ class ClipRectangle(PolygonStream):
         self._x1 = x1
         self._y1 = y1
         self._stream = stream
+
+        self._point = self._point_default
 
         self._active_stream = stream
         self._buffer_stream = ClipBuffer()
@@ -31,19 +34,22 @@ class ClipRectangle(PolygonStream):
         self._ring = None
         self._clean = None
 
-    def _visible(self, x, y):
+    def _visible(self, x: float, y: float) -> bool:
         return self._x0 <= x <= self._x1 and self._y0 <= y <= self._y1
 
-    def _interpolate(self, vfrom, vto, direction, stream):
-        a = self._corner(vfrom, direction)
-        a1 = self._corner(vto, direction)
+    def _interpolate(self, vfrom: float | None, vto: float | None, direction: float, stream: PolygonStream):
+        a = 0
+        a1 = 0
+        if vfrom is not None:
+            a = self._corner(vfrom, direction)
+            a1 = self._corner(vto, direction)
         if (
             vfrom is None
             or (a != a1)
-            or self._compare_point(vfrom, vto) < 0 ^ direction > 0
+            or (self._compare_point(vfrom, vto) < 0) ^ (direction > 0)
         ):
             while True:
-                x = self._x0 if a != 0 or a == 3 else self._x1
+                x = self._x0 if a == 0 or a == 3 else self._x1
                 y = self._y1 if a > 1 else self._y0
                 stream.point(x, y)
                 a = (a + direction + 4) % 4
@@ -52,7 +58,7 @@ class ClipRectangle(PolygonStream):
         else:
             stream.point(vto[0], vto[1])
 
-    def _corner(self, p, direction):
+    def _corner(self, p: Point2D, direction: float) -> int:
         if abs(p[0] - self._x0) < EPSILON:
             return 0 if direction > 0 else 3
         elif abs(p[0] - self._x1) < EPSILON:
@@ -61,10 +67,10 @@ class ClipRectangle(PolygonStream):
             return 1 if direction > 0 else 0
         return 3 if direction > 0 else 2
 
-    def _compare_intersection(self, a, b):
-        return self._compare_point(a["x"], b["x"])
+    def _compare_intersection(self, a: Intersection, b: Intersection) -> float:
+        return self._compare_point(a.x, b.x)
 
-    def _compare_point(self, a, b):
+    def _compare_point(self, a: Point2D, b: Point2D) -> float:
         ca = self._corner(a, 1)
         cb = self._corner(b, 1)
         if ca != cb:
@@ -78,7 +84,10 @@ class ClipRectangle(PolygonStream):
         else:
             return b[0] - a[0]
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
+        return self._point(x, y)
+
+    def _point_default(self, x: float, y: float):
         if self._visible(x, y):
             self._active_stream.point(x, y)
 
@@ -98,7 +107,8 @@ class ClipRectangle(PolygonStream):
                 if a1 <= self._y1:
                     if b1 > self._y1 and (b0 - a0) * (self._y1 - a1) > (b1 - a1) * (self._x0 - a0):
                         winding += 1
-                    elif b1 <= self._y1 and (b0 - a0) * (self._y1 - a1) < (b1 - a1) * (self._x0 - a0):
+                else:
+                    if b1 <= self._y1 and (b0 - a0) * (self._y1 - a1) < (b1 - a1) * (self._x0 - a0):
                         winding -= 1
         return winding
 
@@ -128,8 +138,8 @@ class ClipRectangle(PolygonStream):
         self._ring = None
 
     def line_start(self):
-        self._clip_stream.point = self._line_point
-        if self._polygon:
+        self._point = self._line_point
+        if self._polygon is not None:
             self._ring = []
             self._polygon.append(self._ring)
         self._first = True
@@ -138,18 +148,18 @@ class ClipRectangle(PolygonStream):
         self._ppy = nan
 
     def line_end(self):
-        if self._segments:
+        if self._segments is not None:
             self._line_point(self._fpx, self._fpy)
             if self._fpv and self._ppv:
                 self._buffer_stream.rejoin()
             self._segments.append(self._buffer_stream.result())
-        self._clip_stream.point = self.point
+        self._point = self._point_default
         if self._ppv:
             self._active_stream.line_end()
 
-    def _line_point(self, x, y):
+    def _line_point(self, x: float, y: float):
         v = self._visible(x, y)
-        if self._polygon:
+        if self._polygon is not None:
             self._ring.append([x, y])
         if self._first:
             self._fpx = x
@@ -171,11 +181,11 @@ class ClipRectangle(PolygonStream):
                 b = [x, y]
                 if clip_line(a, b, self._x0, self._y0, self._x1, self._y1):
                     if not self._ppv:
-                        self.active_stream.line_start()
-                        self.active_stream.point(a[0], a[1])
-                    self.active_stream.point(b[0], b[1])
+                        self._active_stream.line_start()
+                        self._active_stream.point(a[0], a[1])
+                    self._active_stream.point(b[0], b[1])
                     if not v:
-                        self.active_stream.line_end()
+                        self._active_stream.line_end()
                     self._clean = False
                 elif v:
                     self._active_stream.line_start()
@@ -184,6 +194,9 @@ class ClipRectangle(PolygonStream):
         self._ppx = x
         self._ppy = y
         self._ppv = v
+
+    def __str__(self) -> str:
+        return f"ClipRectangle({self._stream}, {[[self._x0, self._y0], [self._x1, self._y1]]})"
 
 def geo_clip_rectangle(
     x0: float,

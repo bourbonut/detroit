@@ -11,8 +11,8 @@ def azimuthal_raw(
         if isinf(k):
             return [2, 0]
         return [
-              k * cy * sin(x),
-              k * sin(y)
+            k * cy * sin(x),
+            k * sin(y)
         ]
     return call
 
@@ -25,7 +25,7 @@ def azimuthal_invert(
         sc = sin(c)
         cc = cos(c)
         return [
-          atan2(x * sc, z * cc),
-          asin(y * sc / z if z != 0. else 0.)
+            atan2(x * sc, z * cc),
+            asin(y * sc / z if z != 0. else 0.)
         ]
     return invert

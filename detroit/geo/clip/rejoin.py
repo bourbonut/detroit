@@ -1,3 +1,4 @@
+from functools import cmp_to_key
 from ..point_equal import point_equal, EPSILON
 from ..common import Point2D, LineStream
 from collections.abc import Callable
@@ -15,10 +16,9 @@ class Intersection:
         self.n = None
         self.p = None
 
-
 def clip_rejoin(
     segments: list[list[tuple[float, float, float | None]]],
-    compare_intersection: Callable[[Intersection], float],
+    compare_intersection: Callable[[Intersection, Intersection], float],
     start_inside: int,
     interpolate: Callable[[float | None, float | None, float, LineStream], None],
     stream: LineStream,
@@ -38,7 +38,7 @@ def clip_rejoin(
                 stream.line_start()
                 for i in range(n):
                     p0 = segment[i]
-                    stream.point(p0[1], p0[1])
+                    stream.point(p0[0], p0[1])
                 stream.line_end()
                 return
             p1[0] += 2 * EPSILON
@@ -56,7 +56,7 @@ def clip_rejoin(
     if len(subject) == 0:
         return
 
-    clip = sorted(clip, key=compare_intersection)
+    clip = sorted(clip, key=cmp_to_key(compare_intersection))
     link(subject)
     link(clip)
 

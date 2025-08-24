@@ -34,7 +34,7 @@ class GeoPath:
         self._digits = 3
         self._point_radius = 4.5
         self._projection = projection
-        self._projection_stream = identity
+        self._projection_stream = identity if projection is None else projection.stream
         self._context = context
         self._context_stream = PathString(self._digits) if context is None else PathContext(context)
 

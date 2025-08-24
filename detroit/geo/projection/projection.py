@@ -73,6 +73,13 @@ def scale_translate_rotate(k: float, dx: float, dy: float, sx: float, sy: float,
 def identity(x):
     return x
 
+class RawProjectionIdentity:
+    def __call__(self, lambda_: float, phi: float) -> Point2D:
+        return [lambda_, phi]
+    
+    def invert(self, x: float, y: float) -> Point2D:
+        return self(x, y)
+
 class ProjectionMutator(Projection):
     """
     Projections transform spherical polygonal geometry to planar polygonal
@@ -115,6 +122,7 @@ class ProjectionMutator(Projection):
         self._project_rotate_transform = None
         self._cache = None
         self._cache_stream = None
+        self.recenter()
 
     def __call__(self, point: Point2D) -> Point2D:
         """
@@ -195,6 +203,24 @@ class ProjectionMutator(Projection):
         clipped_stream = self._preclip(self._project_resample(self._postclip(stream)))
         self._cache = transform_radians(transform_rotate(self._rotate)(clipped_stream))
         return self._cache
+
+    def set_project(self, project: RawProjection) -> TProjectionMutator:
+        """
+        Updates the raw projection object and returns itself
+
+        Parameters
+        ----------
+        project : RawProjection
+            Raw projection object
+
+        Returns
+        -------
+        ProjectionMutator
+            Itself
+        """
+        self._project = project
+        self._invert = self._invert_default if hasattr(project, "invert") else self._invert_error
+        return self.recenter()
 
     def set_preclip(self, preclip: Callable[[PolygonStream], PolygonStream]) -> TProjectionMutator:
         """
@@ -628,7 +654,7 @@ def geo_projection(project: RawProjection) -> Projection:
     Projection
         Projection object
     """
-    return ProjectionMutator(project).recenter()
+    return ProjectionMutator(project)
 
 def geo_projection_mutator(project: Callable[..., RawProjection]) -> Callable[..., Projection]:
     """
@@ -648,6 +674,7 @@ def geo_projection_mutator(project: Callable[..., RawProjection]) -> Callable[..
     Callable[..., Projection]
         Projection object
     """
+    projection = ProjectionMutator(RawProjectionIdentity())
     def projection_constructor(*args: Any) -> Projection:
-        return geo_projection(argpass(project)(*args))
+        return projection.set_project(argpass(project)(*args))
     return projection_constructor

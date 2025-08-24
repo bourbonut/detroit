@@ -79,3 +79,6 @@ class PathString(PolygonStream):
                 self._string += string
             self._cache_append = append_round
         return self._cache_append
+
+    def __str__(self) -> str:
+        return "PathString()"

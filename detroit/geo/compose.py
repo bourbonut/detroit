@@ -23,3 +23,6 @@ class Compose:
 
     def _default_invert(self, x: float, y: float):
         return
+
+    def __str__(self) -> str:
+        return f"Compose({self._a}, {self._b})"

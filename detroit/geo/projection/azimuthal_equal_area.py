@@ -1,4 +1,4 @@
-from math import asin, sqrt
+from math import asin, sqrt, inf
 from ...types import Point2D
 from .azimuthal import azimuthal_raw, azimuthal_invert
 from .projection import geo_projection
@@ -7,7 +7,7 @@ class AzimuthalEqualAreaRaw:
 
     def __call__(self, lambda_: float, phi: float) -> Point2D:
         def scale(cxcy: float) -> float:
-            return sqrt(2 / (1 + cxcy))
+            return sqrt(2 / (1 + cxcy)) if cxcy != -1 else inf
         return azimuthal_raw(scale)(lambda_, phi)
 
     def invert(self, x: float, y: float) -> Point2D:

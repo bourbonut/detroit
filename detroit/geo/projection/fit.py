@@ -24,7 +24,7 @@ def fit_extent(projection: ProjectionMutator, extent: tuple[Point2D, Point2D], o
         h = extent[1][1] - extent[0][1]
         k = min(w / (b[1][0] - b[0][0]), h / (b[1][1] - b[0][1]))
         x = extent[0][0] + (w - k * (b[1][0] + b[0][0])) * 0.5
-        y = extent[0][1] + (w - k * (b[1][1] + b[0][1])) * 0.5
+        y = extent[0][1] + (h - k * (b[1][1] + b[0][1])) * 0.5
         projection.scale(150 * k).translate([x, y])
     return fit(projection, fit_bounds, obj)
 

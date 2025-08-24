@@ -13,9 +13,12 @@ half_pi = 0.5 * pi
 def valid_segment(segment: list[T]) -> bool:
     return len(segment) > 1
 
-def compare_intersection(point: Intersection) -> float:
-    point = point.x
-    return point[1] - half_pi - EPSILON if point[0] < 0 else half_pi - point[1]
+def compare_intersection(a: Intersection, b: Intersection) -> float:
+    a = a.x
+    b = b.x
+    ra = a[1] - half_pi - EPSILON if a[0] < 0 else half_pi - a[1]
+    rb = b[1] - half_pi - EPSILON if b[0] < 0 else half_pi - b[1]
+    return ra - rb
 
 class Clip(PolygonStream):
 
@@ -138,8 +141,7 @@ class Clip(PolygonStream):
                     self._sink.polygon_start()
                     self._polygon_started = True
                 self._sink.line_start()
-                for i in range(m):
-                    point = segment[i]
+                for point in segment[:-1]:
                     self._sink.point(point[0], point[1])
                 self._sink.line_end()
             return

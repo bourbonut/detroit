@@ -1,4 +1,4 @@
-from math import abs, asin, atan2, pi, sin, sqrt, cos
+from math import asin, atan2, pi, sin, sqrt, cos
 from .conic import conic_projection
 from .cylindrical_equal_area import CylindricalEqualArea
 from ...types import Point2D
@@ -18,8 +18,8 @@ class ConicEqualAreaRaw:
 
     def __call__(self, x: float, y: float) -> Point2D:
         r = sqrt(self._c - 2 * self._n * sin(y)) / self._n
-        x *= self.n
-        return [self._r * sin(x), self._r0 - r * cos(x)]
+        x *= self._n
+        return [r * sin(x), self._r0 - r * cos(x)]
 
 
     def invert(self, x: float, y: float) -> Point2D:
@@ -34,7 +34,7 @@ def conic_equal_area_raw(y0: float, y1: float) -> RawProjection:
     n = (sy0 + sin(y1)) / 2
     if abs(n) < EPSILON:
         return CylindricalEqualArea(y0)
-    c = 1 - sy0 * (2 * n - sy0)
+    c = 1 + sy0 * (2 * n - sy0)
     return ConicEqualAreaRaw(n, c)
 
 def geo_conic_equal_area():

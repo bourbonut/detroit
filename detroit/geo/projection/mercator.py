@@ -1,4 +1,4 @@
-from .math import atan, exp, log, pi, tan
+from math import atan, exp, log, pi, tan
 from ..rotation import geo_rotation
 from ..common import RawProjection, Projection
 from .projection import ProjectionMutator
@@ -10,7 +10,7 @@ half_pi = pi / 2
 class MercatorRaw:
 
     def __call__(self, lambda_: float, phi: float) -> Point2D:
-        return lambda_, log(tan((half_pi + phi) / 2))
+        return [lambda_, log(tan((half_pi + phi) / 2))]
 
     def invert(self, x: float, y: float) -> Point2D:
         return [x, 2 * atan(exp(y)) - half_pi]
@@ -20,10 +20,10 @@ class MercatorProjection(ProjectionMutator):
     def __init__(self, project: RawProjection):
         ProjectionMutator.__init__(self, project)
         self._project = project
-        self._x0 = None
-        self._y0 = None
-        self._x1 = None
-        self._y1 = None
+        self._mx0 = None
+        self._my0 = None
+        self._mx1 = None
+        self._my1 = None
 
     def scale(self, k: float) -> Projection:
         super().scale(k)
@@ -39,10 +39,10 @@ class MercatorProjection(ProjectionMutator):
 
     def set_clip_extent(self, clip_extent: tuple[Point2D, Point2D] | None = None) -> Projection:
         if clip_extent is None:
-            self._x0 = None
-            self._y0 = None
-            self._x1 = None
-            self._y1 = None
+            self._mx0 = None
+            self._my0 = None
+            self._mx1 = None
+            self._my1 = None
         else:
             self.x0 = clip_extent[0][0]
             self.y0 = clip_extent[0][1]
@@ -50,15 +50,21 @@ class MercatorProjection(ProjectionMutator):
             self.y1 = clip_extent[1][1]
         return self.reclip()
 
-    def reclip(self) -> Projection:
-        k = pi * super().get_scale()
-        t = self(geo_rotation(super().get_rotation()).invert([0, 0]))
-        if self._x0 is None:
-            return super().set_clip_extent([[t[0] - k, t[1] - k], [t[0] + k, t[1] + k]])
-        elif self._project == MercatorRaw:
-            return super().set_clip_extent([[max(t[0] - k, self._x0), self._y0], [min(t[0] + k, self._x1), self._y1]])
+    def get_clip_extent(self) -> tuple[Point2D, Point2D] | None:
+        if self._mx0 is None:
+            return None
         else:
-            return super().set_clip_extent([[self._x0, max(t[1] - k, self._y0)], [self._x1, min(t[1] + k, self._y1)]])
+            return [[self._mx0, self._my0], [self._mx1, self._my1]]
+
+    def reclip(self) -> Projection:
+        k = pi * self.get_scale()
+        t = self(geo_rotation(self.get_rotation()).invert([0, 0]))
+        if self._mx0 is None:
+            return super().set_clip_extent([[t[0] - k, t[1] - k], [t[0] + k, t[1] + k]])
+        elif isinstance(self._project, MercatorRaw):
+            return super().set_clip_extent([[max(t[0] - k, self._mx0), self._my0], [min(t[0] + k, self._mx1), self._my1]])
+        else:
+            return super().set_clip_extent([[self._mx0, max(t[1] - k, self._my0)], [self._mx1, min(t[1] + k, self._my1)]])
 
 def geo_mercator():
-    return MercatorProjection(MercatorRaw()).scale(981 / TAU)
+    return MercatorProjection(MercatorRaw()).reclip().scale(961 / TAU)

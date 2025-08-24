@@ -24,3 +24,6 @@ class ClipBuffer(LineStream):
         self._lines = []
         self._line = None
         return result
+
+    def __str__(self) -> str:
+        return f"ClipBuffer({self._lines})"

@@ -11,7 +11,8 @@ EPSILON = 1e-6
 
 class ClipCircle(LineStream):
 
-    def __init__(self, cr: float, delta: float, small_radius: bool, not_hemisphere: bool, stream: Stream):
+    def __init__(self, radius: float, cr: float, delta: float, small_radius: bool, not_hemisphere: bool, stream: Stream):
+        self._radius = radius
         self._cr = cr
         self._delta = delta
         self._small_radius = small_radius
@@ -31,7 +32,7 @@ class ClipCircle(LineStream):
 
     def point(self, lambda_: float, phi: float):
         point1 = [lambda_, phi]
-        v = self._visible(lambda_, phi)
+        v = cos(lambda_) * cos(phi) > self._cr
         c = 0
         if self._small_radius and not v:
             c = self._code(lambda_, phi)
@@ -74,16 +75,16 @@ class ClipCircle(LineStream):
                     self._stream.line_end()
                     self._stream.line_start()
                     self._stream.point(t[0][0], t[0][1], 3)
-            if v and (not self._point0 or not point_equal(self._point0, point1)):
-                self._stream.point(point1[0], point1[1])
-            self._point0 = point1
-            self._v0 = v
-            self._c0 = c
+        if v and (not self._point0 or not point_equal(self._point0, point1)):
+            self._stream.point(point1[0], point1[1])
+        self._point0 = point1
+        self._v0 = v
+        self._c0 = c
 
     def line_end(self):
         if self._v0:
             self._stream.line_end()
-            self._point0 = None
+        self._point0 = None
 
     def clean(self) -> int:
         return self._clean | ((self._v00 and self._v0) << 1)
@@ -93,8 +94,8 @@ class ClipCircle(LineStream):
         pb = cartesian(b)
 
         n1 = [1, 0, 0]
-        n2 = cartesian_cross(pa, pb),
-        n2n2 = cartesian_dot(n2, n2),
+        n2 = cartesian_cross(pa, pb)
+        n2n2 = cartesian_dot(n2, n2)
         n1n2 = n2[0]
         determinant = n2n2 - n1n2 * n1n2
 
@@ -108,9 +109,9 @@ class ClipCircle(LineStream):
         B = cartesian_scale(n2, c2)
         cartesian_add_in_place(A, B)
 
-        u = n1xn2,
-        w = cartesian_dot(A, u),
-        uu = cartesian_dot(u, u),
+        u = n1xn2
+        w = cartesian_dot(A, u)
+        uu = cartesian_dot(u, u)
         t2 = w * w - uu * (cartesian_dot(A, A) - 1)
 
         if t2 < 0:
@@ -143,11 +144,11 @@ class ClipCircle(LineStream):
             phi0 = phi1
             phi1 = z
 
-        condition = delta > pi ^ (lambda0 <= q[0] and q[0] <= lambda1)
+        condition = (delta > pi) ^ (lambda0 <= q[0] and q[0] <= lambda1)
         if meridian:
             if polar:
                 cst = phi0 if EPSILON else phi1
-                condition = phi0 + phi1 > 0 ^ q[1] < (abs(q[0] - lambda0) < cst)
+                condition = (phi0 + phi1 > 0) ^ (q[1] < (abs(q[0] - lambda0) < cst))
             else:
                 condition = phi0 <= q[1] and q[1] <= phi1
 
@@ -195,7 +196,7 @@ def geo_clip_circle(angle: float) -> Callable[[PolygonStream], Clip]:
     start = [0, -angle] if small_radius else [-pi, angle - pi]
 
     def clip_line(stream: Stream) -> ClipCircle:
-        return ClipCircle(cr, delta, small_radius, not_hemisphere, stream)
+        return ClipCircle(angle, cr, delta, small_radius, not_hemisphere, stream)
 
     def interpolate(vfrom: float | None, vto: float | None, direction: float, stream: LineStream):
         circle_stream(stream, angle, delta, direction, vfrom, vto)

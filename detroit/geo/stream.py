@@ -40,7 +40,7 @@ class StreamGeometryType:
 
     @staticmethod
     def LineString(obj: GeoJSON, stream: PolygonStream):
-        stream_line(obj["coordinates"], stream, 0)
+        stream_line(obj["coordinates"], stream, False)
 
     @staticmethod
     def MultiLineString(obj: GeoJSON, stream: PolygonStream):

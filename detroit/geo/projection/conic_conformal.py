@@ -1,4 +1,4 @@
-from math import abs, atan, atan2, cos, log, pi, pow, sin, sqrt, tan
+from math import atan, atan2, cos, log, pi, pow, sin, sqrt, tan
 from .conic import conic_projection
 from .mercator import MercatorRaw
 from ...types import Point2D

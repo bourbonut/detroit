@@ -1,4 +1,4 @@
-from math import abs, atan2, cos, pi, sin, sqrt
+from math import atan2, cos, pi, sin, sqrt
 from .conic import conic_projection
 from .equirectangular import EquirectangularRaw
 from ...types import Point2D
@@ -17,7 +17,7 @@ class ConicEquidistantRaw:
 
     def __call__(self, x: float, y: float) -> Point2D:
         gy = self._g - y
-        nx = self._n - x
+        nx = self._n * x
         return [gy * sin(nx), self._g - gy * cos(nx)]
 
     def invert(self, x: float, y: float) -> Point2D:

@@ -1,4 +1,10 @@
-def clip_line(a: list[float], b: list[float], x0: float, y0: float, x1: float, y1: float) -> bool:
+from ...types import Point2D
+from math import inf
+
+def sign(x: float) -> float:
+    return -1 if x < 0 else 1
+
+def clip_line(a: Point2D, b: Point2D, x0: float, y0: float, x1: float, y1: float) -> bool:
     ax = a[0]
     ay = a[1]
     bx = b[0]
@@ -11,7 +17,7 @@ def clip_line(a: list[float], b: list[float], x0: float, y0: float, x1: float, y
     r = x0 - ax
     if not dx and r > 0:
         return False
-    r /= dx
+    r = r / dx if dx != 0. else sign(r) * inf
     if dx < 0:
         if r < t0:
             return False
@@ -26,7 +32,7 @@ def clip_line(a: list[float], b: list[float], x0: float, y0: float, x1: float, y
     r = x1 - ax
     if not dx and r < 0:
         return False
-    r /= dx
+    r = r / dx if dx != 0. else sign(r) * inf
     if dx < 0:
         if r > t1:
             return False
@@ -41,7 +47,7 @@ def clip_line(a: list[float], b: list[float], x0: float, y0: float, x1: float, y
     r = y0 - ay
     if not dy and r > 0:
         return False
-    r /= dy
+    r = r / dy if dy != 0. else sign(r) * inf
     if dy < 0:
         if r < t0:
             return False
@@ -56,7 +62,7 @@ def clip_line(a: list[float], b: list[float], x0: float, y0: float, x1: float, y
     r = y1 - ay
     if not dy and r < 0:
         return False
-    r /= dy
+    r = r / dy if dy != 0. else sign(r) * inf
     if dy < 0:
         if r > t1:
             return False
