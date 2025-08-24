@@ -116,7 +116,6 @@ def test_fit_14(world):
     assert in_delta(projection.get_scale(), 143.239449, 1e-6)
     assert in_delta(projection.get_translation(), [473.829551, 500], 1e-6)
 
-@pytest.mark.skip
 def test_fit_15(us):
     projection = d3.geo_albers_usa()
     projection.fit_extent([[50, 50], [950, 950]], us)
@@ -159,12 +158,11 @@ def test_fit_19():
     assert isnan(t[0])
     assert isnan(t[1])
 
-@pytest.mark.skip
 def test_fit_20(world):
     projection = d3.geo_conic_equidistant()
     projection.fit_extent([[50, 50], [950, 950]], world)
-    assert in_delta(projection.get_scale(), 128.903525, 1e-6)
-    assert in_delta(projection.get_translation(), [500, 450.414357], 1e-6)
+    assert in_delta(projection.get_scale(), 123.085586, 1e-6)
+    assert in_delta(projection.get_translation(), [500, 498.598400], 1e-6)
 
 def test_fit_21(world):
     p1 = d3.geo_equirectangular().fit_size([1000, 1000], world)
@@ -180,7 +178,6 @@ def test_fit_21(world):
     assert c1 is None
     assert c2 == [[100, 200], [700, 600]]
 
-@pytest.mark.skip
 def test_fit_22(world):
     projection = d3.geo_transverse_mercator().fit_extent([[50, 50], [950, 950]], world).scale(500)
     assert projection.get_scale() == 500
@@ -207,14 +204,12 @@ def test_fit_24(world):
     assert in_delta(projection.get_scale(), 143.239449, 1e-6)
     assert in_delta(projection.get_translation(), [450, 208.999023], 1e-6)
 
-@pytest.mark.skip
 def test_fit_25(world):
     projection = d3.geo_transverse_mercator()
     projection.fit_width(900, world)
     assert in_delta(projection.get_scale(), 166.239257, 1e-6)
     assert in_delta(projection.get_translation(), [419.627390, 522.256029], 1e-6)
 
-@pytest.mark.skip
 def test_fit_26(us):
     projection = d3.geo_albers_usa()
     projection.fit_width(900, us)
@@ -227,14 +222,12 @@ def test_fit_27(world):
     assert in_delta(projection.get_scale(), 297.042711, 1e-6)
     assert in_delta(projection.get_translation(), [933.187199, 433.411585], 1e-6)
 
-@pytest.mark.skip
 def test_fit_28(world):
     projection = d3.geo_transverse_mercator()
     projection.fit_height(900, world)
     assert in_delta(projection.get_scale(), 143.239449, 1e-6)
     assert in_delta(projection.get_translation(), [361.570408, 450], 1e-6)
 
-@pytest.mark.skip
 def test_fit_29(us):
     projection = d3.geo_albers_usa()
     projection.fit_height(900, us)

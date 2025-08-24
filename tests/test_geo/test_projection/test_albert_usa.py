@@ -1,8 +1,8 @@
 import detroit as d3
 
 def projection_equal(projection, location, point, delta=None):
-    print(projection(location), point)
-    print(projection.invert(point), delta)
+    print("call", projection(location), point)
+    print("invert", projection.invert(point), location)
     return planar_equal(projection(location), point, delta or 1e-6) and spherical_equal(
         projection.invert(point), location, delta or 1e-3
     )

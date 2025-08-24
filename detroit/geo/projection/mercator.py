@@ -24,6 +24,7 @@ class MercatorProjection(ProjectionMutator):
         self._my0 = None
         self._mx1 = None
         self._my1 = None
+        self.reclip()
 
     def scale(self, k: float) -> Projection:
         super().scale(k)
@@ -44,10 +45,10 @@ class MercatorProjection(ProjectionMutator):
             self._mx1 = None
             self._my1 = None
         else:
-            self.x0 = clip_extent[0][0]
-            self.y0 = clip_extent[0][1]
-            self.x1 = clip_extent[1][0]
-            self.y1 = clip_extent[1][1]
+            self._mx0 = clip_extent[0][0]
+            self._my0 = clip_extent[0][1]
+            self._mx1 = clip_extent[1][0]
+            self._my1 = clip_extent[1][1]
         return self.reclip()
 
     def get_clip_extent(self) -> tuple[Point2D, Point2D] | None:
@@ -67,4 +68,4 @@ class MercatorProjection(ProjectionMutator):
             return super().set_clip_extent([[self._mx0, max(t[1] - k, self._my0)], [self._mx1, min(t[1] + k, self._my1)]])
 
 def geo_mercator():
-    return MercatorProjection(MercatorRaw()).reclip().scale(961 / TAU)
+    return MercatorProjection(MercatorRaw()).scale(961 / TAU)

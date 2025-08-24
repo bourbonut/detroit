@@ -1,6 +1,6 @@
 from math import atan, exp, pi, log, tan, inf
 from .mercator import MercatorProjection
-from ..common import Projection
+from ..common import Projection, RawProjection
 from ...types import Point2D
 
 half_pi = pi * 0.5
@@ -16,6 +16,11 @@ class TransverseMercatorRaw:
 
 
 class TransverseMercatorProjection(MercatorProjection):
+    def __init__(self, project: RawProjection):
+        MercatorProjection.__init__(self, project)
+        super().rotate([0, 0, 90])
+        super().scale(159.155)
+
     def set_center(self, center: Point2D) -> Projection:
         center = [-center[1], center[0]]
         return super().set_center(center)
@@ -33,4 +38,4 @@ class TransverseMercatorProjection(MercatorProjection):
         return [angles[0], angles[1], angles[2] - 90]
 
 def geo_transverse_mercator():
-    return TransverseMercatorProjection(TransverseMercatorRaw()).rotate([0, 0, 0]).reclip().rotate([0, 0, 0]).scale(159.155)
+    return TransverseMercatorProjection(TransverseMercatorRaw())

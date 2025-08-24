@@ -38,7 +38,7 @@ def test_transverse_mercator_6():
     }
     projection.fit_extent([[0, 0], [960, 600]], obj)
     assert projection.get_scale() == 15724992.330511674
-    assert projection.get_translation() == [20418843.897824813, 21088401.790971387]
+    assert projection.get_translation() == [20418843.897824816, 21088401.790971387]
     projection.rotate([0, 95]).fit_extent([[0, 0], [960, 600]], obj)
     assert projection.get_scale() == 15724992.330511674
-    assert projection.get_translation() == [20418843.897824813, 47161426.43770847]
+    assert projection.get_translation() == [20418843.897824816, 47161426.43770847]

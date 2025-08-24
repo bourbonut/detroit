@@ -2,7 +2,7 @@ import detroit as d3
 
 def test_rotate_1():
   projection = d3.geo_mercator().rotate([-134.300, 25.776]).scale(750).translate([0, 0])
-  assert d3.geo_path(projection)({
+  assert d3.geo_path(projection).set_digits(6)({
     "type": "Polygon",
     "coordinates": [
       [

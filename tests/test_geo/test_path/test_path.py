@@ -54,13 +54,11 @@ def test_path_2():
     path = d3.geo_path()
     assert path.get_context() is None
 
-@pytest.mark.skip
 def test_path_3():
     projection = d3.geo_albers()
     path = d3.geo_path(projection)
     assert path.get_projection() == projection
 
-@pytest.mark.skip
 def test_path_4():
     context = ContextTest()
     projection = d3.geo_albers()

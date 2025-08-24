@@ -47,7 +47,7 @@ class PointStream:
         self._point = [x, y]
 
     def __str__(self) -> str:
-        return "AlbertUsaPointStream()"
+        return f"AlbertUsaPointStream({self._point})"
 
 
 class AlbersUsaProjection:
@@ -75,7 +75,7 @@ class AlbersUsaProjection:
     def __call__(self, coordinates: Point2D) -> Point2D:
         x = coordinates[0]
         y = coordinates[1]
-        self._point_stream._point is None
+        self._point_stream._point = None
         self._lower48_point.point(x, y)
         if point := self._point_stream._point:
             return point
@@ -96,7 +96,7 @@ class AlbersUsaProjection:
         if 0.166 <= y < 0.234 and -0.214 <= x < -0.115:
             return self._hawaii.invert(coordinates)
         else:
-            self._lower48.invert(coordinates)
+            return self._lower48.invert(coordinates)
 
     def stream(self, stream: PointStream):
         if self._cache is not None and self._cache_stream == stream:
@@ -187,7 +187,7 @@ class AlbersUsaProjection:
         return self._lower48.get_scale()
 
     def get_translation(self) -> Vec2D:
-        return self._lower48.translate()
+        return self._lower48.get_translation()
 
 
 def geo_albers_usa():

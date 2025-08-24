@@ -170,9 +170,7 @@ class ProjectionMutator(Projection):
 
     def _invert_default(self, point: Point2D) -> Point2D:
         point = self._project_rotate_transform.invert(point[0], point[1])
-        if isinstance(point, float) and isnan(point):
-            return point
-        else:
+        if point is not None:
             return [degrees(point[0]), degrees(point[1])]
 
     def _invert_error(self, point: Point2D):
@@ -386,8 +384,8 @@ class ProjectionMutator(Projection):
         ProjectionMutator
             Itself
         """
-        self._lambda = radians(center[0] % 360)
-        self._phi = radians(center[1] % 360)
+        self._lambda = radians(center[0])
+        self._phi = radians(center[1])
         return self.recenter()
 
     def rotate(self, angles: tuple[float, float] | tuple[float, float, float]) -> TProjectionMutator:
@@ -408,9 +406,9 @@ class ProjectionMutator(Projection):
         ProjectionMutator
             Itself
         """
-        self._delta_lambda = radians(angles[0] % 360)
-        self._delta_phi = radians(angles[1] % 360)
-        self._delta_gamma = radians(angles[2] % 360) if len(angles) > 2 else 0
+        self._delta_lambda = radians(angles[0])
+        self._delta_phi = radians(angles[1])
+        self._delta_gamma = radians(angles[2]) if len(angles) > 2 else 0
         return self.recenter()
 
     def set_angle(self, angle: float) -> TProjectionMutator:
@@ -429,7 +427,7 @@ class ProjectionMutator(Projection):
         ProjectionMutator
             Itself
         """
-        self._alpha = radians(angle % 360)
+        self._alpha = radians(angle)
         return self.recenter()
 
     def set_reflect_x(self, reflect_x: bool) -> TProjectionMutator:

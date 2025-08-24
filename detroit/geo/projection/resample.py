@@ -11,7 +11,7 @@ max_depth = 16
 cos_min_distance = cos(radians(30))
 
 def resample_none(project: ProjectionMutator) -> Transformer:
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         x = project(x, y)
         self._stream.point(x[0], x[1])
     return Transformer({"point": point})
