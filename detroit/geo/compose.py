@@ -19,7 +19,7 @@ class Compose:
 
     def _valid_invert(self, x: float, y: float) -> Point2D:
         x = self._b.invert(x, y)
-        return x and self._a.invert(x[0], x[1])
+        return None if x is None else self._a.invert(x[0], x[1])
 
     def _default_invert(self, x: float, y: float):
         return

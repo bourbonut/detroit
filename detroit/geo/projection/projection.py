@@ -9,7 +9,7 @@ from ...array import argpass
 from collections.abc import Callable
 from ...types import Point2D, Vec2D, GeoJSON
 from typing import Any, TypeVar
-from math import cos, degrees, radians, sin, sqrt, isnan
+from math import cos, degrees, radians, sin, sqrt
 
 TProjectionMutator = TypeVar("ProjectionMutator", bound="ProjectionMutator")
 
@@ -49,6 +49,8 @@ class ScaleTranslateRotate:
         self._sx = sx
         self._sy = sy
         self._k = k
+        self._dx = dx
+        self._dy = dy
         self._a = self._cos_alpha * self._k
         self._b = self._sin_alpha * self._k
         self._ai = self._cos_alpha / self._k
@@ -59,7 +61,7 @@ class ScaleTranslateRotate:
     def __call__(self, x: float, y: float) -> Point2D:
         x *= self._sx
         y *= self._sy
-        return [self._a * x - self._b * y + self._dx, self._dy - self._b * self._x - self._a * y]
+        return [self._a * x - self._b * y + self._dx, self._dy - self._b * x - self._a * y]
 
     def invert(self, x: float, y: float) -> Point2D:
         return [self._sx * (self._ai * x - self._bi * y + self._ci), self._sy * (self._fi - self._bi * x - self._ai * y)]

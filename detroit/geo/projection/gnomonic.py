@@ -11,7 +11,7 @@ class GnomonicRaw:
         return [cy * sin(x) / k, sin(y) / k]
 
     def invert(self, x: float, y: float) -> Point2D:
-        return azimuthal_invert(atan)
+        return azimuthal_invert(atan)(x, y)
 
 def geo_gnomonic():
     return geo_projection(GnomonicRaw()).scale(144.049).set_clip_angle(60)
