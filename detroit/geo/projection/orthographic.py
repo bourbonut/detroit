@@ -11,7 +11,7 @@ class OrthographicRaw:
         return [cos(y) * sin(x), sin(y)]
 
     def invert(self, x: float, y: float) -> Point2D:
-        return azimuthal_invert(asin)
+        return azimuthal_invert(asin)(x, y)
 
 def geo_orthographic():
     return geo_projection(OrthographicRaw()).scale(249.5).set_clip_angle(90 + EPSILON)
