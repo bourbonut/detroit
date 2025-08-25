@@ -11,6 +11,9 @@ from .mercator import geo_mercator
 from .transverse_mercator import geo_transverse_mercator
 from .orthographic import geo_orthographic
 from .stereographic import geo_stereographic
+from .gnomonic import geo_gnomonic
+from .natural_earth_1 import geo_natural_earth_1
+from .equal_earth import geo_equal_earth
 
 __all__ = [
     "geo_albers",
@@ -27,4 +30,7 @@ __all__ = [
     "geo_projection_mutator",
     "geo_stereographic",
     "geo_transverse_mercator",
+    "geo_gnomonic",
+    "geo_natural_earth_1",
+    "geo_equal_earth",
 ]

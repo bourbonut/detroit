@@ -74,6 +74,9 @@ from .geo import (
     geo_transverse_mercator,
     geo_orthographic,
     geo_stereographic,
+    geo_equal_earth,
+    geo_natural_earth_1,
+    geo_gnomonic,
 )
 from .interpolate import (
     interpolate,
@@ -612,4 +615,7 @@ __all__ = [
     "union",
     "geo_contains",
     "geo_interpolate",
+    "geo_gnomonic",
+    "geo_natural_earth_1",
+    "geo_equal_earth",
 ]

@@ -79,9 +79,8 @@ def test_fit_8(world):
     assert in_delta(projection.get_scale(), 143.239449, 1e-6)
     assert in_delta(projection.get_translation(), [450, 442.000762], 1e-6)
 
-@pytest.mark.skip
 def test_fit_9(world):
-    projection = d3.geo_gnomonic().clip_angle(45)
+    projection = d3.geo_gnomonic().set_clip_angle(45)
     projection.fit_extent([[50, 50], [950, 950]], world)
     assert in_delta(projection.get_scale(), 450.348233, 1e-6)
     assert in_delta(projection.get_translation(), [500.115138, 556.551304], 1e-6)

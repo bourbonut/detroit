@@ -17,6 +17,9 @@ from .projection import (
     geo_transverse_mercator,
     geo_orthographic,
     geo_stereographic,
+    geo_gnomonic,
+    geo_equal_earth,
+    geo_natural_earth_1,
 )
 from .contains import geo_contains
 from .transform import geo_transform
@@ -52,4 +55,7 @@ __all__ = [
     "geo_transverse_mercator",
     "geo_contains",
     "geo_interpolate",
+    "geo_gnomonic",
+    "geo_natural_earth_1",
+    "geo_equal_earth",
 ]
