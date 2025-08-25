@@ -50,6 +50,8 @@ from .format import (
     locale_format as format,
 )
 from .geo import (
+    geo_contains,
+    geo_interpolate,
     geo_path,
     geo_stream,
     geo_circle,
@@ -608,4 +610,6 @@ __all__ = [
     "time_week",
     "time_year",
     "union",
+    "geo_contains",
+    "geo_interpolate",
 ]

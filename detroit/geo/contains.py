@@ -5,48 +5,48 @@ from math import radians, nan
 EPSILON2 = 1e-12
 
 class ContainsObjectType:
-    def Feature(self, obj, point):
+    def Feature(obj, point):
         return contains_geometry(obj["geometry"], point)
 
-    def FeatureCollection(self, obj, point):
+    def FeatureCollection(obj, point):
         for feature in obj["features"]:
             if contains_geometry(feature["geometry"], point):
                 return True
         return False
 
 class ContainsGeometryType:
-    def Sphere(self):
+    def Sphere(obj, point):
         return True
 
-    def Point(self, obj, point):
+    def Point(obj, point):
         return contains_point(obj["coordinates"], point)
 
-    def MultiPoint(self, obj, point):
+    def MultiPoint(obj, point):
         for coordinates in obj["coordinates"]:
             if contains_point(coordinates, point):
                 return True
         return False
 
-    def LineString(self, obj, point):
+    def LineString(obj, point):
         return contains_line(obj["coordinates"], point)
 
-    def MultiLineString(self, obj, point):
+    def MultiLineString(obj, point):
         for coordinates in obj["coordinates"]:
             if contains_line(coordinates, point):
                 return True
         return False
 
-    def Polygon(self, obj, point):
+    def Polygon(obj, point):
         return contains_polygon(obj["coordinates"], point)
 
-    def MultiPolygon(self, obj, point):
+    def MultiPolygon(obj, point):
         for coordinates in obj["coordinates"]:
             if contains_polygon(coordinates, point):
                 return True
         return False
 
-    def GeometryCollection(self, obj, point):
-        for geometry in obj["geometry"]:
+    def GeometryCollection(obj, point):
+        for geometry in obj["geometries"]:
             if contains_geometry(geometry, point):
                 return True
         return False
@@ -78,7 +78,7 @@ def contains_line(coordinates, point):
     return False
 
 def contains_polygon(coordinates, point):
-    return not(not(polygon_contains(list(map(ring_radians, coordinates))), point_radians(point)))
+    return not(not(polygon_contains(list(map(ring_radians, coordinates)), point_radians(point))))
 
 def ring_radians(ring):
     ring = [point_radians(p) for p in ring]

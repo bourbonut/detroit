@@ -18,12 +18,14 @@ from .projection import (
     geo_orthographic,
     geo_stereographic,
 )
+from .contains import geo_contains
 from .transform import geo_transform
 from .clip import (
     geo_clip_antimeridian,
     geo_clip_circle,
     geo_clip_rectangle,
 )
+from .interpolate import geo_interpolate
 
 __all__ = [
     "geo_albers",
@@ -48,4 +50,6 @@ __all__ = [
     "geo_stream",
     "geo_transform",
     "geo_transverse_mercator",
+    "geo_contains",
+    "geo_interpolate",
 ]
