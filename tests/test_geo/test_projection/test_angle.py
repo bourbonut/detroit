@@ -80,7 +80,6 @@ def test_angle_4():
     projection = d3.geo_gnomonic().scale(1).translate([0, 0]).set_angle(360)
     assert projection.get_angle() == 360
 
-@pytest.mark.skip
 def test_angle_5():
     projection = d3.geo_identity().set_angle(-45)
     SQRT2_2 = sqrt(2) / 2

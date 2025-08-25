@@ -60,6 +60,7 @@ class GeoIdentity(Projection):
         y = point[1] * self._ky
         if self._alpha:
             t = y * self._ca - x * self._sa
+            x = x * self._ca + y * self._sa
             y = t
         return [x + self._tx, y + self._ty]
 
