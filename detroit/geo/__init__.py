@@ -20,6 +20,7 @@ from .projection import (
     geo_gnomonic,
     geo_equal_earth,
     geo_natural_earth_1,
+    geo_identity,
 )
 from .contains import geo_contains
 from .transform import geo_transform
@@ -58,4 +59,5 @@ __all__ = [
     "geo_gnomonic",
     "geo_natural_earth_1",
     "geo_equal_earth",
+    "geo_identity",
 ]

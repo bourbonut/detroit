@@ -77,6 +77,7 @@ from .geo import (
     geo_equal_earth,
     geo_natural_earth_1,
     geo_gnomonic,
+    geo_identity,
 )
 from .interpolate import (
     interpolate,
@@ -618,4 +619,5 @@ __all__ = [
     "geo_gnomonic",
     "geo_natural_earth_1",
     "geo_equal_earth",
+    "geo_identity",
 ]

@@ -14,6 +14,7 @@ from .stereographic import geo_stereographic
 from .gnomonic import geo_gnomonic
 from .natural_earth_1 import geo_natural_earth_1
 from .equal_earth import geo_equal_earth
+from .identity import geo_identity
 
 __all__ = [
     "geo_albers",
@@ -33,4 +34,5 @@ __all__ = [
     "geo_gnomonic",
     "geo_natural_earth_1",
     "geo_equal_earth",
+    "geo_identity",
 ]
