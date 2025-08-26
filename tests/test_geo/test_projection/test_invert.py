@@ -1,10 +1,13 @@
-import detroit as d3
 import pytest
+
+import detroit as d3
+
 
 def projection_equal(projection, location, point, delta=None):
     return planar_equal(projection(location), point, delta or 1e-6) and spherical_equal(
         projection.invert(point), location, delta or 1e-3
     )
+
 
 def planar_equal(actual, expected, delta):
     return (
@@ -13,6 +16,7 @@ def planar_equal(actual, expected, delta):
         and in_delta(actual[0], expected[0], delta)
         and in_delta(actual[0], expected[0], delta)
     )
+
 
 def spherical_equal(actual, expected, delta):
     return (
@@ -31,30 +35,54 @@ def longitude_equal(actual, expected, delta):
 def in_delta(actual, expected, delta):
     return abs(actual - expected) <= delta
 
+
 def conic_conformal_1():
-	 return d3.geo_conic_conformal().parallels([20, 30])
+    return d3.geo_conic_conformal().parallels([20, 30])
+
+
 def conic_conformal_2():
-	 return d3.geo_conic_conformal().parallels([30, 30])
+    return d3.geo_conic_conformal().parallels([30, 30])
+
+
 def conic_conformal_3():
-	 return d3.geo_conic_conformal().parallels([-35, -50])
+    return d3.geo_conic_conformal().parallels([-35, -50])
+
+
 def conic_conformal_4():
-	 return d3.geo_conic_conformal().parallels([40, 60]).rotate([-120,0])
+    return d3.geo_conic_conformal().parallels([40, 60]).rotate([-120, 0])
+
+
 def conic_equal_area_1():
-	 return d3.geo_conic_equal_area().parallels([20, 30])
+    return d3.geo_conic_equal_area().parallels([20, 30])
+
+
 def conic_equal_area_2():
-	 return d3.geo_conic_equal_area().parallels([-30, 30])
+    return d3.geo_conic_equal_area().parallels([-30, 30])
+
+
 def conic_equal_area_3():
-	 return d3.geo_conic_equal_area().parallels([-35, -50])
+    return d3.geo_conic_equal_area().parallels([-35, -50])
+
+
 def conic_equal_area_4():
-	 return d3.geo_conic_equal_area().parallels([40, 60]).rotate([-120,0])
+    return d3.geo_conic_equal_area().parallels([40, 60]).rotate([-120, 0])
+
+
 def conic_equidistant_1():
-	 return d3.geo_conic_equidistant().parallels([20, 30])
+    return d3.geo_conic_equidistant().parallels([20, 30])
+
+
 def conic_equidistant_2():
-	 return d3.geo_conic_equidistant().parallels([30, 30])
+    return d3.geo_conic_equidistant().parallels([30, 30])
+
+
 def conic_equidistant_3():
-	 return d3.geo_conic_equidistant().parallels([-35, -50])
+    return d3.geo_conic_equidistant().parallels([-35, -50])
+
+
 def conic_equidistant_4():
-	 return d3.geo_conic_equidistant().parallels([40, 60]).rotate([-120,0])
+    return d3.geo_conic_equidistant().parallels([40, 60]).rotate([-120, 0])
+
 
 projections = [
     d3.geo_albers,
@@ -84,13 +112,20 @@ projections = [
     conic_equidistant_4,
 ]
 
+
 @pytest.mark.parametrize("factory", projections)
 def test_invert(factory):
     projection = factory()
     for point in [[0, 0], [30.3, 24.1], [-10, 42], [-2, -5]]:
         assert projection_equal(projection, point, projection(point))
 
+
 def test_invert_albers_usa():
     projection = d3.geo_albers_usa()
-    for point in [[-122.4194, 37.7749], [-74.0059, 40.7128], [-149.9003, 61.2181], [-157.8583, 21.3069]]:
+    for point in [
+        [-122.4194, 37.7749],
+        [-74.0059, 40.7128],
+        [-149.9003, 61.2181],
+        [-157.8583, 21.3069],
+    ]:
         assert projection_equal(projection, point, projection(point))

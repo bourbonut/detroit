@@ -1,5 +1,7 @@
-from math import cos, sin, pi
+from math import cos, pi, sin
+
 from ..types import Point2D
+
 
 def point_radial(angle: float, radius: float) -> Point2D:
     """

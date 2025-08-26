@@ -1,5 +1,6 @@
-import detroit as d3
 from math import pi
+
+import detroit as d3
 
 
 def projection_equal(projection, location, point, delta=None):

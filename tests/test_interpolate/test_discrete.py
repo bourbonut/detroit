@@ -1,4 +1,3 @@
-import math
 
 import detroit as d3
 

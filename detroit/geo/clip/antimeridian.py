@@ -1,9 +1,11 @@
-from .clip import clip
-from math import atan, cos, pi, sin, nan
+from math import atan, cos, nan, pi, sin
+
 from ..common import LineStream
+from .clip import clip
 
 half_pi = pi * 0.5
 EPSILON = 1e-6
+
 
 class ClipAntimeridianLine(LineStream):
     def __init__(self, stream: LineStream):
@@ -16,7 +18,7 @@ class ClipAntimeridianLine(LineStream):
     def line_start(self):
         self._stream.line_start()
         self._clean = 1
-    
+
     def line_end(self):
         self._stream.line_end()
         self._lambda0 = nan
@@ -40,7 +42,9 @@ class ClipAntimeridianLine(LineStream):
                 self._lambda0 -= self._sign0 * EPSILON
             if abs(lambda1 - sign1) < EPSILON:
                 lambda1 -= sign1 * EPSILON
-            self._phi0 = clip_antimeridian_intersect(self._lambda0, self._phi0, lambda1, phi1)
+            self._phi0 = clip_antimeridian_intersect(
+                self._lambda0, self._phi0, lambda1, phi1
+            )
             self._stream.point(self._sign0, self._phi0)
             self._stream.line_end()
             self._stream.line_start()
@@ -54,18 +58,21 @@ class ClipAntimeridianLine(LineStream):
     def clean(self) -> int:
         return 2 - self._clean
 
-def clip_antimeridian_intersect(lambda0: float, phi0: float, lambda1: float, phi1: float) -> float:
+
+def clip_antimeridian_intersect(
+    lambda0: float, phi0: float, lambda1: float, phi1: float
+) -> float:
     sin_lambd0_lambda1 = sin(lambda0 - lambda1)
     if abs(sin_lambd0_lambda1) > EPSILON:
         cos_phi0 = cos(phi0)
         cos_phi1 = cos(phi1)
         return atan(
-            ( sin(phi0) * cos_phi1 * sin(lambda1)
-            - sin(phi1) * cos_phi0 * sin(lambda0) )
+            (sin(phi0) * cos_phi1 * sin(lambda1) - sin(phi1) * cos_phi0 * sin(lambda0))
             / (cos_phi0 * cos_phi1 * sin_lambd0_lambda1)
         )
     else:
         return (phi0 + phi1) * 0.5
+
 
 def clip_antimeridian_interpolate(
     vfrom: float | None,
@@ -97,7 +104,10 @@ def clip_antimeridian_interpolate(
 def visible(*args) -> bool:
     return True
 
-geo_clip_antimeridian = clip(visible, ClipAntimeridianLine, clip_antimeridian_interpolate, [-pi, -half_pi])
+
+geo_clip_antimeridian = clip(
+    visible, ClipAntimeridianLine, clip_antimeridian_interpolate, [-pi, -half_pi]
+)
 geo_clip_antimeridian.__doc__ = """
 A clipping function which transforms a stream such that geometries (lines or
 polygons) that cross the antimeridian line are cut in two, one on each side.

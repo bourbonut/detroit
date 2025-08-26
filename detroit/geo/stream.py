@@ -1,16 +1,18 @@
 from ..array import argpass
-from ..types import T, GeoJSON
+from ..types import GeoJSON, T
 from .common import PolygonStream
+
 
 def get(values: list[T], index: int) -> T | None:
     return values[index] if index < len(values) else None
+
 
 def stream_geometry(geometry: GeoJSON, stream: PolygonStream):
     if geometry and hasattr(StreamGeometryType, geometry["type"]):
         getattr(StreamGeometryType, geometry["type"])(geometry, stream)
 
-class StreamObjectType:
 
+class StreamObjectType:
     @staticmethod
     def Feature(obj: GeoJSON, stream: PolygonStream):
         stream_geometry(obj["geometry"], stream)
@@ -21,8 +23,8 @@ class StreamObjectType:
         for feature in features:
             stream_geometry(feature["geometry"], stream)
 
+
 class StreamGeometryType:
-    
     @staticmethod
     def Sphere(obj: GeoJSON, stream: PolygonStream):
         stream.sphere()
@@ -64,18 +66,23 @@ class StreamGeometryType:
         for obj in geometries:
             stream_geometry(obj, stream)
 
+
 def stream_line(coordinates: list[T], stream: PolygonStream, closed: bool):
     stream.line_start()
     coordinates = coordinates[:-1] if closed else coordinates
     for coordinate in coordinates:
-        argpass(stream.point)(get(coordinate, 0), get(coordinate, 1), get(coordinate, 2))
+        argpass(stream.point)(
+            get(coordinate, 0), get(coordinate, 1), get(coordinate, 2)
+        )
     stream.line_end()
+
 
 def stream_polygon(coordinates: list[T], stream: PolygonStream):
     stream.polygon_start()
     for coordinate in coordinates:
         stream_line(coordinate, stream, True)
     stream.polygon_end()
+
 
 def geo_stream(obj: GeoJSON, stream: PolygonStream):
     """

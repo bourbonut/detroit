@@ -1,19 +1,28 @@
-from .projection import geo_projection
 from ...types import Point2D
 from ..common import Projection
+from .projection import geo_projection
 
 EPSILON = 1e-6
 
-class NaturalEarth1Raw:
 
+class NaturalEarth1Raw:
     def __call__(self, lambda_: float, phi: float) -> Point2D:
         phi2 = phi * phi
         phi4 = phi2 * phi2
         return [
-            lambda_ * (0.8707 - 0.131979 * phi2 + phi4 * (-0.013791 + phi4 * (0.003971 * phi2 - 0.001529 * phi4))),
-            phi * (1.007226 + phi2 * (0.015085 + phi4 * (-0.044475 + 0.028874 * phi2 - 0.005916 * phi4)))
+            lambda_
+            * (
+                0.8707
+                - 0.131979 * phi2
+                + phi4 * (-0.013791 + phi4 * (0.003971 * phi2 - 0.001529 * phi4))
+            ),
+            phi
+            * (
+                1.007226
+                + phi2
+                * (0.015085 + phi4 * (-0.044475 + 0.028874 * phi2 - 0.005916 * phi4))
+            ),
         ]
-
 
     def invert(self, x: float, y: float) -> Point2D:
         phi = y
@@ -23,9 +32,24 @@ class NaturalEarth1Raw:
             phi2 = phi * phi
             phi4 = phi2 * phi2
             delta = (
-                phi * (1.007226 + phi2 * (0.015085 + phi4 * (-0.044475 + 0.028874 * phi2 - 0.005916 * phi4))) - y
+                phi
+                * (
+                    1.007226
+                    + phi2
+                    * (
+                        0.015085
+                        + phi4 * (-0.044475 + 0.028874 * phi2 - 0.005916 * phi4)
+                    )
+                )
+                - y
             ) / (
-                1.007226 + phi2 * (0.015085 * 3 + phi4 * (-0.044475 * 7 + 0.028874 * 9 * phi2 - 0.005916 * 11 * phi4))
+                1.007226
+                + phi2
+                * (
+                    0.015085 * 3
+                    + phi4
+                    * (-0.044475 * 7 + 0.028874 * 9 * phi2 - 0.005916 * 11 * phi4)
+                )
             )
             phi -= delta
             i -= 1
@@ -34,9 +58,19 @@ class NaturalEarth1Raw:
 
         phi2 = phi * phi
         return [
-            x / (0.8707 + phi2 * (-0.131979 + phi2 * (-0.013791 + phi2 * phi2 * phi2 * (0.003971 - 0.001529 * phi2)))),
-            phi
+            x
+            / (
+                0.8707
+                + phi2
+                * (
+                    -0.131979
+                    + phi2
+                    * (-0.013791 + phi2 * phi2 * phi2 * (0.003971 - 0.001529 * phi2))
+                )
+            ),
+            phi,
         ]
+
 
 def geo_natural_earth_1() -> Projection:
     """

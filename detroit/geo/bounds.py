@@ -1,20 +1,28 @@
 from functools import cmp_to_key
-from .cartesian import cartesian, cartesian_cross, cartesian_normalize_in_place, spherical
-from .stream import geo_stream
+from math import degrees, fsum, inf, isinf, nan, radians
+
+from ..types import GeoJSON, Point2D
 from .area import AreaStream
-from math import degrees, radians, fsum, nan, inf, isinf
+from .cartesian import (
+    cartesian,
+    cartesian_cross,
+    cartesian_normalize_in_place,
+    spherical,
+)
 from .common import PolygonStream
-from ..types import Point2D
-from ..types import GeoJSON
+from .stream import geo_stream
 
 EPSILON = 1e-6
+
 
 def angle(lambda0: float, lambda1: float) -> float:
     lambda1 -= lambda0
     return lambda1 + 360 if lambda1 < 0 else lambda1
 
+
 def range_compare(a: Point2D, b: Point2D) -> float:
     return a[0] - b[0]
+
 
 def range_contains(rang: Point2D, x: float) -> bool:
     if rang[0] <= rang[1]:
@@ -22,8 +30,8 @@ def range_contains(rang: Point2D, x: float) -> bool:
     else:
         return x < rang[0] or rang[1] < x
 
-class BoundsStream(PolygonStream):
 
+class BoundsStream(PolygonStream):
     def __init__(self):
         self._lambda0 = inf
         self._phi0 = inf
@@ -110,28 +118,36 @@ class BoundsStream(PolygonStream):
             lambdai = degrees(inflection[0]) * sign
             antimeridian = abs(delta) > 180
 
-            if antimeridian ^ (sign * self._lambda2 < lambdai and lambdai < sign * lambda_):
+            if antimeridian ^ (
+                sign * self._lambda2 < lambdai and lambdai < sign * lambda_
+            ):
                 phii = degrees(inflection[1])
                 if phii > self._phi1:
                     self._phi1 = phii
             else:
                 lambdai = (lambdai + 360) % 360 - 180
-                if antimeridian ^ (sign * self._lambda2 < lambdai and lambdai < sign * lambda_):
+                if antimeridian ^ (
+                    sign * self._lambda2 < lambdai and lambdai < sign * lambda_
+                ):
                     phii = degrees(-inflection[1])
                     if phii < self._phi0:
                         self._phi0 = phii
                 else:
                     if phi < self._phi0:
-                       self._phi0 = phi
+                        self._phi0 = phi
                     if phi > self._phi1:
                         self._phi1 = phi
-            
+
             if antimeridian:
                 if lambda_ < self._lambda2:
-                    if angle(self._lambda0, lambda_) > angle(self._lambda0, self._lambda1):
+                    if angle(self._lambda0, lambda_) > angle(
+                        self._lambda0, self._lambda1
+                    ):
                         self._lambda1 = lambda_
                 else:
-                    if angle(lambda_, self._lambda1) > angle(self._lambda0, self._lambda1):
+                    if angle(lambda_, self._lambda1) > angle(
+                        self._lambda0, self._lambda1
+                    ):
                         self._lambda0 = lambda_
             else:
                 if self._lambda1 >= self._lambda0:
@@ -141,17 +157,21 @@ class BoundsStream(PolygonStream):
                         self._lambda1 = lambda_
                 else:
                     if lambda_ > self._lambda2:
-                        if angle(self._lambda0, lambda_) > angle(self._lambda0, self._lambda1):
+                        if angle(self._lambda0, lambda_) > angle(
+                            self._lambda0, self._lambda1
+                        ):
                             self._lambda1 = lambda_
                     else:
-                        if angle(lambda_, self._lambda1) > angle(self._lambda0, self._lambda1):
+                        if angle(lambda_, self._lambda1) > angle(
+                            self._lambda0, self._lambda1
+                        ):
                             self._lambda0 = lambda_
         else:
             self._lambda0 = lambda_
             self._lambda1 = lambda_
             self._range = [self._lambda0, self._lambda1]
             self._ranges.append(self._range)
-        
+
         if phi < self._phi0:
             self._phi0 = phi
         if phi > self._phi1:
@@ -228,6 +248,7 @@ class BoundsStream(PolygonStream):
             return [[nan, nan], [nan, nan]]
         else:
             return [[self._lambda0, self._phi0], [self._lambda1, self._phi1]]
+
 
 def geo_bounds(obj: GeoJSON) -> tuple[Point2D, Point2D]:
     """

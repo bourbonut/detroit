@@ -1,27 +1,32 @@
+from collections.abc import Callable
+from math import cos, degrees, radians, sin, sqrt
+from typing import Any, TypeVar
+
+from ...array import argpass
+from ...types import GeoJSON, Point2D, Vec2D
 from ..clip import geo_clip_antimeridian, geo_clip_circle, geo_clip_rectangle
+from ..common import PolygonStream, Projection, RawProjection, SpatialTransform
 from ..compose import Compose
 from ..rotation import RotateRadians
 from ..transform import GeoTransformer
-from ..common import RawProjection, SpatialTransform, PolygonStream, Projection
-from .fit import fit_extent, fit_size, fit_height, fit_width
+from .fit import fit_extent, fit_height, fit_size, fit_width
 from .resample import resample
-from ...array import argpass
-from collections.abc import Callable
-from ...types import Point2D, Vec2D, GeoJSON
-from typing import Any, TypeVar
-from math import cos, degrees, radians, sin, sqrt
 
 TProjectionMutator = TypeVar("ProjectionMutator", bound="ProjectionMutator")
+
 
 def point(self, x: float, y: float):
     self._stream.point(radians(x), radians(y))
 
+
 transform_radians = GeoTransformer({"point": point})
+
 
 def transform_rotate(rotate: RotateRadians) -> GeoTransformer:
     def point(self, x: float, y: float):
         r = rotate(x, y)
         return self._stream.point(r[0], r[1])
+
     return GeoTransformer({"point": point})
 
 
@@ -39,11 +44,16 @@ class ScaleTranslate:
         return [self._dx + self._k * x, self._dy - self._k * y]
 
     def invert(self, x: float, y: float) -> Point2D:
-        return [(x - self._dx) / self._k * self._sx, (self._dy - y) / self._k * self._sy]
+        return [
+            (x - self._dx) / self._k * self._sx,
+            (self._dy - y) / self._k * self._sy,
+        ]
+
 
 class ScaleTranslateRotate:
-
-    def __init__(self, k: float, dx: float, dy: float, sx: float, sy: float, alpha: float):
+    def __init__(
+        self, k: float, dx: float, dy: float, sx: float, sy: float, alpha: float
+    ):
         self._cos_alpha = cos(alpha)
         self._sin_alpha = sin(alpha)
         self._sx = sx
@@ -61,26 +71,38 @@ class ScaleTranslateRotate:
     def __call__(self, x: float, y: float) -> Point2D:
         x *= self._sx
         y *= self._sy
-        return [self._a * x - self._b * y + self._dx, self._dy - self._b * x - self._a * y]
+        return [
+            self._a * x - self._b * y + self._dx,
+            self._dy - self._b * x - self._a * y,
+        ]
 
     def invert(self, x: float, y: float) -> Point2D:
-        return [self._sx * (self._ai * x - self._bi * y + self._ci), self._sy * (self._fi - self._bi * x - self._ai * y)]
+        return [
+            self._sx * (self._ai * x - self._bi * y + self._ci),
+            self._sy * (self._fi - self._bi * x - self._ai * y),
+        ]
 
-def scale_translate_rotate(k: float, dx: float, dy: float, sx: float, sy: float, alpha: float) -> SpatialTransform:
+
+def scale_translate_rotate(
+    k: float, dx: float, dy: float, sx: float, sy: float, alpha: float
+) -> SpatialTransform:
     if alpha:
         return ScaleTranslateRotate(k, dx, dy, sx, sy, alpha)
     else:
         return ScaleTranslate(k, dx, dy, sx, sy)
 
+
 def identity(x):
     return x
+
 
 class RawProjectionIdentity:
     def __call__(self, lambda_: float, phi: float) -> Point2D:
         return [lambda_, phi]
-    
+
     def invert(self, x: float, y: float) -> Point2D:
         return self(x, y)
+
 
 class ProjectionMutator(Projection):
     """
@@ -96,9 +118,12 @@ class ProjectionMutator(Projection):
     project : RawProjection
         Projection object
     """
+
     def __init__(self, project: RawProjection):
         self._project = project
-        self._invert = self._invert_default if hasattr(project, "invert") else self._invert_error
+        self._invert = (
+            self._invert_default if hasattr(project, "invert") else self._invert_error
+        )
         self._k = 150
         self._x = 480
         self._y = 250
@@ -143,7 +168,7 @@ class ProjectionMutator(Projection):
         Returns
         -------
         Point2D
-            New projected point :code:`[x, y]` 
+            New projected point :code:`[x, y]`
         """
         return self._project_rotate_transform(radians(point[0]), radians(point[1]))
 
@@ -219,10 +244,14 @@ class ProjectionMutator(Projection):
             Itself
         """
         self._project = project
-        self._invert = self._invert_default if hasattr(project, "invert") else self._invert_error
+        self._invert = (
+            self._invert_default if hasattr(project, "invert") else self._invert_error
+        )
         return self.recenter()
 
-    def set_preclip(self, preclip: Callable[[PolygonStream], PolygonStream]) -> TProjectionMutator:
+    def set_preclip(
+        self, preclip: Callable[[PolygonStream], PolygonStream]
+    ) -> TProjectionMutator:
         """
         If preclip is specified, sets the projection's spherical clipping to
         the specified function and returns the projection; preclip is a
@@ -242,7 +271,9 @@ class ProjectionMutator(Projection):
         self._theta = None
         return self.reset()
 
-    def set_postclip(self, postclip: Callable[[PolygonStream], PolygonStream]) -> TProjectionMutator:
+    def set_postclip(
+        self, postclip: Callable[[PolygonStream], PolygonStream]
+    ) -> TProjectionMutator:
         """
         If postclip is specified, sets the projection's Cartesian clipping to
         the specified function and returns the projection; postclip is a
@@ -292,7 +323,9 @@ class ProjectionMutator(Projection):
             self._preclip = geo_clip_antimeridian
         return self.reset()
 
-    def set_clip_extent(self, clip_extent: tuple[Point2D, Point2D] | None = None) -> TProjectionMutator:
+    def set_clip_extent(
+        self, clip_extent: tuple[Point2D, Point2D] | None = None
+    ) -> TProjectionMutator:
         """
         If extent is specified, sets the projection's viewport clip extent to
         the specified bounds in pixels and returns the projection. The extent
@@ -307,7 +340,7 @@ class ProjectionMutator(Projection):
         Parameters
         ----------
         clip_extent : tuple[Point2D, Point2D] | None
-            
+
 
         Returns
         -------
@@ -390,7 +423,9 @@ class ProjectionMutator(Projection):
         self._phi = radians(center[1])
         return self.recenter()
 
-    def rotate(self, angles: tuple[float, float] | tuple[float, float, float]) -> TProjectionMutator:
+    def rotate(
+        self, angles: tuple[float, float] | tuple[float, float, float]
+    ) -> TProjectionMutator:
         """
         If angles is specified, sets the projection's three-axis spherical
         rotation to the specified value, which must be a two- or three-element
@@ -493,7 +528,9 @@ class ProjectionMutator(Projection):
         self._project_resample = resample(self._project_transform, self._delta2)
         return self.reset()
 
-    def fit_extent(self, extent: tuple[Point2D, Point2D], obj: GeoJSON) -> TProjectionMutator:
+    def fit_extent(
+        self, extent: tuple[Point2D, Point2D], obj: GeoJSON
+    ) -> TProjectionMutator:
         """
         Sets the projection's scale and translate to fit the specified GeoJSON
         object in the center of the given extent. The extent is specified as an
@@ -579,9 +616,20 @@ class ProjectionMutator(Projection):
         return fit_height(self, height, obj)
 
     def recenter(self) -> TProjectionMutator:
-        center = scale_translate_rotate(self._k, 0, 0, self._sx, self._sy, self._alpha)(*self._project(self._lambda, self._phi))
-        transform = scale_translate_rotate(self._k, self._x - center[0], self._y - center[1], self._sx, self._sy, self._alpha)
-        self._rotate = RotateRadians(self._delta_lambda, self._delta_phi, self._delta_gamma)
+        center = scale_translate_rotate(self._k, 0, 0, self._sx, self._sy, self._alpha)(
+            *self._project(self._lambda, self._phi)
+        )
+        transform = scale_translate_rotate(
+            self._k,
+            self._x - center[0],
+            self._y - center[1],
+            self._sx,
+            self._sy,
+            self._alpha,
+        )
+        self._rotate = RotateRadians(
+            self._delta_lambda, self._delta_phi, self._delta_gamma
+        )
         self._project_transform = Compose(self._project, transform)
         self._project_rotate_transform = Compose(self._rotate, self._project_transform)
         self._project_resample = resample(self._project_transform, self._delta2)
@@ -617,7 +665,11 @@ class ProjectionMutator(Projection):
         return [degrees(self._lambda), degrees(self._phi)]
 
     def get_rotation(self) -> tuple[float, float, float]:
-        return [degrees(self._delta_lambda), degrees(self._delta_phi), degrees(self._delta_gamma)]
+        return [
+            degrees(self._delta_lambda),
+            degrees(self._delta_phi),
+            degrees(self._delta_gamma),
+        ]
 
     def get_angle(self) -> float:
         return degrees(self._alpha)
@@ -656,7 +708,10 @@ def geo_projection(project: RawProjection) -> Projection:
     """
     return ProjectionMutator(project)
 
-def geo_projection_mutator(project: Callable[..., RawProjection]) -> Callable[..., Projection]:
+
+def geo_projection_mutator(
+    project: Callable[..., RawProjection],
+) -> Callable[..., Projection]:
     """
     Constructs a new projection from the specified raw projection factory and
     returns a mutate function to call whenever the raw projection changes. The
@@ -675,6 +730,8 @@ def geo_projection_mutator(project: Callable[..., RawProjection]) -> Callable[..
         Projection object
     """
     projection = ProjectionMutator(RawProjectionIdentity())
+
     def projection_constructor(*args: Any) -> Projection:
         return projection.set_project(argpass(project)(*args))
+
     return projection_constructor

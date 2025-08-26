@@ -1,17 +1,20 @@
-from .buffer import ClipBuffer
-from .rejoin import clip_rejoin, Intersection
-from ..polygon_contains import polygon_contains
-from ..common import Stream, PolygonStream, LineStream
-from ...types import T
 from collections.abc import Callable
 from itertools import chain
 from math import pi
 
+from ...types import T
+from ..common import LineStream, PolygonStream, Stream
+from ..polygon_contains import polygon_contains
+from .buffer import ClipBuffer
+from .rejoin import Intersection, clip_rejoin
+
 EPSILON = 1e-6
 half_pi = 0.5 * pi
 
+
 def valid_segment(segment: list[T]) -> bool:
     return len(segment) > 1
+
 
 def compare_intersection(a: Intersection, b: Intersection) -> float:
     a = a.x
@@ -20,8 +23,8 @@ def compare_intersection(a: Intersection, b: Intersection) -> float:
     rb = b[1] - half_pi - EPSILON if b[0] < 0 else half_pi - b[1]
     return ra - rb
 
-class Clip(PolygonStream):
 
+class Clip(PolygonStream):
     def __init__(
         self,
         point_visible: Callable[[float, float], bool],
@@ -71,7 +74,13 @@ class Clip(PolygonStream):
             if not self._polygon_started:
                 self._sink.polygon_start()
                 self._polygon_started = True
-            clip_rejoin(self._segments, compare_intersection, start_inside, self._interpolate, self._sink)
+            clip_rejoin(
+                self._segments,
+                compare_intersection,
+                start_inside,
+                self._interpolate,
+                self._sink,
+            )
         elif start_inside:
             if not self._polygon_started:
                 self._sink.polygon_start()
@@ -158,6 +167,7 @@ class Clip(PolygonStream):
             f"sink={self._sink})"
         )
 
+
 def clip(
     point_visible: Callable[[float, float], bool],
     clip_line: Callable[[Stream], LineStream],
@@ -166,4 +176,5 @@ def clip(
 ) -> Callable[[PolygonStream], Clip]:
     def wrapper(sink: PolygonStream) -> Clip:
         return Clip(point_visible, clip_line, interpolate, start, sink)
+
     return wrapper

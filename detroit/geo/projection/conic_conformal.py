@@ -1,26 +1,29 @@
 from math import atan, atan2, cos, log, pi, pow, sin, sqrt, tan
+
+from ...types import Point2D
+from ..common import Projection, RawProjection
 from .conic import conic_projection
 from .mercator import MercatorRaw
-from ...types import Point2D
-from ..common import RawProjection, Projection
 
 EPSILON = 1e-6
 half_pi = pi * 0.5
 
+
 def tany(y):
     return tan((half_pi + y) / 2)
+
 
 def sign(x):
     return -1 if x < 0 else 1
 
-class ConicConformalRaw:
 
+class ConicConformalRaw:
     def __init__(self, n: float, f: float):
         self._n = n
         self._f = f
 
     def __call__(self, x: float, y: float) -> Point2D:
-        if self._f > 0.:
+        if self._f > 0.0:
             if y < -half_pi + EPSILON:
                 y = -half_pi + EPSILON
         else:
@@ -37,11 +40,13 @@ class ConicConformalRaw:
             l_ -= pi * sign(x) * sign(fy)
         return [l_ / self._n, 2 * atan(pow(self._f / r, 1 / self._n)) - half_pi]
 
+
 def conic_conformal_raw(y0: float, y1: float) -> RawProjection:
     cy0 = cos(y0)
     n = sin(y0) if y0 == y1 else log(cy0 / cos(y1)) / log(tany(y1) / tany(y0))
     f = cy0 * pow(tany(y0), n) / n
-    return MercatorRaw() if n == 0. else ConicConformalRaw(n, f)
+    return MercatorRaw() if n == 0.0 else ConicConformalRaw(n, f)
+
 
 def geo_conic_conformal() -> Projection:
     """

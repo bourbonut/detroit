@@ -1,12 +1,15 @@
-from math import degrees, pi, radians
-from .projection import ProjectionMutator
-from ...types import Point2D
-from ..common import RawProjection, Projection
 from collections.abc import Callable
+from math import degrees, pi, radians
+
+from ...types import Point2D
+from ..common import Projection, RawProjection
+from .projection import ProjectionMutator
+
 
 class ConicProjection(ProjectionMutator):
-
-    def __init__(self, project_func: Callable[..., RawProjection], phi0: float, phi1: float):
+    def __init__(
+        self, project_func: Callable[..., RawProjection], phi0: float, phi1: float
+    ):
         ProjectionMutator.__init__(self, project_func(phi0, phi1))
         self._project_func = project_func
         self._phi0 = phi0
@@ -31,7 +34,9 @@ class ConicProjection(ProjectionMutator):
         if point is None:
             return [degrees(self._phi0), degrees(self._phi1)]
         else:
-            return self.set_project(self._project_func(radians(point[0]), radians(point[1])))
+            return self.set_project(
+                self._project_func(radians(point[0]), radians(point[1]))
+            )
 
 
 def conic_projection(project: Callable[..., RawProjection]) -> ConicProjection:

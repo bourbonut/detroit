@@ -1,18 +1,21 @@
-from math import floor, nan, isnan
-from collections.abc import Callable
 import re
-from ..common import PolygonStream
+from collections.abc import Callable
+from math import floor, isnan, nan
 
 from ...path.string_round import string_round
+from ..common import PolygonStream
+
 
 class PathString(PolygonStream):
-    def __init__(self, digits = None):
+    def __init__(self, digits=None):
         self._cache_digits = None
         self._cache_append = None
         self._cache_radius = None
         self._cache_circle = None
 
-        self._append = self._append_default if digits is None else self._append_round(digits)
+        self._append = (
+            self._append_default if digits is None else self._append_round(digits)
+        )
         self._radius = 4.5
         self._string = ""
         self._line = nan
@@ -48,7 +51,9 @@ class PathString(PolygonStream):
                 r = self._radius
                 s = self._string
                 self._string = ""
-                self._append(f"m0,{r}a{r},{r} 0 1,1 0,{-2 * r}a{r},{r} 0 1,1 0,{2 * r}z")
+                self._append(
+                    f"m0,{r}a{r},{r} 0 1,1 0,{-2 * r}a{r},{r} 0 1,1 0,{2 * r}z"
+                )
                 self._cache_radius = r
                 self._cache_append = self._append
                 self._cache_circle = self._string
@@ -71,12 +76,14 @@ class PathString(PolygonStream):
             return self._append_default
         if d != self._cache_digits:
             self._cache_digits = d
+
             def append_round(string: str):
                 floats = re.findall(r"\d+\.\d+", string)
                 rounds = [string_round(f, d) for f in floats]
-                for (old, new) in zip(floats, rounds):
+                for old, new in zip(floats, rounds):
                     string = string.replace(old, new)
                 self._string += string
+
             self._cache_append = append_round
         return self._cache_append
 

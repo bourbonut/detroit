@@ -1,18 +1,20 @@
 from math import asin, cos, sin
-from .azimuthal import azimuthal_invert
-from .projection import geo_projection
+
 from ...types import Point2D
 from ..common import Projection
+from .azimuthal import azimuthal_invert
+from .projection import geo_projection
 
 EPSILON = 1e-6
 
-class OrthographicRaw:
 
+class OrthographicRaw:
     def __call__(self, x: float, y: float) -> Point2D:
         return [cos(y) * sin(x), sin(y)]
 
     def invert(self, x: float, y: float) -> Point2D:
         return azimuthal_invert(asin)(x, y)
+
 
 def geo_orthographic() -> Projection:
     """

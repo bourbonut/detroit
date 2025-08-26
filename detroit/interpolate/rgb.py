@@ -9,6 +9,7 @@ from .color import gamma
 
 TRGBGammaInterpolator = TypeVar("RGBGammaInterpolator", bound="RGBGammaInterpolator")
 
+
 class RGBGammaInterpolator:
     def __init__(self, y):
         self.color = gamma(y)

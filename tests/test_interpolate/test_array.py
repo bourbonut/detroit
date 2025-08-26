@@ -1,4 +1,3 @@
-import pytest
 
 import detroit as d3
 

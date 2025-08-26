@@ -1,13 +1,17 @@
-from functools import cmp_to_key
-from ..point_equal import point_equal, EPSILON
-from ..common import Point2D, LineStream
 from collections.abc import Callable
+from functools import cmp_to_key
 from typing import TypeVar
+
+from ..common import LineStream, Point2D
+from ..point_equal import EPSILON, point_equal
 
 TIntersection = TypeVar("Intersection", bound="Intersection")
 
+
 class Intersection:
-    def __init__(self, point: Point2D, points: list[Point2D], other: TIntersection, entry: bool):
+    def __init__(
+        self, point: Point2D, points: list[Point2D], other: TIntersection, entry: bool
+    ):
         self.x = point
         self.z = points
         self.o = other
@@ -15,6 +19,7 @@ class Intersection:
         self.v = False
         self.n = None
         self.p = None
+
 
 def clip_rejoin(
     segments: list[list[tuple[float, float, float | None]]],
@@ -32,7 +37,7 @@ def clip_rejoin(
             return
         p0 = segment[0]
         p1 = segment[n]
-        
+
         if point_equal(p0, p1):
             if not p0[2] and not p1[2]:
                 stream.line_start()
@@ -61,7 +66,7 @@ def clip_rejoin(
     link(clip)
 
     for i in range(len(clip)):
-        start_inside = not(start_inside)
+        start_inside = not (start_inside)
         clip[i].e = start_inside
 
     start = subject[0]
@@ -99,7 +104,7 @@ def clip_rejoin(
             if current.v:
                 break
         stream.line_end()
-        
+
 
 def link(array: list[Intersection]):
     n = len(array)

@@ -1,6 +1,7 @@
+from lxml import etree
+
 from ..array import argpass
 from ..types import Accessor, EtreeFunction, T
-from lxml import etree
 
 
 def text_constant(value: str) -> EtreeFunction[T, None]:
@@ -18,6 +19,7 @@ def text_constant(value: str) -> EtreeFunction[T, None]:
     EtreeFunction[T, None]
         Function which adds a text value to nodes
     """
+
     def callback(node: etree.Element, data: T, i: int, group: list[etree.Element]):
         node.text = value
 

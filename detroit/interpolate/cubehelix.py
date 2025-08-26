@@ -6,6 +6,7 @@ from .color import color, hue
 
 TCubeHelixInterpolator = TypeVar("CubeHelixInterpolator", bound="CubeHelixInterpolator")
 
+
 class CubeHelixInterpolator:
     def __init__(self, func):
         self.func = func

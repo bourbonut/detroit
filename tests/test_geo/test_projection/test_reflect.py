@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def projection_equal(projection, location, point, delta=None):
     return planar_equal(projection(location), point, delta or 1e-6) and spherical_equal(
         projection.invert(point), location, delta or 1e-3
@@ -32,6 +33,7 @@ def longitude_equal(actual, expected, delta):
 def in_delta(actual, expected, delta):
     return abs(actual - expected) <= delta
 
+
 def in_delta_number(actual, expected, delta=1e-6):
     return actual >= expected - delta and actual <= expected + delta
 
@@ -43,6 +45,7 @@ def test_reflect_1():
     assert projection_equal(projection, [0, 0], [0, 0])
     assert projection_equal(projection, [10, 0], [0.17632698070846498, 0])
     assert projection_equal(projection, [0, 10], [0, -0.17632698070846498])
+
 
 def test_reflect_2():
     projection = d3.geo_gnomonic().scale(1).translate([0, 0]).set_reflect_x(True)
@@ -57,8 +60,11 @@ def test_reflect_2():
     assert projection_equal(projection, [10, 0], [0.17632698070846498, 0])
     assert projection_equal(projection, [0, 10], [0, 0.17632698070846498])
 
+
 def test_reflect_3():
-    projection = d3.geo_mercator().scale(1).translate([10, 20]).set_reflect_x(True).set_angle(45)
+    projection = (
+        d3.geo_mercator().scale(1).translate([10, 20]).set_reflect_x(True).set_angle(45)
+    )
     assert projection.get_reflect_x() is True
     assert in_delta_number(projection.get_angle(), 45)
     assert projection_equal(projection, [0, 0], [10, 20])

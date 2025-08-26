@@ -1,5 +1,6 @@
 from ..common import LineStream
 
+
 class ClipBuffer(LineStream):
     def __init__(self):
         self._lines = []

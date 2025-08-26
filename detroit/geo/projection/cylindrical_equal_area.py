@@ -1,8 +1,9 @@
 from math import asin, cos, sin
+
 from ...types import Point2D
 
-class CylindricalEqualArea:
 
+class CylindricalEqualArea:
     def __init__(self, phi0):
         self._cos_phi0 = cos(phi0)
 

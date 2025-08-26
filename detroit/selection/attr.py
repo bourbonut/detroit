@@ -1,6 +1,7 @@
+from lxml import etree
+
 from ..array import argpass
 from ..types import Accessor, EtreeFunction, Number, T
-from lxml import etree
 
 
 def attr_constant(name: str, value: str) -> EtreeFunction[T, None]:
@@ -19,13 +20,16 @@ def attr_constant(name: str, value: str) -> EtreeFunction[T, None]:
     EtreeFunction[T, None]
         Function which adds an attribute to nodes
     """
+
     def callback(node: etree.Element, data: T, i: int, group: list[etree.Element]):
         node.set(name, str(value))
 
     return callback
 
 
-def attr_function(name: str, value: Accessor[T, str | Number]) -> EtreeFunction[T, None]:
+def attr_function(
+    name: str, value: Accessor[T, str | Number]
+) -> EtreeFunction[T, None]:
     """
     Returns a function which adds an attribute to nodes based on an accessor
     function.

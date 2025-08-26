@@ -1,5 +1,7 @@
 from collections.abc import Callable
+
 from ..types import T
+
 
 def constant(x: T) -> Callable[..., T]:
     """
@@ -15,6 +17,7 @@ def constant(x: T) -> Callable[..., T]:
     Callable[..., T]
         Function which returns :code:`x` whatever are arguments
     """
+
     def f(*args: ...) -> T:
         return x
 

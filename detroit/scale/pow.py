@@ -2,7 +2,7 @@ import math
 from collections.abc import Callable
 from typing import TypeVar, overload
 
-from ..types import Number, T
+from ..types import Number
 from .continuous import Transformer, copy, identity
 from .init import init_range
 from .linear import LinearBase

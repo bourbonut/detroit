@@ -16,6 +16,7 @@ TLink = TypeVar("Link", bound="Link")
 link_source = itemgetter("source")
 link_target = itemgetter("target")
 
+
 class Link(Generic[T], WithPath):
     """
     The link shape generates a smooth cubic Bézier curve from a source point to

@@ -1,6 +1,6 @@
 from collections.abc import Callable
-from operator import itemgetter
 from math import floor, isnan, log, sqrt, ulp
+from operator import itemgetter
 from typing import Generic, TypeVar
 
 from ..array import argpass, blur2, ticks
@@ -12,6 +12,7 @@ TDensity = TypeVar("Density", bound="Density")
 
 default_x = itemgetter(0)
 default_y = itemgetter(1)
+
 
 def default_weight() -> float:
     """
@@ -41,6 +42,7 @@ class Contour:
     transform : Callable[[GeoJSON], GeoJSON]
         Transform function
     """
+
     def __init__(
         self,
         values: list[float],
@@ -88,6 +90,7 @@ class Density(Generic[T]):
     """
     Constructs a new density estimator with the default settings.
     """
+
     def __init__(self):
         self._x = argpass(default_x)
         self._y = argpass(default_y)
@@ -377,7 +380,9 @@ class Density(Generic[T]):
 
     def set_thresholds(
         self,
-        thresholds: Callable[[list[float], ...], float | list[float]] | list[float] | float,
+        thresholds: Callable[[list[float], ...], float | list[float]]
+        | list[float]
+        | float,
     ) -> TDensity:
         """
         Sets the threshold function to the contour generator and returns
@@ -396,7 +401,7 @@ class Density(Generic[T]):
         ----------
         thresholds : Callable[[list[float], ...], float | list[float]] | list[float] | float
             Threshold function or array or constant value
-            
+
 
         Returns
         -------

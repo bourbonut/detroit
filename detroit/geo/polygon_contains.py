@@ -1,6 +1,7 @@
-from .cartesian import cartesian, cartesian_cross, cartesian_normalize_in_place
-from math import asin, atan2, cos, sin, pi, fsum
+from math import asin, atan2, cos, fsum, pi, sin
+
 from ..types import Point2D
+from .cartesian import cartesian, cartesian_cross, cartesian_normalize_in_place
 
 EPSILON = 1e-6
 EPSILON2 = 1e-12
@@ -8,14 +9,17 @@ TAU = 2 * pi
 half_pi = pi * 0.5
 quarter_pi = pi * 0.25
 
+
 def sign(x: float) -> float:
     return -1 if x < 0 else 1
+
 
 def longitude(point: Point2D) -> float:
     if abs(point[0]) <= pi:
         return point[0]
     else:
         return sign(point[0]) * ((abs(point[0]) + pi) % TAU - pi)
+
 
 def polygon_contains(polygon: list[list[float]], point: tuple[float, float]) -> int:
     lambda_ = longitude(point)
@@ -26,7 +30,7 @@ def polygon_contains(polygon: list[list[float]], point: tuple[float, float]) -> 
     winding = 0
 
     sum = []
-    
+
     if sin_phi == 1.0:
         phi = half_pi + EPSILON
     elif sin_phi == -1.0:
@@ -53,8 +57,12 @@ def polygon_contains(polygon: list[list[float]], point: tuple[float, float]) -> 
             abs_delta = sign_ * delta
             antimeridian = abs_delta > pi
             k = sin_phi0 * sin_phi1
-            
-            sum.append(atan2(k * sign_ * sin(abs_delta), cos_phi0 * cos_phi1 + k * cos(abs_delta)))
+
+            sum.append(
+                atan2(
+                    k * sign_ * sin(abs_delta), cos_phi0 * cos_phi1 + k * cos(abs_delta)
+                )
+            )
             angle += delta + sign_ * TAU if antimeridian else delta
 
             if (antimeridian ^ (lambda0 >= lambda_)) ^ (lambda1 >= lambda_):
@@ -62,7 +70,9 @@ def polygon_contains(polygon: list[list[float]], point: tuple[float, float]) -> 
                 cartesian_normalize_in_place(arc)
                 intersection = cartesian_cross(normal, arc)
                 cartesian_normalize_in_place(intersection)
-                phi_arc = (-1 if antimeridian ^ (delta >= 0) else 1) * asin(intersection[2])
+                phi_arc = (-1 if antimeridian ^ (delta >= 0) else 1) * asin(
+                    intersection[2]
+                )
                 if phi > phi_arc or phi == phi_arc and (arc[0] or arc[1]):
                     winding += 1 if antimeridian ^ (delta >= 0) else -1
 
@@ -71,5 +81,6 @@ def polygon_contains(polygon: list[list[float]], point: tuple[float, float]) -> 
             cos_phi0 = cos_phi1
             point0 = point1
 
-
-    return (angle < -EPSILON or angle < EPSILON and fsum(sum) < -EPSILON2) ^ (winding & 1)
+    return (angle < -EPSILON or angle < EPSILON and fsum(sum) < -EPSILON2) ^ (
+        winding & 1
+    )

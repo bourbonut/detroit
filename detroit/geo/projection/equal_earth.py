@@ -1,7 +1,8 @@
-from .projection import geo_projection
 from math import asin, cos, sin, sqrt
+
 from ...types import Point2D
 from ..common import Projection
+from .projection import geo_projection
 
 EPSILON2 = 1e-12
 A1 = 1.340264
@@ -11,17 +12,16 @@ A4 = 0.003796
 M = sqrt(3) / 2
 iterations = 12
 
+
 class EqualEarthRaw:
-    
     def __call__(self, lambda_: float, phi: float) -> Point2D:
         l_ = asin(M * sin(phi))
         l2 = l_ * l_
         l6 = l2 * l2 * l2
         return [
             lambda_ * cos(l_) / (M * (A1 + 3 * A2 * l2 + l6 * (7 * A3 + 9 * A4 * l2))),
-            l_ * (A1 + A2 * l2 + l6 * (A3 + A4 * l2))
+            l_ * (A1 + A2 * l2 + l6 * (A3 + A4 * l2)),
         ]
-
 
     def invert(self, x: float, y: float) -> Point2D:
         l_ = y
@@ -38,7 +38,7 @@ class EqualEarthRaw:
                 break
         return [
             M * x * (A1 + 3 * A2 * l2 + l6 * (7 * A3 + 9 * A4 * l2)) / cos(l_),
-            asin(sin(l_) / M)
+            asin(sin(l_) / M),
         ]
 
 

@@ -3,6 +3,7 @@ from collections.abc import Callable
 from ..array import argpass
 from ..types import Accessor, T
 
+
 def matcher(match: Accessor[T, bool] | int | float | str) -> Callable[[T], bool]:
     """
     Returns a function whichs checks if the data input matches a arbitrary condition.

@@ -1,3 +1,7 @@
+from collections.abc import Callable
+from math import floor, isnan
+from typing import Any, TypeVar
+
 from ...types import GeoJSON, Point2D
 from ..common import Context, Projection
 from ..stream import geo_stream
@@ -7,15 +11,13 @@ from .centroid import CentroidStream
 from .context import PathContext
 from .measure import LengthStream
 from .string import PathString
-from collections.abc import Callable
-from typing import Any, TypeVar
-
-from math import floor, isnan
 
 TGeoPath = TypeVar("GeoPath", bound="GeoPath")
 
+
 def identity(x):
     return x
+
 
 class GeoPath:
     """
@@ -30,13 +32,18 @@ class GeoPath:
     context : Context | None
         Context
     """
-    def __init__(self, projection: Projection | None = None, context: Context | None = None):
+
+    def __init__(
+        self, projection: Projection | None = None, context: Context | None = None
+    ):
         self._digits = 3
         self._point_radius = 4.5
         self._projection = projection
         self._projection_stream = identity if projection is None else projection.stream
         self._context = context
-        self._context_stream = PathString(self._digits) if context is None else PathContext(context)
+        self._context_stream = (
+            PathString(self._digits) if context is None else PathContext(context)
+        )
 
     def __call__(self, obj: GeoJSON, *args: Any) -> str | None:
         """
@@ -79,7 +86,6 @@ class GeoPath:
             geo_stream(obj, self._projection_stream(self._context_stream))
 
         return self._context_stream.result()
-
 
     def area(self, obj: GeoJSON) -> float:
         """
@@ -146,7 +152,7 @@ class GeoPath:
         Parameters
         ----------
         obj : GeoJSON
-            GeoJSON object   
+            GeoJSON object
 
         Returns
         -------

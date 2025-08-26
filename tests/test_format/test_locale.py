@@ -1,4 +1,3 @@
-import detroit as d3
 
 # function locale(locale) {
 #     return formatLocale(JSON.parse(readFileSync(`./locale/${locale}.json`, "utf8")))

@@ -1,13 +1,15 @@
-from math import fsum, sqrt, nan
+from math import fsum, nan, sqrt
+
 from ...array import argpass
 from ..common import PolygonStream
+
 
 @argpass
 def noop():
     return
 
-class LengthStream(PolygonStream):
 
+class LengthStream(PolygonStream):
     def __init__(self):
         self._point = noop
         self._length_sum = []

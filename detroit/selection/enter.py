@@ -1,7 +1,9 @@
 from typing import Generic
 
-from ..types import T
 from lxml import etree
+
+from ..types import T
+
 
 class EnterNode(Generic[T]):
     """
@@ -15,6 +17,7 @@ class EnterNode(Generic[T]):
     datum : T
         Data to hold
     """
+
     def __init__(self, parent: etree.Element, datum: T):
         self._next = None
         self._parent = parent

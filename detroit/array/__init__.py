@@ -12,8 +12,8 @@ from .set_operations import (
     superset,
     union,
 )
-from .ticks import tick_increment, tick_step, ticks
 from .threshold import threshold_freedman_diaconis, threshold_scott, threshold_sturges
+from .ticks import tick_increment, tick_step, ticks
 
 __all__ = [
     "argpass",

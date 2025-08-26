@@ -1,22 +1,26 @@
-from ..clip import geo_clip_rectangle
-from ..transform import GeoTransformer
-from .fit import fit_extent, fit_size, fit_width, fit_height
-from math import cos, degrees, radians, sin
-from ..common import Projection, PolygonStream
 from collections.abc import Callable
-from ...types import Point2D, Vec2D, GeoJSON
+from math import cos, degrees, radians, sin
+
+from ...types import GeoJSON, Point2D, Vec2D
+from ..clip import geo_clip_rectangle
+from ..common import PolygonStream, Projection
+from ..transform import GeoTransformer
+from .fit import fit_extent, fit_height, fit_size, fit_width
+
 
 def transform(projection: Projection) -> GeoTransformer:
     def point(self, x: float, y: float):
         x = projection([x, y])
         self._stream.point(x[0], x[1])
+
     return GeoTransformer({"point": point})
+
 
 def identity(x: PolygonStream) -> PolygonStream:
     return x
 
-class GeoIdentity(Projection):
 
+class GeoIdentity(Projection):
     def __init__(self):
         self._k = 1
         self._tx = 0
@@ -54,7 +58,7 @@ class GeoIdentity(Projection):
         Returns
         -------
         Point2D
-            New projected point :code:`[x, y]` 
+            New projected point :code:`[x, y]`
         """
         x = point[0] * self._kx
         y = point[1] * self._ky
@@ -118,7 +122,9 @@ class GeoIdentity(Projection):
         self._cache = self._transform(self._postclip(self._cache_stream))
         return self._cache
 
-    def set_preclip(self, preclip: Callable[[PolygonStream], PolygonStream]) -> Projection:
+    def set_preclip(
+        self, preclip: Callable[[PolygonStream], PolygonStream]
+    ) -> Projection:
         """
         If preclip is specified, sets the projection's spherical clipping to
         the specified function and returns the projection; preclip is a
@@ -136,7 +142,9 @@ class GeoIdentity(Projection):
         """
         raise NotImplementedError("Unsupported method for GeoIdentity")
 
-    def set_postclip(self, postclip: Callable[[PolygonStream], PolygonStream]) -> Projection:
+    def set_postclip(
+        self, postclip: Callable[[PolygonStream], PolygonStream]
+    ) -> Projection:
         """
         If postclip is specified, sets the projection's Cartesian clipping to
         the specified function and returns the projection; postclip is a
@@ -159,7 +167,9 @@ class GeoIdentity(Projection):
         self._y1 = None
         return self.reset()
 
-    def set_clip_extent(self, clip_extent: tuple[Point2D, Point2D] | None = None) -> Projection:
+    def set_clip_extent(
+        self, clip_extent: tuple[Point2D, Point2D] | None = None
+    ) -> Projection:
         """
         If extent is specified, sets the projection's viewport clip extent to
         the specified bounds in pixels and returns the projection. The extent
@@ -174,7 +184,7 @@ class GeoIdentity(Projection):
         Parameters
         ----------
         clip_extent : tuple[Point2D, Point2D] | None
-            
+
 
         Returns
         -------
@@ -255,7 +265,9 @@ class GeoIdentity(Projection):
         """
         raise NotImplementedError("Unsupported method for GeoIdentity")
 
-    def rotate(self, angles: tuple[float, float] | tuple[float, float, float]) -> Projection:
+    def rotate(
+        self, angles: tuple[float, float] | tuple[float, float, float]
+    ) -> Projection:
         """
         If angles is specified, sets the projection's three-axis spherical
         rotation to the specified value, which must be a two- or three-element
@@ -470,6 +482,7 @@ class GeoIdentity(Projection):
 
     def get_reflect_y(self) -> bool:
         return self._sy < 0
+
 
 def geo_identity() -> GeoIdentity:
     return GeoIdentity()

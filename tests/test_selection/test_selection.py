@@ -134,7 +134,7 @@ def test_selection_11(g_classes):
 def test_selection_12():
     svg = d3.create("svg")
     svg.select_all("g").data([None] * 10).enter().append("g").attr(
-        "class", lambda d: f"class"
+        "class", lambda d: "class"
     ).append("text")
     g = svg.select_all(".class")
     nodes = g.nodes()

@@ -1,16 +1,18 @@
+from collections.abc import Callable
+from math import acos, cos, degrees, pi, radians, sin
+from typing import Any, TypeVar
+
+from ..types import GeoJSON, Point2D, Point3D
 from .cartesian import cartesian, cartesian_normalize_in_place, spherical
 from .common import LineStream
 from .constant import constant
 from .rotation import RotateRadians
-from ..types import Point3D, Point2D, GeoJSON
-from collections.abc import Callable
-from math import acos, cos, degrees, radians, sin, pi
-from typing import Any, TypeVar
 
 TGeoCircle = TypeVar("GeoCircle", bound="GeoCircle")
 
 EPISLON = 1e-6
 TAU = 2 * pi
+
 
 def circle_stream(
     stream: LineStream,
@@ -46,6 +48,7 @@ def circle_stream(
         if condition:
             break
 
+
 def circle_radius(cos_radius: float, point: Point3D) -> float:
     point = cartesian(point)
     point[0] -= cos_radius
@@ -54,10 +57,12 @@ def circle_radius(cos_radius: float, point: Point3D) -> float:
     radius = -radius if -point[2] < 0 else radius
     return (radius + TAU - EPISLON) % TAU
 
+
 class GeoCircle:
     """
     Circle generator
     """
+
     def __init__(self):
         self._center = constant([0, 0])
         self._radius = constant(90)
@@ -99,7 +104,7 @@ class GeoCircle:
         self._ring.append(x)
         x[0] = degrees(x[0])
         x[1] = degrees(x[1])
-    
+
     def set_center(self, center: Callable[..., Point2D] | Point2D) -> TGeoCircle:
         """
         If center is specified, sets the circle center to the specified point
@@ -165,6 +170,7 @@ class GeoCircle:
         else:
             self._precision = constant(precision)
         return self
+
 
 def geo_circle() -> GeoCircle:
     """

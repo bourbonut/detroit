@@ -163,6 +163,7 @@ class Contours:
     coordinates, where :math:`(i + 0.5, j + 0.5)` corresponds to element
     :code:`i + j * n` in the input values array.
     """
+
     def __init__(self):
         self._dx = 1
         self._dy = 1
@@ -247,7 +248,12 @@ class Contours:
             "coordinates": polygons,
         }
 
-    def _isorings(self, values: list[float], value: float, callback: Callable[[list[Point2D]], None]):
+    def _isorings(
+        self,
+        values: list[float],
+        value: float,
+        callback: Callable[[list[Point2D]], None],
+    ):
         """
         Finds contour polygons and passes them to :code:`callback` function.
 
@@ -431,7 +437,9 @@ class Contours:
 
     def set_thresholds(
         self,
-        thresholds: Callable[[list[float], ...], float | list[float]] | list[float] | float,
+        thresholds: Callable[[list[float], ...], float | list[float]]
+        | list[float]
+        | float,
     ) -> TContours:
         """
         Sets the threshold function to the contour generator and returns
@@ -469,6 +477,7 @@ class Contours:
         Contours
             Itself
         """
+
         def noop():
             return
 

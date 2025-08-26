@@ -1,31 +1,39 @@
-from math import ceil
 from collections.abc import Callable
-from typing import Iterable
 from itertools import chain
-from ..types import Point2D, GeoJSON
-from typing import TypeVar
+from math import ceil
+from typing import Iterable, TypeVar
+
+from ..types import GeoJSON, Point2D
 
 EPSILON = 1e-6
+
 
 def frange(start: float, stop: float, step: float) -> list[float]:
     return [start + i * step for i in range(max(0, ceil((stop - start) / step)))]
 
+
 def graticule_x(y0: float, y1: float, dy: float) -> Callable[[float], list[Point2D]]:
     ly = frange(y0, y1 - EPSILON, dy) + [y1]
+
     def local_graticule_x(x: float) -> Point2D:
         return [[x, y] for y in ly]
+
     return local_graticule_x
+
 
 def graticule_y(x0: float, x1: float, dx: float) -> Callable[[float], list[Point2D]]:
     lx = frange(x0, x1 - EPSILON, dx) + [x1]
+
     def local_graticule_y(y: float) -> Point2D:
         return [[x, y] for x in lx]
+
     return local_graticule_y
+
 
 TGraticule = TypeVar("Graticule", bound="Graticule")
 
-class Graticule:
 
+class Graticule:
     def __init__(self):
         self._x0 = 0.0
         self._x1 = 0.0
@@ -73,20 +81,42 @@ class Graticule:
         list[GeoJSON]
             List of GeoJSON LineString geometry objects
         """
+
         def coordinates(coordinates: list[Point2D]) -> GeoJSON:
             return {"type": "LineString", "coordinates": coordinates}
+
         return list(map(coordinates, self._lines()))
 
     def _lines(self) -> Iterable[list[Point2D]]:
         def filter_x(x: float) -> bool:
             return abs(x % self._DX) > EPSILON
+
         def filter_y(y: float) -> bool:
             return abs(y % self._DY) > EPSILON
+
         return chain(
-            map(self._X, frange(ceil(self._X0 / self._DX) * self._DX, self._X1, self._DX)),
-            map(self._Y, frange(ceil(self._Y0 / self._DY) * self._DY, self._Y1, self._DY)),
-            map(self._x, filter(filter_x, frange(ceil(self._x0 / self._dx) * self._dx, self._x1, self._dx))),
-            map(self._y, filter(filter_y, frange(ceil(self._y0 / self._dy) * self._dy, self._y1, self._dy))),
+            map(
+                self._X,
+                frange(ceil(self._X0 / self._DX) * self._DX, self._X1, self._DX),
+            ),
+            map(
+                self._Y,
+                frange(ceil(self._Y0 / self._DY) * self._DY, self._Y1, self._DY),
+            ),
+            map(
+                self._x,
+                filter(
+                    filter_x,
+                    frange(ceil(self._x0 / self._dx) * self._dx, self._x1, self._dx),
+                ),
+            ),
+            map(
+                self._y,
+                filter(
+                    filter_y,
+                    frange(ceil(self._y0 / self._dy) * self._dy, self._y1, self._dy),
+                ),
+            ),
         )
 
     def outline(self) -> GeoJSON:
@@ -103,11 +133,11 @@ class Graticule:
         return {
             "type": "Polygon",
             "coordinates": [
-                self._X(self._X0) +
-                self._Y(self._Y1)[1:] +
-                self._X(self._X1)[-2::-1] +
-                self._Y(self._Y0)[-2::-1]
-            ]
+                self._X(self._X0)
+                + self._Y(self._Y1)[1:]
+                + self._X(self._X1)[-2::-1]
+                + self._Y(self._Y0)[-2::-1]
+            ],
         }
 
     def set_extent(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
@@ -276,6 +306,7 @@ class Graticule:
     def get_precision(self):
         return self._precision
 
+
 def geo_graticule() -> Graticule:
     """
     Constructs a geometry generator for creating graticules: a uniform grid of
@@ -290,6 +321,7 @@ def geo_graticule() -> Graticule:
         Graticule object
     """
     return Graticule()
+
 
 def geo_graticule_10() -> GeoJSON:
     """

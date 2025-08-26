@@ -1,10 +1,11 @@
-from math import pi, nan
-from ..common import PolygonStream, Context
+from math import nan, pi
+
+from ..common import Context, PolygonStream
 
 TAU = 2 * pi
 
-class PathContext(PolygonStream):
 
+class PathContext(PolygonStream):
     def __init__(self, context: Context):
         self._context = context
         self._radius = 4.5

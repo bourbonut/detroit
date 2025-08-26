@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def projection_equal(projection, location, point, delta=None):
     return planar_equal(projection(location), point, delta or 1e-6) and spherical_equal(
         projection.invert(point), location, delta or 1e-3
@@ -32,10 +33,11 @@ def longitude_equal(actual, expected, delta):
 def in_delta(actual, expected, delta):
     return abs(actual - expected) <= delta
 
+
 def test_stereographic_1():
     stereographic = d3.geo_stereographic().translate([0, 0]).scale(1)
-    assert projection_equal(stereographic, [  0,   0], [ 0,  0])
-    assert projection_equal(stereographic, [-90,   0], [-1,  0])
-    assert projection_equal(stereographic, [ 90,   0], [ 1,  0])
-    assert projection_equal(stereographic, [  0, -90], [ 0,  1])
-    assert projection_equal(stereographic, [  0,  90], [ 0, -1])
+    assert projection_equal(stereographic, [0, 0], [0, 0])
+    assert projection_equal(stereographic, [-90, 0], [-1, 0])
+    assert projection_equal(stereographic, [90, 0], [1, 0])
+    assert projection_equal(stereographic, [0, -90], [0, 1])
+    assert projection_equal(stereographic, [0, 90], [0, -1])

@@ -1,8 +1,9 @@
-from ..cartesian import cartesian
-from math import asin, atan2, cos, radians, sqrt, nan
-from ..transform import GeoTransformer
-from ..common import PolygonStream
+from math import asin, atan2, cos, nan, radians, sqrt
 from typing import TypeVar
+
+from ..cartesian import cartesian
+from ..common import PolygonStream
+from ..transform import GeoTransformer
 
 ProjectionMutator = TypeVar("ProjectionMutator")
 
@@ -10,14 +11,19 @@ EPSILON = 1e-6
 max_depth = 16
 cos_min_distance = cos(radians(30))
 
+
 def resample_none(project: ProjectionMutator) -> GeoTransformer:
     def point(self, x: float, y: float):
         x = project(x, y)
         self._stream.point(x[0], x[1])
+
     return GeoTransformer({"point": point})
 
+
 class Resample(PolygonStream):
-    def __init__(self, project: ProjectionMutator, delta2: float, stream: PolygonStream):
+    def __init__(
+        self, project: ProjectionMutator, delta2: float, stream: PolygonStream
+    ):
         self._project = project
         self._delta2 = delta2
         self._stream = stream
@@ -39,7 +45,9 @@ class Resample(PolygonStream):
         self._line_start = self._line_start_default
         self._line_end = self._line_end_default
 
-    def resample_line_to(self, x0, y0, lambda0, a0, b0, c0, x1, y1, lambda1, a1, b1, c1, depth):
+    def resample_line_to(
+        self, x0, y0, lambda0, a0, b0, c0, x1, y1, lambda1, a1, b1, c1, depth
+    ):
         dx = x1 - x0
         dy = y1 - y0
         d2 = dx * dx + dy * dy
@@ -68,9 +76,13 @@ class Resample(PolygonStream):
             ):
                 a /= m
                 b /= m
-                self.resample_line_to(x0, y0, lambda0, a0, b0, c0, x2, y2, lambda2, a, b, c, depth)
+                self.resample_line_to(
+                    x0, y0, lambda0, a0, b0, c0, x2, y2, lambda2, a, b, c, depth
+                )
                 self._stream.point(x2, y2)
-                self.resample_line_to(x2, y2, lambda2, a, b, c, x1, y1, lambda1, a1, b1, c1, depth)
+                self.resample_line_to(
+                    x2, y2, lambda2, a, b, c, x1, y1, lambda1, a1, b1, c1, depth
+                )
 
     def line_start(self):
         self._line_start()
@@ -158,7 +170,7 @@ class Resample(PolygonStream):
             self._a00,
             self._b00,
             self._c00,
-            max_depth
+            max_depth,
         )
         self._line_end = self._line_end_default
         self._line_end_default()
@@ -166,10 +178,13 @@ class Resample(PolygonStream):
     def __str__(self):
         return f"Resample({self._stream})"
 
+
 def resample(project: ProjectionMutator, delta2: float):
     if delta2:
+
         def resample(stream: PolygonStream) -> Resample:
             return Resample(project, delta2, stream)
+
         return resample
     else:
         return resample_none(project)

@@ -1,14 +1,16 @@
 from math import inf
+
 from ...array import argpass
-from ..common import PolygonStream
 from ...types import Point2D
+from ..common import PolygonStream
+
 
 @argpass
 def noop():
     return
 
-class BoundsStream(PolygonStream):
 
+class BoundsStream(PolygonStream):
     def __init__(self):
         self._line_start = noop
         self._line_end = noop

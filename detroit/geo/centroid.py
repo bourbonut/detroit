@@ -1,13 +1,14 @@
-from math import asin, atan2, degrees, hypot, radians, sin, sqrt, cos, fsum, nan
-from .stream import geo_stream
+from math import asin, atan2, cos, degrees, fsum, hypot, nan, radians, sin, sqrt
+
+from ..types import GeoJSON, Point2D
 from .common import PolygonStream
-from ..types import Point2D, GeoJSON
+from .stream import geo_stream
 
 EPSILON = 1e-6
 EPSILON2 = 1e-12
 
-class CentroidStream(PolygonStream):
 
+class CentroidStream(PolygonStream):
     def __init__(self):
         self._W0 = 0
         self._W1 = 0
@@ -57,7 +58,9 @@ class CentroidStream(PolygonStream):
         lambda_ = radians(lambda_)
         phi = radians(phi)
         cos_phi = cos(phi)
-        self._centroid_point_cartesian(cos_phi * cos(lambda_), cos_phi * sin(lambda_), sin(phi))
+        self._centroid_point_cartesian(
+            cos_phi * cos(lambda_), cos_phi * sin(lambda_), sin(phi)
+        )
 
     def _centroid_point_cartesian(self, x: float, y: float, z: float):
         self._W0 += 1
@@ -87,9 +90,9 @@ class CentroidStream(PolygonStream):
         z = sin(phi)
         w = atan2(
             sqrt(
-                (self._y0 * z - self._z0 * y) * (self._y0 * z - self._z0 * y) +
-                (self._z0 * x - self._x0 * z) * (self._z0 * x - self._x0 * z) +
-                (self._x0 * y - self._y0 * x) * (self._x0 * y - self._y0 * x)
+                (self._y0 * z - self._z0 * y) * (self._y0 * z - self._z0 * y)
+                + (self._z0 * x - self._x0 * z) * (self._z0 * x - self._x0 * z)
+                + (self._x0 * y - self._y0 * x) * (self._x0 * y - self._y0 * x)
             ),
             self._x0 * x + self._y0 * y + self._z0 * z,
         )
@@ -137,7 +140,7 @@ class CentroidStream(PolygonStream):
         cz = self._x0 * y - self._y0 * x
         m = hypot(cx, cy, cz)
         w = asin(m)
-        v = -w / m if m != 0 else 0.
+        v = -w / m if m != 0 else 0.0
 
         self._X2.append(v * cx)
         self._Y2.append(v * cy)
@@ -168,6 +171,7 @@ class CentroidStream(PolygonStream):
             if m < EPSILON2:
                 return [nan, nan]
         return [degrees(atan2(y, x)), degrees(asin(z / m))]
+
 
 def geo_centroid(obj: GeoJSON) -> Point2D:
     """

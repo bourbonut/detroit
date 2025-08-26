@@ -24,6 +24,7 @@ Formatter: TypeAlias = Callable[[str], T]
 
 EtreeFunction: TypeAlias = Callable[[etree.Element, U, int, list[etree.Element]], V]
 
+
 class Interval(Protocol):
     """
     Protocol class which represents Interval class
@@ -322,6 +323,7 @@ class Accessor(Generic[U, V], Protocol):
         """
         ...
 
+
 class MultiPolygonGeoJSON(TypedDict):
     """
     Describes a contour as GeoJSON MultiPolygon geometry objects
@@ -336,6 +338,7 @@ class MultiPolygonGeoJSON(TypedDict):
     coordinates : list[list[tuple[int, int]]]
         Coordinates of contours
     """
+
     type: str
     value: float
     coordinates: list[list[Point2D]]

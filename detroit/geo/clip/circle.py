@@ -1,17 +1,33 @@
-from .clip import clip, Clip
-from ..cartesian import cartesian, cartesian_add_in_place, cartesian_cross, cartesian_dot, cartesian_scale, spherical
-from ..circle import circle_stream
-from ..point_equal import point_equal
-from ..common import PolygonStream, LineStream, Stream
-from ...types import Point2D
 from collections.abc import Callable
 from math import cos, pi, radians, sqrt
 
+from ...types import Point2D
+from ..cartesian import (
+    cartesian,
+    cartesian_add_in_place,
+    cartesian_cross,
+    cartesian_dot,
+    cartesian_scale,
+    spherical,
+)
+from ..circle import circle_stream
+from ..common import LineStream, PolygonStream, Stream
+from ..point_equal import point_equal
+from .clip import Clip, clip
+
 EPSILON = 1e-6
 
-class ClipCircle(LineStream):
 
-    def __init__(self, radius: float, cr: float, delta: float, small_radius: bool, not_hemisphere: bool, stream: Stream):
+class ClipCircle(LineStream):
+    def __init__(
+        self,
+        radius: float,
+        cr: float,
+        delta: float,
+        small_radius: bool,
+        not_hemisphere: bool,
+        stream: Stream,
+    ):
         self._radius = radius
         self._cr = cr
         self._delta = delta
@@ -47,7 +63,11 @@ class ClipCircle(LineStream):
                 self._stream.line_start()
         if v != self._v0:
             point2 = self._intersect(self._point0, point1)
-            if not point2 or point_equal(self._point0, point2) or point_equal(point1, point2):
+            if (
+                not point2
+                or point_equal(self._point0, point2)
+                or point_equal(point1, point2)
+            ):
                 point1[2] = 1
 
         if v != self._v0:
@@ -63,7 +83,7 @@ class ClipCircle(LineStream):
             self._point0 = point2
         elif self._not_hemisphere and self._point0 and self._small_radius ^ v:
             t = self._intersect(point1, self._point0, True)
-            if not(c & self._c0) and t:
+            if not (c & self._c0) and t:
                 self._clean = 0
                 if self._small_radius:
                     self._stream.line_start()
@@ -102,7 +122,7 @@ class ClipCircle(LineStream):
         if not determinant:
             return not two and a
 
-        c1 =  self._cr * n2n2 / determinant
+        c1 = self._cr * n2n2 / determinant
         c2 = -self._cr * n1n2 / determinant
         n1xn2 = cartesian_cross(n1, n2)
         A = cartesian_scale(n1, c1)
@@ -153,9 +173,9 @@ class ClipCircle(LineStream):
                 condition = phi0 <= q[1] and q[1] <= phi1
 
         if condition:
-          q1 = cartesian_scale(u, (-w + t) / uu)
-          cartesian_add_in_place(q1, A)
-          return [q, spherical(q1)]
+            q1 = cartesian_scale(u, (-w + t) / uu)
+            cartesian_add_in_place(q1, A)
+            return [q, spherical(q1)]
 
     def _code(self, lambda_: float, phi: float) -> int:
         r = self._radius if self._small_radius else pi - self._radius
@@ -198,7 +218,9 @@ def geo_clip_circle(angle: float) -> Callable[[PolygonStream], Clip]:
     def clip_line(stream: Stream) -> ClipCircle:
         return ClipCircle(angle, cr, delta, small_radius, not_hemisphere, stream)
 
-    def interpolate(vfrom: float | None, vto: float | None, direction: float, stream: LineStream):
+    def interpolate(
+        vfrom: float | None, vto: float | None, direction: float, stream: LineStream
+    ):
         circle_stream(stream, angle, delta, direction, vfrom, vto)
 
     def visible(lambda_: float, phi: float) -> bool:

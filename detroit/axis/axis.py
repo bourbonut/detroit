@@ -159,6 +159,7 @@ class Axis:
         elif hasattr(self._scale, "tick_format"):
             format_func = argpass(self._scale.tick_format)(*self._tick_arguments)
         else:
+
             def format_func(d):
                 return d
 

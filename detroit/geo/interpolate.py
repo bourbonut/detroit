@@ -1,9 +1,12 @@
 from math import asin, atan2, cos, degrees, radians, sin, sqrt
+
 from ..types import Point2D
+
 
 def haversin(x: float) -> float:
     x = sin(x * 0.5)
     return x * x
+
 
 class Interpolate:
     def __init__(self, a: Point2D, b: Point2D):
@@ -19,10 +22,17 @@ class Interpolate:
         self._ky0 = self._cy0 * sin(self._x0)
         self._kx1 = self._cy1 * cos(self._x1)
         self._ky1 = self._cy1 * sin(self._x1)
-        self._d = 2 * asin(sqrt(haversin(self._y1 - self._y0) + self._cy0 * self._cy1 * haversin(self._x1 - self._x0)))
+        self._d = 2 * asin(
+            sqrt(
+                haversin(self._y1 - self._y0)
+                + self._cy0 * self._cy1 * haversin(self._x1 - self._x0)
+            )
+        )
         self._k = sin(self._d)
-        self._interpolate = self._interpolate_non_null if self._d else self._interpolate_null
-        
+        self._interpolate = (
+            self._interpolate_non_null if self._d else self._interpolate_null
+        )
+
     def __call__(self, t: float) -> Point2D:
         return self._interpolate(t)
 
@@ -33,10 +43,7 @@ class Interpolate:
         x = A * self._kx0 + B * self._kx1
         y = A * self._ky0 + B * self._ky1
         z = A * self._sy0 + B * self._sy1
-        return [
-            degrees(atan2(y, x)),
-            degrees(atan2(z, sqrt(x * x + y * y)))
-        ]
+        return [degrees(atan2(y, x)), degrees(atan2(z, sqrt(x * x + y * y)))]
 
     def _interpolate_null(self, t: float) -> Point2D:
         return [degrees(self._x0), degrees(self._y0)]

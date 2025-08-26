@@ -1,6 +1,7 @@
 import math
 from typing import Any
 
+
 def threshold_sturges(values: list[float | None], *args: Any) -> int:
     """
     Returns the number of bins according to Sturges' formula; the input values

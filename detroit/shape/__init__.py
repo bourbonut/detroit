@@ -43,6 +43,7 @@ from .order import (
     order_reverse,
 )
 from .pie import Pie
+from .point_radial import point_radial
 from .stack import Stack
 from .symbol import SYMBOLS_FILL, SYMBOLS_STROKE, Symbol
 from .symbols import (
@@ -60,7 +61,6 @@ from .symbols import (
     symbol_triangle2,
     symbol_wye,
 )
-from .point_radial import point_radial
 
 __all__ = [
     "Arc",

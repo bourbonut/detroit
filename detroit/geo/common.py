@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Protocol, TypeAlias, TypeVar
-from ..types import Point2D, GeoJSON, Vec2D
 from collections.abc import Callable
+from typing import Protocol, TypeAlias, TypeVar
+
+from ..types import GeoJSON, Point2D, Vec2D
+
 
 class SpatialTransform(Protocol):
     """
     Describes a spatial transformation
     """
+
     def __call__(self, x: float, y: float) -> Point2D:
         """
         Transforms the x and y values into two new values.
@@ -43,8 +46,8 @@ class SpatialTransform(Protocol):
         """
         ...
 
-class LineStream(ABC):
 
+class LineStream(ABC):
     @abstractmethod
     def line_start(self):
         """
@@ -91,8 +94,8 @@ class LineStream(ABC):
         """
         ...
 
+
 class PolygonStream(LineStream):
-    
     @abstractmethod
     def polygon_start(self):
         """
@@ -108,12 +111,15 @@ class PolygonStream(LineStream):
         """
         ...
 
+
 Stream: TypeAlias = LineStream | PolygonStream
+
 
 class Context(ABC):
     """
     Context definition
     """
+
     @abstractmethod
     def arc(self, x: float, y: float, r: float):
         """
@@ -165,6 +171,7 @@ class Context(ABC):
         """
         ...
 
+
 class RawProjection(Protocol):
     """
     Raw projections are point transformation functions that are used to
@@ -174,6 +181,7 @@ class RawProjection(Protocol):
     :code:`[lambda, phi]` in radians (not degrees!) and return a point
     :code:`[x, y]`, typically in the unit square centered around the origin.
     """
+
     def __call__(self, lambda_: float, phi: float) -> Point2D:
         """
         Projects the specified point :code:`[lambda, phi]` in radians,
@@ -211,10 +219,11 @@ class RawProjection(Protocol):
         """
         ...
 
+
 TProjection = TypeVar("Projection", bound="Projection")
 
-class Projection(ABC):
 
+class Projection(ABC):
     @abstractmethod
     def __call__(self, point: Point2D) -> Point2D:
         """
@@ -233,7 +242,7 @@ class Projection(ABC):
         Returns
         -------
         Point2D
-            New projected point :code:`[x, y]` 
+            New projected point :code:`[x, y]`
         """
         ...
 
@@ -283,7 +292,9 @@ class Projection(ABC):
         """
         ...
 
-    def set_preclip(self, preclip: Callable[[PolygonStream], PolygonStream]) -> TProjection:
+    def set_preclip(
+        self, preclip: Callable[[PolygonStream], PolygonStream]
+    ) -> TProjection:
         """
         If preclip is specified, sets the projection's spherical clipping to
         the specified function and returns the projection; preclip is a
@@ -301,7 +312,9 @@ class Projection(ABC):
         """
         ...
 
-    def set_postclip(self, postclip: Callable[[PolygonStream], PolygonStream]) -> TProjection:
+    def set_postclip(
+        self, postclip: Callable[[PolygonStream], PolygonStream]
+    ) -> TProjection:
         """
         If postclip is specified, sets the projection's Cartesian clipping to
         the specified function and returns the projection; postclip is a
@@ -340,7 +353,9 @@ class Projection(ABC):
         """
         ...
 
-    def set_clip_extent(self, clip_extent: tuple[Point2D, Point2D] | None = None) -> TProjection:
+    def set_clip_extent(
+        self, clip_extent: tuple[Point2D, Point2D] | None = None
+    ) -> TProjection:
         """
         If extent is specified, sets the projection's viewport clip extent to
         the specified bounds in pixels and returns the projection. The extent
@@ -355,7 +370,7 @@ class Projection(ABC):
         Parameters
         ----------
         clip_extent : tuple[Point2D, Point2D] | None
-            
+
 
         Returns
         -------
@@ -423,7 +438,9 @@ class Projection(ABC):
         """
         ...
 
-    def rotate(self, angles: tuple[float, float] | tuple[float, float, float]) -> TProjection:
+    def rotate(
+        self, angles: tuple[float, float] | tuple[float, float, float]
+    ) -> TProjection:
         """
         If angles is specified, sets the projection's three-axis spherical
         rotation to the specified value, which must be a two- or three-element

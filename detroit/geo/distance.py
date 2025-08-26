@@ -1,5 +1,6 @@
-from .length import geo_length
 from ..types import Point2D
+from .length import geo_length
+
 
 def geo_distance(a: Point2D, b: Point2D) -> float:
     """

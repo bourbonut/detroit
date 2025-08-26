@@ -1,6 +1,5 @@
 import math
 
-import pytest
 
 import detroit as d3
 

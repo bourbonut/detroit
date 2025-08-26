@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import pytest
 
 import detroit as d3
 

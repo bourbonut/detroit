@@ -1,6 +1,8 @@
 from math import fsum
+
 from ...array import argpass
 from ..common import PolygonStream
+
 
 @argpass
 def noop():
@@ -8,7 +10,6 @@ def noop():
 
 
 class AreaStream(PolygonStream):
-
     def __init__(self):
         self._area_sum = []
         self._area_ring_sum = []

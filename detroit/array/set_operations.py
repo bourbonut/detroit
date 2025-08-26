@@ -2,7 +2,6 @@ from collections.abc import Hashable, Iterable
 from functools import reduce
 from operator import iand, ior
 
-from ..types import T
 
 
 def union(*iterables: Iterable[Hashable]) -> set[Hashable]:

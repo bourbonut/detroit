@@ -1,5 +1,4 @@
 import math
-from typing import TypeVar
 
 from ..types import T
 from .ticks import tick_increment

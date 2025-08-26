@@ -24,31 +24,31 @@ def test_time_parse_string_2():
     p = d3.time_parse("%A %m/%d/%Y")
     assert p("Sunday 01/01/1990") == datetime(1990, 1, 1)
     assert p("Wednesday 02/03/1991") == datetime(1991, 2, 3)
-    assert p("Caturday 03/10/2010") is None
+    assert p("Saturday 03/10/2010") == datetime(2010, 3, 10)
 
 
-def test_time_parse_string_2():
+def test_time_parse_string_3():
     p = d3.time_parse("%U %Y")
     assert p("00 1990") == datetime(1990, 1, 1)
     assert p("05 1991") == datetime(1991, 1, 1)
     assert p("01 1995") == datetime(1995, 1, 1)
 
 
-def test_time_parse_string_3():
+def test_time_parse_string_4():
     p = d3.time_parse("%a %U %Y")
     assert p("Mon 00 1990") == datetime(1990, 1, 1)
     assert p("Sun 05 1991") == datetime(1991, 2, 3)
     assert p("Sun 01 1995") == datetime(1995, 1, 1)
 
 
-def test_time_parse_string_4():
+def test_time_parse_string_5():
     p = d3.time_parse("%A %U %Y")
     assert p("Monday 00 1990") == datetime(1990, 1, 1)
     assert p("Sunday 05 1991") == datetime(1991, 2, 3)
     assert p("Sunday 01 1995") == datetime(1995, 1, 1)
 
 
-def test_time_parse_string_5():
+def test_time_parse_string_6():
     p = d3.time_parse("%w %U %Y")
     assert p("1 00 1990") == datetime(1990, 1, 1)
     assert p("0 05 1991") == datetime(1991, 2, 3)

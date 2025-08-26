@@ -691,7 +691,9 @@ class Selection(Generic[T]):
                         node = node._parent
                     callback(node, self._data.get(node), i, group)
 
-    def attr(self, name: str, value: Accessor[T, str | Number] | str | None = None) -> TSelection:
+    def attr(
+        self, name: str, value: Accessor[T, str | Number] | str | None = None
+    ) -> TSelection:
         """
         If a value is specified, sets the attribute with the specified name to
         the specified value on the selected elements and returns this
@@ -735,7 +737,9 @@ class Selection(Generic[T]):
             self.each(attr_constant(name, value))
         return self
 
-    def style(self, name: str, value: Accessor[T, str] | str | None = None) -> TSelection:
+    def style(
+        self, name: str, value: Accessor[T, str] | str | None = None
+    ) -> TSelection:
         """
         If a value is specified, sets the style with the specified name to the
         specified value on the selected elements and returns this selection.
@@ -877,7 +881,7 @@ class Selection(Generic[T]):
     def data(
         self,
         values: list[T] | EtreeFunction[T, list[T]],
-        key: Accessor[T, float | str] | None = None
+        key: Accessor[T, float | str] | None = None,
     ) -> TSelection:
         """
         Binds the specified list of data with the selected elements, returning
@@ -1536,7 +1540,9 @@ class Selection(Generic[T]):
             .removesuffix("\n")
         )
 
-    def to_repr(self, show_enter: bool = True, show_exit: bool = True, show_data: bool = True) -> str:
+    def to_repr(
+        self, show_enter: bool = True, show_exit: bool = True, show_data: bool = True
+    ) -> str:
         """
         Represents the selection with optional parameters.
 
@@ -1576,6 +1582,7 @@ class Selection(Generic[T]):
         lement g at 0x7287cf880d80>: 1, <Element g at 0x7287cf881000>: 0},
         )
         """
+
         def node_repr(node):
             if node is None:
                 return str(node)

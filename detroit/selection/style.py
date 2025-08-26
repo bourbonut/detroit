@@ -1,6 +1,7 @@
+from lxml import etree
+
 from ..array import argpass
 from ..types import Accessor, EtreeFunction, T
-from lxml import etree
 
 
 def style_constant(name: str, value: str) -> EtreeFunction[T, None]:
@@ -20,6 +21,7 @@ def style_constant(name: str, value: str) -> EtreeFunction[T, None]:
     EtreeFunction[T, None]
         Function which adds a style attribute to nodes
     """
+
     def callback(node: etree.Element, data: T, i: int, group: list[etree.Element]):
         current_value = node.get("style", "")
         node.set("style", f"{current_value}{name}:{value};")

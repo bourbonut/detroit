@@ -187,7 +187,7 @@ def test_time_format_space_pad_seconds():
     assert f(datetime(1990, 1, 1, 0, 0, 32)) == "32"
 
 
-def test_time_format_no_pad_seconds():
+def test_time_format_no_pad_seconds_2():
     f = d3.time_format("%-S")
     assert f(datetime(1990, 1, 1, 0, 0, 0)) == "0"
     assert f(datetime(1990, 1, 1, 0, 0, 3)) == "3"
@@ -228,7 +228,7 @@ def test_time_format_zero_pad_week_number():
     assert f(datetime(2010, 11, 8, 0)) == "45"
 
 
-def test_time_format_week_numbers():
+def test_time_format_week_numbers_2():
     f = d3.time_format("%V")
     assert f(datetime(1990, 1, 1, 0)) == "01"
     assert f(datetime(1990, 6, 1, 0)) == "22"

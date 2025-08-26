@@ -1,15 +1,17 @@
-from math import atan2, cos, radians, sin, sqrt, fsum
-from .stream import geo_stream
-from .common import PolygonStream
+from math import atan2, cos, fsum, radians, sin, sqrt
+
 from ..array import argpass
 from ..types import GeoJSON
+from .common import PolygonStream
+from .stream import geo_stream
+
 
 @argpass
 def noop():
     return
 
-class LengthStream(PolygonStream):
 
+class LengthStream(PolygonStream):
     def __init__(self):
         self._point = noop
         self._line_start = self._length_line_start
@@ -69,11 +71,12 @@ class LengthStream(PolygonStream):
         self._length_sum.append(atan2(sqrt(x * x + y * y), z))
 
         self._lambda0 = lambda_
-        self._cos_phi0 = cos_phi       
+        self._cos_phi0 = cos_phi
         self._sin_phi0 = sin_phi
 
     def result(self) -> float:
         return fsum(self._length_sum)
+
 
 def geo_length(obj: GeoJSON) -> float:
     """

@@ -1,4 +1,3 @@
-import detroit as d3
 
 # def test_formatSpecifier_1():
 #     assert.throws(() => { formatSpecifier("foo") }, /invalid format: foo/)

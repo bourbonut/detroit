@@ -1,8 +1,8 @@
 from ..types import Point2D
 from .common import SpatialTransform
 
-class Compose:
 
+class Compose:
     def __init__(self, a: SpatialTransform, b: SpatialTransform):
         self._a = a
         self._b = b

@@ -1,18 +1,20 @@
-from math import atan2, cos, radians, sin, pi, fsum
-from .stream import geo_stream
-from .common import PolygonStream
+from math import atan2, cos, fsum, pi, radians, sin
+
 from ..array import argpass
 from ..types import GeoJSON
+from .common import PolygonStream
+from .stream import geo_stream
 
 QUARTER_PI = pi * 0.25
 TAU = 2 * pi
+
 
 @argpass
 def noop():
     return
 
-class AreaStream(PolygonStream):
 
+class AreaStream(PolygonStream):
     def __init__(self):
         self._point = noop
         self._line_start = noop
@@ -90,6 +92,7 @@ class AreaStream(PolygonStream):
 
     def result(self) -> float:
         return fsum(self._area_sum) * 2
+
 
 def geo_area(obj: GeoJSON) -> float:
     """

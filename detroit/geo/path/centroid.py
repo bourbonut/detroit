@@ -1,9 +1,10 @@
-from math import sqrt, nan, isnan
-from ..common import PolygonStream
+from math import isnan, nan, sqrt
+
 from ...types import Point2D
+from ..common import PolygonStream
+
 
 class CentroidStream(PolygonStream):
-
     def __init__(self):
         self._point = self._centroid_point
         self._line_start = self._centroid_line_start

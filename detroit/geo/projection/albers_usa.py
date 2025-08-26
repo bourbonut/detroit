@@ -1,10 +1,11 @@
+from ...types import GeoJSON, Point2D, Vec2D
+from ..common import PolygonStream, Projection
 from .albers import geo_albers
 from .conic_equal_area import geo_conic_equal_area
-from .fit import fit_extent, fit_size, fit_width, fit_height
-from ...types import Point2D, Vec2D, GeoJSON
-from ..common import PolygonStream, Projection
+from .fit import fit_extent, fit_height, fit_size, fit_width
 
 EPSILON = 1e-6
+
 
 class Multiplex:
     def __init__(self, streams: list[PolygonStream]):
@@ -85,7 +86,7 @@ class AlbersUsaProjection(Projection):
         Returns
         -------
         Point2D
-            New projected point :code:`[x, y]` 
+            New projected point :code:`[x, y]`
         """
         x = coordinates[0]
         y = coordinates[1]
@@ -255,9 +256,7 @@ class AlbersUsaProjection(Projection):
 
         return self.reset()
 
-    def fit_extent(
-        self, extent: tuple[Point2D, Point2D], obj: GeoJSON
-    ) -> Projection:
+    def fit_extent(self, extent: tuple[Point2D, Point2D], obj: GeoJSON) -> Projection:
         """
         Sets the projection's scale and translate to fit the specified GeoJSON
         object in the center of the given extent. The extent is specified as an

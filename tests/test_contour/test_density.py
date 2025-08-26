@@ -82,8 +82,8 @@ def test_density_6():
 
 @pytest.fixture(scope="session")
 def contour_density(faithful):
-    width = 96 # original value: 960
-    height = 50 # original value: 500
+    width = 96  # original value: 960
+    height = 50  # original value: 500
     margin_top = 20
     margin_right = 30
     margin_bottom = 30
@@ -112,17 +112,21 @@ def contour_density(faithful):
     )
     return contour_density
 
+
 @pytest.fixture(scope="session")
 def contours(contour_density, faithful):
     return contour_density.contours(faithful)
+
 
 @pytest.fixture(scope="session")
 def density(contour_density, faithful):
     return contour_density(faithful)
 
+
 def test_density_7(density):
     # change values for making test faster
     assert list(map(lambda c: c["value"], density)) == d3.ticks(0.002, 0.036, 18)
+
 
 @pytest.mark.parametrize("value", d3.ticks(0.0002, 0.006, 30))
 def test_density_8(value, contours):

@@ -2,7 +2,9 @@ import math
 from statistics import quantiles
 
 
-def threshold_freedman_diaconis(values: list[float | None], mini: float, maxi: float) -> int:
+def threshold_freedman_diaconis(
+    values: list[float | None], mini: float, maxi: float
+) -> int:
     """
     Returns the number of bins according to the Freedman–Diaconis rule; the
     input values must be numbers.

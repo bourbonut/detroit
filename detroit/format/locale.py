@@ -227,7 +227,11 @@ class Locale:
                     value = float(value)
                     value_negative = value < 0 or (value != 0 and 1 / value < 0)
 
-                    value = self.nan if math.isnan(value) else format_type(abs(value), precision)
+                    value = (
+                        self.nan
+                        if math.isnan(value)
+                        else format_type(abs(value), precision)
+                    )
 
                     if trim:
                         value = format_trim(value)

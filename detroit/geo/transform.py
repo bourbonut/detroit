@@ -1,6 +1,8 @@
-from types import MethodType
 from collections.abc import Callable
+from types import MethodType
+
 from .common import PolygonStream
+
 
 class TransformStream(PolygonStream):
     """
@@ -12,6 +14,7 @@ class TransformStream(PolygonStream):
     stream : PolygonStream
         Stream object
     """
+
     def __init__(self, stream: PolygonStream):
         self._stream = stream
 
@@ -61,6 +64,7 @@ class TransformStream(PolygonStream):
     def __str__(self):
         return f"TransformStream({self._stream})"
 
+
 class GeoTransformer:
     """
     Transform a stream object given :code:`methods`
@@ -70,6 +74,7 @@ class GeoTransformer:
     methods : dict[str, Callable[..., ...]]
         Methods applied on a stream object
     """
+
     def __init__(self, methods: dict[str, Callable[..., ...]]):
         self._methods = methods
 
@@ -96,6 +101,7 @@ class GeoTransformer:
     def __str__(self):
         return f"GeoTransformer({self._methods})"
 
+
 class GeoTransform:
     """
     Defines an arbitrary transform using the methods defined on the specified
@@ -107,6 +113,7 @@ class GeoTransform:
     methods : dict[str, Callable[..., ...]]
         Methods applied on a stream object
     """
+
     def __init__(self, methods: dict[str, Callable[..., ...]]):
         self._methods = methods
 
@@ -121,6 +128,7 @@ class GeoTransform:
             Callable object which modifies the behavior of a stream object
         """
         return GeoTransformer(self._methods)
+
 
 def geo_transform(methods: dict[str, Callable[..., ...]]) -> GeoTransform:
     """

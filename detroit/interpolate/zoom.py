@@ -7,6 +7,7 @@ SQRT2 = sqrt(2)
 
 TZoomRho = TypeVar("ZoomRho", bound="ZoomRho")
 
+
 class Base:
     def __init__(self, rho, p0, p1):
         ux0, uy0, w0 = p0
