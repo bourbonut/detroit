@@ -81,6 +81,7 @@ from .geo import (
     geo_graticule,
     geo_graticule_10,
     geo_area,
+    geo_length,
 )
 from .interpolate import (
     interpolate,
@@ -626,4 +627,5 @@ __all__ = [
     "geo_graticule",
     "geo_graticule_10",
     "geo_area",
+    "geo_length",
 ]
