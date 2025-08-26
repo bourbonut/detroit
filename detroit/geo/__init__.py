@@ -30,6 +30,10 @@ from .clip import (
     geo_clip_rectangle,
 )
 from .interpolate import geo_interpolate
+from .graticule import (
+    geo_graticule,
+    geo_graticule_10,
+)
 
 __all__ = [
     "geo_albers",
@@ -60,4 +64,6 @@ __all__ = [
     "geo_natural_earth_1",
     "geo_equal_earth",
     "geo_identity",
+    "geo_graticule",
+    "geo_graticule_10",
 ]
