@@ -1,6 +1,7 @@
 import detroit as d3
 from math import isnan, ceil
 import json
+from pathlib import Path
 
 def frange(start, stop, step):
     return [start + i * step for i in range(max(0, ceil((stop - start) / step)))]
@@ -165,6 +166,7 @@ def test_centroid_30():
     ]}) == [0, 0]
 
 def test_centroid_31():
-    with open("data/ny.json") as file:
+    filepath = Path(__file__).resolve().parent / "data" / "ny.json"
+    with open(filepath) as file:
         ny = json.load(file)
     assert in_delta(d3.geo_centroid(ny), [-73.93079, 40.69447], 1e-5)
