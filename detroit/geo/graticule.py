@@ -51,9 +51,28 @@ class Graticule:
         self.set_extent_minor([[-180, -80 - EPSILON], [180, 80 + EPSILON]])
 
     def __call__(self) -> GeoJSON:
+        """
+        Returns a GeoJSON MultiLineString geometry object representing all
+        meridians and parallels for this graticule.
+
+
+        Returns
+        -------
+        GeoJSON
+            GeoJSON object
+        """
         return {"type": "MultiLineString", "coordinates": list(self._lines())}
 
-    def lines(self) -> list[Point2D]:
+    def lines(self) -> list[GeoJSON]:
+        """
+        Returns an array of GeoJSON LineString geometry objects, one for each
+        meridian or parallel for this graticule.
+
+        Returns
+        -------
+        list[GeoJSON]
+            List of GeoJSON LineString geometry objects
+        """
         def coordinates(coordinates: list[Point2D]) -> GeoJSON:
             return {"type": "LineString", "coordinates": coordinates}
         return list(map(coordinates, self._lines()))
@@ -70,7 +89,17 @@ class Graticule:
             map(self._y, filter(filter_y, frange(ceil(self._y0 / self._dy) * self._dy, self._y1, self._dy))),
         )
 
-    def outline(self):
+    def outline(self) -> GeoJSON:
+        """
+        Returns a GeoJSON Polygon geometry object representing the outline of
+        this graticule, i.e. along the meridians and parallels defining its
+        extent.
+
+        Returns
+        -------
+        GeoJSON
+            GeoJSON object
+        """
         return {
             "type": "Polygon",
             "coordinates": [
@@ -82,9 +111,35 @@ class Graticule:
         }
 
     def set_extent(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
+        """
+        Sets the major and minor extents of this graticule.
+
+        Parameters
+        ----------
+        extent : tuple[Point2D, Point2D]
+            Extent values
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         return self.set_extent_major(extent).set_extent_minor(extent)
 
     def set_extent_major(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
+        """
+        Sets the major extent of this graticule.
+
+        Parameters
+        ----------
+        extent : tuple[Point2D, Point2D]
+            Extent values
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         self._X0 = extent[0][0]
         self._Y0 = extent[0][1]
         self._X1 = extent[1][0]
@@ -100,6 +155,19 @@ class Graticule:
         return self.set_precision(self.get_precision())
 
     def set_extent_minor(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
+        """
+        Sets the minor extent of this graticule.
+
+        Parameters
+        ----------
+        extent : tuple[Point2D, Point2D]
+            Extent values
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         self._x0 = extent[0][0]
         self._y0 = extent[0][1]
         self._x1 = extent[1][0]
@@ -115,19 +183,71 @@ class Graticule:
         return self.set_precision(self.get_precision())
 
     def set_step(self, step: Point2D) -> TGraticule:
+        """
+        Sets the major and minor step for this graticule.
+
+        Parameters
+        ----------
+        step : Point2D
+            Step values
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         return self.set_step_major(step).set_step_minor(step)
 
     def set_step_major(self, step: Point2D) -> TGraticule:
+        """
+        Sets the major step for this graticule.
+
+        Parameters
+        ----------
+        step : Point2D
+            Step values
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         self._DX = step[0]
         self._DY = step[1]
         return self
 
     def set_step_minor(self, step: Point2D) -> TGraticule:
+        """
+        Sets the minor step for this graticule.
+
+        Parameters
+        ----------
+        step : Point2D
+            Step values
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         self._dx = step[0]
         self._dy = step[1]
         return self
 
-    def set_precision(self, precision: float):
+    def set_precision(self, precision: float) -> TGraticule:
+        """
+        Sets the precision for this graticule.
+
+        Parameters
+        ----------
+        precision : float
+            Precision value
+
+        Returns
+        -------
+        Graticule
+            Itself
+        """
         self._precision = precision
         self._x = graticule_x(self._y0, self._y1, 90)
         self._y = graticule_y(self._x0, self._x1, precision)
@@ -157,7 +277,28 @@ class Graticule:
         return self._precision
 
 def geo_graticule() -> Graticule:
+    """
+    Constructs a geometry generator for creating graticules: a uniform grid of
+    meridians and parallels for showing projection distortion. The default
+    graticule has meridians and parallels every :math:`10°` between :math:`\\pm
+    80°` latitude; for the polar regions, there are meridians every
+    :math:`90°`.
+
+    Returns
+    -------
+    Graticule
+        Graticule object
+    """
     return Graticule()
 
 def geo_graticule_10() -> GeoJSON:
+    """
+    A convenience method for directly generating the default :math:`10°` global
+    graticule as a GeoJSON MultiLineString geometry object.
+
+    Returns
+    -------
+    GeoJSON
+        GeoJSON object
+    """
     return Graticule()()

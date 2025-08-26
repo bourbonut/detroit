@@ -1,6 +1,7 @@
 from .projection import geo_projection
 from math import asin, cos, sin, sqrt
 from ...types import Point2D
+from ..common import Projection
 
 EPSILON2 = 1e-12
 A1 = 1.340264
@@ -41,5 +42,14 @@ class EqualEarthRaw:
         ]
 
 
-def geo_equal_earth():
+def geo_equal_earth() -> Projection:
+    """
+    The Equal Earth projection, an equal-area projection, by Bojan Šavrič et
+    al., 2018.
+
+    returns
+    -------
+    Projection
+        Projection object
+    """
     return geo_projection(EqualEarthRaw()).scale(177.158)

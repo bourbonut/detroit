@@ -68,5 +68,16 @@ class MercatorProjection(ProjectionMutator):
         else:
             return super().set_clip_extent([[self._mx0, max(t[1] - k, self._my0)], [self._mx1, min(t[1] + k, self._my1)]])
 
-def geo_mercator():
+def geo_mercator() -> Projection:
+    """
+    The spherical Mercator projection. Defines a default
+    :func:`Projection.set_clip_extent
+    <detroit.geo.common.Projection.set_clip_extent>` such that the world is
+    projected to a square, clipped to approximately :math:`\\pm 85°` latitude.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return MercatorProjection(MercatorRaw()).scale(961 / TAU)

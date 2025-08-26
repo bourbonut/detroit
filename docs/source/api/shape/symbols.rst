@@ -29,3 +29,5 @@ Symbols
    .. automethod:: set_symbol_type
    .. automethod:: set_size
    .. automethod:: set_context
+
+.. autofunction:: detroit.point_radial

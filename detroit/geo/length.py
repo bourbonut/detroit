@@ -2,6 +2,7 @@ from math import atan2, cos, radians, sin, sqrt, fsum
 from .stream import geo_stream
 from .common import PolygonStream
 from ..array import argpass
+from ..types import GeoJSON
 
 @argpass
 def noop():
@@ -74,7 +75,23 @@ class LengthStream(PolygonStream):
     def result(self) -> float:
         return fsum(self._length_sum)
 
-def geo_length(obj) -> float:
+def geo_length(obj: GeoJSON) -> float:
+    """
+    Returns the great-arc length of the specified GeoJSON object in radians.
+    For polygons, returns the perimeter of the exterior ring plus that of any
+    interior rings. This is the spherical equivalent of :func:`GeoPath.measure
+    <detroit.geo.path.path.GeoPath.measure>`.
+
+    Parameters
+    ----------
+    obj : GeoJSON
+        GeoJSON object
+
+    Returns
+    -------
+    float
+        Great-arc length
+    """
     stream = LengthStream()
     geo_stream(obj, stream)
     return stream.result()

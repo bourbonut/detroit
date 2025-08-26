@@ -2,7 +2,7 @@ from math import atan, atan2, cos, log, pi, pow, sin, sqrt, tan
 from .conic import conic_projection
 from .mercator import MercatorRaw
 from ...types import Point2D
-from ..common import RawProjection
+from ..common import RawProjection, Projection
 
 EPSILON = 1e-6
 half_pi = pi * 0.5
@@ -43,5 +43,14 @@ def conic_conformal_raw(y0: float, y1: float) -> RawProjection:
     f = cy0 * pow(tany(y0), n) / n
     return MercatorRaw() if n == 0. else ConicConformalRaw(n, f)
 
-def geo_conic_conformal():
+def geo_conic_conformal() -> Projection:
+    """
+    the conic conformal projection. the parallels default to [30°, 30°]
+    resulting in flat top.
+
+    returns
+    -------
+    projection
+        projection object
+    """
     return conic_projection(conic_conformal_raw).scale(109.5).parallels([30, 30])

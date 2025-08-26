@@ -2,6 +2,7 @@ from math import asin, sqrt, inf
 from ...types import Point2D
 from .azimuthal import azimuthal_raw, azimuthal_invert
 from .projection import geo_projection
+from ..common import Projection
 
 class AzimuthalEqualAreaRaw:
 
@@ -15,5 +16,13 @@ class AzimuthalEqualAreaRaw:
             return 2 * asin(z / 2)
         return azimuthal_invert(angle)(x, y)
 
-def geo_azimuthal_equal_area():
+def geo_azimuthal_equal_area() -> Projection:
+    """
+    The azimuthal equal-area projection.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return geo_projection(AzimuthalEqualAreaRaw()).scale(124.75).set_clip_angle(180 - 1e-3)

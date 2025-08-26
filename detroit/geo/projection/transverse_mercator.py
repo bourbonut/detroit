@@ -37,5 +37,16 @@ class TransverseMercatorProjection(MercatorProjection):
         angles = super().get_rotation()
         return [angles[0], angles[1], angles[2] - 90]
 
-def geo_transverse_mercator():
+def geo_transverse_mercator() -> Projection:
+    """
+    The transverse spherical Mercator projection. Defines a default
+    :func:`Projection.set_clip_extent
+    <detroit.geo.common.Projection.set_clip_extent>` such that the world is
+    projected to a square, clipped to approximately :math:`\\pm 85°` latitude.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return TransverseMercatorProjection(TransverseMercatorRaw())

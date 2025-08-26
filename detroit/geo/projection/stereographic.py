@@ -1,7 +1,8 @@
 from math import atan, cos, sin
 from .azimuthal import azimuthal_invert
 from .projection import geo_projection
-from ..common import Point2D
+from ...types import Point2D
+from ..common import Projection
 
 class StereographicRaw:
     def __call__(self, x: float, y: float) -> Point2D:
@@ -16,5 +17,13 @@ class StereographicRaw:
         return azimuthal_invert(angle)(x, y)
 
 
-def geo_stereographic():
+def geo_stereographic() -> Projection:
+    """
+    The stereographic projection.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return geo_projection(StereographicRaw()).scale(250).set_clip_angle(142)

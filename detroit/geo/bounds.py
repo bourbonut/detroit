@@ -5,6 +5,7 @@ from .area import AreaStream
 from math import degrees, radians, fsum, nan, inf, isinf
 from .common import PolygonStream
 from ..types import Point2D
+from ..types import GeoJSON
 
 EPSILON = 1e-6
 
@@ -228,7 +229,28 @@ class BoundsStream(PolygonStream):
         else:
             return [[self._lambda0, self._phi0], [self._lambda1, self._phi1]]
 
-def geo_bounds(obj) -> tuple[Point2D, Point2D]:
+def geo_bounds(obj: GeoJSON) -> tuple[Point2D, Point2D]:
+    """
+    Returns the spherical bounding box for the specified GeoJSON object. The
+    bounding box is represented by a two-dimensional array: :code:`[[left,
+    bottom], [right, top]]`, where :code:`left` is the minimum longitude,
+    :code:`bottom` is the minimum latitude, :code:`right` is maximum longitude,
+    and :code:`top` is the maximum latitude. All coordinates are given in
+    degrees. (Note that in projected planar coordinates, the minimum latitude
+    is typically the maximum y-value, and the maximum latitude is typically the
+    minimum y-value.) This is the spherical equivalent of :func:`GeoPath.bounds
+    <detroit.geo.path.path.GeoPath.bounds>`.
+
+    Parameters
+    ----------
+    obj : GeoJSON
+        GeoJSON object
+
+    Returns
+    -------
+    tuple[Point2D, Point2D]
+        Spherical bounding box
+    """
     stream = BoundsStream()
     geo_stream(obj, stream)
     return stream.result()

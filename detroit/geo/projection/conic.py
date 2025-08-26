@@ -1,7 +1,7 @@
 from math import degrees, pi, radians
 from .projection import ProjectionMutator
 from ...types import Point2D
-from ..common import RawProjection
+from ..common import RawProjection, Projection
 from collections.abc import Callable
 
 class ConicProjection(ProjectionMutator):
@@ -12,7 +12,22 @@ class ConicProjection(ProjectionMutator):
         self._phi0 = phi0
         self._phi1 = phi1
 
-    def parallels(self, point: Point2D | None = None) -> Point2D:
+    def parallels(self, point: Point2D | None = None) -> Projection:
+        """
+        The two standard parallels that define the map layout in conic
+        projections. If :code:`point` is :code:`None`, returns the current
+        parallels parameters.
+
+        Parameters
+        ----------
+        point : Point2D | None
+            2D Point
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         if point is None:
             return [degrees(self._phi0), degrees(self._phi1)]
         else:

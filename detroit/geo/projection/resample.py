@@ -1,6 +1,6 @@
 from ..cartesian import cartesian
 from math import asin, atan2, cos, radians, sqrt, nan
-from ..transform import Transformer
+from ..transform import GeoTransformer
 from ..common import PolygonStream
 from typing import TypeVar
 
@@ -10,11 +10,11 @@ EPSILON = 1e-6
 max_depth = 16
 cos_min_distance = cos(radians(30))
 
-def resample_none(project: ProjectionMutator) -> Transformer:
+def resample_none(project: ProjectionMutator) -> GeoTransformer:
     def point(self, x: float, y: float):
         x = project(x, y)
         self._stream.point(x[0], x[1])
-    return Transformer({"point": point})
+    return GeoTransformer({"point": point})
 
 class Resample(PolygonStream):
     def __init__(self, project: ProjectionMutator, delta2: float, stream: PolygonStream):

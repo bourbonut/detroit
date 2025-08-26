@@ -2,6 +2,7 @@ from math import atan2, cos, radians, sin, pi, fsum
 from .stream import geo_stream
 from .common import PolygonStream
 from ..array import argpass
+from ..types import GeoJSON
 
 QUARTER_PI = pi * 0.25
 TAU = 2 * pi
@@ -90,7 +91,22 @@ class AreaStream(PolygonStream):
     def result(self) -> float:
         return fsum(self._area_sum) * 2
 
-def geo_area(obj) -> float:
+def geo_area(obj: GeoJSON) -> float:
+    """
+    Returns the spherical area of the specified GeoJSON object in steradians.
+    This is the spherical equivalent of :func:`GeoPath.area
+    <detroit.geo.path.path.GeoPath.area>`.
+
+    Parameters
+    ----------
+    obj : GeoJSON
+        GeoJSON object
+
+    Returns
+    -------
+    float
+        Spherical area
+    """
     stream = AreaStream()
     geo_stream(obj, stream)
     return stream.result()

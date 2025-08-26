@@ -2,7 +2,7 @@ from math import atan2, cos, pi, sin, sqrt
 from .conic import conic_projection
 from .equirectangular import EquirectangularRaw
 from ...types import Point2D
-from ..common import RawProjection
+from ..common import RawProjection, Projection
 
 EPSILON = 1e-6
 
@@ -33,5 +33,13 @@ def conic_equidistant_raw(y0: float, y1: float) -> RawProjection:
     g = cy0 / n + y0
     return EquirectangularRaw() if abs(n) < EPSILON else ConicEquidistantRaw(n, g)
 
-def geo_conic_equidistant():
+def geo_conic_equidistant() -> Projection:
+    """
+    The Albers' equidistant conic projection.
+
+    returns
+    -------
+    Projection
+        Projection object
+    """
     return conic_projection(conic_equidistant_raw).scale(131.154).set_center([0, 13.9389])

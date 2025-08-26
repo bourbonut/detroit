@@ -10,9 +10,9 @@ from datetime import datetime
 
 import detroit
 
-last_year = datetime.now().year
+current_year = datetime.now().year
 project = 'detroit'
-copyright = f'2024-{last_year}, bourbonut'
+copyright = f'2024-{current_year}, bourbonut'
 author = 'bourbonut'
 release = detroit.__version__
 

@@ -46,4 +46,25 @@ class Interpolate:
 
 
 def geo_interpolate(a: Point2D, b: Point2D) -> Interpolate:
+    """
+    Returns an interpolator function given two points a and b. Each point must
+    be specified as a two-element array :code:`[longitude, latitude]` in
+    degrees. The returned interpolator function takes a single argument t,
+    where t is a number ranging from 0 to 1; a value of 0 returns the point a,
+    while a value of 1 returns the point b. Intermediate values interpolate
+    from a to b along the great arc that passes through both a and b. If a and
+    b are antipodes, an arbitrary great arc is chosen.
+
+    Parameters
+    ----------
+    a : Point2D
+        2D point
+    b : Point2D
+        2D point
+
+    Returns
+    -------
+    Interpolate
+        Interpolate function
+    """
     return Interpolate(a, b)

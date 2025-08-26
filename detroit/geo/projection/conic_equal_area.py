@@ -2,7 +2,7 @@ from math import asin, atan2, pi, sin, sqrt, cos
 from .conic import conic_projection
 from .cylindrical_equal_area import CylindricalEqualArea
 from ...types import Point2D
-from ..common import RawProjection
+from ..common import RawProjection, Projection
 
 EPSILON = 1e-6
 
@@ -37,5 +37,13 @@ def conic_equal_area_raw(y0: float, y1: float) -> RawProjection:
     c = 1 + sy0 * (2 * n - sy0)
     return ConicEqualAreaRaw(n, c)
 
-def geo_conic_equal_area():
+def geo_conic_equal_area() -> Projection:
+    """
+    The Albers' equal-area conic projection.
+
+    returns
+    -------
+    Projection
+        Projection object
+    """
     return conic_projection(conic_equal_area_raw).scale(155.424).set_center([0, 33.6442])

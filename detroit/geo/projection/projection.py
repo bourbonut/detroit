@@ -1,7 +1,7 @@
 from ..clip import geo_clip_antimeridian, geo_clip_circle, geo_clip_rectangle
 from ..compose import Compose
 from ..rotation import RotateRadians
-from ..transform import Transformer
+from ..transform import GeoTransformer
 from ..common import RawProjection, SpatialTransform, PolygonStream, Projection
 from .fit import fit_extent, fit_size, fit_height, fit_width
 from .resample import resample
@@ -16,13 +16,13 @@ TProjectionMutator = TypeVar("ProjectionMutator", bound="ProjectionMutator")
 def point(self, x: float, y: float):
     self._stream.point(radians(x), radians(y))
 
-transform_radians = Transformer({"point": point})
+transform_radians = GeoTransformer({"point": point})
 
-def transform_rotate(rotate: RotateRadians) -> Transformer:
+def transform_rotate(rotate: RotateRadians) -> GeoTransformer:
     def point(self, x: float, y: float):
         r = rotate(x, y)
         return self._stream.point(r[0], r[1])
-    return Transformer({"point": point})
+    return GeoTransformer({"point": point})
 
 
 class ScaleTranslate:

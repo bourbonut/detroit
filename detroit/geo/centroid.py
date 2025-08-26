@@ -1,7 +1,7 @@
 from math import asin, atan2, degrees, hypot, radians, sin, sqrt, cos, fsum, nan
 from .stream import geo_stream
 from .common import PolygonStream
-from ..types import Point2D
+from ..types import Point2D, GeoJSON
 
 EPSILON = 1e-6
 EPSILON2 = 1e-12
@@ -169,7 +169,22 @@ class CentroidStream(PolygonStream):
                 return [nan, nan]
         return [degrees(atan2(y, x)), degrees(asin(z / m))]
 
-def geo_centroid(obj) -> Point2D:
+def geo_centroid(obj: GeoJSON) -> Point2D:
+    """
+    Returns the spherical centroid of the specified GeoJSON object. This is the
+    spherical equivalent of :func:`GeoPath.centroid
+    <detroit.geo.path.path.GeoPath.centroid>`.
+
+    Parameters
+    ----------
+    obj : GeoJSON
+        GeoJSON object
+
+    Returns
+    -------
+    Point2D
+        Spherical centroid
+    """
     stream = CentroidStream()
     geo_stream(obj, stream)
     return stream.result()

@@ -2,13 +2,9 @@ from .albers import geo_albers
 from .conic_equal_area import geo_conic_equal_area
 from .fit import fit_extent, fit_size, fit_width, fit_height
 from ...types import Point2D, Vec2D, GeoJSON
-from ..common import PolygonStream
-from typing import TypeVar
+from ..common import PolygonStream, Projection
 
 EPSILON = 1e-6
-
-TAlbersUsaProjection = TypeVar("AlbersUsaProjection", bound="AlbersUsaProjection")
-
 
 class Multiplex:
     def __init__(self, streams: list[PolygonStream]):
@@ -50,7 +46,7 @@ class PointStream:
         return f"AlbertUsaPointStream({self._point})"
 
 
-class AlbersUsaProjection:
+class AlbersUsaProjection(Projection):
     def __init__(self):
         self._cache = None
         self._cache_stream = None
@@ -73,6 +69,24 @@ class AlbersUsaProjection:
         self._point_stream = PointStream()
 
     def __call__(self, coordinates: Point2D) -> Point2D:
+        """
+        Returns a new array :code:`[x, y]` (typically in pixels) representing
+        the projected point of the given point. The point must be specified as
+        a two-element array :code:`[longitude, latitude]` in degrees. May
+        return :code:`None` if the specified point has no defined projected position,
+        such as when the point is outside the clipping bounds of the
+        projection.
+
+        Parameters
+        ----------
+        point : Point2D
+            Point :code:`[longitude, latitude]`
+
+        Returns
+        -------
+        Point2D
+            New projected point :code:`[x, y]` 
+        """
         x = coordinates[0]
         y = coordinates[1]
         self._point_stream._point = None
@@ -87,6 +101,26 @@ class AlbersUsaProjection:
             return point
 
     def invert(self, coordinates: Point2D) -> Point2D:
+        """
+        Returns a new array :code:`[longitude, latitude]` in degrees
+        representing the unprojected point of the given projected point. The
+        point must be specified as a two-element array :code:`[x, y]`
+        (typically in pixels). May return null if the specified point has no
+        defined projected position, such as when the point is outside the
+        clipping bounds of the projection.
+
+        This method is only defined on invertible projections.
+
+        Parameters
+        ----------
+        point : Point2D
+            2D point where coordinates are in pixels
+
+        Returns
+        -------
+        Point2D
+            2D point where coordinates are in degrees
+        """
         k = self._lower48.get_scale()
         t = self._lower48.get_translation()
         x = (coordinates[0] - t[0]) / k
@@ -99,6 +133,19 @@ class AlbersUsaProjection:
             return self._lower48.invert(coordinates)
 
     def stream(self, stream: PointStream):
+        """
+        Returns a projection stream for the specified output stream.
+
+        Parameters
+        ----------
+        stream : PolygonStream
+            Stream object
+
+        Returns
+        -------
+        PolygonStream
+            Modified stream object
+        """
         if self._cache is not None and self._cache_stream == stream:
             return self._cache
         else:
@@ -112,19 +159,66 @@ class AlbersUsaProjection:
             )
             return self._cache
 
-    def set_precision(self, precision: float) -> TAlbersUsaProjection:
+    def set_precision(self, precision: float) -> Projection:
+        """
+        If precision is specified, sets the threshold for the projection's
+        adaptive resampling to the specified value in pixels and returns the
+        projection. This value corresponds to the Douglas–Peucker distance.
+
+        Parameters
+        ----------
+        precision : float
+            Precision value
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         self._lower48.set_precision(precision)
         self._alaska.set_precision(precision)
         self._hawaii.set_precision(precision)
         return self.reset()
 
-    def scale(self, k: float) -> TAlbersUsaProjection:
+    def scale(self, k: float) -> Projection:
+        """
+        If scale is specified, sets the projection's scale factor to the
+        specified value and returns the projection. The scale factor
+        corresponds linearly to the distance between projected points; however,
+        absolute scale factors are not equivalent across projections.
+
+        Parameters
+        ----------
+        k : float
+            Scale factor
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         self._lower48.scale(k)
         self._alaska.scale(k * 0.35)
         self._hawaii.scale(k)
         return self.translate(self._lower48.get_translation())
 
-    def translate(self, translation: Vec2D) -> TAlbersUsaProjection:
+    def translate(self, translation: Vec2D) -> Projection:
+        """
+        If translate is specified, sets the projection's translation offset to
+        the specified two-element array :code:`[tx, ty]` and returns the
+        projection. The translation offset determines the pixel coordinates of
+        the projection's center.
+
+        Parameters
+        ----------
+        translation : Vec2D
+            Translation 2D vector
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         k = self._lower48.get_scale()
         x = translation[0]
         y = translation[1]
@@ -163,16 +257,89 @@ class AlbersUsaProjection:
 
     def fit_extent(
         self, extent: tuple[Point2D, Point2D], obj: GeoJSON
-    ) -> TAlbersUsaProjection:
+    ) -> Projection:
+        """
+        Sets the projection's scale and translate to fit the specified GeoJSON
+        object in the center of the given extent. The extent is specified as an
+        array :math:`[[x_0, y_0], [x_1, y_1]]`, where :math:`x_0` is the left
+        side of the bounding box, :math:`y_0` is the top, :math:`x_1`₁ is the
+        right and :math:`y_1` is the bottom. Returns the projection.
+
+        Any clip extent is ignored when determining the new scale and
+        translate. The precision used to compute the bounding box of the given
+        object is computed at an effective scale of 150.
+
+        Parameters
+        ----------
+        extent : tuple[Point2D, Point2D]
+            Extent values
+        obj : GeoJSON
+            GeoJSON object
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         return fit_extent(self, extent, obj)
 
-    def fit_size(self, size: Point2D, obj: GeoJSON) -> TAlbersUsaProjection:
+    def fit_size(self, size: Point2D, obj: GeoJSON) -> Projection:
+        """
+        A convenience method for projection.fit_extent where the top-left
+        corner of the extent is [0, 0].
+
+        Parameters
+        ----------
+        size : Point2D
+            Size values
+        obj : GeoJSON
+            GeoJSON object
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         return fit_size(self, size, obj)
 
-    def fit_width(self, width: float, obj: GeoJSON) -> TAlbersUsaProjection:
+    def fit_width(self, width: float, obj: GeoJSON) -> Projection:
+        """
+        A convenience method for projection.fit_size where the height is
+        automatically chosen from the aspect ratio of object and the given
+        constraint on width.
+
+        Parameters
+        ----------
+        width : float
+            Width value
+        obj : GeoJSON
+            GeoJSON object
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         return fit_width(self, width, obj)
 
-    def fit_height(self, height: float, obj: GeoJSON) -> TAlbersUsaProjection:
+    def fit_height(self, height: float, obj: GeoJSON) -> Projection:
+        """
+        A convenience method for projection.fit_size where the width is
+        automatically chosen from the aspect ratio of object and the given
+        constraint on height.
+
+        Parameters
+        ----------
+        height : float
+            Height value
+        obj : GeoJSON
+            GeoJSON object
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
         return fit_height(self, height, obj)
 
     def reset(self):
@@ -190,5 +357,25 @@ class AlbersUsaProjection:
         return self._lower48.get_translation()
 
 
-def geo_albers_usa():
+def geo_albers_usa() -> Projection:
+    """
+    This is a U.S.-centric composite projection of three geoConicEqualArea
+    projections: :func:`d3.geo_albers <geo_albers>` is used for the lower
+    forty-eight states, and separate conic equal-area projections are used for
+    Alaska and Hawaii. The scale for Alaska is diminished: it is projected at
+    :math:`0.35 \\times` its true relative area.
+
+    The constituent projections have fixed clip, center and rotation, and thus
+    this projection does not support :func:`Projection.set_center
+    <detroit.geo.common.Projection.set_center>`, :func:`Projection.rotate
+    <detroit.geo.common.Projection.rotate>`, :func:`Projection.set_clip_angle
+    <detroit.geo.common.Projection.set_clip_angle>` or
+    :func:`Projection.set_clip_extent
+    <detroit.geo.common.Projection.set_clip_extent>`.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return AlbersUsaProjection().scale(1070)

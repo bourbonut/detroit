@@ -113,7 +113,7 @@ class GeoCircle:
 
         Returns
         -------
-        TGeoCircle
+        GeoCircle
             Itself
         """
         if callable(center):
@@ -135,7 +135,7 @@ class GeoCircle:
 
         Returns
         -------
-        TGeoCircle
+        GeoCircle
             Itself
         """
         if callable(radius):
@@ -157,7 +157,7 @@ class GeoCircle:
 
         Returns
         -------
-        TGeoCircle
+        GeoCircle
             Itself
         """
         if callable(precision):

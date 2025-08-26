@@ -1,5 +1,6 @@
 from .projection import geo_projection
 from ...types import Point2D
+from ..common import Projection
 
 EPSILON = 1e-6
 
@@ -37,5 +38,15 @@ class NaturalEarth1Raw:
             phi
         ]
 
-def geo_natural_earth_1():
+def geo_natural_earth_1() -> Projection:
+    """
+    The Natural Earth projection is a pseudocylindrical projection designed by
+    Tom Patterson. It is neither conformal nor equal-area, but appealing to the
+    eye for small-scale maps of the whole world.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return geo_projection(NaturalEarth1Raw()).scale(175.295)

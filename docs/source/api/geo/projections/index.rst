@@ -22,6 +22,7 @@ Projection classes
    .. automethod:: stream
    .. automethod:: set_preclip
    .. automethod:: set_postclip
+   .. automethod:: set_clip_angle
    .. automethod:: set_clip_extent
    .. automethod:: scale
    .. automethod:: translate
@@ -52,7 +53,7 @@ Transform function
 
    .. automethod:: stream
 
-.. autoclass:: detroit.geo.transform.Transformer
+.. autoclass:: detroit.geo.transform.GeoTransformer
 
    .. automethod:: __call__
    .. automethod:: __str__
@@ -65,3 +66,11 @@ Transform function
    .. automethod:: line_end
    .. automethod:: polygon_start
    .. automethod:: polygon_end
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   azimuthal
+   conic
+   cylindrical

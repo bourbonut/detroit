@@ -1,16 +1,16 @@
 from ..clip import geo_clip_rectangle
-from ..transform import Transformer
+from ..transform import GeoTransformer
 from .fit import fit_extent, fit_size, fit_width, fit_height
 from math import cos, degrees, radians, sin
 from ..common import Projection, PolygonStream
 from collections.abc import Callable
 from ...types import Point2D, Vec2D, GeoJSON
 
-def transform(projection: Projection) -> Transformer:
+def transform(projection: Projection) -> GeoTransformer:
     def point(self, x: float, y: float):
         x = projection([x, y])
         self._stream.point(x[0], x[1])
-    return Transformer({"point": point})
+    return GeoTransformer({"point": point})
 
 def identity(x: PolygonStream) -> PolygonStream:
     return x

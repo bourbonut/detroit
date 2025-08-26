@@ -61,7 +61,7 @@ class TransformStream(PolygonStream):
     def __str__(self):
         return f"TransformStream({self._stream})"
 
-class Transformer:
+class GeoTransformer:
     """
     Transform a stream object given :code:`methods`
 
@@ -94,7 +94,7 @@ class Transformer:
         return s
 
     def __str__(self):
-        return f"Transformer({self._methods})"
+        return f"GeoTransformer({self._methods})"
 
 class GeoTransform:
     """
@@ -110,17 +110,17 @@ class GeoTransform:
     def __init__(self, methods: dict[str, Callable[..., ...]]):
         self._methods = methods
 
-    def stream(self) -> Transformer:
+    def stream(self) -> GeoTransformer:
         """
         Passes :code:`methods` to a new class which transforms the methods of a
         stream object given the methods and returns it.
 
         Returns
         -------
-        Transformer
+        GeoTransformer
             Callable object which modifies the behavior of a stream object
         """
-        return Transformer(self._methods)
+        return GeoTransformer(self._methods)
 
 def geo_transform(methods: dict[str, Callable[..., ...]]) -> GeoTransform:
     """

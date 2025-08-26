@@ -85,6 +85,12 @@ class LineStream(ABC):
         """
         ...
 
+    def sphere(self):
+        """
+        Indicates the sphere (the globe; the unit sphere centered at (0,0,0)).
+        """
+        ...
+
 class PolygonStream(LineStream):
     
     @abstractmethod
@@ -313,7 +319,27 @@ class Projection(ABC):
         """
         ...
 
-    @abstractmethod
+    def set_clip_angle(self, clip_angle: float | None = None) -> TProjection:
+        """
+        If angle is specified, sets the projection's clipping circle radius to
+        the specified angle in degrees and returns the projection. If angle is
+        :code:`None`, switches to antimeridian cutting rather than small-circle
+        clipping. If angle is not specified, returns the current clip angle
+        which defaults to :code:`None`. Small-circle clipping is independent of
+        viewport clipping via projection.clipExtent.
+
+        Parameters
+        ----------
+        clip_angle : float | None
+            Clip angle
+
+        Returns
+        -------
+        Projection
+            Itself
+        """
+        ...
+
     def set_clip_extent(self, clip_extent: tuple[Point2D, Point2D] | None = None) -> TProjection:
         """
         If extent is specified, sets the projection's viewport clip extent to
@@ -397,7 +423,6 @@ class Projection(ABC):
         """
         ...
 
-    @abstractmethod
     def rotate(self, angles: tuple[float, float] | tuple[float, float, float]) -> TProjection:
         """
         If angles is specified, sets the projection's three-axis spherical
@@ -418,7 +443,6 @@ class Projection(ABC):
         """
         ...
 
-    @abstractmethod
     def set_angle(self, angle: float) -> TProjection:
         """
         If angle is specified, sets the projection's post-projection planar
@@ -437,7 +461,6 @@ class Projection(ABC):
         """
         ...
 
-    @abstractmethod
     def set_reflect_x(self, reflect_x: bool) -> TProjection:
         """
         If reflect is specified, sets whether or not the x-dimension is
@@ -457,7 +480,6 @@ class Projection(ABC):
         """
         ...
 
-    @abstractmethod
     def set_reflect_y(self, reflect_y: bool) -> TProjection:
         """
         If reflect is specified, sets whether or not the y-dimension is

@@ -2,6 +2,7 @@ from math import atan, cos, sin
 from .azimuthal import azimuthal_invert
 from .projection import geo_projection
 from ...types import Point2D
+from ..common import Projection
 
 class GnomonicRaw:
 
@@ -13,5 +14,13 @@ class GnomonicRaw:
     def invert(self, x: float, y: float) -> Point2D:
         return azimuthal_invert(atan)(x, y)
 
-def geo_gnomonic():
+def geo_gnomonic() -> Projection:
+    """
+    The gnomonic projection.
+
+    Returns
+    -------
+    Projection
+        Projection object
+    """
     return geo_projection(GnomonicRaw()).scale(144.049).set_clip_angle(60)

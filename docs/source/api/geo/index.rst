@@ -6,7 +6,7 @@ Geo
    :caption: Contents:
 
    paths
-   projections
+   projections/index
    streams
    spherical_shapes
    spherical_math
