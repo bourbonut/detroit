@@ -1,4 +1,4 @@
-from math import atan, exp, log, pi, tan
+from math import atan, exp, log, pi, tan, inf
 from ..rotation import geo_rotation
 from ..common import RawProjection, Projection
 from .projection import ProjectionMutator
@@ -10,7 +10,8 @@ half_pi = pi / 2
 class MercatorRaw:
 
     def __call__(self, lambda_: float, phi: float) -> Point2D:
-        return [lambda_, log(tan((half_pi + phi) / 2))]
+        t = tan((half_pi + phi) / 2)
+        return [lambda_, log(t) if t > 0. else -inf]
 
     def invert(self, x: float, y: float) -> Point2D:
         return [x, 2 * atan(exp(y)) - half_pi]
