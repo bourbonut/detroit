@@ -1,5 +1,4 @@
 from math import asin, atan2, degrees, hypot, radians, sin, sqrt, cos, fsum, nan
-from ..array import argpass
 from .stream import geo_stream
 from .common import PolygonStream
 from ..types import Point2D
@@ -7,13 +6,9 @@ from ..types import Point2D
 EPSILON = 1e-6
 EPSILON2 = 1e-12
 
-@argpass
-def noop():
-    return
-
 class CentroidStream(PolygonStream):
 
-    def __init__(self, X2: list[float], Y2: list[float], Z2: list[float]):
+    def __init__(self):
         self._W0 = 0
         self._W1 = 0
         self._X0 = 0
@@ -34,7 +29,7 @@ class CentroidStream(PolygonStream):
         self._lambda00 = None
         self._phi00 = None
 
-        self._point = noop
+        self._point = self._centroid_point
         self._line_start = self._centroid_line_start
         self._line_end = self._centroid_line_end
 
@@ -55,6 +50,8 @@ class CentroidStream(PolygonStream):
         self._line_start = self._centroid_line_start
         self._line_end = self._centroid_line_end
 
+    def sphere(self):
+        return
 
     def _centroid_point(self, lambda_: float, phi: float):
         lambda_ = radians(lambda_)
@@ -64,9 +61,9 @@ class CentroidStream(PolygonStream):
 
     def _centroid_point_cartesian(self, x: float, y: float, z: float):
         self._W0 += 1
-        self._X0 = (x - self._X0) / self._W0
-        self._Y0 = (y - self._Y0) / self._W0
-        self._Z0 = (z - self._Z0) / self._W0
+        self._X0 += (x - self._X0) / self._W0
+        self._Y0 += (y - self._Y0) / self._W0
+        self._Z0 += (z - self._Z0) / self._W0
 
     def _centroid_line_start(self):
         self._point = self._centroid_line_point_first
@@ -79,6 +76,7 @@ class CentroidStream(PolygonStream):
         self._y0 = cos_phi * sin(lambda_)
         self._z0 = sin(phi)
         self._point = self._centroid_line_point
+        self._centroid_point_cartesian(self._x0, self._y0, self._z0)
 
     def _centroid_line_point(self, lambda_: float, phi: float):
         lambda_ = radians(lambda_)
@@ -96,13 +94,13 @@ class CentroidStream(PolygonStream):
             self._x0 * x + self._y0 * y + self._z0 * z,
         )
 
+        self._W1 += w
+        self._X1 += w * (self._x0 + x)
+        self._Y1 += w * (self._y0 + y)
+        self._Z1 += w * (self._z0 + z)
         self._x0 = x
         self._y0 = y
         self._z0 = z
-        self._W1 += w
-        self._X1 += 2 * w * self._x0
-        self._Y1 += 2 * w * self._y0
-        self._Z1 += 2 * w * self._z0
         self._centroid_point_cartesian(self._x0, self._y0, self._z0)
 
     def _centroid_line_end(self):
@@ -145,12 +143,12 @@ class CentroidStream(PolygonStream):
         self._Y2.append(v * cy)
         self._Z2.append(v * cz)
         self._W1 += w
+        self._X1 += w * (self._x0 + x)
+        self._Y1 += w * (self._y0 + y)
+        self._Z1 += w * (self._z0 + z)
         self._x0 = x
         self._y0 = y
         self._z0 = z
-        self._X1 = 2 * w * self._x0
-        self._Y1 = 2 * w * self._y0
-        self._Z1 = 2 * w * self._z0
         self._centroid_point_cartesian(self._x0, self._y0, self._z0)
 
     def result(self) -> Point2D:

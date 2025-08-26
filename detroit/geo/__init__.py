@@ -37,6 +37,7 @@ from .graticule import (
 from .area import geo_area
 from .length import geo_length
 from .distance import geo_distance
+from .centroid import geo_centroid
 
 __all__ = [
     "geo_albers",
@@ -72,4 +73,5 @@ __all__ = [
     "geo_area",
     "geo_length",
     "geo_distance",
+    "geo_centroid",
 ]

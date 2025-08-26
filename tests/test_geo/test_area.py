@@ -7,7 +7,7 @@ SQRT2 = sqrt(2)
 def frange(start, stop, step):
     return [start + i * step for i in range(max(0, ceil((stop - start) / step)))]
 
-def in_delta(actual, expected, delta=1e6):
+def in_delta(actual, expected, delta=1e-6):
     if isinstance(expected, list):
         n = len(expected)
         if len(actual) != n:

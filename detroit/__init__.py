@@ -83,6 +83,7 @@ from .geo import (
     geo_area,
     geo_length,
     geo_distance,
+    geo_centroid,
 )
 from .interpolate import (
     interpolate,
@@ -630,4 +631,5 @@ __all__ = [
     "geo_area",
     "geo_length",
     "geo_distance",
+    "geo_centroid",
 ]

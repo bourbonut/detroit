@@ -2,7 +2,7 @@ import detroit as d3
 import pytest
 from math import pi, isnan
 
-def in_delta(actual, expected, delta=1e6):
+def in_delta(actual, expected, delta=1e-6):
     if isinstance(expected, list):
         n = len(expected)
         if len(actual) != n:
