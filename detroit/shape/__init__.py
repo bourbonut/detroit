@@ -60,6 +60,7 @@ from .symbols import (
     symbol_triangle2,
     symbol_wye,
 )
+from .point_radial import point_radial
 
 __all__ = [
     "Arc",
@@ -108,6 +109,7 @@ __all__ = [
     "order_inside_out",
     "order_none",
     "order_reverse",
+    "point_radial",
     "symbol_asterisk",
     "symbol_circle",
     "symbol_cross",
