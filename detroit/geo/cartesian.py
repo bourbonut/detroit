@@ -1,4 +1,4 @@
-from math import asin, atan2, cos, sin, sqrt
+from math import asin, atan2, cos, sin, sqrt, nan
 from ..types import Point3D, Vec3D
 
 def spherical(cartesian: Point3D) -> Point3D:
@@ -26,6 +26,8 @@ def cartesian_scale(vector: Vec3D, k: float) -> Vec3D:
 
 def cartesian_normalize_in_place(d: Vec3D):
     length = sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2])
+    if length == 0.:
+        return [nan, nan, nan]
     d[0] /= length
     d[1] /= length
     d[2] /= length

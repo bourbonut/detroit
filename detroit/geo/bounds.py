@@ -15,11 +15,11 @@ def angle(lambda0: float, lambda1: float) -> float:
 def range_compare(a: Point2D, b: Point2D) -> float:
     return a[0] - b[0]
 
-def range_contains(range_: Point2D, x: float) -> bool:
-    if range_[0] < range_[1]:
-        return range_[0] <= x <= range_[1]
+def range_contains(rang: Point2D, x: float) -> bool:
+    if rang[0] <= rang[1]:
+        return rang[0] <= x <= rang[1]
     else:
-        return x < range_[0] or range_[1] < x
+        return x < rang[0] or rang[1] < x
 
 class BoundsStream(PolygonStream):
 
@@ -96,7 +96,7 @@ class BoundsStream(PolygonStream):
         if phi > self._phi1:
             self._phi1 = phi
 
-    def line_point(self, lambda_: float, phi: float):
+    def _line_point(self, lambda_: float, phi: float):
         p = cartesian([radians(lambda_), radians(phi)])
         if self._p0:
             normal = cartesian_cross(self._p0, p)
@@ -171,11 +171,12 @@ class BoundsStream(PolygonStream):
         if self._p0:
             delta = lambda_ - self._lambda2
             if abs(delta) > 180:
-                delta = delta + 360 if delta > 0 else -360
+                delta = delta + (360 if delta > 0 else -360)
             self._delta_sum.append(delta)
         else:
             self._lambda00 = lambda_
             self._phi00 = phi
+        self._area_stream.point(lambda_, phi)
         self._line_point(lambda_, phi)
 
     def _bounds_ring_start(self):
@@ -212,11 +213,13 @@ class BoundsStream(PolygonStream):
             n = len(merged)
             a = merged[n - 1]
             for i in range(n):
+                b = merged[i]
                 delta = angle(a[1], b[0])
                 if delta > delta_max:
                     delta_max = delta
                     self._lambda0 = b[0]
                     self._lambda1 = a[1]
+                a = b
 
         self._ranges = []
         self._range = []
