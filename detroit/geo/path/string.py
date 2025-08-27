@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from math import isnan, nan
+from io import StringIO
 
 from ..common import PolygonStream
 
@@ -35,7 +36,7 @@ class PathString(PolygonStream):
         self._cache_circle = None
 
         self._radius = 4.5
-        self._string = []
+        self._string = StringIO(newline="")
         self._line = nan
         self._point = nan
 
@@ -54,7 +55,6 @@ class PathString(PolygonStream):
 
     def line_end(self):
         if self._line == 0:
-            self._string += "Z"
             self.append("Z")
         self._point = nan
 
@@ -76,20 +76,20 @@ class PathString(PolygonStream):
                 r = self._round(self._radius)
                 r2 = self._round(2 * self._radius)
                 s = self._string
-                self._string = []
+                self._string = StringIO(newline="")
                 self.append(f"m0,{r}a{r},{r} 0 1,1 0,{-r2}a{r},{r} 0 1,1 0,{r2}z")
                 self._cache_radius = r
                 self._cache_circle = self._string
                 self._string = s
-            self._string += self._cache_circle
+            self._string.write(self._cache_circle.getvalue())
 
     def result(self) -> str | None:
-        result = "".join(self._string)
-        self._string = []
+        result = self._string.getvalue()
+        self._string = StringIO(newline="")
         return result if len(result) else None
 
     def append(self, string: str):
-        self._string.append(string)
+        self._string.write(string)
 
     def __str__(self) -> str:
         return "PathString()"
