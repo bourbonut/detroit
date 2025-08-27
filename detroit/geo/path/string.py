@@ -55,6 +55,7 @@ class PathString(PolygonStream):
     def line_end(self):
         if self._line == 0:
             self._string += "Z"
+            self.append("Z")
         self._point = nan
 
     def point(self, x: float, y: float):
