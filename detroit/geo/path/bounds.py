@@ -20,7 +20,6 @@ class BoundsStream(PolygonStream):
         self._y0 = inf
         self._x1 = -inf
         self._y1 = -inf
-        self._iteration = 0
 
     def line_start(self):
         return self._line_start()
@@ -44,7 +43,6 @@ class BoundsStream(PolygonStream):
         return bounds
 
     def _bounds_point(self, x: float, y: float):
-        self._iteration += 1
         if x < self._x0:
             self._x0 = x
         if x > self._x1:
