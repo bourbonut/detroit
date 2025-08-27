@@ -90,7 +90,7 @@ class Resample(PolygonStream):
     def line_end(self):
         self._line_end()
 
-    def point(self, lambda_, phi):
+    def point(self, lambda_: float, phi: float):
         return self._point(lambda_, phi)
 
     def polygon_start(self):
@@ -101,7 +101,7 @@ class Resample(PolygonStream):
         self._stream.polygon_end()
         self._line_start = self._line_start_default
 
-    def _point_default(self, x, y):
+    def _point_default(self, x: float, y: float):
         x = self._project(x, y)
         self._stream.point(x[0], x[1])
 

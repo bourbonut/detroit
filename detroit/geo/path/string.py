@@ -1,23 +1,41 @@
-import re
 from collections.abc import Callable
-from math import floor, isnan, nan
+from math import isnan, nan
 
-from ...path.string_round import string_round
 from ..common import PolygonStream
 
+def asint(x: float) -> int | float:
+    return int(x) if x.is_integer() else x
+
+def round_zero(x: float) -> int:
+    return int(round(x))
+
+def round_digits(digits: int) -> Callable[[float], float]:
+    def local_round(x: float) -> float:
+        return asint(round(x, digits))
+    return local_round
+
+def identity(x: float) -> float:
+    return asint(x)
 
 class PathString(PolygonStream):
-    def __init__(self, digits=None):
-        self._cache_digits = None
+    def __init__(self, digits: int | None = None):
+        digits = 15 if digits is None else digits
+        if isnan(digits) or digits < 0:
+            raise ValueError(f"Invalid digits: {digits}")
+
+        self._digits = digits
+        self._round = identity
+        if digits == 0:
+            self._round = round_zero
+        elif self._digits < 15:
+            self._round = round_digits(digits)
+
         self._cache_append = None
         self._cache_radius = None
         self._cache_circle = None
 
-        self._append = (
-            self._append_default if digits is None else self._append_round(digits)
-        )
         self._radius = 4.5
-        self._string = ""
+        self._string = []
         self._line = nan
         self._point = nan
 
@@ -41,51 +59,36 @@ class PathString(PolygonStream):
 
     def point(self, x: float, y: float):
         if self._point == 0:
-            self._append(f"M{x},{y}")
+            x = self._round(x)
+            y = self._round(y)
+            self.append(f"M{x},{y}")
             self._point = 1
         elif self._point == 1:
-            self._append(f"L{x},{y}")
+            x = self._round(x)
+            y = self._round(y)
+            self.append(f"L{x},{y}")
         else:
-            self._append(f"M{x},{y}")
-            if self._radius != self._cache_radius or self._append != self._cache_append:
-                r = self._radius
+            x = self._round(x)
+            y = self._round(y)
+            self.append(f"M{x},{y}")
+            if self._radius != self._cache_radius:
+                r = self._round(self._radius)
+                r2 = self._round(2 * self._radius)
                 s = self._string
-                self._string = ""
-                self._append(
-                    f"m0,{r}a{r},{r} 0 1,1 0,{-2 * r}a{r},{r} 0 1,1 0,{2 * r}z"
-                )
+                self._string = []
+                self.append(f"m0,{r}a{r},{r} 0 1,1 0,{-r2}a{r},{r} 0 1,1 0,{r2}z")
                 self._cache_radius = r
-                self._cache_append = self._append
                 self._cache_circle = self._string
                 self._string = s
             self._string += self._cache_circle
 
     def result(self) -> str | None:
-        result = self._string
-        self._string = ""
+        result = "".join(self._string)
+        self._string = []
         return result if len(result) else None
 
-    def _append_default(self, string: str):
-        self._string += string
-
-    def _append_round(self, digits: float) -> Callable[[str], None]:
-        d = floor(digits)
-        if isnan(d) or d < 0:
-            raise ValueError(f"Invalid digits: {digits}")
-        if d > 15:
-            return self._append_default
-        if d != self._cache_digits:
-            self._cache_digits = d
-
-            def append_round(string: str):
-                floats = re.findall(r"\d+\.\d+", string)
-                rounds = [string_round(f, d) for f in floats]
-                for old, new in zip(floats, rounds):
-                    string = string.replace(old, new)
-                self._string += string
-
-            self._cache_append = append_round
-        return self._cache_append
+    def append(self, string: str):
+        self._string.append(string)
 
     def __str__(self) -> str:
         return "PathString()"
