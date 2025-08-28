@@ -161,7 +161,7 @@ cython_debug/
 
 # Data files
 *.csv
-*.json
+# *.json
 *.pkl
 
 # Fuzzy finder
