@@ -7,6 +7,7 @@ Complex charts
 
    impulse
    pca
+   scatter_matrix
    kernel_comparison
    hertz_russel
    gantt
