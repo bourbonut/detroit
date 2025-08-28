@@ -220,7 +220,7 @@ from .scale_chromatic import (
     interpolate_ylorbr,
     interpolate_ylorrd,
 )
-from .selection import create
+from .selection import create, select
 from .shape import (
     SYMBOLS_FILL,
     SYMBOLS_STROKE,
@@ -583,6 +583,7 @@ __all__ = [
     "scale_symlog",
     "scale_threshold",
     "scale_time",
+    "select",
     "stack",
     "stack_offset_diverging",
     "stack_offset_expand",

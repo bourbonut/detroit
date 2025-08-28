@@ -668,7 +668,7 @@ class Selection(Generic[T]):
         parents = list(groups)
         return Selection(subgroups, parents, data=self._data)
 
-    def each(self, callback: EtreeFunction[T, None]):
+    def each(self, callback: EtreeFunction[T, None]) -> TSelection:
         """
         Invokes the specified function for each selected element, in order,
         being passed the current DOM element (nodes[i]), the current datum (d),
@@ -683,6 +683,11 @@ class Selection(Generic[T]):
             * **data** (:code:`Any`) - current data associated to the node
             * **index** (:code:`int`) - the index of the node in its group
             * **group** (:code:`list[etree.Element]`) - the node's group with other nodes.
+
+        Returns
+        -------
+        Selection
+            Itself
         """
         for group in self._groups:
             for i, node in enumerate(group):
@@ -690,6 +695,7 @@ class Selection(Generic[T]):
                     if isinstance(node, EnterNode):
                         node = node._parent
                     callback(node, self._data.get(node), i, group)
+        return self
 
     def attr(
         self, name: str, value: Accessor[T, str | Number] | str | None = None
