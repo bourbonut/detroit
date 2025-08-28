@@ -34,7 +34,7 @@ def clip_rejoin(
     for segment in segments:
         n = len(segment) - 1
         if n <= 0:
-            return
+            continue
         p0 = segment[0]
         p1 = segment[n]
 
@@ -45,7 +45,7 @@ def clip_rejoin(
                     p0 = segment[i]
                     stream.point(p0[0], p0[1])
                 stream.line_end()
-                return
+                continue
             p1[0] += 2 * EPSILON
 
         x = Intersection(p0, segment, None, True)
