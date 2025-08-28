@@ -2,6 +2,7 @@ Selection
 =========
 
 .. autofunction:: detroit.create
+.. autofunction:: detroit.select
 
 .. autoclass:: detroit.selection.selection.Selection
 
