@@ -1,6 +1,17 @@
 Spherical shapes
 ----------------
 
+Graticule
+---------
+
+.. image:: ../../figures/light-graticule.svg
+   :align: center
+   :class: only-light
+
+.. image:: ../../figures/dark-graticule.svg
+   :align: center
+   :class: only-dark
+
 .. autofunction:: detroit.geo_graticule
 .. autofunction:: detroit.geo_graticule_10
 
@@ -16,6 +27,9 @@ Spherical shapes
    .. automethod:: set_step_major
    .. automethod:: set_step_minor
    .. automethod:: set_precision
+
+Circle
+------
 
 .. autofunction:: detroit.geo_circle
 
