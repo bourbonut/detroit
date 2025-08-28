@@ -1,0 +1,5 @@
+polars
+requests
+pytopojson
+scikit-learn
+cairosvg
