@@ -1,22 +1,28 @@
 from collections.abc import Callable
-from math import isnan, nan
 from io import StringIO
+from math import isnan, nan
 
 from ..common import PolygonStream
+
 
 def asint(x: float) -> int | float:
     return int(x) if x.is_integer() else x
 
+
 def round_zero(x: float) -> int:
     return int(round(x))
+
 
 def round_digits(digits: int) -> Callable[[float], float]:
     def local_round(x: float) -> float:
         return asint(round(x, digits))
+
     return local_round
+
 
 def identity(x: float) -> float:
     return asint(x)
+
 
 class PathString(PolygonStream):
     def __init__(self, digits: int | None = None):

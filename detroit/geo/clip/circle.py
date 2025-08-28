@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from math import cos, pi, radians, sqrt
 
+from ...array import argpass
 from ...types import Point2D
 from ..cartesian import (
     cartesian,
@@ -68,7 +69,10 @@ class ClipCircle(LineStream):
                 or point_equal(self._point0, point2)
                 or point_equal(point1, point2)
             ):
-                point1[2] = 1
+                if len(point1) == 2:
+                    point2.append(1)
+                else:
+                    point1[2] = 1
 
         if v != self._v0:
             self._clean = 0
@@ -78,7 +82,7 @@ class ClipCircle(LineStream):
                 self._stream.point(point2[0], point2[1])
             else:
                 point2 = self._intersect(self._point0, point1)
-                self._stream.point(point2[0], point2[1], 2)
+                argpass(self._stream.point)(point2[0], point2[1], 2)
                 self._stream.line_end()
             self._point0 = point2
         elif self._not_hemisphere and self._point0 and self._small_radius ^ v:
@@ -94,7 +98,7 @@ class ClipCircle(LineStream):
                     self._stream.point(t[1][0], t[1][1])
                     self._stream.line_end()
                     self._stream.line_start()
-                    self._stream.point(t[0][0], t[0][1], 3)
+                    argpass(self._stream.point)(t[0][0], t[0][1], 3)
         if v and (not self._point0 or not point_equal(self._point0, point1)):
             self._stream.point(point1[0], point1[1])
         self._point0 = point1
@@ -191,6 +195,44 @@ class ClipCircle(LineStream):
         return code
 
 
+class ClipCircleWrapper:
+    def __init__(self, angle: float):
+        self._angle = angle
+        self._cr = cos(angle)
+        self._delta = radians(2)
+        self._small_radius = self._cr > 0
+        self._not_hemisphere = abs(self._cr) > EPSILON
+        self._start = (
+            [0, -self._angle] if self._small_radius else [-pi, self._angle - pi]
+        )
+
+    def clip_line(self, stream: Stream) -> ClipCircle:
+        return ClipCircle(
+            self._angle,
+            self._cr,
+            self._delta,
+            self._small_radius,
+            self._not_hemisphere,
+            stream,
+        )
+
+    def interpolate(
+        self,
+        vfrom: float | None,
+        vto: float | None,
+        direction: float,
+        stream: LineStream,
+    ):
+        circle_stream(stream, self._angle, self._delta, direction, vfrom, vto)
+
+    def visible(self, lambda_: float, phi: float) -> bool:
+        return cos(lambda_) * cos(phi) > self._cr
+
+    @property
+    def start(self) -> Point2D:
+        return self._start
+
+
 def geo_clip_circle(angle: float) -> Callable[[PolygonStream], Clip]:
     """
     Generates a clipping function which transforms a stream such that
@@ -208,22 +250,10 @@ def geo_clip_circle(angle: float) -> Callable[[PolygonStream], Clip]:
     Callable[[PolygonStream], Clip]
         Clipping function
     """
-    cr = cos(angle)
-    delta = radians(2)
-    small_radius = cr > 0
-    not_hemisphere = abs(cr) > EPSILON
-
-    start = [0, -angle] if small_radius else [-pi, angle - pi]
-
-    def clip_line(stream: Stream) -> ClipCircle:
-        return ClipCircle(angle, cr, delta, small_radius, not_hemisphere, stream)
-
-    def interpolate(
-        vfrom: float | None, vto: float | None, direction: float, stream: LineStream
-    ):
-        circle_stream(stream, angle, delta, direction, vfrom, vto)
-
-    def visible(lambda_: float, phi: float) -> bool:
-        return cos(lambda_) * cos(phi) > cr
-
-    return clip(visible, clip_line, interpolate, start)
+    clip_circle = ClipCircleWrapper(angle)
+    return clip(
+        clip_circle.visible,
+        clip_circle.clip_line,
+        clip_circle.interpolate,
+        clip_circle.start,
+    )

@@ -168,13 +168,29 @@ class Clip(PolygonStream):
         )
 
 
+class ClipWrapper:
+    def __init__(
+        self,
+        point_visible: Callable[[float, float], bool],
+        clip_line: Callable[[Stream], LineStream],
+        interpolate: Callable[[float | None, float | None, float, LineStream], None],
+        start: tuple[float, float],
+    ):
+        self._point_visible = point_visible
+        self._clip_line = clip_line
+        self._interpolate = interpolate
+        self._start = start
+
+    def __call__(self, sink: PolygonStream) -> Clip:
+        return Clip(
+            self._point_visible, self._clip_line, self._interpolate, self._start, sink
+        )
+
+
 def clip(
     point_visible: Callable[[float, float], bool],
     clip_line: Callable[[Stream], LineStream],
     interpolate: Callable[[float | None, float | None, float, LineStream], None],
     start: tuple[float, float],
 ) -> Callable[[PolygonStream], Clip]:
-    def wrapper(sink: PolygonStream) -> Clip:
-        return Clip(point_visible, clip_line, interpolate, start, sink)
-
-    return wrapper
+    return ClipWrapper(point_visible, clip_line, interpolate, start)

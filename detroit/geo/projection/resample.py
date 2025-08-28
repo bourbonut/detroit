@@ -1,18 +1,16 @@
+from collections.abc import Callable
 from math import asin, atan2, cos, nan, radians, sqrt
-from typing import TypeVar
 
 from ..cartesian import cartesian
-from ..common import PolygonStream
+from ..common import PolygonStream, Projection
 from ..transform import GeoTransformer
-
-ProjectionMutator = TypeVar("ProjectionMutator")
 
 EPSILON = 1e-6
 max_depth = 16
 cos_min_distance = cos(radians(30))
 
 
-def resample_none(project: ProjectionMutator) -> GeoTransformer:
+def resample_none(project: Projection) -> GeoTransformer:
     def point(self, x: float, y: float):
         x = project(x, y)
         self._stream.point(x[0], x[1])
@@ -21,9 +19,7 @@ def resample_none(project: ProjectionMutator) -> GeoTransformer:
 
 
 class Resample(PolygonStream):
-    def __init__(
-        self, project: ProjectionMutator, delta2: float, stream: PolygonStream
-    ):
+    def __init__(self, project: Projection, delta2: float, stream: PolygonStream):
         self._project = project
         self._delta2 = delta2
         self._stream = stream
@@ -179,12 +175,19 @@ class Resample(PolygonStream):
         return f"Resample({self._stream})"
 
 
-def resample(project: ProjectionMutator, delta2: float):
+class ResampleWrapper:
+    def __init__(self, project: Projection, delta2: float):
+        self._project = project
+        self._delta2 = delta2
+
+    def __call__(self, stream: PolygonStream) -> Resample:
+        return Resample(self._project, self._delta2, stream)
+
+
+def resample(
+    project: Projection, delta2: float
+) -> Callable[[PolygonStream], PolygonStream]:
     if delta2:
-
-        def resample(stream: PolygonStream) -> Resample:
-            return Resample(project, delta2, stream)
-
-        return resample
+        return ResampleWrapper(project, delta2)
     else:
         return resample_none(project)

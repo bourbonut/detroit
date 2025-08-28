@@ -218,6 +218,23 @@ class ClipRectangle(PolygonStream):
         return f"ClipRectangle({self._stream}, {[[self._x0, self._y0], [self._x1, self._y1]]})"
 
 
+class ClipRectangleWrapper:
+    def __init__(
+        self,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+    ):
+        self._x0 = x0
+        self._y0 = y0
+        self._x1 = x1
+        self._y1 = y1
+
+    def __call__(self, stream: PolygonStream):
+        return ClipRectangle(self._x0, self._y0, self._x1, self._y1, stream)
+
+
 def geo_clip_rectangle(
     x0: float,
     y0: float,
@@ -246,7 +263,4 @@ def geo_clip_rectangle(
         Clipping function
     """
 
-    def wrapper(stream: PolygonStream) -> ClipRectangle:
-        return ClipRectangle(x0, y0, x1, y1, stream)
-
-    return wrapper
+    return ClipRectangleWrapper(x0, y0, x1, y1)
