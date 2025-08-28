@@ -38,7 +38,7 @@ pip install detroit
 | brush           | No       | -        |                               |
 | chord           | No       | -        |                               |
 | color           | Yes      | Yes      |                               |
-| contour         | No       | -        |                               |
+| contour         | Yes      | Yes      |                               |
 | delaunay        | No       | -        |                               |
 | dispatch        | No       | -        |                               |
 | drag            | No       | -        |                               |
@@ -47,17 +47,17 @@ pip install detroit
 | fetch           | -        | -        | use `import requests`         |
 | force           | No       | -        |                               |
 | format          | Yes      | Yes      |                               |
-| geo             | No       | -        |                               |
+| geo             | Yes      | Yes      |                               |
 | hierarchy       | No       | -        |                               |
 | interpolate     | Yes      | Yes      | interpolate CSS not supported |
 | path            | Yes      | Yes      |                               |
-| polygone        | No       | -        |                               |
+| polygon         | No       | -        |                               |
 | quadtree        | No       | -        |                               |
 | random          | -        | -        | Use `import random`           |
 | scale           | Yes      | Yes      | Mostly `test_linear`          |
-| scale-chromatic | Yes      | Yes      | See all schemes in `examples` |
+| scale-chromatic | Yes      | Yes      |                               |
 | selection       | Yes      | Yes      |                               |
-| shape           | Yes      | Yes      | Missing some of shapes        |
+| shape           | Yes      | Yes      |                               |
 | time            | Yes      | Yes      |                               |
 | time-format     | Yes      | Yes      |                               |
 | timer           | No       | -        |                               |
