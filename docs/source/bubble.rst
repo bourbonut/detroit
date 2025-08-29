@@ -13,6 +13,7 @@ Geographical Map
 
 .. code:: python
 
+   # https://observablehq.com/@d3/bubble-map/2
    import detroit as d3
    import requests
    import json
