@@ -101,6 +101,7 @@ Step Response of a Second Order System (Control Theory)
    )
 
    # Append the pathes for the lines.
+   line = d3.line().x(lambda d: x(d["x"])).y(lambda d: y(d["y"]))
    (
        svg.select_all(".line")
        .data(data["allvalues"])
@@ -108,12 +109,7 @@ Step Response of a Second Order System (Control Theory)
        .append("path")
        .attr("fill", "none")
        .attr("stroke", lambda d: color(d["key"]))
-       .attr(
-           "d",
-           lambda d: d3.line()
-           .x(lambda d1: x(d1["x"]))
-           .y(lambda d2: y(d2["y"]))(d["values"]),
-       )
+       .attr("d", lambda d: line(d["values"]))
    )
 
 3. Save your chart

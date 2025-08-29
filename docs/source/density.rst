@@ -98,8 +98,7 @@ Density chart
        .call(d3.axis_bottom(x).set_tick_size_outer(0))
        .call(lambda g: g.select(".domain").remove())
        .call(
-           lambda g: g.select(".tick:last-of-type")
-           .select("text")
+           lambda g: g.select(".tick:last-of-type text")
            .clone()
            .attr("y", -3)
            .attr("dy", "null")
@@ -114,8 +113,7 @@ Density chart
        .call(d3.axis_left(y).set_tick_size_outer(0))
        .call(lambda g: g.select(".domain").remove())
        .call(
-           lambda g: g.select(".tick:last-of-type")
-           .select("text")
+           lambda g: g.select(".tick:last-of-type text")
            .clone()
            .attr("x", 3)
            .attr("text-anchor", "start")
