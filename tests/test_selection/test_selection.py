@@ -576,3 +576,26 @@ def test_selection_44():
 
     s = svg.select_all("[aria-label='group2']")
     assert len(s.nodes()) == 2
+
+
+def test_selection_45():
+    svg = d3.create("svg").append("g").attr("class", "main")
+    g1 = svg.append("g").attr("class", "tick")
+    g1.append("text").text("Hello")
+    g2 = svg.append("g").attr("class", "tick")
+    g2.append("text").text("world")
+
+    s = svg.select(".tick:last-of-type text")
+    assert s.text() == "world"
+    assert len(s.nodes()) == 1
+
+
+def test_selection_46():
+    svg = d3.create("svg").append("g").attr("class", "main")
+    g1 = svg.append("g").attr("class", "tick")
+    g1.append("text").text("Hello")
+    g2 = svg.append("g").attr("class", "tick")
+    g2.append("text").text("world")
+
+    s = svg.select_all(".tick text")
+    assert len(s.nodes()) == 2

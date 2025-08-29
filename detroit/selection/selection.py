@@ -20,6 +20,43 @@ from .text import text_constant, text_function
 TSelection = TypeVar("Selection", bound="Selection")
 
 
+def xpath(selection: str) -> str:
+    """
+    Returns a partial formatted xpath string given a selection
+
+    Parameters
+    ----------
+    selection : str
+        Selection string
+
+    Returns
+    -------
+    str
+        Partial formatted xpath
+    """
+    order = ""
+    if ":" in selection:
+        selection, order = selection.split(":")
+        if order != "last-of-type":
+            raise ValueError(
+                f"Only 'last-of-type' is implemented currently (found {order})."
+            )
+        order = "[last()]"
+    if "." in selection:
+        tag, class_name = selection.split(".")
+        tag = tag or "*"
+        class_name = f"[@class='{class_name}']" if class_name else ""
+        xpath = f"{tag}{order}{class_name}"
+    elif "[" in selection and "]" in selection:
+        tag, specifier = selection.split("[")
+        tag = tag or "*"
+        specifier = f"[@{specifier}" if specifier else ""
+        xpath = f"{tag}{order}{specifier}"
+    else:
+        xpath = f"{selection}{order}"
+    return xpath
+
+
 def selector(
     element: etree.Element, selection: str | None = None
 ) -> list[etree.Element]:
@@ -31,8 +68,9 @@ def selector(
     - :code:`{tag_name}{.class_name}{:last-of-type}`
     - :code:`{tag_name}{[attribute_name="value"]}{:last-of-type}`
 
-    The :code:`tag_name` is any SVG element tag (ex: :code:`g`,
-    :code:`rect`, :code:`line`, ...).
+    The :code:`tag_name` is any SVG element tag (ex: :code:`g`, :code:`rect`,
+    :code:`line`, ...). You can chain selections by adding one space between
+    them.
 
     The :code:`.class_name` is specified when a element is created such as:
 
@@ -68,31 +106,14 @@ def selector(
     list[etree.Element]
         List of found nodes.
     """
-    if selection is None:
+    if selection is None or selection == "":
         return element
-    order = ""
-    if ":" in selection:
-        selection, order = selection.split(":")
-        if order != "last-of-type":
-            raise ValueError("Only 'last-of-type' is implemented currently.")
-        order = "[last()]"
-    if "." in selection:
-        tag, class_name = selection.split(".")
-        tag = tag or "*"
-        class_name = f"[@class='{class_name}']" if class_name else ""
-        return element.xpath(f"./*//{tag}{order}{class_name}") + element.xpath(
-            f"./{tag}{order}{class_name}"
-        )
-    elif "[" in selection and "]" in selection:
-        tag, specifier = selection.split("[")
-        tag = tag or "*"
-        specifier = f"[@{specifier}" if specifier else ""
-        return element.xpath(f"./*//{tag}{order}{specifier}") + element.xpath(
-            f"./{tag}{order}{specifier}"
-        )
-    return element.xpath(f"./*//{selection}{order}") + element.xpath(
-        f"./{selection}{order}"
+    pxpath = (
+        "/".join(map(xpath, selection.split(" ")))
+        if " " in selection
+        else xpath(selection)
     )
+    return element.xpath(f"./*//{pxpath}") + element.xpath(f"./{pxpath}")
 
 
 def creator(node: etree.Element, fullname: dict | None = None) -> etree.SubElement:
@@ -202,7 +223,8 @@ class Selection(Generic[T]):
         - :code:`{tag_name}{[attribute_name="value"]}{:last-of-type}`
 
         The :code:`tag_name` is any SVG element tag (ex: :code:`g`,
-        :code:`rect`, :code:`line`, ...).
+        :code:`rect`, :code:`line`, ...). You can chain selections by adding
+        one space between them.
 
         The :code:`.class_name` is specified when a element is created such as:
 
@@ -301,7 +323,8 @@ class Selection(Generic[T]):
         - :code:`{tag_name}{[attribute_name="value"]}{:last-of-type}`
 
         The :code:`tag_name` is any SVG element tag (ex: :code:`g`,
-        :code:`rect`, :code:`line`, ...).
+        :code:`rect`, :code:`line`, ...). You can chain selections by adding
+        one space between them.
 
         The :code:`.class_name` is specified when a element is created such as:
 
