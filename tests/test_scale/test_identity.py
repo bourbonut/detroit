@@ -1,7 +1,6 @@
 import math
 from datetime import datetime
 
-
 import detroit as d3
 
 

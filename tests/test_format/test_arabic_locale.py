@@ -1,4 +1,3 @@
-
 # def test_arabicLocale_1():
 #     assert locale("ar-001").format("$,.2f")(-1234.56) == "−١٬٢٣٤٫٥٦"
 #

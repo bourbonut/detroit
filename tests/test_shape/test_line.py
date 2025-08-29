@@ -1,6 +1,5 @@
 import math
 
-
 import detroit as d3
 from detroit.shape.curves.linear import curve_linear
 

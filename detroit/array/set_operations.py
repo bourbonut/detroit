@@ -3,7 +3,6 @@ from functools import reduce
 from operator import iand, ior
 
 
-
 def union(*iterables: Iterable[Hashable]) -> set[Hashable]:
     """
     Returns a new set containing every distinct value that appears in any of

@@ -1,5 +1,7 @@
 from lxml import etree
+
 from .selection import Selection
+
 
 def select(node: etree.Element) -> Selection:
     """

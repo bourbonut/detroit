@@ -1,4 +1,3 @@
-
 import detroit as d3
 
 

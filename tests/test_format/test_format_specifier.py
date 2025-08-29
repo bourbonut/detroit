@@ -1,4 +1,3 @@
-
 # def test_formatSpecifier_1():
 #     assert.throws(() => { formatSpecifier("foo") }, /invalid format: foo/)
 #     assert.throws(() => { formatSpecifier(".-2s") }, /invalid format: \.-2s/)

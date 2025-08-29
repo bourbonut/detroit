@@ -1,5 +1,5 @@
-from math import inf, nan
 from functools import reduce
+from math import inf, nan
 from operator import iadd
 
 import pytest

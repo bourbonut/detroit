@@ -1,6 +1,5 @@
 from math import sqrt
 
-
 import detroit as d3
 
 

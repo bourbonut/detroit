@@ -1,4 +1,3 @@
-
 # function locale(locale) {
 #     return formatLocale(JSON.parse(readFileSync(`./locale/${locale}.json`, "utf8")))
 # }
