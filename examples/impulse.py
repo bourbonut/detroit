@@ -84,6 +84,7 @@ color = (
 )
 
 # Append the pathes for the lines.
+line = d3.line().x(lambda d: x(d["x"])).y(lambda d: y(d["y"]))
 (
     svg.select_all(".line")
     .data(data["allvalues"])
@@ -91,18 +92,13 @@ color = (
     .append("path")
     .attr("fill", "none")
     .attr("stroke", lambda d: color(d["key"]))
-    .attr(
-        "d",
-        lambda d: d3.line()
-        .x(lambda d1: x(d1["x"]))
-        .y(lambda d2: y(d2["y"]))(d["values"]),
-    )
+    .attr("d", lambda d: line(d["values"]))
 )
 
 # For white axis and text
 # svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("g.tick line").attr("stroke", "white")
+# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
 # svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
 with open("impulse.svg", "w") as file:

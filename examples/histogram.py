@@ -88,8 +88,8 @@ svg = (
 
 # For white axis and text
 # svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("g.tick line").attr("stroke", "white")
+# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
 # svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
 with open("histogram.svg", "w") as file:

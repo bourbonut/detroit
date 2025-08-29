@@ -54,8 +54,7 @@ svg = (
     .call(d3.axis_bottom(x).set_tick_size_outer(0))
     .call(lambda g: g.select(".domain").remove())
     .call(
-        lambda g: g.select(".tick:last-of-type")
-        .select("text")
+        lambda g: g.select(".tick:last-of-type text")
         .clone()
         .attr("y", -3)
         .attr("dy", "null")
@@ -70,8 +69,7 @@ svg = (
     .call(d3.axis_left(y).set_tick_size_outer(0))
     .call(lambda g: g.select(".domain").remove())
     .call(
-        lambda g: g.select(".tick:last-of-type")
-        .select("text")
+        lambda g: g.select(".tick:last-of-type text")
         .clone()
         .attr("x", 3)
         .attr("text-anchor", "start")
@@ -108,8 +106,8 @@ svg = (
 
 # # For white axis and text
 # svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("line").attr("stroke", "white")
-# svg.select_all("g.tick").select_all("text").attr("fill", "white").attr("stroke", "none")
+# svg.select_all("g.tick line").attr("stroke", "white")
+# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
 # svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
 with open("light-density.svg", "w") as file:

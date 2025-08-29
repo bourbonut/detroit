@@ -7,7 +7,7 @@ from itertools import product, accumulate
 
 URL = "https://static.observableusercontent.com/files/715db1223e067f00500780077febc6cebbdd90c151d3d78317c802732252052ab0e367039872ab9c77d6ef99e5f55a0724b35ddc898a1c99cb14c31a379af80a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27penguins.csv"
 
-theme = "light"
+theme = "dark"
 foreground_color = "black" if theme == "light" else "white"
 grid_color = "#ddd" if theme == "light" else "#222"
 rect_color = "#aaa" if theme == "light" else "#555"
@@ -222,8 +222,8 @@ g = (
 )
 
 svg.select_all("path.domain").attr("stroke", grid_color)
-svg.select_all("g.tick").select_all("line").attr("stroke", grid_color)
-svg.select_all("g.tick").select_all("text").attr("fill", foreground_color).attr("stroke", "none")
+svg.select_all("g.tick line").attr("stroke", grid_color)
+svg.select_all("g.tick text").attr("fill", foreground_color).attr("stroke", "none")
 svg.select_all("text").attr("fill", foreground_color).attr("stroke", "none")
 
 with open(f"{theme}-scatter-matrix.svg", "w") as file:
