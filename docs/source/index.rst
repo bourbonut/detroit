@@ -159,6 +159,10 @@ Gallery
        <img class="only-light" src="_images/light-donut.svg">
        <img class="only-dark" src="_images/dark-donut.svg">
      </a>
+     <a href="density.html">
+       <img class="only-light" src="_images/light-density.svg">
+       <img class="only-dark" src="_images/dark-density.svg">
+     </a>
      <a href="bubble.html">
        <img class="only-light" src="_images/light-bubble-map.png">
        <img class="only-dark" src="_images/dark-bubble-map.png">
@@ -201,6 +205,7 @@ Table of Content
    bar
    histogram
    pie
+   density
    bubble
    complex_charts/index
    api/index
