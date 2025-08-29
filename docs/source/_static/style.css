@@ -47,3 +47,14 @@ body {
 .toctree-checkbox:checked~ul {
   border-left: 1px solid var(--color-sidebar-link-text);
 }
+
+.custom-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  place-items: center;
+}
+
+.custom-grid > a > img {
+  max-height: 250px;
+  max-width: 380px;
+}

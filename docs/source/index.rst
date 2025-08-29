@@ -129,6 +129,65 @@ Once you have finished, you can save it to a :code:`.svg` file:
    :align: center
    :class: only-dark
 
+Gallery
+-------
+
+.. raw:: html
+
+   <div class="custom-grid">
+     <a href="line.html">
+       <img class="only-light" src="_images/light-line.svg">
+       <img class="only-dark" src="_images/dark-line.svg">
+     </a>
+     <a href="area.html">
+       <img class="only-light" src="_images/light-area.svg">
+       <img class="only-dark" src="_images/dark-area.svg">
+     </a>
+     <a href="scatter.html">
+       <img class="only-light" src="_images/light-scatter.svg">
+       <img class="only-dark" src="_images/dark-scatter.svg">
+     </a>
+     <a href="bar.html">
+       <img class="only-light" src="_images/light-bar.svg">
+       <img class="only-dark" src="_images/dark-bar.svg">
+     </a>
+     <a href="histogram.html">
+       <img class="only-light" src="_images/light-histogram.svg">
+       <img class="only-dark" src="_images/dark-histogram.svg">
+     </a>
+     <a href="pie.html">
+       <img class="only-light" src="_images/light-donut.svg">
+       <img class="only-dark" src="_images/dark-donut.svg">
+     </a>
+     <a href="bubble.html">
+       <img class="only-light" src="_images/light-bubble-map.png">
+       <img class="only-dark" src="_images/dark-bubble-map.png">
+     </a>
+     <a href="complex_charts/impulse.html">
+       <img class="only-light" src="_images/light-impulse.png">
+       <img class="only-dark" src="_images/dark-impulse.png">
+     </a>
+     <a href="complex_charts/pca.html">
+       <img class="only-light" src="_images/light-pca.svg">
+       <img class="only-dark" src="_images/dark-pca.svg">
+     </a>
+     <a href="complex_charts/scatter_matrix.html">
+       <img class="only-light" src="_images/light-scatter-matrix.svg">
+       <img class="only-dark" src="_images/dark-scatter-matrix.svg">
+     </a>
+     <a href="complex_charts/kernel_comparison.html">
+       <img class="only-light" src="_images/light_kernel_results.svg">
+       <img class="only-dark" src="_images/dark_kernel_results.svg">
+     </a>
+     <a href="complex_charts/hertz_russel.html">
+       <img src="_images/hertz_russel.png">
+     </a>
+     <a href="complex_charts/gantt.html">
+       <img class="only-light" src="_images/light-gantt.svg">
+       <img class="only-dark" src="_images/dark-gantt.svg">
+     </a>
+   </div>
+
 
 Table of Content
 ----------------
