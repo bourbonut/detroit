@@ -689,6 +689,7 @@ class Selection(Generic[T]):
         Selection
             Itself
         """
+        callback = argpass(callback)
         for group in self._groups:
             for i, node in enumerate(group):
                 if node is not None:
