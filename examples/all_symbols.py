@@ -3,6 +3,9 @@ import detroit as d3
 width = 810
 height = 40
 
+theme = "dark"
+main_color = "white" if theme == "dark" else "black"
+
 # Fill symbols
 
 svg = (
@@ -31,10 +34,16 @@ axis = d3.scale_band(names, [0, width]).set_padding(1)
     .attr("transform", lambda d: f"translate({axis(d)}, -10)")
     .append("path")
     .attr("d", lambda d: d3.symbol(symbol_type(d))())
-    .attr("fill", "black")
+    .attr("fill", main_color)
 )
 
-with open("symbols_fill.svg", "w") as file:
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+
+with open(f"{theme}_symbols_fill.svg", "w") as file:
     file.write(str(svg))
 
 # Stroke symbols
@@ -65,8 +74,14 @@ axis = d3.scale_band(names, [0, width]).set_padding(1)
     .attr("transform", lambda d: f"translate({axis(d)}, -10)")
     .append("path")
     .attr("d", lambda d: d3.symbol(symbol_type(d))())
-    .attr("stroke", "black")
+    .attr("stroke", main_color)
 )
 
-with open("symbols_stroke.svg", "w") as file:
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+
+with open(f"{theme}_symbols_stroke.svg", "w") as file:
     file.write(str(svg))

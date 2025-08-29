@@ -1,6 +1,5 @@
 # pip install scikit-learn
 from collections import namedtuple
-from itertools import cycle
 
 import polars as pl
 from sklearn.datasets import load_digits
@@ -8,6 +7,8 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 import detroit as d3
+
+theme = "light"
 
 # Prepare data
 mnist = load_digits()
@@ -137,11 +138,11 @@ legend = svg.append("g").select_all("legend").data(labels.to_list()).enter()
     .style("font-size", 15)
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("pca.svg", "w") as file:
+with open(f"{theme}-pca.svg", "w") as file:
     file.write(str(svg))

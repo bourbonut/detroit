@@ -5,6 +5,8 @@ height = 570
 margin = 30
 offset = 5
 
+theme = "light"
+
 svg = (
     d3.create("svg")
     .attr("width", width)
@@ -64,11 +66,11 @@ svg = (
     .text("axis_right")
 )
 
-# To change color all in white
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("all_axis.svg", "w") as file:
+with open(f"{theme}_all_axis.svg", "w") as file:
     file.write(str(svg))

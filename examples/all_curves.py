@@ -10,18 +10,18 @@ height = y_max * square_length
 legend_height = int(square_length * 3)
 legend_width = int(square_length * 15)
 
+theme = "dark"
+
 rect_color = "#2b2b2e"
 line_color = "#202020"
 font_color = curve_color = point_color = "white"
 start_color = "#999999"
-prefix = "dark"
 
-# Uncomment these lines for light theme
-# rect_color = "#d4d4d1"
-# line_color = "#f8f8f8"
-# font_color = curve_color = point_color = "black"
-# start_color = "#303030"
-# prefix = "light"
+if theme == "light":
+    rect_color = "#d4d4d1"
+    line_color = "#f8f8f8"
+    font_color = curve_color = point_color = "black"
+    start_color = "#303030"
 
 curves = [
     ("basis", d3.curve_basis),
@@ -135,7 +135,7 @@ for name, curve in curves:
         .attr("fill", "none")
     )
 
-    with open(f"{prefix}_curve_{name}.svg", "w") as file:
+    with open(f"{theme}_curve_{name}.svg", "w") as file:
         file.write(str(svg))
 
 # Parametric curves
@@ -273,5 +273,5 @@ for name, curve, variable_name in parametric_curves:
         .attr("fill", "none")
     )
 
-    with open(f"{prefix}_curve_{name}.svg", "w") as file:
+    with open(f"{theme}_curve_{name}.svg", "w") as file:
         file.write(str(svg))

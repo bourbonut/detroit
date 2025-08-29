@@ -9,18 +9,17 @@ margin_right = 50
 margin_bottom = 10
 margin_left = 120
 
-prefix = "light"
+theme = "light"
 color = "black"
 reverse_color = "white"
 blue_color = "blue"
 red_color = "red"
 
-# # Uncomment these lines for white color
-# prefix = "dark"
-# color = "#cfd0d0"
-# reverse_color = "#202020"
-# blue_color = d3.hsl("blue").brighter(1.5)
-# red_color = d3.hsl("red").brighter(1.5)
+if theme == "dark":
+    color = "#cfd0d0"
+    reverse_color = "#202020"
+    blue_color = d3.hsl("blue").brighter(1.5)
+    red_color = d3.hsl("red").brighter(1.5)
 
 # Data
 numba = [
@@ -167,5 +166,5 @@ g.append("text").attr("x", 15).attr("y", 30).attr("fill", color).text("Cupy")
 
 # Save the SVG content
 
-with open(f"{prefix}_kernel_results.svg", "w") as file:
+with open(f"{theme}_kernel_results.svg", "w") as file:
     file.write(str(svg))

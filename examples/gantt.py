@@ -28,6 +28,8 @@ SELECTED_COUNTRIES = [
     "Japan",
 ]
 
+theme = "light"
+
 # Load data with selected countries
 archigos = (
     pl.read_csv(URL)
@@ -492,12 +494,12 @@ g = (
     .text(lambda d: d)
 )
 
-# Uncomment these lines for dark mode
-# gantt.style("background", "black")
-# svg.select_all("text").attr("fill", "white")
-# svg.select_all("line").attr("stroke", "white")
-# svg.select_all("path").attr("stroke", "white")
-# g.select_all("text").attr("fill", "white")
+if theme == "dark":
+    gantt.style("background", "black")
+    svg.select_all("text").attr("fill", "white")
+    svg.select_all("line").attr("stroke", "white")
+    svg.select_all("path").attr("stroke", "white")
+    g.select_all("text").attr("fill", "white")
 
-with open("gantt.svg", "w") as file:
+with open(f"{theme}-gantt.svg", "w") as file:
     file.write(str(gantt))

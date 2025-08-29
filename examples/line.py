@@ -14,6 +14,8 @@ aapl = pl.read_csv(URL).select(
     pl.col("close"),
 )
 
+theme = "light"
+
 # Declare the chart dimensions and margins.
 width = 928
 height = 500
@@ -78,11 +80,11 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     .attr("d", line(aapl.iter_rows()))
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("line.svg", "w") as file:
+with open(f"{theme}-line.svg", "w") as file:
     file.write(str(svg))

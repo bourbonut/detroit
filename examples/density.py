@@ -6,6 +6,8 @@ URL = "https://static.observableusercontent.com/files/98d78d7f290f9776833e989617
 
 faithful = pl.read_csv(URL, separator="\t").to_dicts()
 
+theme = "light"
+
 width = 928
 height = 600
 margin_top = 20
@@ -104,11 +106,11 @@ svg = (
     .attr("r", 2)
 )
 
-# # For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("light-density.svg", "w") as file:
+with open(f"{theme}-density.svg", "w") as file:
     file.write(str(svg))

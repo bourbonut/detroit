@@ -7,6 +7,10 @@ URL = "https://static.observableusercontent.com/files/bee673b386dd058ab8d2cf353a
 
 data = pl.read_csv(URL)
 
+theme = "light"
+main_color = "white" if theme == "dark" else "black"
+interpolate = d3.interpolate_inferno if theme == "dark" else d3.interpolate_spectral
+
 # Declare the chart dimensions.
 width = 500
 height = min(width, 500)
@@ -23,11 +27,7 @@ color = (
     d3.scale_ordinal()
     .set_domain(data["name"].to_list())
     .set_range(
-        d3.quantize(
-            lambda t: d3.interpolate_spectral(t * 0.8 + 0.1),
-            data.height,
-            # lambda t: d3.interpolate_inferno(t * 0.8 + 0.1), data.height # for white text
-        )[::-1]
+        d3.quantize(lambda t: interpolate(t * 0.8 + 0.1), data.height)[::-1]
     )
 )
 
@@ -61,7 +61,7 @@ svg = (
     .select_all()
     .data(pie(data.iter_rows()))
     .join("g")
-    # .attr("fill", "white") # uncomment this for white text
+    .attr("fill", main_color)
     .attr(
         "transform", lambda d: f"translate({arc.centroid(d)[0]}, {arc.centroid(d)[1]})"
     )
@@ -87,5 +87,5 @@ svg = (
     )
 )
 
-with open("donut.svg", "w") as file:
+with open(f"{theme}-donut.svg", "w") as file:
     file.write(str(svg))

@@ -19,6 +19,8 @@ width = 928
 height = 500
 margin = Margin(20, 30, 30, 40)
 
+theme = "light"
+
 # Declare the x (horizontal position) scale.
 x = d3.scale_time(
     [aapl["date"].min(), aapl["date"].max()], [margin.left, width - margin.right]
@@ -72,11 +74,11 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     )
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("area.svg", "w") as file:
+with open(f"{theme}-area.svg", "w") as file:
     file.write(str(svg))

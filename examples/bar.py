@@ -14,6 +14,8 @@ width = 928
 height = 500
 margin = Margin(30, 0, 30, 40)
 
+theme = "light"
+
 # Declare the x (horizontal position) scale.
 # descending frequency
 x = (
@@ -73,11 +75,11 @@ svg.append("g").attr("transform", f"translate(0, {height - margin.bottom})").cal
     )
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("bar.svg", "w") as file:
+with open(f"{theme}-bar.svg", "w") as file:
     file.write(str(svg))

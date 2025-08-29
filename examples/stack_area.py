@@ -11,6 +11,8 @@ unemployment = pl.read_csv(URL).select(
 )
 data = unemployment.to_dicts()
 
+theme = "light"
+
 width = 928
 height = 500
 margin_top = 20
@@ -102,5 +104,11 @@ svg = (
     )
 )
 
-with open("stack_area.svg", "w") as file:
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+
+with open(f"{theme}-stack-area.svg", "w") as file:
     file.write(str(svg))

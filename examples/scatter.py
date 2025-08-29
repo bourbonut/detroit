@@ -8,6 +8,8 @@ import detroit as d3
 URL = "https://static.observableusercontent.com/files/53c407ee531bab128477148c9e28c49dd06bf83a93ae317e58dbb9fc819db0d4f6c4fb9646fa2fe20faad76addee20cfc360eab2362eeaec3340a5e4655b9996?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27cars-2.csv"
 Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
 
+theme = "light"
+
 schema = pl.Schema(
     {
         "Name": pl.String,
@@ -100,11 +102,11 @@ svg = (
     .attr("r", 3)
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("scatter.svg", "w") as file:
+with open(f"{theme}-scatter.svg", "w") as file:
     file.write(str(svg))

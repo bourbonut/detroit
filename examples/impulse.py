@@ -4,6 +4,8 @@ from math import exp, sin, sqrt
 
 import detroit as d3
 
+theme = "light"
+
 Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
 
 # Arbitrary parameters for second order system.
@@ -95,11 +97,11 @@ line = d3.line().x(lambda d: x(d["x"])).y(lambda d: y(d["y"]))
     .attr("d", lambda d: line(d["values"]))
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("impulse.svg", "w") as file:
+with open(f"{theme}-impulse.svg", "w") as file:
     file.write(str(svg))

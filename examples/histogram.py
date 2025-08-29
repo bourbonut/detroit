@@ -10,6 +10,8 @@ Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
 
 unemployment = pl.read_csv(URL)
 
+theme = "light"
+
 width = 928
 height = 500
 margin = Margin(20, 20, 30, 40)
@@ -86,11 +88,11 @@ svg = (
     )
 )
 
-# For white axis and text
-# svg.select_all("path.domain").attr("stroke", "white")
-# svg.select_all("g.tick line").attr("stroke", "white")
-# svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
-# svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
 
-with open("histogram.svg", "w") as file:
+with open(f"{theme}-histogram.svg", "w") as file:
     file.write(str(svg))
