@@ -142,5 +142,6 @@ Table of Content
    bar
    histogram
    pie
+   bubble
    complex_charts/index
    api/index
