@@ -23,7 +23,7 @@ padding = 28
 columns = list(filter(lambda d: isinstance(data[0][d], float), penguins.columns))
 size = (width - (len(columns) + 1) * padding) / len(columns) + padding
 
-# Declare the legend dimensions
+# Declare the legend dimensions.
 rect_size = 15
 legend_width = width
 legend_height = rect_size * 2
@@ -37,7 +37,7 @@ scatter = (
 )
 scatter.append("style").text(".circle.hidden{fill:#000;fill-opacity:1;r:1px;}")
 
-# Create the SVG container.
+# Create the legend container.
 legend = scatter.append("g").attr(
     "transform", f"translate({rect_size / 2}, {rect_size / 2})"
 )
