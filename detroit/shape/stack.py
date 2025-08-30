@@ -121,10 +121,6 @@ class Stack(Generic[T]):
         self._keys = argpass(self._keys)
         return self
 
-    @property
-    def keys(self) -> Callable[[...], str]:
-        return self._keys
-
     def set_value(
         self, value: Callable[[T, str, int, list[T]], float] | float
     ) -> TStack:
@@ -153,10 +149,6 @@ class Stack(Generic[T]):
         self._value = argpass(self._value)
         return self
 
-    @property
-    def value(self) -> Callable[[T, str, int, list[T]], float]:
-        return self._value
-
     def set_order(
         self, order: Callable[[list[Series]], list[int]] | list[int] | None = None
     ) -> TStack:
@@ -182,10 +174,6 @@ class Stack(Generic[T]):
             self._order = constant(list(order))
         return self
 
-    @property
-    def order(self) -> Callable[[list[Series]], list[int]]:
-        return self._order
-
     def set_offset(
         self, offset: Callable[[list[Series], list[int]], None] | None = None
     ) -> TStack:
@@ -210,6 +198,14 @@ class Stack(Generic[T]):
             self._offset = offset
         return self
 
-    @property
-    def offset(self) -> Callable[[list[Series], list[int]], None]:
+    def get_keys(self) -> Callable[[...], str]:
+        return self._keys
+
+    def get_value(self) -> Callable[[T, str, int, list[T]], float]:
+        return self._value
+
+    def get_order(self) -> Callable[[list[Series]], list[int]]:
+        return self._order
+
+    def get_offset(self) -> Callable[[list[Series], list[int]], None]:
         return self._offset
