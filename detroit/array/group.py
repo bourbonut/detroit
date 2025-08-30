@@ -66,7 +66,7 @@ def index(
 
     Returns
     -------
-    dict[V, list[U]]
+    dict[V, U]
         Nested dictionary.
 
     Examples
