@@ -143,6 +143,10 @@ Gallery
        <img class="only-light" src="_images/light-area.svg">
        <img class="only-dark" src="_images/dark-area.svg">
      </a>
+     <a href="stack.html">
+       <img class="only-light" src="_images/light-stack-area.svg">
+       <img class="only-dark" src="_images/dark-stack-area.svg">
+     </a>
      <a href="scatter.html">
        <img class="only-light" src="_images/light-scatter.svg">
        <img class="only-dark" src="_images/dark-scatter.svg">
@@ -154,6 +158,10 @@ Gallery
      <a href="histogram.html">
        <img class="only-light" src="_images/light-histogram.svg">
        <img class="only-dark" src="_images/dark-histogram.svg">
+     </a>
+     <a href="heatmap.html">
+       <img class="only-light" src="_images/light-heatmap.svg">
+       <img class="only-dark" src="_images/dark-heatmap.svg">
      </a>
      <a href="pie.html">
        <img class="only-light" src="_images/light-donut.svg">
@@ -201,9 +209,11 @@ Table of Content
 
    line
    area
+   stack
    scatter
    bar
    histogram
+   heatmap
    pie
    density
    bubble
