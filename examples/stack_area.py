@@ -22,17 +22,17 @@ margin_left = 40
 
 
 # Determine the series that need to be stacked.
+# set_keys: distinct series keys, in input order
+# set_values: get value for each series key and stack
+# index: group by stack then series key
 series = (
     d3.stack()
+    .set_order(d3.stack_order_descending)
     .set_offset(d3.stack_offset_expand)
-    .set_keys(
-        unemployment["industry"].unique().to_list()
-    )  # distinct series keys, in input order
-    .set_value(
-        lambda d, key, index, data: data[d][key]["unemployed"]
-    )(  # get value for each series key and stack
+    .set_keys(unemployment["industry"].unique().to_list())
+    .set_value(lambda d, key, i, data: data[d][key]["unemployed"])(
         d3.index(data, lambda d: d["date"], lambda d: d["industry"])
-    )  # group by stack then series key
+    )
 )
 
 # Prepare the scales for positional and color encodings.
@@ -51,7 +51,12 @@ color = (
 )
 
 # Construct an area shape.
-area = d3.area().x(lambda d: x(d.data.timestamp())).y0(lambda d: y(d[0])).y1(lambda d: y(d[1]))
+area = (
+    d3.area()
+    .x(lambda d: x(d.data.timestamp()))
+    .y0(lambda d: y(d[0]))
+    .y1(lambda d: y(d[1]))
+)
 
 # Create the SVG container.
 svg = (
