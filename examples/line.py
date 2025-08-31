@@ -26,7 +26,7 @@ x = d3.scale_time(
     [aapl["date"].min(), aapl["date"].max()], [margin.left, width - margin.right]
 )
 
-# # Declare the y (vertical position) scale.
+# Declare the y (vertical position) scale.
 y = d3.scale_linear([0, aapl["close"].max()], [height - margin.bottom, margin.top])
 
 # Declare the line generator.
