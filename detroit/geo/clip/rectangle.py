@@ -11,6 +11,12 @@ from .rejoin import EPSILON, Intersection, clip_rejoin
 clip_max = 1e9
 clip_min = -1e9
 
+def clamp(x):
+    if x > clip_max:
+        return clip_max
+    if x < clip_min:
+        return clip_min
+    return x
 
 class ClipRectangle(PolygonStream):
     def __init__(
@@ -192,17 +198,18 @@ class ClipRectangle(PolygonStream):
             if v and self._ppv:
                 self._active_stream.point(x, y)
             else:
-                self._ppx = max(clip_min, min(clip_max, self._ppx))
-                self._ppy = max(clip_min, min(clip_max, self._ppy))
-                x = max(clip_min, min(clip_max, x))
-                y = max(clip_min, min(clip_max, y))
-                a = [self._ppx, self._ppy]
-                b = [x, y]
-                if clip_line(a, b, self._x0, self._y0, self._x1, self._y1):
+                # self._timer.start()
+                self._ppx = clamp(self._ppx)
+                self._ppy = clamp(self._ppy)
+                x = clamp(x)
+                y = clamp(y)
+                # self._timer.end()
+                if result := clip_line(self._ppx, self._ppy, x, y, self._x0, self._y0, self._x1, self._y1):
+                    x1, y1, x2, y2 = result
                     if not self._ppv:
                         self._active_stream.line_start()
-                        self._active_stream.point(a[0], a[1])
-                    self._active_stream.point(b[0], b[1])
+                        self._active_stream.point(x1, y1)
+                    self._active_stream.point(x2, y2)
                     if not v:
                         self._active_stream.line_end()
                     self._clean = False

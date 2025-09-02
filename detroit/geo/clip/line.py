@@ -1,19 +1,12 @@
 from math import inf
 
-from ...types import Point2D
-
-
 def sign(x: float) -> float:
     return -1 if x < 0 else 1
 
 
 def clip_line(
-    a: Point2D, b: Point2D, x0: float, y0: float, x1: float, y1: float
-) -> bool:
-    ax = a[0]
-    ay = a[1]
-    bx = b[0]
-    by = b[1]
+    ax: float, ay: float, bx: float, by: float, x0: float, y0: float, x1: float, y1: float
+) -> tuple[float, float, float, float] | None:
     t0 = 0
     t1 = 1
     dx = bx - ax
@@ -21,68 +14,72 @@ def clip_line(
 
     r = x0 - ax
     if not dx and r > 0:
-        return False
+        return None
     r = r / dx if dx != 0.0 else sign(r) * inf
     if dx < 0:
         if r < t0:
-            return False
+            return None
         if r < t1:
             t1 = r
     elif dx > 0:
         if r > t1:
-            return False
+            return None
         if r > t0:
             t0 = r
 
     r = x1 - ax
     if not dx and r < 0:
-        return False
+        return None
     r = r / dx if dx != 0.0 else sign(r) * inf
     if dx < 0:
         if r > t1:
-            return False
+            return None
         if r > t0:
             t0 = r
     elif dx > 0:
         if r < t0:
-            return False
+            return None
         if r < t1:
             t1 = r
 
     r = y0 - ay
     if not dy and r > 0:
-        return False
+        return None
     r = r / dy if dy != 0.0 else sign(r) * inf
     if dy < 0:
         if r < t0:
-            return False
+            return None
         if r < t1:
             t1 = r
     elif dy > 0:
         if r > t1:
-            return False
+            return None
         if r > t0:
             t0 = r
 
     r = y1 - ay
     if not dy and r < 0:
-        return False
+        return None
     r = r / dy if dy != 0.0 else sign(r) * inf
     if dy < 0:
         if r > t1:
-            return False
+            return None
         if r > t0:
             t0 = r
     elif dy > 0:
         if r < t0:
-            return False
+            return None
         if r < t1:
             t1 = r
 
+    x1 = ax
+    y1 = ay
+    x2 = bx
+    y2 = by
     if t0 > 0:
-        a[0] = ax + t0 * dx
-        a[1] = ay + t0 * dy
+        x1 = ax + t0 * dx
+        y1 = ay + t0 * dy
     if t1 < 1:
-        b[0] = ax + t1 * dx
-        b[1] = ay + t1 * dy
-    return True
+        x2 = ax + t1 * dx
+        y2 = ay + t1 * dy
+    return x1, y1, x2, y2

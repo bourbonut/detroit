@@ -12,8 +12,8 @@ cos_min_distance = cos(radians(30))
 
 def resample_none(project: Projection) -> GeoTransformer:
     def point(self, x: float, y: float):
-        x = project(x, y)
-        self._stream.point(x[0], x[1])
+        a, b = project(x, y)
+        self._stream.point(a, b)
 
     return GeoTransformer({"point": point})
 
@@ -98,8 +98,8 @@ class Resample(PolygonStream):
         self._line_start = self._line_start_default
 
     def _point_default(self, x: float, y: float):
-        x = self._project(x, y)
-        self._stream.point(x[0], x[1])
+        a, b = self._project(x, y)
+        self._stream.point(a, b)
 
     def _line_start_default(self):
         self._x0 = nan
@@ -108,8 +108,8 @@ class Resample(PolygonStream):
         self._stream.line_start()
 
     def _line_point(self, lambda_: float, phi: float):
-        c = cartesian([lambda_, phi])
-        p = self._project(lambda_, phi)
+        a1, b1, c1 = cartesian([lambda_, phi])
+        x1, y1 = self._project(lambda_, phi)
         self.resample_line_to(
             self._x0,
             self._y0,
@@ -117,20 +117,20 @@ class Resample(PolygonStream):
             self._a0,
             self._b0,
             self._c0,
-            p[0],
-            p[1],
+            x1,
+            y1,
             lambda_,
-            c[0],
-            c[1],
-            c[2],
+            a1,
+            b1,
+            c1,
             max_depth,
         )
-        self._x0 = p[0]
-        self._y0 = p[1]
+        self._x0 = x1
+        self._y0 = y1
         self._lambda0 = lambda_
-        self._a0 = c[0]
-        self._b0 = c[1]
-        self._c0 = c[2]
+        self._a0 = a1
+        self._b0 = b1
+        self._c0 = c1
         self._stream.point(self._x0, self._y0)
 
     def _line_end_default(self):
