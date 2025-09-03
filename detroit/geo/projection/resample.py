@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from math import asin, atan2, cos, nan, radians, sqrt
+from math import asin, atan2, cos, fabs, hypot, nan, radians
 
 from ..cartesian import cartesian
 from ..common import PolygonStream, Projection
@@ -52,22 +52,19 @@ class Resample(PolygonStream):
             a = a0 + a1
             b = b0 + b1
             c = c0 + c1
-            m = sqrt(a * a + b * b + c * c)
+            m = hypot(a, b, c)
             c /= m
-            phi2 = asin(c)
-            if abs(abs(c) - 1) < EPSILON or abs(lambda0 - lambda1) < EPSILON:
-                lambda2 = (lambda0 + lambda1) / 2
+            if fabs(fabs(c) - 1.0) < EPSILON or fabs(lambda0 - lambda1) < EPSILON:
+                lambda2 = (lambda0 + lambda1) * 0.5
             else:
                 lambda2 = atan2(b, a)
-            p = self._project(lambda2, phi2)
-            x2 = p[0]
-            y2 = p[1]
+            x2, y2 = self._project(lambda2, asin(c))
             dx2 = x2 - x0
             dy2 = y2 - y0
             dz = dy * dx2 - dx * dy2
             if (
                 dz * dz / d2 > self._delta2
-                or abs((dx * dx2 + dy * dy2) / d2 - 0.5) > 0.3
+                or fabs((dx * dx2 + dy * dy2) / d2 - 0.5) > 0.3
                 or a0 * a1 + b0 * b1 + c0 * c1 < cos_min_distance
             ):
                 a /= m

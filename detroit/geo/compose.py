@@ -11,8 +11,8 @@ class Compose:
             self._invert = self._valid_invert
 
     def __call__(self, x: float, y: float) -> Point2D:
-        x = self._a(x, y)
-        return self._b(x[0], x[1])
+        a, b = self._a(x, y)
+        return self._b(a, b)
 
     def invert(self, x: float, y: float) -> Point2D:
         return self._invert(x, y)

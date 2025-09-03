@@ -1,11 +1,15 @@
-from math import inf
-
-def sign(x: float) -> float:
-    return -1 if x < 0 else 1
+from math import copysign, inf
 
 
 def clip_line(
-    ax: float, ay: float, bx: float, by: float, x0: float, y0: float, x1: float, y1: float
+    ax: float,
+    ay: float,
+    bx: float,
+    by: float,
+    x0: float,
+    y0: float,
+    x1: float,
+    y1: float,
 ) -> tuple[float, float, float, float] | None:
     t0 = 0
     t1 = 1
@@ -15,7 +19,10 @@ def clip_line(
     r = x0 - ax
     if not dx and r > 0:
         return None
-    r = r / dx if dx != 0.0 else sign(r) * inf
+    try:
+        r = r / dx
+    except ZeroDivisionError:
+        r = copysign(r, 0) * inf
     if dx < 0:
         if r < t0:
             return None
@@ -30,7 +37,10 @@ def clip_line(
     r = x1 - ax
     if not dx and r < 0:
         return None
-    r = r / dx if dx != 0.0 else sign(r) * inf
+    try:
+        r = r / dx
+    except ZeroDivisionError:
+        r = copysign(r, 0) * inf
     if dx < 0:
         if r > t1:
             return None
@@ -45,7 +55,10 @@ def clip_line(
     r = y0 - ay
     if not dy and r > 0:
         return None
-    r = r / dy if dy != 0.0 else sign(r) * inf
+    try:
+        r = r / dy
+    except ZeroDivisionError:
+        r = copysign(r, 0) * inf
     if dy < 0:
         if r < t0:
             return None
@@ -60,7 +73,10 @@ def clip_line(
     r = y1 - ay
     if not dy and r < 0:
         return None
-    r = r / dy if dy != 0.0 else sign(r) * inf
+    try:
+        r = r / dy
+    except ZeroDivisionError:
+        r = copysign(r, 0) * inf
     if dy < 0:
         if r > t1:
             return None

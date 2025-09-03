@@ -9,6 +9,8 @@ TIntersection = TypeVar("Intersection", bound="Intersection")
 
 
 class Intersection:
+    __slots__ = ("x", "z", "o", "e", "v", "n", "p")
+
     def __init__(
         self, point: Point2D, points: list[Point2D], other: TIntersection, entry: bool
     ):
@@ -31,43 +33,44 @@ def clip_rejoin(
     subject = []
     clip = []
 
-    for segment in segments:
-        n = len(segment) - 1
-        if n <= 0:
-            continue
-        p0 = segment[0]
-        p1 = segment[n]
-
-        if point_equal(p0, p1):
-            if not p0[2] and not p1[2]:
-                stream.line_start()
-                for i in range(n):
-                    p0 = segment[i]
-                    stream.point(p0[0], p0[1])
-                stream.line_end()
+    if segments:
+        for segment in segments:
+            n = len(segment) - 1
+            if n <= 0:
                 continue
-            p1[0] += 2 * EPSILON
+            p0 = segment[0]
+            p1 = segment[n]
 
-        x = Intersection(p0, segment, None, True)
-        subject.append(x)
-        x.o = Intersection(p0, None, x, False)
-        clip.append(x.o)
+            if point_equal(p0, p1):
+                if not p0[2] and not p1[2]:
+                    stream.line_start()
+                    for i in range(n):
+                        p0 = segment[i]
+                        stream.point(p0[0], p0[1])
+                    stream.line_end()
+                    continue
+                p1[0] += 2 * EPSILON
 
-        x = Intersection(p1, segment, None, False)
-        subject.append(x)
-        x.o = Intersection(p1, None, x, True)
-        clip.append(x.o)
+            x = Intersection(p0, segment, None, True)
+            subject.append(x)
+            x.o = Intersection(p0, None, x, False)
+            clip.append(x.o)
 
-    if len(subject) == 0:
+            x = Intersection(p1, segment, None, False)
+            subject.append(x)
+            x.o = Intersection(p1, None, x, True)
+            clip.append(x.o)
+
+    if not subject:
         return
 
-    clip = sorted(clip, key=cmp_to_key(compare_intersection))
+    clip.sort(key=cmp_to_key(compare_intersection))
     link(subject)
     link(clip)
 
-    for i in range(len(clip)):
+    for intersection in clip:
         start_inside = not (start_inside)
-        clip[i].e = start_inside
+        intersection.e = start_inside
 
     start = subject[0]
 
@@ -86,7 +89,8 @@ def clip_rejoin(
             if current.e:
                 if is_subject:
                     for point in points:
-                        stream.point(point[0], point[1])
+                        x, y, _ = point
+                        stream.point(x, y)
                 else:
                     interpolate(current.x, current.n.x, 1, stream)
                 current = current.n
@@ -94,7 +98,8 @@ def clip_rejoin(
                 if is_subject:
                     points = current.p.z
                     for point in reversed(points):
-                        stream.point(point[0], point[1])
+                        x, y, _ = point
+                        stream.point(x, y)
                 else:
                     interpolate(current.x, current.p.x, -1, stream)
                 current = current.p
