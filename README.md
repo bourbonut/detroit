@@ -1,13 +1,13 @@
 <p align="center">
     <img style="border-radius:15px" src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/_static/logo.png"></img>
     <br />
-    <a href="https://pypi.org/project/detroit/">
+    <a style="text-decoration: none;" href="https://pypi.org/project/detroit/">
         <img src="https://img.shields.io/pypi/v/detroit.svg?style=flat&logo=pypi" alt="PyPI Latest Release">
     </a>
-    <a href='https://detroit.readthedocs.io/en/latest/?badge=latest'>
+    <a style="text-decoration: none;" href='https://detroit.readthedocs.io/en/latest/?badge=latest'>
         <img src='https://readthedocs.org/projects/detroit/badge/?version=latest' alt='Documentation Status' />
     </a>
-    <a href="https://opensource.org/licenses/ISC">
+    <a style="text-decoration: none;" href="https://opensource.org/licenses/ISC">
         <img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="Licence ISC">
     </a>
 </p>
