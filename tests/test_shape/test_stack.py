@@ -18,10 +18,10 @@ def round_series(series):
 
 def test_stack_1():
     s = d3.stack()
-    assert s.keys() == []
-    assert s.value({"foo": 42}, "foo") == 42
-    assert s.order == d3.stack_order_none
-    assert s.offset == d3.stack_offset_none
+    assert s.get_keys()() == []
+    assert s.get_value()({"foo": 42}, "foo") == 42
+    assert s.get_order() == d3.stack_order_none
+    assert s.get_offset() == d3.stack_offset_none
 
 
 def test_stack_2():
@@ -37,12 +37,12 @@ def test_stack_2():
 
 def test_stack_3():
     s = d3.stack().set_keys(["0.0", "2.0", "4.0"])
-    assert s.keys() == ["0.0", "2.0", "4.0"]
+    assert s.get_keys()() == ["0.0", "2.0", "4.0"]
 
 
 def test_stack_4():
     s = d3.stack().set_keys(lambda: list("abc"))
-    assert s.keys(), ["a", "b", "c"]
+    assert s.get_keys(), ["a", "b", "c"]
 
 
 def test_stack_5():
@@ -68,7 +68,7 @@ def test_stack_5():
 
 def test_stack_6():
     s = d3.stack().set_value("42.0")
-    assert s.value() == 42
+    assert s.get_value() == 42
 
 
 def test_stack_7():
@@ -76,7 +76,7 @@ def test_stack_7():
         return 42
 
     s = d3.stack().set_value(v)
-    assert s.value == v
+    assert s.get_value() == v
 
 
 def test_stack_8():
@@ -93,23 +93,23 @@ def test_stack_8():
 
 def test_stack_9():
     def v():
-        return "2.0"
+        return 2.0
 
     s = d3.stack().set_keys(["foo"]).set_value(v)
     data = [{"foo": 1}]
-    assert s(data), [make_series([[0, 2]], data, "foo" == 0)]
+    assert s(data) == [make_series([[0, 2]], data, "foo", 0)]
 
 
 def test_stack_10():
     s = d3.stack().set_order(None)
-    assert s.order == d3.stack_order_none
-    assert callable(s.order)
+    assert s.get_order() == d3.stack_order_none
+    assert callable(s.get_order())
 
 
 def test_stack_11():
     s = d3.stack().set_keys([0, 1, 2, 3]).set_order(d3.stack_order_reverse)
     data = [[1, 3, 5, 1], [2, 4, 2, 3], [1, 2, 4, 2]]
-    assert s.order == d3.stack_order_reverse
+    assert s.get_order() == d3.stack_order_reverse
     assert s(data) == [
         make_series([[9, 10], [9, 11], [8, 9]], data, 0, 3),
         make_series([[6, 9], [5, 9], [6, 8]], data, 1, 2),
@@ -120,14 +120,14 @@ def test_stack_11():
 
 def test_stack_12():
     s = d3.stack().set_offset(None)
-    assert s.offset == d3.stack_offset_none
-    assert callable(s.offset)
+    assert s.get_offset() == d3.stack_offset_none
+    assert callable(s.get_offset())
 
 
 def test_stack_13():
     s = d3.stack().set_keys([0, 1, 2, 3]).set_offset(d3.stack_offset_expand)
     data = [[1, 3, 5, 1], [2, 4, 2, 3], [1, 2, 4, 2]]
-    assert s.offset == d3.stack_offset_expand
+    assert s.get_offset() == d3.stack_offset_expand
     computed = list(map(round_series, s(data)))
     expected = list(
         map(
