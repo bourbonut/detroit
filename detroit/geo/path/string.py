@@ -32,10 +32,10 @@ class PathString(PolygonStream):
 
         self._digits = digits
         self._round = identity
-        if digits == 0:
+        if self._digits == 0:
             self._round = round_zero
         elif self._digits < 15:
-            self._round = round_digits(digits)
+            self._round = round_digits(self._digits)
 
         self._cache_append = None
         self._cache_radius = None
@@ -61,41 +61,41 @@ class PathString(PolygonStream):
 
     def line_end(self):
         if self._line == 0:
-            self.append("Z")
+            self._string.write("Z")
         self._point = nan
 
     def point(self, x: float, y: float):
-        if self._point == 0:
-            x = self._round(x)
-            y = self._round(y)
-            self.append(f"M{x},{y}")
-            self._point = 1
-        elif self._point == 1:
-            x = self._round(x)
-            y = self._round(y)
-            self.append(f"L{x},{y}")
-        else:
-            x = self._round(x)
-            y = self._round(y)
-            self.append(f"M{x},{y}")
-            if self._radius != self._cache_radius:
-                r = self._round(self._radius)
-                r2 = self._round(2 * self._radius)
-                s = self._string
-                self._string = StringIO(newline="")
-                self.append(f"m0,{r}a{r},{r} 0 1,1 0,{-r2}a{r},{r} 0 1,1 0,{r2}z")
-                self._cache_radius = r
-                self._cache_circle = self._string
-                self._string = s
-            self._string.write(self._cache_circle.getvalue())
+        match self._point:
+            case 0:
+                x = self._round(x)
+                y = self._round(y)
+                self._string.write(f"M{x},{y}")
+                self._point = 1
+            case 1:
+                x = self._round(x)
+                y = self._round(y)
+                self._string.write(f"L{x},{y}")
+            case _:
+                x = self._round(x)
+                y = self._round(y)
+                self._string.write(f"M{x},{y}")
+                if self._radius != self._cache_radius:
+                    r = self._round(self._radius)
+                    r2 = self._round(2 * self._radius)
+                    s = self._string
+                    self._string = StringIO(newline="")
+                    self._string.write(
+                        f"m0,{r}a{r},{r} 0 1,1 0,{-r2}a{r},{r} 0 1,1 0,{r2}z"
+                    )
+                    self._cache_radius = r
+                    self._cache_circle = self._string
+                    self._string = s
+                self._string.write(self._cache_circle.getvalue())
 
     def result(self) -> str | None:
         result = self._string.getvalue()
         self._string = StringIO(newline="")
         return result if len(result) else None
-
-    def append(self, string: str):
-        self._string.write(string)
 
     def __str__(self) -> str:
         return "PathString()"

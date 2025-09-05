@@ -24,8 +24,8 @@ transform_radians = GeoTransformer({"point": point})
 
 def transform_rotate(rotate: RotateRadians) -> GeoTransformer:
     def point(self, x: float, y: float):
-        r = rotate(x, y)
-        return self._stream.point(r[0], r[1])
+        a, b = rotate(x, y)
+        return self._stream.point(a, b)
 
     return GeoTransformer({"point": point})
 

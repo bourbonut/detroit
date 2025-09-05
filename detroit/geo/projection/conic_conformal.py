@@ -6,11 +6,11 @@ from .conic import conic_projection
 from .mercator import MercatorRaw
 
 EPSILON = 1e-6
-half_pi = pi * 0.5
+HALF_PI = pi * 0.5
 
 
 def tany(y):
-    return tan((half_pi + y) / 2)
+    return tan((HALF_PI + y) * 0.5)
 
 
 def sign(x):
@@ -24,12 +24,12 @@ class ConicConformalRaw:
 
     def __call__(self, x: float, y: float) -> Point2D:
         if self._f > 0.0:
-            if y < -half_pi + EPSILON:
-                y = -half_pi + EPSILON
+            if y < -HALF_PI + EPSILON:
+                y = -HALF_PI + EPSILON
         else:
-            if y > half_pi - EPSILON:
-                y = half_pi - EPSILON
-        r = self._f / pow(tany(y), self._n)
+            if y > HALF_PI - EPSILON:
+                y = HALF_PI - EPSILON
+        r = self._f / pow(tan((HALF_PI + y) * 0.5), self._n)
         return [r * sin(self._n * x), self._f - r * cos(self._n * x)]
 
     def invert(self, x: float, y: float) -> Point2D:
@@ -38,7 +38,7 @@ class ConicConformalRaw:
         l_ = atan2(x, abs(fy)) * sign(fy)
         if fy * self._n < 0:
             l_ -= pi * sign(x) * sign(fy)
-        return [l_ / self._n, 2 * atan(pow(self._f / r, 1 / self._n)) - half_pi]
+        return [l_ / self._n, 2 * atan(pow(self._f / r, 1 / self._n)) - HALF_PI]
 
 
 def conic_conformal_raw(y0: float, y1: float) -> RawProjection:

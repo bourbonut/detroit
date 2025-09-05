@@ -1,4 +1,4 @@
-from math import atan, cos, nan, pi, sin
+from math import atan, cos, fabs, nan, pi, sin
 
 from ..common import LineStream
 from .clip import clip
@@ -26,7 +26,7 @@ class ClipAntimeridianLine(LineStream):
 
     def point(self, lambda1: float, phi1: float):
         sign1 = pi if lambda1 > 0 else -pi
-        delta = abs(lambda1 - self._lambda0)
+        delta = fabs(lambda1 - self._lambda0)
 
         if abs(delta - pi) < EPSILON:
             self._phi0 = half_pi if (self._phi0 + phi1) * 0.5 > 0 else -half_pi
@@ -38,9 +38,9 @@ class ClipAntimeridianLine(LineStream):
             self._stream.point(lambda1, self._phi0)
             self._clean = 0
         elif self._sign0 != sign1 and delta >= pi:
-            if abs(self._lambda0 - self._sign0) < EPSILON:
+            if fabs(self._lambda0 - self._sign0) < EPSILON:
                 self._lambda0 -= self._sign0 * EPSILON
-            if abs(lambda1 - sign1) < EPSILON:
+            if fabs(lambda1 - sign1) < EPSILON:
                 lambda1 -= sign1 * EPSILON
             self._phi0 = clip_antimeridian_intersect(
                 self._lambda0, self._phi0, lambda1, phi1
@@ -57,6 +57,9 @@ class ClipAntimeridianLine(LineStream):
 
     def clean(self) -> int:
         return 2 - self._clean
+
+    def __str__(self):
+        return f"ClipAntimeridianLine({self._stream})"
 
 
 def clip_antimeridian_intersect(
