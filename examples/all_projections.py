@@ -12,9 +12,9 @@ theme = "light"
 color = "white" if theme == "dark" else "black"
 
 world = json.loads(requests.get(WORLD_URL).content)
-feature = Feature().feature(world, world["objects"]["land"])
+feature = Feature()(world, world["objects"]["land"])
 us = json.loads(requests.get(US_URL).content)
-nation = Feature().feature(us, us["objects"]["nation"])
+nation = Feature()(us, us["objects"]["nation"])
 
 # pytopojson bug: it does not work
 # statemesh = Mesh()(
