@@ -68,7 +68,7 @@ def test_stack_5():
 
 def test_stack_6():
     s = d3.stack().set_value("42.0")
-    assert s.get_value() == 42
+    assert s.get_value()() == 42
 
 
 def test_stack_7():
