@@ -211,7 +211,7 @@ class Selection(Generic[T]):
         self._parents = parents
         self._enter = enter
         self._exit = exit
-        self._data = data or {}
+        self._data = {} if data is None else data
 
     def select(self, selection: str | None = None) -> TSelection:
         """

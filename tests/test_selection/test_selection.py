@@ -227,7 +227,7 @@ def test_selection_19(g_classes):
         assert node in nodes
 
     g_classes.select_all("g").each(test)
-    assert data == [(None, i) for i in range(10)]
+    assert data == [(i, i) for i in range(10)]
 
 
 def test_selection_20():
