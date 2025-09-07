@@ -599,3 +599,37 @@ def test_selection_46():
 
     s = svg.select_all(".tick text")
     assert len(s.nodes()) == 2
+
+def test_selection_47(root):
+    svg = d3.create("svg")
+    text = svg.append("text").style("fill", "red").style("stroke", "none")
+    assert text.style("fill") == "red"
+    assert text.style("stroke") == "none"
+
+    text.style("fill", "blue")
+    text.style("stroke", "white")
+
+    assert text.style("fill") == "blue"
+    assert text.style("stroke") == "white"
+    assert text.attr("style") == "fill:blue;stroke:white;"
+
+def test_selection_48(root):
+    svg = d3.create("svg")
+    def fill():
+        return "red"
+    def stroke():
+        return "none"
+    text = svg.append("text").style("fill", fill).style("stroke", stroke)
+    assert text.style("fill") == "red"
+    assert text.style("stroke") == "none"
+
+    def fill():
+        return "blue"
+    def stroke():
+        return "white"
+    text.style("fill", fill)
+    text.style("stroke", stroke)
+
+    assert text.style("fill") == "blue"
+    assert text.style("stroke") == "white"
+    assert text.attr("style") == "fill:blue;stroke:white;"
