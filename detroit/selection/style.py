@@ -67,7 +67,7 @@ def style_constant(name: str, value: str) -> EtreeFunction[T, None]:
         style = node.get("style", "")
         attrs = str_to_attrs(style)
         if name in attrs:
-            attrs[name] = value
+            attrs[name] = str(value)
             style = attrs_to_str(attrs)
         else:
             style = f"{style}{name}:{value};"
@@ -100,7 +100,7 @@ def style_function(name: str, value: Accessor[T, str]) -> EtreeFunction[T, None]
         new_value = value(data, i, group)
         attrs = str_to_attrs(style)
         if name in attrs:
-            attrs[name] = new_value
+            attrs[name] = str(new_value)
             style = attrs_to_str(attrs)
         else:
             style = f"{style}{name}:{new_value};"
