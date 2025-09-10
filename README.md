@@ -31,35 +31,35 @@ pip install detroit
 
 # Coverage
 
-| Package Name    | Yes / No | Tests OK | Notes                         |
-|-----------------|----------|----------|-------------------------------|
-| array           | Yes      | Yes      |  Not all functions supported  |
-| axis            | Yes      | Yes      |                               |
-| brush           | No       | -        |                               |
-| chord           | No       | -        |                               |
-| color           | Yes      | Yes      |                               |
-| contour         | Yes      | Yes      |                               |
-| delaunay        | No       | -        |                               |
-| dispatch        | No       | -        |                               |
-| drag            | No       | -        |                               |
-| dsv             | -        | -        | use `import pandas / polars`  |
-| ease            | No       | -        |                               |
-| fetch           | -        | -        | use `import requests`         |
-| force           | No       | -        |                               |
-| format          | Yes      | Yes      |                               |
-| geo             | Yes      | Yes      |                               |
-| hierarchy       | No       | -        |                               |
-| interpolate     | Yes      | Yes      | interpolate CSS not supported |
-| path            | Yes      | Yes      |                               |
-| polygon         | No       | -        |                               |
-| quadtree        | No       | -        |                               |
-| random          | -        | -        | Use `import random`           |
-| scale           | Yes      | Yes      | Mostly `test_linear`          |
-| scale-chromatic | Yes      | Yes      |                               |
-| selection       | Yes      | Yes      |                               |
-| shape           | Yes      | Yes      |                               |
-| time            | Yes      | Yes      |                               |
-| time-format     | Yes      | Yes      |                               |
-| timer           | No       | -        |                               |
-| transition      | No       | -        |                               |
-| zoom            | No       | -        |                               |
+| Package Name    | Yes / No | Tests OK | Notes                                                            |
+|-----------------|----------|----------|------------------------------------------------------------------|
+| array           | Yes      | Yes      |  Not all functions supported                                     |
+| axis            | Yes      | Yes      |                                                                  |
+| brush           | No       | -        |  TODO [`detroit-live`](https://github.com/bourbonut/detroit-live)|
+| chord           | No       | -        |                                                                  |
+| color           | Yes      | Yes      |                                                                  |
+| contour         | Yes      | Yes      |                                                                  |
+| delaunay        | No       | -        |                                                                  |
+| dispatch        | No       | -        | TODO [`detroit-live`](https://github.com/bourbonut/detroit-live) |
+| drag            | No       | -        | TODO [`detroit-live`](https://github.com/bourbonut/detroit-live) |
+| dsv             | -        | -        | use `import pandas / polars`                                     |
+| ease            | No       | -        |                                                                  |
+| fetch           | -        | -        | use `import requests`                                            |
+| force           | No       | -        |                                                                  |
+| format          | Yes      | Yes      |                                                                  |
+| geo             | Yes      | Yes      |                                                                  |
+| hierarchy       | No       | -        |                                                                  |
+| interpolate     | Yes      | Yes      | interpolate CSS not supported                                    |
+| path            | Yes      | Yes      |                                                                  |
+| polygon         | No       | -        |                                                                  |
+| quadtree        | No       | -        |                                                                  |
+| random          | -        | -        | Use `import random`                                              |
+| scale           | Yes      | Yes      | Mostly `test_linear`                                             |
+| scale-chromatic | Yes      | Yes      |                                                                  |
+| selection       | Yes      | Yes      |                                                                  |
+| shape           | Yes      | Yes      |                                                                  |
+| time            | Yes      | Yes      |                                                                  |
+| time-format     | Yes      | Yes      |                                                                  |
+| timer           | No       | -        | TODO [`detroit-live`](https://github.com/bourbonut/detroit-live) |
+| transition      | No       | -        | TODO [`detroit-live`](https://github.com/bourbonut/detroit-live) |
+| zoom            | No       | -        | TODO [`detroit-live`](https://github.com/bourbonut/detroit-live) |
