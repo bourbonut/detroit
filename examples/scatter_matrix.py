@@ -1,9 +1,11 @@
 # Source: https://observablehq.com/@d3/brushable-scatterplot-matrix
-import detroit as d3
+from itertools import accumulate, product
+from math import exp, isnan
+from operator import iadd, itemgetter
+
 import polars as pl
-from operator import itemgetter, iadd
-from math import isnan, exp
-from itertools import product, accumulate
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/715db1223e067f00500780077febc6cebbdd90c151d3d78317c802732252052ab0e367039872ab9c77d6ef99e5f55a0724b35ddc898a1c99cb14c31a379af80a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27penguins.csv"
 
@@ -75,7 +77,11 @@ def x_axis(g):
         .attr("transform", lambda d, i: f"translate({i * size},0)")
         .each(lambda node, d, i, data: d3.select(node).call(axis_x.set_scale(d)))
         .call(lambda g: g.select(".domain").remove())
-        .call(lambda g: g.select_all(".tick").select_all("line").attr("stroke", grid_color))
+        .call(
+            lambda g: g.select_all(".tick")
+            .select_all("line")
+            .attr("stroke", grid_color)
+        )
     )
 
 
@@ -91,7 +97,11 @@ def y_axis(g):
         .attr("transform", lambda d, i: f"translate(0,{i * size})")
         .each(lambda node, d, i, data: d3.select(node).call(axis_y.set_scale(d)))
         .call(lambda g: g.select(".domain").remove())
-        .call(lambda g: g.select_all(".tick").select_all("line").attr("stroke", grid_color))
+        .call(
+            lambda g: g.select_all(".tick")
+            .select_all("line")
+            .attr("stroke", grid_color)
+        )
     )
 
 

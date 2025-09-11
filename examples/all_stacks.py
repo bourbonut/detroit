@@ -1,5 +1,6 @@
-import detroit as d3
 import polars as pl
+
+import detroit as d3
 
 URL = "https://raw.githubusercontent.com/d3/d3/refs/heads/main/docs/public/data/riaa-us-revenue.csv"
 
@@ -16,7 +17,12 @@ riaa = pl.read_csv(URL).select(
 data = riaa.to_dicts()
 keys = riaa["format"].unique().sort().to_list()
 indexed_data = d3.index(data, lambda d: d["year"], lambda d: d["format"])
-mapping_group = {key: list(group)[0] for key, group in d3.group(data, lambda d: d["format"], lambda d: d["group"]).items()}
+mapping_group = {
+    key: list(group)[0]
+    for key, group in d3.group(
+        data, lambda d: d["format"], lambda d: d["group"]
+    ).items()
+}
 
 width = 628
 height = 200
@@ -25,8 +31,10 @@ margin_right = 20
 margin_bottom = 20
 margin_left = 40
 
+
 def value_default(d, key, i, data):
     return data[d][key]["revenue"]
+
 
 def value_diverging(d, key, i, data):
     d = data[d][key]
@@ -34,17 +42,15 @@ def value_diverging(d, key, i, data):
     group = d["group"]
     return (-1 if group == "Disc" else 1) * revenue
 
+
 def reverse_appearance(series):
     return d3.stack_order_appearance(series)[::-1]
+
 
 def generate_svg(title, order, offset):
     value = value_diverging if "diverging" in title else value_default
     stack = (
-        d3.stack()
-        .set_order(order)
-        .set_offset(offset)
-        .set_keys(keys)
-        .set_value(value)
+        d3.stack().set_order(order).set_offset(offset).set_keys(keys).set_value(value)
     )
     series = stack(indexed_data)
 
@@ -103,9 +109,7 @@ def generate_svg(title, order, offset):
     (
         svg.append("g")
         .attr("transform", f"translate({margin_left},0)")
-        .call(
-            d3.axis_left(y).set_ticks(*((6, "%") if is_expand else (5,)))
-        )
+        .call(d3.axis_left(y).set_ticks(*((6, "%") if is_expand else (5,))))
         .call(lambda g: g.select(".domain").remove())
         .call(
             lambda g: g.select_all(".tick line")
@@ -143,6 +147,7 @@ def generate_svg(title, order, offset):
 
     with open(f"{theme}-{title}.svg", "w") as file:
         file.write(str(svg))
+
 
 options = [
     ("stack-order-appearance", d3.stack_order_appearance, d3.stack_offset_none),

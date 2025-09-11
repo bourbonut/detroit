@@ -451,6 +451,7 @@ data = cm.get_domain()
 def clamp_total(total):
     def f(x):
         return 1 - exp(-x / total)
+
     return f
 
 
@@ -458,7 +459,7 @@ lengths = list(map(len, data))
 clamp = clamp_total(max(lengths))
 weights = list(map(clamp, lengths))
 w_max = max(weights)
-weights = [w / w_max for w in weights] # normalize weights
+weights = [w / w_max for w in weights]  # normalize weights
 
 # Spaces between labels
 spaces = [0] + list(

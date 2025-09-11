@@ -1,6 +1,8 @@
 from collections import namedtuple
-import detroit as d3
+
 import polars as pl
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/609a91fa3908394198a9b2592b8432a798332e9a140a8d5f9c864615e3f18b2e822badadc579c06b394bb1396a20f064d72123b718354b829978b2d4782bd5c9?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27traffic.csv"
 

@@ -129,6 +129,7 @@ svg = (
     .call(d3.axis_bottom(x).set_ticks(None, "+f"))
 )
 
+
 def top_axis(temperatures):
     tick_values = list(map(color, temperatures))
     return (
@@ -136,6 +137,7 @@ def top_axis(temperatures):
         .set_tick_values(list(map(color, temperatures)))
         .set_tick_format(lambda d: str(temperatures[tick_values.index(d)]))
     )
+
 
 (
     svg.append("g")

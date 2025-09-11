@@ -1,9 +1,12 @@
-import detroit as d3
-import requests
 import json
-from pytopojson.feature import Feature
+
 # from pytopojson.mesh import Mesh
 from concurrent.futures import ProcessPoolExecutor
+
+import requests
+from pytopojson.feature import Feature
+
+import detroit as d3
 
 WORLD_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json"
 US_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"
@@ -99,13 +102,43 @@ def conic_projection2(projection, width, height):
 
 width = 688
 projections = [
-    ("equirectangular", d3.geo_equirectangular(), width / 2, cylindrical_projection, True),
+    (
+        "equirectangular",
+        d3.geo_equirectangular(),
+        width / 2,
+        cylindrical_projection,
+        True,
+    ),
     ("mercator", d3.geo_mercator(), width, cylindrical_projection, True),
-    ("transverse_mercator", d3.geo_transverse_mercator(), width, cylindrical_projection, True),
+    (
+        "transverse_mercator",
+        d3.geo_transverse_mercator(),
+        width,
+        cylindrical_projection,
+        True,
+    ),
     ("equal_earth", d3.geo_equal_earth(), width * 0.49, cylindrical_projection, True),
-    ("natural_earth_1", d3.geo_natural_earth_1(), width * 0.5, cylindrical_projection, True),
-    ("azimuthal_equal_area", d3.geo_azimuthal_equal_area(), 400, azimuthal_projection1, True),
-    ("azimuthal_equidistant", d3.geo_azimuthal_equidistant(), 400, azimuthal_projection1, True),
+    (
+        "natural_earth_1",
+        d3.geo_natural_earth_1(),
+        width * 0.5,
+        cylindrical_projection,
+        True,
+    ),
+    (
+        "azimuthal_equal_area",
+        d3.geo_azimuthal_equal_area(),
+        400,
+        azimuthal_projection1,
+        True,
+    ),
+    (
+        "azimuthal_equidistant",
+        d3.geo_azimuthal_equidistant(),
+        400,
+        azimuthal_projection1,
+        True,
+    ),
     ("gnomonic", d3.geo_gnomonic(), 400, azimuthal_projection2, True),
     ("orthographic", d3.geo_orthographic(), 400, azimuthal_projection3, True),
     ("stereographic", d3.geo_stereographic(), 400, azimuthal_projection4, True),
@@ -152,6 +185,7 @@ def generate_world(name, projection, height, transform):
     with open(f"{theme}-projection-{name}.svg", "w") as file:
         file.write(str(svg))
 
+
 def generate_us(name, projection, height, transform):
     projection = transform(projection, width, height)
     path = d3.geo_path(projection)
@@ -189,6 +223,7 @@ def generate_us(name, projection, height, transform):
 
     with open(f"{theme}-projection-{name}.svg", "w") as file:
         file.write(str(svg))
+
 
 def generate_svg(name, projection, height, transform, is_world):
     if is_world:

@@ -10,7 +10,8 @@ theme = "light"
 color = "white" if theme == "dark" else "black"
 
 projection = (
-    d3.geo_orthographic().rotate([110, -40])
+    d3.geo_orthographic()
+    .rotate([110, -40])
     .fit_extent([[1, 1], [width - 1, height - 1]], {"type": "Sphere"})
     .set_precision(0.2)
 )

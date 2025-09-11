@@ -23,8 +23,9 @@ symbol_type = d3.scale_ordinal(names, d3.SYMBOLS_FILL)
 axis = d3.scale_band(names, [0, width]).set_padding(1)
 
 (
-    svg.call(d3.axis_bottom(axis).set_tick_size_outer(0).set_offset(0))
-    .call(lambda g: g.select(".domain").remove())
+    svg.call(d3.axis_bottom(axis).set_tick_size_outer(0).set_offset(0)).call(
+        lambda g: g.select(".domain").remove()
+    )
 )
 
 (
@@ -63,8 +64,9 @@ symbol_type = d3.scale_ordinal(names, d3.SYMBOLS_STROKE)
 axis = d3.scale_band(names, [0, width]).set_padding(1)
 
 (
-    svg.call(d3.axis_bottom(axis).set_tick_size_outer(0).set_offset(0))
-    .call(lambda g: g.select(".domain").remove())
+    svg.call(d3.axis_bottom(axis).set_tick_size_outer(0).set_offset(0)).call(
+        lambda g: g.select(".domain").remove()
+    )
 )
 
 (

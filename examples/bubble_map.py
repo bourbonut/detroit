@@ -1,9 +1,11 @@
 # https://observablehq.com/@d3/bubble-map/2
-import detroit as d3
-import requests
 import json
-from pytopojson.feature import Feature
 from math import isnan
+
+import requests
+from pytopojson.feature import Feature
+
+import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/beb56a2d9534662123fa352ffff2db8472e481776fcc1608ee4adbd532ea9ccf2f1decc004d57adc76735478ee68c0fd18931ba01fc859ee4901deb1bee2ed1b?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27population.json"
 US_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"

@@ -26,9 +26,7 @@ pie = d3.pie().set_pad_angle(1 / radius).set_sort(None).set_value(lambda d: d[1]
 color = (
     d3.scale_ordinal()
     .set_domain(data["name"].to_list())
-    .set_range(
-        d3.quantize(lambda t: interpolate(t * 0.8 + 0.1), data.height)[::-1]
-    )
+    .set_range(d3.quantize(lambda t: interpolate(t * 0.8 + 0.1), data.height)[::-1])
 )
 
 # Create the SVG container.

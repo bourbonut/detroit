@@ -17,7 +17,13 @@ svg = (
 (
     svg.append("g")
     .attr("transform", f"translate({margin}, {margin - offset})")
-    .call(d3.axis_top(d3.scale_linear().set_domain([0, 10]).set_range([0, width - 2 * margin - offset])))
+    .call(
+        d3.axis_top(
+            d3.scale_linear()
+            .set_domain([0, 10])
+            .set_range([0, width - 2 * margin - offset])
+        )
+    )
     .append("text")
     .style("fill", "black")
     .style("font-size", 20)
@@ -30,7 +36,13 @@ svg = (
 (
     svg.append("g")
     .attr("transform", f"translate({margin}, {height - margin})")
-    .call(d3.axis_bottom(d3.scale_linear().set_domain([0, 10]).set_range([0, width - 2 * margin - offset])))
+    .call(
+        d3.axis_bottom(
+            d3.scale_linear()
+            .set_domain([0, 10])
+            .set_range([0, width - 2 * margin - offset])
+        )
+    )
     .append("text")
     .style("fill", "black")
     .style("font-size", 20)
@@ -43,7 +55,13 @@ svg = (
 (
     svg.append("g")
     .attr("transform", f"translate({margin - offset}, {margin})")
-    .call(d3.axis_left(d3.scale_linear().set_domain([0, 10]).set_range([0, height - 2 * margin - offset])))
+    .call(
+        d3.axis_left(
+            d3.scale_linear()
+            .set_domain([0, 10])
+            .set_range([0, height - 2 * margin - offset])
+        )
+    )
     .append("text")
     .style("fill", "black")
     .style("font-size", 20)
@@ -56,7 +74,13 @@ svg = (
 (
     svg.append("g")
     .attr("transform", f"translate({width - margin}, {margin})")
-    .call(d3.axis_right(d3.scale_linear().set_domain([0, 10]).set_range([0, height - 2 * margin - offset])))
+    .call(
+        d3.axis_right(
+            d3.scale_linear()
+            .set_domain([0, 10])
+            .set_range([0, height - 2 * margin - offset])
+        )
+    )
     .append("text")
     .style("fill", "black")
     .style("font-size", 20)
