@@ -114,6 +114,13 @@ from .interpolate import (
     quantize,
 )
 from .path import Path as path
+from .polygon import (
+    polygon_area,
+    polygon_centroid,
+    polygon_contains,
+    polygon_hull,
+    polygon_length,
+)
 from .scale import (
     scale_band,
     scale_diverging,
@@ -551,6 +558,11 @@ __all__ = [
     "pie",
     "piecewise",
     "point_radial",
+    "polygon_area",
+    "polygon_centroid",
+    "polygon_contains",
+    "polygon_hull",
+    "polygon_length",
     "precision_fixed",
     "precision_prefix",
     "precision_round",
