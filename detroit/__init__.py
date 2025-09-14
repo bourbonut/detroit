@@ -27,6 +27,13 @@ from .array import (
     union,
 )
 from .axis import axis_bottom, axis_left, axis_right, axis_top
+from .chord import (
+    chord,
+    chord_directed,
+    chord_transpose,
+    ribbon,
+    ribbon_arrow,
+)
 from .color import (
     color,
     cubehelix,
@@ -406,6 +413,9 @@ __all__ = [
     "blur",
     "blur2",
     "blur_image",
+    "chord",
+    "chord_directed",
+    "chord_transpose",
     "color",
     "contour_density",
     "contours",
@@ -568,6 +578,8 @@ __all__ = [
     "precision_round",
     "quantize",
     "rgb",
+    "ribbon",
+    "ribbon_arrow",
     "rollup",
     "rollups",
     "scale_band",
