@@ -1,6 +1,6 @@
 from functools import cmp_to_key
 from collections.abc import Callable, Iterator
-from typing import TypeVar
+from typing import Any, TypeVar
 from math import pi
 
 TAU = 2 * pi
@@ -31,6 +31,25 @@ class ChordValue:
         self.end_angle = end_angle
         self.value = value
 
+    def get(self, key: str, default: Any | None = None) -> int | float | None:
+        match key:
+            case "index":
+                return self.index
+            case "start_angle":
+                return self.start_angle
+            case "end_angle":
+                return self.end_angle
+            case "value":
+                return self.value
+            case _:
+                return default
+
+    def __getitem__(self, key: str) -> int | float:
+        value = self.get(key)
+        if value is None:
+            raise KeyError(f"'ChordValue' object has no attribute {key!r}")
+        return value
+
     def __str__(self) -> str:
         return f"ChordValue({self.index}, {self.start_angle}, {self.end_angle}, {self.value})"
 
@@ -55,6 +74,21 @@ class ChordItem:
     ):
         self.source = source
         self.target = target
+
+    def get(self, key: str, default: Any | None = None) -> int | float | None:
+        match key:
+            case "source":
+                return self.source
+            case "target":
+                return self.target
+            case _:
+                return default
+
+    def __getitem__(self, key: str) -> int | float:
+        value = self.get(key)
+        if value is None:
+            raise KeyError(f"'ChordItem' object has no attribute {key!r}")
+        return value
 
     def __str__(self) -> str:
         return f"ChordItem({self.source}, {self.target})"
