@@ -128,6 +128,7 @@ from .polygon import (
     polygon_hull,
     polygon_length,
 )
+from .quadtree import quadtree
 from .scale import (
     scale_band,
     scale_diverging,
@@ -576,6 +577,7 @@ __all__ = [
     "precision_fixed",
     "precision_prefix",
     "precision_round",
+    "quadtree",
     "quantize",
     "rgb",
     "ribbon",
