@@ -10,7 +10,7 @@ height = y_max * square_length
 legend_height = int(square_length * 3)
 legend_width = int(square_length * 15)
 
-theme = "dark"
+theme = "light"
 
 rect_color = "#2b2b2e"
 line_color = "#202020"
