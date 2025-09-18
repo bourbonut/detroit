@@ -548,7 +548,7 @@ class Quadtree(Generic[T]):
                     quads.append(Quad(child, x0, y0, xm, ym))
         return self
 
-    def visit_all(
+    def visit_after(
         self, callback: Callable[[dict, float, float, float, float], bool]
     ) -> TQuadtree:
         """
