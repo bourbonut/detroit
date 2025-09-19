@@ -85,6 +85,16 @@ from .ease import (
     ease_sin_in_out,
     ease_sin_out,
 )
+from .force import (
+    force_center,
+    force_collide,
+    force_link,
+    force_many_body,
+    force_radial,
+    force_simulation,
+    force_x,
+    force_y,
+)
 from .format import (
     format_default_locale,
     format_prefix,
@@ -522,6 +532,14 @@ __all__ = [
     "ease_sin_in_out",
     "ease_sin_out",
     "extent",
+    "force_center",
+    "force_collide",
+    "force_link",
+    "force_many_body",
+    "force_radial",
+    "force_simulation",
+    "force_x",
+    "force_y",
     "format",
     "format_default_locale",
     "format_prefix",
