@@ -608,7 +608,8 @@ class Quadtree(Generic[T]):
                 if child:
                     quads.append(Quad(child, xm, ym, x1, y1))
             next.append(q)
-        while q := next.pop():
+        while len(next) != 0:
+            q = next.pop()
             callback(q.node, q.x0, q.y0, q.x1, q.y1)
         return self
 
