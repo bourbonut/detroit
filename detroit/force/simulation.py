@@ -266,7 +266,7 @@ class ForceSimulation:
         self._alpha_decay = alpha_decay
         return self
 
-    def alpha_target(self, alpha_target: float) -> TForceSimulation:
+    def set_alpha_target(self, alpha_target: float) -> TForceSimulation:
         """
         Sets the current target alpha to the specified number in the range
         :math:`[0,1]` and returns this simulation.
