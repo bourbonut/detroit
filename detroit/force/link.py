@@ -16,14 +16,14 @@ from math import sqrt
 from .constant import constant
 from .jiggle import jiggle
 from ..array import argpass
-from ..types import SimulationNode, SimulationLink, SimulationNodeFunction, SimulationLinkFunction
+from ..types import T, SimulationNode, SimulationLink, SimulationNodeFunction, SimulationLinkFunction
 
 TForceLink = TypeVar("ForceLink", bound="ForceLink")
 
-def index(d):
+def index(d: SimulationNode) -> int:
     return d["index"]
 
-def find(node_by_id, node_id):
+def find(node_by_id: dict[T, SimulationNode], node_id: T) -> SimulationNode:
     node = node_by_id.get(node_id)
     if node is None:
         raise RuntimeError(f"Node not found: {node_id}")
