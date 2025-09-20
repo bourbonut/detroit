@@ -19,21 +19,26 @@ class Apply:
         strengths: list[float],
         distance_min_2: float,
         distance_max_2: float,
+        theta2: float,
         random: Callable[[None], float],
     ):
         self._alpha = alpha
         self._strengths = strengths
         self._distance_min_2 = distance_min_2
         self._distance_max_2 = distance_max_2
+        self._theta2 = theta2
         self._random = random
         self._node = None
 
     def __call__(self, quad: list[dict] | dict, x1: float, y1: float, x2: float, y2: float):
-        if quad["value"] is None:
+        value = quad["value"] if isinstance(quad, dict) else quad[4]["value"]
+        if not value:
             return True
     
-        x = quad["x"] - self._node["x"]
-        y = quad["y"] - self._node["y"]
+        qx = quad["x"] if isinstance(quad, dict) else quad[4]["x"]
+        qy = quad["y"] if isinstance(quad, dict) else quad[4]["y"]
+        x = qx - self._node["x"]
+        y = qy - self._node["y"]
         w = x2 - x1
         length = x * x + y * y
 
@@ -47,12 +52,12 @@ class Apply:
                     length += y * y
                 if length < self._distance_min_2:
                     length = sqrt(self._distance_min_2 * length)
-                self._node["vx"] += x * quad["value"] * self._alpha / length
-                self._node["vy"] += y * quad["value"] * self._alpha / length
+                self._node["vx"] += x * value * self._alpha / length
+                self._node["vy"] += y * value * self._alpha / length
             return True
         elif isinstance(quad, list) or length >= self._distance_max_2:
             return
-        if quad["data"] != self._node or quad["next"]:
+        if quad["data"] != self._node or quad.get("next"):
             if x == 0:
                 x = jiggle(self._random)
                 length += x * x
@@ -94,6 +99,7 @@ class ForceManyBody:
             self._strengths,
             self._distance_min_2,
             self._distance_max_2,
+            self._theta2,
             self._random,
         )
         for node in self._nodes:
@@ -115,14 +121,28 @@ class ForceManyBody:
             x = 0
             y = 0
             for q in quad:
-                if q and abs(q["value"]):
-                    c = abs(q["value"])
-                    strength += q["value"]
+                if not q:
+                    continue
+                if isinstance(q, dict):
+                    value = q["value"]
+                    qx = q["x"]
+                    qy = q["y"]
+                else: # fifth element of a quad as a list
+                    value = q[4]["value"]
+                    qx = q[4]["x"]
+                    qy = q[4]["y"]
+                if value:
+                    c = abs(value)
+                    strength += value
                     weight += c
-                    x += c * q["x"]
-                    y += c * q["y"]
-            quad["x"] = x / weight
-            quad["y"] = y / weight
+                    x += c * qx
+                    y += c * qy
+            if len(quad) == 4:
+                quad.append({"x": x / weight, "y": y / weight})
+            else:
+                quad[4]["x"] = x / weight
+                quad[4]["y"] = y / weight
+            quad[4]["value"] = strength
         else:
             q = quad
             q["x"] = q["data"]["x"]
@@ -132,7 +152,7 @@ class ForceManyBody:
                 q = q.get("next")
                 if q is None:
                     break
-        quad["value"] = strength
+            quad["value"] = strength
 
     def initialize(self, nodes: list[SimulationNode], random: Callable[[None], float]):
         self._nodes = nodes

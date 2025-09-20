@@ -17,7 +17,7 @@ def y(d: dict[str, float]) -> float:
     return d["y"] + d["vy"]
 
 def quadr(quad: dict | list) -> float:
-    return quad["r"] if isinstance(quad, dict) else quad[4]
+    return quad["r"] if isinstance(quad, dict) else quad[4]["r"]
 
 class Apply:
     def __init__(self, strength: float, random: Callable[[None], float]):
@@ -94,10 +94,13 @@ class ForceCollide:
         if isinstance(quad, dict) and quad["data"]:
             r = quad["r"] = self._radii[quad["data"]["index"]]
             return r
-        quad.append(0)
+        if len(quad) == 4:
+            quad.append({"r": 0})
+        else: # it assumes there is a fifth element of type `dict`
+            quad[4]["r"] = 0
         for i in range(4):
-            if quad[i] and quadr(quad[i]) > quad[4]:
-                quad[4] = quadr(quad[i])
+            if quad[i] and quadr(quad[i]) > quad[4]["r"]:
+                quad[4]["r"] = quadr(quad[i])
 
     def _initialize(self):
         if self._nodes is None:

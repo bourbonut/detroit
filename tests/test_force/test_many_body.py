@@ -1,5 +1,5 @@
 import detroit as d3
-from .expected import expected_links
+from .expected import expected_many_body
 import pytest
 
 def node_equal(actual, expected, delta=1e-6):
@@ -42,8 +42,8 @@ def data():
         ],
     }
 
-def test_link_1(data):
-    expected = expected_links()
+def test_many_body_1(data):
+    expected = expected_many_body()
     f = (
         d3.force_simulation(data["nodes"])
         .set_force(
@@ -54,6 +54,7 @@ def test_link_1(data):
                 .set_links(data["links"])
             )
         )
+        .set_force("charge", d3.force_many_body().set_strength(-400))
     )
     f.tick(10)
     assert len(data["nodes"]) == len(expected)

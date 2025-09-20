@@ -29,7 +29,7 @@ class ForceRadial:
         if self._nodes is None:
             return
 
-        n = len(self._radiuses)
+        n = len(self._nodes)
         self._strengths = [None] * n
         self._radiuses = [None] * n
 
