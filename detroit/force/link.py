@@ -1,3 +1,15 @@
+# Since Javascript accepts weird stuff, I had to make the same programming
+# "errors" / "mistakes" in order to keep as simple as possible the code. These
+# "mistakes" are adding attributes to array object. For instance, in
+# Javascript, you can do
+# ```js
+# var myarray = [1, 2, 3];
+# myarray.data = 42
+# ```
+# In Python, this would raise an error. However, in this specific algorihm,
+# lists have a fixed length of 4. I have used this assumption and I dynamically
+# add a fifth element (of type `dict`) in `quad` objects in order to *mimic*
+# the same behavior.
 from collections.abc import Callable
 from typing import TypeVar
 from math import sqrt
