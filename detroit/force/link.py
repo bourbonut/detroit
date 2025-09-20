@@ -1,6 +1,11 @@
+from collections.abc import Callable
+from typing import TypeVar
 from math import sqrt
 from .constant import constant
 from .jiggle import jiggle
+from ..types import SimulationNode, SimulationLink, SimulationNodeFunction
+
+TForceLink = TypeVar("ForceLink", bound="ForceLink")
 
 def index(d):
     return d["index"]
@@ -12,7 +17,7 @@ def find(node_by_id, node_id):
     return node
 
 class ForceLink:
-    def __init__(self, links):
+    def __init__(self, links: list[SimulationLink]):
         self._links = links
         self._id = index
         self._strength = self._default_strength
@@ -26,13 +31,13 @@ class ForceLink:
         self._iterations = 1
 
 
-    def _default_strength(self, link):
+    def _default_strength(self, link: SimulationLink) -> float:
         return 1 / min(
             self._count[link["source"]["index"]],
             self._count[link["target"]["index"]],
         )
 
-    def __call__(self, alpha):
+    def __call__(self, alpha: float):
         for k in range(self._iterations):
             for i, link in enumerate(self._links):
                 source = link["source"]
@@ -97,25 +102,105 @@ class ForceLink:
         for i, link in enumerate(self._links):
             self._distances[i] = self._distance(link, i, self._links)
 
-    def initialize(self, nodes, random):
+    def initialize(self, nodes: list[SimulationNode], random: Callable[[None], float]):
         self._nodes = nodes
         self._random = random
         self._initialize()
 
-    def set_links(self, links):
+    def set_links(self, links: list[SimulationLink]) -> TForceLink:
+        """
+        Sets the array of links associated with this force, recomputes the
+        distance and strength parameters for each link, and returns this force.
+
+        Each link is an object with the following properties:
+
+        * **source** - the link's source node; see simulation.nodes
+        * **target** - the link's target node; see simulation.nodes
+        * **index** - the zero-based index into links, assigned by this method
+
+        For convenience, a link's source and target properties may be
+        initialized using numeric or string identifiers rather than object
+        references.
+
+        Parameters
+        ----------
+        links : list[SimulationLink]
+            List of links
+
+        Returns
+        -------
+        ForceLink
+            Itself
+        """
         self._links = links
         self._initialize()
         return self
 
-    def set_id(self, id_func):
+    def set_id(self, id_func: SimulationNodeFunction[int]) -> TForceLink:
+        """
+        Sets the node ID accessor to the specified function and returns this
+        force.
+
+        Parameters
+        ----------
+        id_func : SimulationNodeFunction[int]
+            ID accessor function which takes the following arguments:
+
+            * **node** (:code:`SimulationNode`) - the node element
+            * **i** (:code:`int`) - the index of the node
+            * **nodes** (:code:`list[SimulationNode]`) - the list of nodes
+
+            It returns the ID value (:code:`int`)
+
+        Returns
+        -------
+        ForceLink
+            Itself
+        """
         self._id = id_func
         return self
 
-    def set_iterations(self, iterations: int):
+    def set_iterations(self, iterations: int) -> TForceLink:
+        """
+        Sets the number of iterations per application to the specified number
+        and returns this force.
+
+        Parameters
+        ----------
+        iterations : int
+            Number of iterations
+
+        Returns
+        -------
+        ForceLink
+            Itself
+        """
         self._iterations = iterations
         return self
 
-    def set_strength(self, strength):
+    def set_strength(self, strength: SimulationNodeFunction[float] | float) -> TForceLink:
+        """
+        Sets the strength accessor to the specified number or function,
+        re-evaluates the strength accessor for each link, and returns this
+        force.
+
+        Parameters
+        ----------
+        strength : SimulationNodeFunction[float] | float
+            Strength function or constant value. If it is a function, it takes
+            the following arguments:
+
+            * **node** (:code:`SimulationNode`) - the node element
+            * **i** (:code:`int`) - the index of the node
+            * **nodes** (:code:`list[SimulationNode]`) - the list of nodes
+
+            It returns the strength value (:code:`float`)
+
+        Returns
+        -------
+        ForceLink
+            Itself
+        """
         if callable(strength):
             self._strength = strength
         else:
@@ -123,7 +208,29 @@ class ForceLink:
         self._initialize_strength()
         return self
 
-    def set_distance(self, distance):
+    def set_distance(self, distance: SimulationNodeFunction[float] | float) -> TForceLink:
+        """
+        Sets the distance accessor to the specified number or function,
+        re-evaluates the distance accessor for each link, and returns this
+        force.
+
+        Parameters
+        ----------
+        distance : SimulationNodeFunction[float] | float
+            Distance function or constant value. If it is a function, it takes
+            the following arguments:
+
+            * **node** (:code:`SimulationNode`) - the node element
+            * **i** (:code:`int`) - the index of the node
+            * **nodes** (:code:`list[SimulationNode]`) - the list of nodes
+
+            It returns the distance value (:code:`float`)
+
+        Returns
+        -------
+        ForceLink
+            Itself
+        """
         if callable(distance):
             self._distance = distance
         else:
@@ -131,22 +238,38 @@ class ForceLink:
         self._initialize_distance()
         return self
 
-    def get_links(self):
+    def get_links(self) -> list[SimulationLink]:
         return self._links
 
-    def get_id(self):
+    def get_id(self) -> SimulationNodeFunction[int]:
         return self._id
 
-    def get_iterations(self):
+    def get_iterations(self) -> int:
         return self._iterations
 
-    def get_strength(self):
+    def get_strength(self) -> SimulationNodeFunction[float]:
         return self._strength
 
-    def get_distance(self):
+    def get_distance(self) -> SimulationNodeFunction[float]:
         return self._distance
 
-def force_link(links = None):
+def force_link(links: list[SimulationLink] | None = None) -> ForceLink:
+    """
+    The link force pushes linked nodes together or apart according to the
+    desired link distance. The strength of the force is proportional to the
+    difference between the linked nodes' distance and the target distance,
+    similar to a spring force.
+
+    Parameters
+    ----------
+    links : list[SimulationLink] | None
+        List of links
+
+    Returns
+    -------
+    ForceLink
+        Force object
+    """
     if links is None:
         links = []
     return ForceLink(links)

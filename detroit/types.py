@@ -331,7 +331,7 @@ class MultiPolygonGeoJSON(TypedDict):
     Attributes
     ----------
     type : str
-        Type of contour (ex: :code:`"MultiPolygon`)
+        Type of contour (ex: :code:`"MultiPolygon"`)
     value : str
         Threshold value; the input values are greater than or equal to this
         value.
@@ -342,3 +342,65 @@ class MultiPolygonGeoJSON(TypedDict):
     type: str
     value: float
     coordinates: list[list[Point2D]]
+
+class SimulationNode(TypedDict):
+    """
+    Describes a simulation's node.
+
+    Attributes
+    ----------
+    index : int
+        The node's zero-based index into nodes
+    x : float
+        The node's current x-position
+    y : float
+        The node's current y-position
+    vx : float
+        The node's current x-velocity
+    vy : float
+        The node's current y-velocity
+    fx : float
+        The node's fixed x-position
+    fy : float
+        The node's fixed y-position
+    """
+    index: int
+    x: float
+    y: float
+    vx: float
+    vy: float
+    fx: float
+    fy: float
+
+class SimulationLink(TypedDict):
+    """
+    Describes a simulation's link.
+
+    Attributes
+    ----------
+    source : SimulationNode
+        The link's source node
+    target : SimulationNode
+        The link's target node
+    index : int
+        The zero-based index into links
+    """
+    source: dict
+    target: dict
+    index: int
+
+SimulationNodeFunction: TypeAlias = Callable[[SimulationNode, int, list[SimulationNode]], T]
+
+class Force(Protocol):
+    """
+    Protocol class which represents Force object
+    """
+    def initialize(
+        self,
+        nodes: list[SimulationNode],
+        random: Callable[[None], float],
+    ):
+        ...
+
+    def __call__(self, alpha: float | None):
+        ...
