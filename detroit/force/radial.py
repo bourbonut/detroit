@@ -2,6 +2,7 @@ from collections.abc import Callable
 from math import sqrt, isnan
 from typing import TypeVar
 from .constant import constant
+from ..array import argpass
 from ..types import SimulationNode, SimulationNodeFunction
 
 TForceRadial = TypeVar("ForceRadial", bound="ForceRadial")
@@ -72,7 +73,7 @@ class ForceRadial:
             Itself
         """
         if callable(strength):
-            self._strength = strength
+            self._strength = argpass(strength)
         else:
             self._strength = constant(strength)
         self._initialize()
@@ -101,7 +102,7 @@ class ForceRadial:
             Force object
         """
         if callable(radius):
-            self._radius = radius
+            self._radius = argpass(radius)
         else:
             self._radius = constant(radius)
         self._initialize()
@@ -189,6 +190,8 @@ def force_radial(
     """
     if not callable(radius):
         radius = constant(radius)
+    else:
+        radius = argpass(radius)
     if x is None:
         x = 0
     if y is None:

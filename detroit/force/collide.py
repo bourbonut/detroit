@@ -2,6 +2,7 @@ from collections.abc import Callable
 from math import sqrt, nan
 from typing import TypeVar
 
+from ..array import argpass
 from ..quadtree import quadtree
 from ..types import SimulationNode, SimulationNodeFunction
 from .constant import constant
@@ -187,7 +188,7 @@ class ForceCollide:
             Itself
         """
         if callable(radius):
-            self._radius = radius
+            self._radius = argpass(radius)
         else:
             self._radius = constant(radius)
         self._initialize()
@@ -234,4 +235,6 @@ def force_collide(
     """
     if not callable(radius):
         radius = constant(1 if radius is None else radius)
+    else:
+        radius = argpass(radius)
     return ForceCollide(radius)

@@ -390,6 +390,7 @@ class SimulationLink(TypedDict):
     index: int
 
 SimulationNodeFunction: TypeAlias = Callable[[SimulationNode, int, list[SimulationNode]], T]
+SimulationLinkFunction: TypeAlias = Callable[[SimulationLink, int, list[SimulationLink]], T]
 
 class Force(Protocol):
     """

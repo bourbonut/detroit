@@ -2,6 +2,7 @@ from collections.abc import Callable
 from math import inf, sqrt
 from typing import TypeVar
 
+from ..array import argpass
 from ..quadtree import quadtree
 from ..types import SimulationNode, SimulationNodeFunction
 from .constant import constant
@@ -164,7 +165,7 @@ class ForceManyBody:
             Itself
         """
         if callable(strength):
-            self._strength = strength
+            self._strength = argpass(strength)
         else:
             self._strength = constant(strength)
         self._initialize()

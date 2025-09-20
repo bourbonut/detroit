@@ -66,7 +66,7 @@ class ForceX:
             Itself
         """
         if callable(strength):
-            self._strength = strength
+            self._strength = argpass(strength)
         else:
             self._strength = constant(strength)
         self._initialize()
@@ -95,10 +95,9 @@ class ForceX:
             Itself
         """
         if callable(x):
-            self._x = x
+            self._x = argpass(x)
         else:
             self._x = constant(x)
-        self._x = argpass(self._x)
         self._initialize()
         return self
 
@@ -137,5 +136,7 @@ def force_x(x: SimulationNodeFunction[float] | float | None = None) -> ForceX:
     """
     if not callable(x):
         x = constant(0 if x is None else x)
+    else:
+        x = argpass(x)
 
     return ForceX(argpass(x))

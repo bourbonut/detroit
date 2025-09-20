@@ -66,7 +66,7 @@ class ForceY:
             Itself
         """
         if callable(strength):
-            self._strength = strength
+            self._strength = argpass(strength)
         else:
             self._strength = constant(strength)
         self._initialize()
@@ -95,10 +95,9 @@ class ForceY:
             Itself
         """
         if callable(y):
-            self._y = y
+            self._y = argpass(y)
         else:
             self._y = constant(y)
-        self._y = argpass(self._y)
         self._initialize()
         return self
 
@@ -137,5 +136,7 @@ def force_y(y: SimulationNodeFunction[float] | float | None = None):
     """
     if not callable(y):
         y = constant(0 if y is None else y)
+    else:
+        y = argpass(y)
 
     return ForceY(argpass(y))

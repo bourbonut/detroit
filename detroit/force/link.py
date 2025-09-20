@@ -3,7 +3,8 @@ from typing import TypeVar
 from math import sqrt
 from .constant import constant
 from .jiggle import jiggle
-from ..types import SimulationNode, SimulationLink, SimulationNodeFunction
+from ..array import argpass
+from ..types import SimulationNode, SimulationLink, SimulationNodeFunction, SimulationLinkFunction
 
 TForceLink = TypeVar("ForceLink", bound="ForceLink")
 
@@ -31,7 +32,7 @@ class ForceLink:
         self._iterations = 1
 
 
-    def _default_strength(self, link: SimulationLink) -> float:
+    def _default_strength(self, link: SimulationLink, i: int, links: list[SimulationLink]) -> float:
         return 1 / min(
             self._count[link["source"]["index"]],
             self._count[link["target"]["index"]],
@@ -43,8 +44,8 @@ class ForceLink:
                 source = link["source"]
                 target = link["target"]
 
-                x = (target["x"] + target["vx"] + source["x"] + source["vx"]) or jiggle(self._random)
-                y = (target["y"] + target["vy"] + source["y"] + source["vy"]) or jiggle(self._random)
+                x = (target["x"] + target["vx"] - source["x"] - source["vx"]) or jiggle(self._random)
+                y = (target["y"] + target["vy"] - source["y"] - source["vy"]) or jiggle(self._random)
 
                 length = sqrt(x * x + y * y)
                 length = (length - self._distances[i]) / length * alpha * self._strengths[i]
@@ -57,8 +58,8 @@ class ForceLink:
                 target["vy"] -= y * b
 
                 b = 1 - b
-                self._vx += x * b
-                self._vy += y * b
+                source["vx"] += x * b
+                source["vy"] += y * b
 
     def _initialize(self):
         if self._nodes is None:
@@ -157,7 +158,7 @@ class ForceLink:
         ForceLink
             Itself
         """
-        self._id = id_func
+        self._id = argpass(id_func)
         return self
 
     def set_iterations(self, iterations: int) -> TForceLink:
@@ -178,7 +179,7 @@ class ForceLink:
         self._iterations = iterations
         return self
 
-    def set_strength(self, strength: SimulationNodeFunction[float] | float) -> TForceLink:
+    def set_strength(self, strength: SimulationLinkFunction[float] | float) -> TForceLink:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each link, and returns this
@@ -186,13 +187,13 @@ class ForceLink:
 
         Parameters
         ----------
-        strength : SimulationNodeFunction[float] | float
+        strength : SimulationLinkFunction[float] | float
             Strength function or constant value. If it is a function, it takes
             the following arguments:
 
-            * **node** (:code:`SimulationNode`) - the node element
+            * **link** (:code:`SimulationLink`) - the link element
             * **i** (:code:`int`) - the index of the node
-            * **nodes** (:code:`list[SimulationNode]`) - the list of nodes
+            * **links** (:code:`list[SimulationLink]`) - the list of links
 
             It returns the strength value (:code:`float`)
 
@@ -202,7 +203,7 @@ class ForceLink:
             Itself
         """
         if callable(strength):
-            self._strength = strength
+            self._strength = argpass(strength)
         else:
             self._strength = constant(strength)
         self._initialize_strength()
@@ -232,7 +233,7 @@ class ForceLink:
             Itself
         """
         if callable(distance):
-            self._distance = distance
+            self._distance = argpass(distance)
         else:
             self._distance = constant(distance)
         self._initialize_distance()
