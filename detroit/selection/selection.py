@@ -722,7 +722,7 @@ class Selection(Generic[T]):
         return self
 
     def attr(
-        self, name: str, value: Accessor[T, str | Number] | str | None = None
+        self, name: str, value: Accessor[T, Any] | list[Any] | Any | None = None
     ) -> TSelection:
         """
         If a value is specified, sets the attribute with the specified name to
@@ -737,8 +737,9 @@ class Selection(Generic[T]):
         ----------
         name : str
             Name of the attribute
-        value : Accessor[T, str | Number] | str | None
-            Value
+        value : Accessor[T, Any] | list[Any] | Any | None
+            Value function or constant value. The final value is converted to a
+            string.
 
         Returns
         -------

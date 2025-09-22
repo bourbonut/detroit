@@ -1,10 +1,31 @@
 from lxml import etree
+from typing import Any
 
 from ..array import argpass
 from ..types import Accessor, EtreeFunction, Number, T
 
 
-def attr_constant(name: str, value: str) -> EtreeFunction[T, None]:
+def tostring(value: list[Any] | Any) -> str:
+    """
+    If :code:`value` is a list of elements, the function converts elements
+    strings, concatenate them into a single string and return it.
+    If :code:`value` is a single element, the function converts it into a
+    string.
+
+    Parameters
+    ----------
+    value : list[Any] | Any
+        Value to convert into string
+
+    Returns
+    -------
+    str
+        Output
+    """
+    return " ".join(map(str, value)) if isinstance(value, list) else str(value)
+
+
+def attr_constant(name: str, value: list[Any] | Any) -> EtreeFunction[T, None]:
     """
     Returns a function which adds an attribute to nodes given a constant value.
 
@@ -12,7 +33,7 @@ def attr_constant(name: str, value: str) -> EtreeFunction[T, None]:
     ----------
     name : str
         Attribute name
-    value : str
+    value : list[Any] | Any
         Constant value of the attribute
 
     Returns
@@ -20,9 +41,10 @@ def attr_constant(name: str, value: str) -> EtreeFunction[T, None]:
     EtreeFunction[T, None]
         Function which adds an attribute to nodes
     """
+    value = tostring(value)
 
     def callback(node: etree.Element, data: T, i: int, group: list[etree.Element]):
-        node.set(name, str(value))
+        node.set(name, value)
 
     return callback
 
@@ -49,6 +71,6 @@ def attr_function(
     value = argpass(value)
 
     def callback(node: etree.Element, data: T, i: int, group: list[etree.Element]):
-        node.set(name, str(value(data, i, group)))
+        node.set(name, tostring(value(data, i, group)))
 
     return callback

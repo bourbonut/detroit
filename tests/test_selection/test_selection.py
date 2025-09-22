@@ -601,7 +601,7 @@ def test_selection_46():
     assert len(s.nodes()) == 2
 
 
-def test_selection_47(root):
+def test_selection_47():
     svg = d3.create("svg")
     text = svg.append("text").style("fill", "red").style("stroke", "none")
     assert text.style("fill") == "red"
@@ -615,7 +615,7 @@ def test_selection_47(root):
     assert text.attr("style") == "fill:blue;stroke:white;"
 
 
-def test_selection_48(root):
+def test_selection_48():
     svg = d3.create("svg")
 
     def fill():
@@ -640,3 +640,15 @@ def test_selection_48(root):
     assert text.style("fill") == "blue"
     assert text.style("stroke") == "white"
     assert text.attr("style") == "fill:blue;stroke:white;"
+
+def test_selection_49():
+    svg = d3.create("svg")
+
+    svg.attr("viewBox", [0, 0, 100, 200])
+    assert svg.attr("viewBox") == "0 0 100 200"
+
+def test_selection_50():
+    svg = d3.create("svg")
+
+    svg.attr("viewBox", lambda: [0, 0, 100, 200])
+    assert svg.attr("viewBox") == "0 0 100 200"
