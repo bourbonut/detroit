@@ -1,3 +1,4 @@
+# Source: https://observablehq.com/@d3/fan-chart
 import detroit as d3
 import polars as pl
 from collections import namedtuple
