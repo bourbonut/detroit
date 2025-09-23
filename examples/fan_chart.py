@@ -1,0 +1,167 @@
+import detroit as d3
+import polars as pl
+from collections import namedtuple
+
+URL = "https://static.observableusercontent.com/files/56bfb0d9ffc42b5c82ab7c52e91694ff266585ff9835cd292b910054e857577e5ff5b49231a0b91d8370608cb5bd213590b7468e794c8760349cf234d35a1c8a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27covid-ihme-projected-deaths-2020-04-01.csv"
+Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
+
+covid_data = pl.read_csv(URL).select(
+    pl.col("date").str.to_datetime("%Y-%m-%d"),
+    pl.all().exclude("date"),
+)
+data = covid_data.to_dicts()
+
+width = 928
+height = 600
+margin = Margin(20, 30, 30, 40)
+
+x = (
+    d3.scale_time()
+    .set_domain(d3.extent(data, lambda d: d["date"]))
+    .set_range_round([margin.left, width - margin.right])
+)
+y = (
+    d3.scale_log()
+    .set_domain([1, max(map(lambda d: d["upper"], data))])
+    .set_range_round([height - margin.bottom, margin.top])
+    .set_clamp(True)
+)
+line = d3.line().x(lambda d: x(d["date"])).y(lambda d: y(d["mean"]))
+area = (
+    d3.area()
+    .x(lambda d: x(d["date"]))
+    .y(lambda d: y(d["lower"]))
+    .y1(lambda d: y(d["upper"]))
+)
+
+observed_index = 0
+while not data[observed_index]["projected"]:
+    observed_index += 1
+observed_index -= 1
+observed = data[observed_index]
+
+
+def grid(g):
+    def horizontal_lines(g):
+        (
+            g.append("g")
+            .select_all("line")
+            .data(x.ticks())
+            .join("line")
+            .attr("x1", lambda d: 0.5 + x(d))
+            .attr("x2", lambda d: 0.5 + x(d))
+            .attr("y1", margin.top)
+            .attr("y2", height - margin.bottom)
+        )
+
+    def vertical_lines(g):
+        (
+            g.append("g")
+            .select_all("line")
+            .data(y.ticks())
+            .join("line")
+            .attr("y1", lambda d: 0.5 + y(d))
+            .attr("y2", lambda d: 0.5 + y(d))
+            .attr("x1", margin.left)
+            .attr("x2", width - margin.right)
+        )
+
+    (
+        g.attr("stroke", "currentColor")
+        .attr("stroke-opacity", 0.1)
+        .call(horizontal_lines)
+        .call(vertical_lines)
+    )
+
+
+def x_axis(g):
+    (
+        g.attr("transform", f"translate(0, {height - margin.bottom})")
+        .call(d3.axis_bottom(x).set_ticks(width / 80))
+        .call(lambda g: g.select(".domain").remove())
+    )
+
+
+def y_axis(g):
+    (
+        g.attr("transform", f"translate({margin.left}, 0)")
+        .call(d3.axis_left(y).set_ticks(None, ",d"))
+        .call(lambda g: g.select(".domain").remove())
+        .call(
+            lambda g: (
+                g.append("text")
+                .attr("x", -margin.left)
+                .attr("y", 10)
+                .attr("fill", "currentColor")
+                .attr("text-anchor", "start")
+                .text("↑ Deaths per day")
+            )
+        )
+    )
+
+
+svg = (
+    d3.create("svg")
+    .attr("viewBox", [0, 0, width, height])
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 10)
+    .attr("stroke-miterlimit", 1)
+)
+
+svg.append("g").call(x_axis)
+
+svg.append("g").call(y_axis)
+
+svg.append("g").call(grid)
+
+(
+    svg.append("path")
+    .attr("fill", "steelblue")
+    .attr("fill-opacity", 0.2)
+    .attr("d", area(data))
+)
+
+(
+    svg.append("path")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("d", line(data[0 : observed_index + 1]))
+)
+
+(
+    svg.append("path")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("stroke-dasharray", "3,3")
+    .attr("d", line(data[observed_index:]))
+)
+
+(
+    svg.append("circle")
+    .attr("cx", x(observed["date"]))
+    .attr("cy", y(observed["mean"]))
+    .attr("r", 2.5)
+)
+
+(
+    svg.append("text")
+    .attr("x", x(observed["date"]))
+    .attr("y", y(observed["mean"]))
+    .attr("dx", 6)
+    .attr("dy", "0.35em")
+    .text(str(observed["mean"]))
+)
+
+(
+    svg.append("text")
+    .attr("x", x(observed["date"]))
+    .attr("y", y(observed["mean"]))
+    .attr("dx", 6)
+    .attr("dy", "1.35em")
+    .text(observed["date"].strftime("%B %-d"))
+)
+
+with open("fan-chart.svg", "w") as file:
+    file.write(str(svg))
