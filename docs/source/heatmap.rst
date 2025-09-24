@@ -29,7 +29,10 @@ Heatmap
             pl.read_csv(URL)
             .select(
                 pl.col("location"),
-                pl.col("date").str.to_datetime(strict=False).dt.hour().alias("hour"),
+                pl.col("date")
+                .str.to_datetime("%Y-%m-%dT%H:%MZ", strict=False)
+                .dt.hour()
+                .alias("hour"),
                 pl.col("vehicles"),
             )
             .fill_null(0)
