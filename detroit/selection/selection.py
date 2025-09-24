@@ -784,7 +784,7 @@ class Selection(Generic[T]):
         name : str
             Name of the style
         value : Accessor[T, str] | str | None
-            Value constant or function
+            Value function or constant value.
 
         Returns
         -------
@@ -813,7 +813,7 @@ class Selection(Generic[T]):
             self.each(style_constant(name, value))
         return self
 
-    def text(self, value: Accessor[T, str] | str | None = None) -> TSelection:
+    def text(self, value: Accessor[T, Any] | Any | None = None) -> TSelection:
         """
         If the value is a constant, then all elements are given the same text
         content; otherwise, if the value is a function, it is evaluated for
@@ -822,8 +822,9 @@ class Selection(Generic[T]):
 
         Parameters
         ----------
-        value : Accessor[T, str] | str | None
-            Value constant or function
+        value : Accessor[T, Any] | Any | None
+            Value function or constant value. The final value is converted to a
+            string.
 
         Returns
         -------

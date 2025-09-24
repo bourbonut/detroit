@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union
 
 import pytest
@@ -652,3 +653,25 @@ def test_selection_50():
 
     svg.attr("viewBox", lambda: [0, 0, 100, 200])
     assert svg.attr("viewBox") == "0 0 100 200"
+
+def test_selection_51():
+    svg = d3.create("svg").append("g").attr("class", "main")
+    g1 = svg.append("g").attr("class", "tick")
+    text1 = g1.append("text").text(258)
+    g2 = svg.append("g").attr("class", "tick")
+    text2 = g2.append("text").text(284)
+
+    assert text1.text() == "258"
+    assert text2.text() == "284"
+
+def test_selection_52():
+    d1 = datetime(2001, 1, 1)
+    d2 = datetime(2003, 1, 1)
+    svg = d3.create("svg").append("g").attr("class", "main")
+    g1 = svg.append("g").attr("class", "tick")
+    text1 = g1.append("text").text(lambda: d1)
+    g2 = svg.append("g").attr("class", "tick")
+    text2 = g2.append("text").text(lambda: d2)
+
+    assert text1.text() == str(d1)
+    assert text2.text() == str(d2)
