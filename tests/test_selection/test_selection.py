@@ -685,3 +685,30 @@ def test_selection_53():
     assert len(text_enter1._data.keys() & text_enter2._data.keys()) == 0
     for enter_node1, enter_node2 in zip(text_enter1.nodes(), text_enter2.nodes()):
         assert enter_node1 != enter_node2
+
+def test_selection_54():
+    data = ["Hello", "world"]
+    svg = d3.create("svg")
+    g1 = svg.append("g")
+    g2 = svg.append("g")
+    (
+        svg.select_all("g")
+        .data(data)
+        .classed("foo", lambda d: d == "Hello")
+        .classed("bar", True)
+        .classed("foo-bar", False)
+    )
+    assert g1.classed("foo") is True
+    assert g2.classed("foo") is False
+
+    assert g1.classed("foo bar") is True
+    assert g2.classed("foo bar") is False
+
+    assert g1.classed("bar") is True
+    assert g2.classed("bar") is True
+
+    assert g1.classed("foo-bar") is False
+    assert g2.classed("foo-bar") is False
+
+    assert g1.node().get("class") == "foo bar"
+    assert g2.node().get("class") == "bar"
