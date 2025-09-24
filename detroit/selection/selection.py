@@ -1419,8 +1419,7 @@ class Selection(Generic[T]):
 
     def clone(self, deep: bool = False) -> TSelection:
         """
-        Inserts clones of the selected elements immediately following the
-        selected elements and returns a selection of the newly added clones.
+        Returns a clone of the selection.
 
         Parameters
         ----------
@@ -1431,6 +1430,33 @@ class Selection(Generic[T]):
         -------
         Selection
             Clone of itself
+
+        Notes
+        -----
+        Data, enter nodes, exit nodes are also cloned.
+
+        Examples
+        --------
+        >>> import detroit as d3
+        >>> svg = d3.create("svg")
+        >>> clone = svg.clone()
+        >>> rect = svg.append("rect")
+        >>> clone.select_all("rect")
+        Selection(
+            groups=[[]],
+            parents=[svg],
+        )
+        >>> g = clone.append("g")
+        >>> svg.select_all("rect")
+        Selection(
+            groups=[[rect]],
+            parents=[svg],
+        )
+        >>> svg.select_all("g")
+        Selection(
+            groups=[[]],
+            parents=[svg],
+        )
         """
         copy_func = deepcopy if deep else copy
 
