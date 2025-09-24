@@ -27,6 +27,35 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
         self._align = 0.5
         self._rescale()
 
+    def __call__(self, d: T) -> Number:
+        """
+        Given a value from the domain, returns the corresponding value from the range.
+
+        Parameters
+        ----------
+        d : T
+            Input value
+
+        Returns
+        -------
+        Number
+            Corresponding value from the range
+        """
+        i = self._index.get(d)
+        if i is None:
+            if self._unknown is None:
+                return self._unknown
+            self._domain.append(d)
+            i = len(self._domain) - 1
+            self._index[d] = i
+        length = len(self._range_vals)
+        if not length:
+            return None
+        index = i % length
+        if index >= length or index < 0:
+            return None
+        return self._range_vals[index]
+
     def _rescale(self):
         n = len(self._domain)
         reverse = self._r1 < self._r0

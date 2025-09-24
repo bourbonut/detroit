@@ -25,7 +25,7 @@ class ScaleOrdinal(Generic[U, V]):
 
         Parameters
         ----------
-        x : U
+        d : U
             Input value
 
         Returns

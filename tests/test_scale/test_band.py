@@ -31,7 +31,6 @@ def test_band_2():
     assert s.get_bandwidth() == 30
 
 
-@pytest.mark.skip
 def test_band_3():
     s = d3.scale_band(["a", "b", "c"], [0, 1])
     assert s("d") is None
@@ -39,7 +38,6 @@ def test_band_3():
     assert s("f") is None
 
 
-@pytest.mark.skip
 def test_band_4():
     s = d3.scale_band(["a", "b", "c"], [0, 1])
     s("d")
