@@ -6,6 +6,9 @@ from collections import namedtuple
 URL = "https://static.observableusercontent.com/files/56bfb0d9ffc42b5c82ab7c52e91694ff266585ff9835cd292b910054e857577e5ff5b49231a0b91d8370608cb5bd213590b7468e794c8760349cf234d35a1c8a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27covid-ihme-projected-deaths-2020-04-01.csv"
 Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
 
+theme = "light"
+main_color = "black" if theme == "light" else "white"
+
 covid_data = pl.read_csv(URL).select(
     pl.col("date").str.to_datetime("%Y-%m-%d"),
     pl.all().exclude("date"),
@@ -68,7 +71,7 @@ def grid(g):
         )
 
     (
-        g.attr("stroke", "currentColor")
+        g.attr("stroke", main_color)
         .attr("stroke-opacity", 0.1)
         .call(horizontal_lines)
         .call(vertical_lines)
@@ -93,7 +96,7 @@ def y_axis(g):
                 g.append("text")
                 .attr("x", -margin.left)
                 .attr("y", 10)
-                .attr("fill", "currentColor")
+                .attr("fill", main_color)
                 .attr("text-anchor", "start")
                 .text("↑ Deaths per day")
             )
@@ -144,6 +147,7 @@ svg.append("g").call(grid)
     .attr("cx", x(observed["date"]))
     .attr("cy", y(observed["mean"]))
     .attr("r", 2.5)
+    .attr("fill", main_color)
 )
 
 (
@@ -164,5 +168,11 @@ svg.append("g").call(grid)
     .text(observed["date"].strftime("%B %-d"))
 )
 
-with open("fan-chart.svg", "w") as file:
+if theme == "dark":
+    svg.select_all("path.domain").attr("stroke", "white")
+    svg.select_all("g.tick line").attr("stroke", "white")
+    svg.select_all("g.tick text").attr("fill", "white").attr("stroke", "none")
+    svg.select_all("text").attr("fill", "white").attr("stroke", "none")
+
+with open(f"{theme}-fan-chart.svg", "w") as file:
     file.write(str(svg))
