@@ -1,3 +1,4 @@
+from copy import deepcopy, copy
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from itertools import zip_longest
@@ -6,10 +7,9 @@ from typing import Any, Generic, TypeVar
 from lxml import etree
 
 from ..array import argpass
-from ..types import Accessor, EtreeFunction, Number, T
+from ..types import Accessor, EtreeFunction, T
 from .attr import attr_constant, attr_function
 from .bind import bind_index, bind_key
-from .clone import clone
 from .constant import constant
 from .enter import EnterNode
 from .matcher import matcher
@@ -164,12 +164,12 @@ class Selection(Generic[T]):
         List of groups of selected nodes given its parent.
     parents : list[etree.Element]
         List of parents related to groups.
-    enter : list[EnterNode[T]] | None = None
+    enter : list[EnterNode[T]] | None
         List of placeholder nodes for each datum that had no corresponding
         DOM element in the selection.
-    exit : list[etree.Element] = None
+    exit : list[etree.Element] | None
         List of existing DOM elements in the selection for which no new datum was found.
-    data : dict[etree.Element, T] | None = None
+    data : dict[etree.Element, T] | None
         Association between nodes and its data
 
     Examples
@@ -204,7 +204,7 @@ class Selection(Generic[T]):
         groups: list[list[etree.Element]],
         parents: list[etree.Element],
         enter: list[EnterNode[T]] | None = None,
-        exit: list[etree.Element] = None,
+        exit: list[etree.Element] | None = None,
         data: dict[etree.Element, T] | None = None,
     ):
         self._groups = groups
@@ -1417,20 +1417,54 @@ class Selection(Generic[T]):
         func(self, *args)
         return self
 
-    def clone(self) -> TSelection:
+    def clone(self, deep: bool = False) -> TSelection:
         """
         Inserts clones of the selected elements immediately following the
         selected elements and returns a selection of the newly added clones.
+
+        Parameters
+        ----------
+        deep : bool
+            :code:`True` for deep copy
 
         Returns
         -------
         Selection
             Clone of itself
         """
-        subgroups = [
-            clone(node) for group in self._groups for node in group if node is not None
-        ]
-        return Selection(subgroups, self._parents, data=self._data)
+        copy_func = deepcopy if deep else copy
+
+        # Clone data and groups
+        cloned_data = {}
+        cloned_groups = []
+        for group in self._groups:
+            cloned_group = []
+            for node in group:
+                if isinstance(node, EnterNode):
+                    cloned_group.append(node.clone(deep))
+                    continue
+                cloned_node = copy_func(node)
+                if node in self._data:
+                    cloned_data[cloned_data] = copy_func(self._data[node])
+                cloned_group.append(cloned_node)
+            cloned_groups.append(cloned_group)
+
+        # Clone parents
+        cloned_parents = [copy_func(parent) for parent in self._parents]
+        cloned_enter = (
+            None if self._enter is None else [node.clone(deep) for node in self._enter]
+        )
+        cloned_exit = (
+            None if self._exit is None else [copy_func(node) for node in self._exit]
+        )
+
+        return Selection(
+            cloned_groups,
+            cloned_parents,
+            enter=cloned_enter,
+            exit=cloned_exit,
+            data=self._data,
+        )
 
     def node(self) -> etree.Element:
         """

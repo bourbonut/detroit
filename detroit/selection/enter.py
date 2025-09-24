@@ -1,3 +1,4 @@
+from copy import deepcopy, copy
 from typing import Generic
 
 from lxml import etree
@@ -32,17 +33,14 @@ class EnterNode(Generic[T]):
             return f"EnterNode({tag}.{class_name}, {self.__data__})"
         return f"EnterNode({tag}, {self.__data__})"
 
+    def clone(self, deep: bool = False):
+        copy_func = deepcopy if deep else copy
+        node = EnterNode(
+            copy_func(self._parent),
+            copy_func(self.__data__),
+        )
+        node._next = copy_func(self._next)
+        return node
+
     def __repr__(self):
         return str(self)
-
-    # def append_child(self, child):
-    #     return self._parent.insert_before(child, self._next)
-    #
-    # def insert_before(self, child, next):
-    #     return self._parent.insert_before(child, next)
-    #
-    # def query_selector(self, selector):
-    #     return self._parent.query_selector(selector)
-    #
-    # def query_selector_all(self, selector):
-    #     return self._parent.query_selector_all(selector)

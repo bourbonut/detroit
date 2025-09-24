@@ -536,7 +536,6 @@ def test_selection_40():
     assert box[2] == 3
 
 
-@pytest.mark.skip
 def test_selection_41():
     svg = d3.create("svg")
     svg2 = svg.clone()
@@ -675,3 +674,14 @@ def test_selection_52():
 
     assert text1.text() == str(d1)
     assert text2.text() == str(d2)
+
+def test_selection_53():
+    data = ["hello", "world"]
+    svg = d3.create("svg")
+    text = svg.select_all("text").data(data)
+    text_enter1 = text.enter()
+    text_enter2 = text_enter1.clone()
+    assert len(text_enter1._data) == len(text_enter2._data)
+    assert len(text_enter1._data.keys() & text_enter2._data.keys()) == 0
+    for enter_node1, enter_node2 in zip(text_enter1.nodes(), text_enter2.nodes()):
+        assert enter_node1 != enter_node2
