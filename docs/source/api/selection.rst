@@ -24,6 +24,7 @@ Selection
    .. automethod:: node
    .. automethod:: nodes
    .. automethod:: order
+   .. automethod:: property
    .. automethod:: remove
    .. automethod:: select
    .. automethod:: select_all
