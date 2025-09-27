@@ -1,16 +1,10 @@
-<p align="center">
-    <img style="border-radius:15px" src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/_static/logo.png"></img>
-    <br />
-    <a style="text-decoration: none;" href="https://pypi.org/project/detroit/">
-        <img src="https://img.shields.io/pypi/v/detroit.svg?style=flat&logo=pypi" alt="PyPI Latest Release">
-    </a>
-    <a style="text-decoration: none;" href='https://detroit.readthedocs.io/en/latest/?badge=latest'>
-        <img src='https://readthedocs.org/projects/detroit/badge/?version=latest' alt='Documentation Status' />
-    </a>
-    <a style="text-decoration: none;" href="https://opensource.org/licenses/ISC">
-        <img src="https://img.shields.io/badge/License-ISC-blue.svg" alt="Licence ISC">
-    </a>
-</p>
+<h1 align="center">
+    <img src="https://raw.githubusercontent.com/bourbonut/detroit/main/docs/source/_static/logo.png"></img>
+</h1>
+
+[![PyPI Latest Release](https://img.shields.io/pypi/v/detroit.svg?style=flat&logo=pypi)](https://pypi.org/project/detroit/)
+[![Documentation Status](https://readthedocs.org/projects/detroit/badge/?version=latest)](https://detroit.readthedocs.io/en/latest/?badge=latest)
+[![Licence ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 `detroit` is Python implementation of [d3js](https://d3js.org/).
 
