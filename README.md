@@ -30,23 +30,23 @@ pip install detroit
 | array           | Yes      | Yes      | Not all functions supported                                      |
 | axis            | Yes      | Yes      |                                                                  |
 | brush           | -        | -        | TODO [`detroit-live`](https://github.com/bourbonut/detroit-live) |
-| chord           | No       | -        |                                                                  |
+| chord           | Yes      | Yes      |                                                                  |
 | color           | Yes      | Yes      |                                                                  |
 | contour         | Yes      | Yes      |                                                                  |
 | delaunay        | No       | -        |                                                                  |
 | dispatch        | -        | -        | See  [`detroit-live`](https://github.com/bourbonut/detroit-live) |
 | drag            | -        | -        | See  [`detroit-live`](https://github.com/bourbonut/detroit-live) |
 | dsv             | -        | -        | use `import pandas / polars`                                     |
-| ease            | No       | -        |                                                                  |
+| ease            | Yes      | Yes      |                                                                  |
 | fetch           | -        | -        | use `import requests`                                            |
-| force           | No       | -        |                                                                  |
+| force           | Yes      | Yes      |                                                                  |
 | format          | Yes      | Yes      |                                                                  |
 | geo             | Yes      | Yes      |                                                                  |
 | hierarchy       | No       | -        |                                                                  |
 | interpolate     | Yes      | Yes      | interpolate CSS not supported                                    |
 | path            | Yes      | Yes      |                                                                  |
-| polygon         | No       | -        |                                                                  |
-| quadtree        | No       | -        |                                                                  |
+| polygon         | Yes      | Yes      |                                                                  |
+| quadtree        | Yes      | Yes      |                                                                  |
 | random          | -        | -        | Use `import random`                                              |
 | scale           | Yes      | Yes      |                                                                  |
 | scale-chromatic | Yes      | Yes      |                                                                  |
