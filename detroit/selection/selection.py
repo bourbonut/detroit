@@ -983,11 +983,11 @@ class Selection(Generic[T]):
         ...    .classed("myclass", lambda d: d == "Hello")
         ... )
         Selection(
-            groups=[[g. myclass, g]],
+            groups=[[g.myclass, g]],
             parents=[svg],
         )
         >>> str(svg)
-        '<svg xmlns="http://www.w3.org/2000/svg"><g class=" myclass"/><g/></svg>'
+        '<svg xmlns="http://www.w3.org/2000/svg"><g class="myclass"/><g/></svg>'
         """
         if value is None:
             node = self.node()

@@ -38,7 +38,7 @@ def classed_add(node: etree.Element, names: list[str]):
     for name in names:
         if name not in class_names:
             class_names.append(name)
-    node.set("class", " ".join(class_names))
+    node.set("class", " ".join(class_names).strip())
 
 def classed_remove(node: etree.Element, names: list[str]):
     """
@@ -63,7 +63,7 @@ def classed_remove(node: etree.Element, names: list[str]):
         except ValueError:
             pass
     if len(class_names) != length:
-        node.set("class", " ".join(class_names))
+        node.set("class", " ".join(class_names).strip())
 
 def classed_constant(class_names: str, value: bool) -> EtreeFunction[T, None]:
     """
