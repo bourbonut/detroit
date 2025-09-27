@@ -13,24 +13,39 @@ covid_data = pl.read_csv(URL).select(
     pl.col("date").str.to_datetime("%Y-%m-%d"),
     pl.all().exclude("date"),
 )
-data = covid_data.to_dicts()
 
+
+data = covid_data.to_dicts()
+observed_index = 0
+while not data[observed_index]["projected"]:
+    observed_index += 1
+observed_index -= 1
+observed = data[observed_index]
+
+# Declare the chart dimensions and margins.
 width = 928
 height = 600
 margin = Margin(20, 30, 30, 40)
 
+# Declare the x (horizontal position) scale.
 x = (
     d3.scale_time()
     .set_domain(d3.extent(data, lambda d: d["date"]))
     .set_range_round([margin.left, width - margin.right])
 )
+
+# Declare the y (vertical position) scale.
 y = (
     d3.scale_log()
     .set_domain([1, max(map(lambda d: d["upper"], data))])
     .set_range_round([height - margin.bottom, margin.top])
     .set_clamp(True)
 )
+
+# Declare the line generator.
 line = d3.line().x(lambda d: x(d["date"])).y(lambda d: y(d["mean"]))
+
+# Declare the area generator.
 area = (
     d3.area()
     .x(lambda d: x(d["date"]))
@@ -38,13 +53,7 @@ area = (
     .y1(lambda d: y(d["upper"]))
 )
 
-observed_index = 0
-while not data[observed_index]["projected"]:
-    observed_index += 1
-observed_index -= 1
-observed = data[observed_index]
-
-
+# Grid function (passed to `svg.call(...)`).
 def grid(g):
     def horizontal_lines(g):
         (
@@ -78,6 +87,7 @@ def grid(g):
     )
 
 
+# X-axis function (passed to `svg.call(...)`)
 def x_axis(g):
     (
         g.attr("transform", f"translate(0, {height - margin.bottom})")
@@ -86,6 +96,7 @@ def x_axis(g):
     )
 
 
+# Y-axis function (passed to `svg.call(...)`)
 def y_axis(g):
     (
         g.attr("transform", f"translate({margin.left}, 0)")
@@ -104,20 +115,28 @@ def y_axis(g):
     )
 
 
+# Create the SVG container.
 svg = (
     d3.create("svg")
+    .attr("width", width)
+    .attr("height", height)
     .attr("viewBox", [0, 0, width, height])
     .attr("font-family", "sans-serif")
     .attr("font-size", 10)
     .attr("stroke-miterlimit", 1)
 )
 
+# Add the x-axis.
 svg.append("g").call(x_axis)
 
+# Add the y-axis.
 svg.append("g").call(y_axis)
 
+# Add grid.
 svg.append("g").call(grid)
 
+
+# Append a path for the area.
 (
     svg.append("path")
     .attr("fill", "steelblue")
@@ -125,6 +144,7 @@ svg.append("g").call(grid)
     .attr("d", area(data))
 )
 
+# Append a path for the line (left part).
 (
     svg.append("path")
     .attr("fill", "none")
@@ -133,6 +153,7 @@ svg.append("g").call(grid)
     .attr("d", line(data[0 : observed_index + 1]))
 )
 
+# Append a path for the line (right part).
 (
     svg.append("path")
     .attr("fill", "none")
@@ -142,6 +163,7 @@ svg.append("g").call(grid)
     .attr("d", line(data[observed_index:]))
 )
 
+# Append a circle for the observed mean.
 (
     svg.append("circle")
     .attr("cx", x(observed["date"]))
@@ -150,6 +172,7 @@ svg.append("g").call(grid)
     .attr("fill", main_color)
 )
 
+# Append the mean value of the observed mean as text.
 (
     svg.append("text")
     .attr("x", x(observed["date"]))
@@ -159,6 +182,7 @@ svg.append("g").call(grid)
     .text(str(observed["mean"]))
 )
 
+# Append the date value of the observed mean as text.
 (
     svg.append("text")
     .attr("x", x(observed["date"]))

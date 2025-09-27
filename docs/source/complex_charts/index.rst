@@ -7,6 +7,7 @@ Complex charts
 
    impulse
    pca
+   fan_chart
    scatter_matrix
    kernel_comparison
    hertz_russel

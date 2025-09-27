@@ -183,6 +183,10 @@ Gallery
        <img class="only-light" src="_images/light-pca.svg">
        <img class="only-dark" src="_images/dark-pca.svg">
      </a>
+     <a href="complex_charts/fan_chart.html">
+       <img class="only-light" src="_images/light-fan-chart.svg">
+       <img class="only-dark" src="_images/dark-fan-chart.svg">
+     </a>
      <a href="complex_charts/scatter_matrix.html">
        <img class="only-light" src="_images/light-scatter-matrix.svg">
        <img class="only-dark" src="_images/dark-scatter-matrix.svg">
