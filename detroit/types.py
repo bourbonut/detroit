@@ -301,7 +301,7 @@ class Accessor(Generic[U, V], Protocol):
     def __call__(self, d: U, i: int) -> V: ...
 
     @overload
-    def __call__(self, d: U, i: int, data: list[U]) -> V: ...
+    def __call__(self, d: U, i: int, data: list[etree.Element]) -> V: ...
 
     def __call__(self, *args) -> V:
         """
@@ -313,8 +313,8 @@ class Accessor(Generic[U, V], Protocol):
             Represents a value of :code:`data` such as :code:`d = data[i]`.
         i : int
             Index of the value (i.e. :code:`data[i]`)
-        data : list[U]
-            Array of values
+        data : list[etree.Element]
+            Group of selected nodes
 
         Returns
         -------
