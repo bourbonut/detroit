@@ -9,6 +9,7 @@ Selection
    .. automethod:: append
    .. automethod:: attr
    .. automethod:: call
+   .. automethod:: classed
    .. automethod:: clone
    .. automethod:: data
    .. automethod:: datum
@@ -16,6 +17,7 @@ Selection
    .. automethod:: enter
    .. automethod:: exit
    .. automethod:: filter
+   .. automethod:: html
    .. automethod:: insert
    .. automethod:: join
    .. automethod:: merge
@@ -28,7 +30,7 @@ Selection
    .. automethod:: selection
    .. automethod:: style
    .. automethod:: text
-   .. automethod:: to_string
    .. automethod:: to_repr
+   .. automethod:: to_string
    .. automethod:: __str__
    .. automethod:: __repr__

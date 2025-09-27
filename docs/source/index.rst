@@ -163,6 +163,10 @@ Gallery
        <img class="only-light" src="_images/light-heatmap.svg">
        <img class="only-dark" src="_images/dark-heatmap.svg">
      </a>
+     <a href="chord.html">
+       <img class="only-light" src="_images/light-chord.svg">
+       <img class="only-dark" src="_images/dark-chord.svg">
+     </a>
      <a href="pie.html">
        <img class="only-light" src="_images/light-donut.svg">
        <img class="only-dark" src="_images/dark-donut.svg">
@@ -218,6 +222,7 @@ Table of Content
    bar
    histogram
    heatmap
+   chord
    pie
    density
    bubble

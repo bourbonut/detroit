@@ -7,12 +7,17 @@ API
 
    array
    axis
+   chord/index
    color
    contour/index
+   ease
+   force/index
    format
    geo/index
    interpolate
    path
+   polygon
+   quadtree
    scale/index
    scale_chromatic/index
    selection
