@@ -117,7 +117,7 @@ Fan Chart
            )
    
        (
-           g.attr("stroke", main_color)
+           g.attr("stroke", "black")
            .attr("stroke-opacity", 0.1)
            .call(horizontal_lines)
            .call(vertical_lines)
@@ -144,7 +144,7 @@ Fan Chart
                    g.append("text")
                    .attr("x", -margin.left)
                    .attr("y", 10)
-                   .attr("fill", main_color)
+                   .attr("fill", "black")
                    .attr("text-anchor", "start")
                    .text("↑ Deaths per day")
                )
@@ -206,7 +206,7 @@ Fan Chart
        .attr("cx", x(observed["date"]))
        .attr("cy", y(observed["mean"]))
        .attr("r", 2.5)
-       .attr("fill", main_color)
+       .attr("fill", "black")
    )
    
    # Append the mean value of the observed mean as text.
