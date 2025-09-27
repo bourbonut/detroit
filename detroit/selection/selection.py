@@ -188,6 +188,10 @@ class Selection(Generic[T]):
     ...     .attr("width", 920)
     ...     .attr("height", 460)
     ... )
+    Selection(
+        groups=[[rect]],
+        parents=[g],
+    )
     >>> print(body.to_string())
     <body>
       <svg xmlns="http://www.w3.org/2000/svg" weight="960" height="500">
@@ -267,33 +271,21 @@ class Selection(Generic[T]):
         Selection(
             groups=[[g.ticks]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f2d1504cb80>: None},
         )
         >>> svg.append("g").attr("class", "labels")
         Selection(
             groups=[[g.labels]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
         )
         >>> svg.select("g.ticks")
         Selection(
             groups=[[g.ticks]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
         )
         >>> svg.select("g.points")
         Selection(
             groups=[[]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f2d1504cb80>: None, <Element g at 0x7f2d15052640>: None},
         )
         """
         groups = defaultdict(list)
@@ -384,17 +376,11 @@ class Selection(Generic[T]):
         Selection(
             groups=[[line], [line], [line]],
             parents=[g.tick, g.tick, g.tick],
-            enter=None,
-            exit=None,
-            data={},
         )
         >>> svg.select_all("line")
         Selection(
             groups=[[line], [line], [line]],
             parents=[g.tick, g.tick, g.tick],
-            enter=None,
-            exit=None,
-            data={},
         )
         """
         groups = defaultdict(list)
@@ -435,9 +421,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[EnterNode(svg, hello), EnterNode(svg, world)]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={},
         )
         """
         return Selection(
@@ -451,7 +434,6 @@ class Selection(Generic[T]):
         Returns the exit selection: existing DOM elements in the selection for
         which no new datum was found. (The exit selection is empty for
         selections not returned by selection.data.)
-
 
         Returns
         -------
@@ -468,9 +450,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={},
         )
         """
         return Selection(
@@ -508,31 +487,28 @@ class Selection(Generic[T]):
         Selection(
             groups=[[text, text]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element text at 0x7f2d14b2a580>: 'hello', <Element text at 0x7f2d14457540>: 'world'},
         )
         >>> print(svg.to_string())
         <svg xmlns:xmlns="http://www.w3.org/2000/svg">
           <text>hello</text>
           <text>world</text>
         </svg>
-        >>> text
+        >>> print(text.to_repr())
         Selection(
             groups=[[None, None]],
             parents=[svg],
             enter=[[EnterNode(svg, hello), EnterNode(svg, world)]],
             exit=[[]],
-            data={},
+            data={<Element text at 0x7d28b3f08380>: 'hello', <Element text at 0x7d28b3f08140>: 'world'},
         )
         >>> text = text.merge(text_enter)
-        >>> text
+        >>> print(text.to_repr())
         Selection(
             groups=[[EnterNode(svg, hello), EnterNode(svg, world)]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={<Element text at 0x7f2d14b2a580>: 'hello', <Element text at 0x7f2d14457540>: 'world'},
+            data={<Element text at 0x7d28b3f08380>: 'hello', <Element text at 0x7d28b3f08140>: 'world'},
         )
         """
         selection = context.selection() if hasattr(context, "selection") else context
@@ -593,9 +569,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[text]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={},
         )
         >>> result.node().text
         '5'
@@ -653,14 +626,16 @@ class Selection(Generic[T]):
 
         >>> import detroit as d3
         >>> svg = d3.create("svg")
-        >>> svg.select_all("g").data([None, None]).enter().append("g").append("text")
+        >>> (
+        ...     svg.select_all()
+        ...     .data([None] * 2)
+        ...     .enter()
+        ...     .append("g")
+        ...     .append("text")
+        ... )
         Selection(
             groups=[[text], [text]],
             parents=[g, g],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f91d8360200>: None, <Element g at 0x7f91d8360240>: None, <Element text at 0x7f91d8bbb540>: None, <Element text at 0
-        x7f91d8360140>: None},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -704,7 +679,7 @@ class Selection(Generic[T]):
             Function to call which takes as argument:
 
             * **node** (:code:`etree.Element`) - the node element
-            * **data** (:code:`Any`) - current data associated to the node
+            * **data** (:code:`T`) - current data associated to the node
             * **index** (:code:`int`) - the index of the node in its group
             * **group** (:code:`list[etree.Element]`) - the node's group with other nodes.
 
@@ -712,6 +687,37 @@ class Selection(Generic[T]):
         -------
         Selection
             Itself
+
+        Examples
+        --------
+
+        >>> import detroit as d3
+        >>> svg = d3.create("svg")
+        >>> (
+        ...     svg.select_all()
+        ...     .data(list(range(4)))
+        ...     .enter()
+        ...     .append("g")
+        ...     .attr("transform", lambda d: f"scale({d})")
+        ... )
+        Selection(
+            groups=[[g, g, g, g]],
+            parents=[svg],
+        )
+        >>> def each(node, d, i, group):
+        ...     tag = node.tag
+        ...     transform = node.attrib.get("transform")
+        ...     print(f"{tag = }, {transform = }, data = {d}, {i = }, {len(group) = }")
+        ...
+        >>> svg.select_all("g").each(each)
+        tag = 'g', transform = 'scale(0)', data = 0, i = 0, len(group) = 4
+        tag = 'g', transform = 'scale(1)', data = 1, i = 1, len(group) = 4
+        tag = 'g', transform = 'scale(2)', data = 2, i = 2, len(group) = 4
+        tag = 'g', transform = 'scale(3)', data = 3, i = 3, len(group) = 4
+        Selection(
+            groups=[[g, g, g, g]],
+            parents=[svg],
+        )
         """
         callback = argpass(callback)
         for group in self._groups:
@@ -750,6 +756,7 @@ class Selection(Generic[T]):
         Examples
         --------
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(
         ...     svg.append("g")
@@ -791,6 +798,7 @@ class Selection(Generic[T]):
         Examples
         --------
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(
         ...     svg.append("g")
@@ -830,6 +838,7 @@ class Selection(Generic[T]):
         Examples
         --------
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(
         ...     svg.append("text")
@@ -872,6 +881,7 @@ class Selection(Generic[T]):
 
         Direct assignment:
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(svg.append("text").text("Hello, world!").to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -880,6 +890,7 @@ class Selection(Generic[T]):
 
         Through data:
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(
         ...     svg.select_all("text")
@@ -922,6 +933,7 @@ class Selection(Generic[T]):
 
         Direct assignment:
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(svg.append("text").html("Hello, world!").to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -930,6 +942,7 @@ class Selection(Generic[T]):
 
         Through data:
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> print(
         ...     svg.select_all("text")
@@ -972,6 +985,7 @@ class Selection(Generic[T]):
 
         Examples
         --------
+
         >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> data = ["Hello", "world"]
@@ -1020,28 +1034,34 @@ class Selection(Generic[T]):
         Examples
         --------
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> g1 = svg.append("g").attr("class", "g1")
         >>> g2 = svg.append("g").attr("class", "g2")
         >>> g = svg.select_all("g")
-        >>> g
+        >>> print(g.to_repr())
         Selection(
             groups=[[g.g1, g.g2]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={<Element g at 0x7f3eda0be4c0>: None, <Element g at 0x7f3eda029700>: None},
+            data={<Element g at 0x7d115a460a80>: None, <Element g at 0x7d115a460640>: None},
         )
         >>> g.datum("Hello, world")
         Selection(
             groups=[[g.g1, g.g2]],
             parents=[svg],
+        )
+        >>> print(g.to_repr())
+        Selection(
+            groups=[[g.g1, g.g2]],
+            parents=[svg],
             enter=None,
             exit=None,
-            data={<Element g at 0x7f3eda0be4c0>: 'Hello, world', <Element g at 0x7f3eda029700>: None},
+            data={<Element g at 0x7d115a460a80>: 'Hello, world', <Element g at 0x7d115a460640>: None},
         )
         >>> g1.node()
-        <Element g at 0x7f3eda0be4c0>
+        <Element g at 0x7d115a460a80>
         """
         self._data[self.node()] = value
         return self
@@ -1075,6 +1095,7 @@ class Selection(Generic[T]):
         Examples
         --------
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> svg.append("g")
         Selection(
@@ -1205,6 +1226,7 @@ class Selection(Generic[T]):
         Examples
         --------
 
+        >>> import detroit as d3
         >>> data = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
         >>> svg = d3.create("svg")
         >>> table = (
@@ -1255,9 +1277,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[circle]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element circle at 0x7f5e219fd300>: None},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -1275,9 +1294,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[circle, circle, None]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element circle at 0x7f5e219fd300>: 0, <Element circle at 0x7f5e2251f040>: 1, <Element circle at 0x7f5e22517a80>: 2},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -1356,9 +1372,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[text], [text]],
             parents=[g, g],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fc5748c2f00>: None, <Element g at 0x7fc5748c2300>: None, <Element text at 0x7fc575105280>: None, <Element text at 0x7fc5748c2100>: None},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -1373,9 +1386,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[circle], [circle]],
             parents=[g, g],
-            enter=None,
-            exit=None,
-            data={<Element circle at 0x7fc5748f9980>: None, <Element circle at 0x7fc5748f8c80>: None},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -1404,10 +1414,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[text.class1], [text.class2]],
             parents=[g, g],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fc5748e9340>: 'class1', <Element g at 0x7fc5748e9b80>: 'class2', <Element text at 0x7fc5753f7140>: 'class1', <Eleme
-        nt text at 0x7fc5748e8180>: 'class2'},
         )
         >>> svg.insert("circle", ".class1")
         Selection(
@@ -1471,9 +1477,6 @@ class Selection(Generic[T]):
         Selection(
             groups=[[g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain, g.domain]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fd461822100>: None, <Element g at 0x7fd461822800>: None, <Element g at 0x7fd461821980>: None, <Element g at 0x7fd4618219c0>: None, <Element g at 0x7fd461821380>: None, <Element g at 0x7fd461822ec0>: None, <Element g at 0x7fd461821580>: None, <Element g at 0x7fd461822180>: None, <Element g at 0x7fd461823300>: None, <Element g at 0x7fd461821200>: None},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg">
@@ -1639,6 +1642,8 @@ class Selection(Generic[T]):
 
         Examples
         --------
+
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> g = (
         ...     svg.select_all("g")
@@ -1651,12 +1656,10 @@ class Selection(Generic[T]):
         Selection(
             groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fac2cf609c0>: 9, <Element g at 0x7fac2c4e1880>: 8, <Element g at 0x7fac2c4e0840>: 7, <Element g at 0x7fac2cca92c0>:6, <Element g at 0x7fac2cca8800>: 5, <Element g at 0x7fac2cca99c0>: 4, <Element g at 0x7fac2cca9940>: 3, <Element g at 0x7fac2cca9200>: 2, <Element g at 0x7fac2ccaa980>: 1, <Element g at 0x7fac2ccaa400>: 0},
         )
-        >>> g.node()
-        <Element g at 0x7fac2cf609c0>
+        >>> first = g.node()
+        >>> print(f"{first.tag}.{first.attrib.get("class")}")
+        g.class9
         """
         return next(iter(self))
 
@@ -1683,12 +1686,9 @@ class Selection(Generic[T]):
         Selection(
             groups=[[g.class9, g.class8, g.class7, g.class6, g.class5, g.class4, g.class3, g.class2, g.class1, g.class0]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fac2cf609c0>: 9, <Element g at 0x7fac2c4e1880>: 8, <Element g at 0x7fac2c4e0840>: 7, <Element g at 0x7fac2cca92c0>:6, <Element g at 0x7fac2cca8800>: 5, <Element g at 0x7fac2cca99c0>: 4, <Element g at 0x7fac2cca9940>: 3, <Element g at 0x7fac2cca9200>: 2, <Element g at 0x7fac2ccaa980>: 1, <Element g at 0x7fac2ccaa400>: 0},
         )
-        >>> g.nodes()
-        [<Element g at 0x7fac2cf609c0>, <Element g at 0x7fac2c4e1880>, <Element g at 0x7fac2c4e0840>, <Element g at 0x7fac2cca92c0>, <Element g at 0x7fac2cca8800>, <Element g at 0x7fac2cca99c0>, <Element g at 0x7fac2cca9940>, <Element g at 0x7fac2cca9200>, <Element g at 0x7fac2ccaa980>, <Element g at 0x7fac2ccaa400>]
+        >>> [f"{node.tag}.{node.attrib.get("class")}" for node in g.nodes()]
+        ['g.class9', 'g.class8', 'g.class7', 'g.class6', 'g.class5', 'g.class4', 'g.class3', 'g.class2', 'g.class1', 'g.class0']
         """
         return list(self)
 
@@ -1805,9 +1805,7 @@ class Selection(Generic[T]):
             parents=[svg],
             enter=None,
             exit=None,
-            data={<Element g at 0x7287cf850040>: 9, <Element g at 0x7287cfa50bc0>: 8, <Element g at 0x7287cf883ac0>: 7, <Element g at 0x7287cf8837c0>:
-         6, <Element g at 0x7287cf883e00>: 5, <Element g at 0x7287cf883a40>: 4, <Element g at 0x7287cf882fc0>: 3, <Element g at 0x7287cf883a80>: 2, <E
-        lement g at 0x7287cf880d80>: 1, <Element g at 0x7287cf881000>: 0},
+            data={<Element g at 0x7287cf850040>: 9, <Element g at 0x7287cfa50bc0>: 8, <Element g at 0x7287cf883ac0>: 7, <Element g at 0x7287cf8837c0>:6, <Element g at 0x7287cf883e00>: 5, <Element g at 0x7287cf883a40>: 4, <Element g at 0x7287cf882fc0>: 3, <Element g at 0x7287cf883a80>: 2, <Element g at 0x7287cf880d80>: 1, <Element g at 0x7287cf881000>: 0},
         )
         """
 
