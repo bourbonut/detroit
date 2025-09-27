@@ -66,7 +66,7 @@ class ForceCenter:
         self._y = y
         return self
 
-    def strength(self, strength: float) -> TForceCenter:
+    def set_strength(self, strength: float) -> TForceCenter:
         """
         Sets the center force's strength. A reduced strength of e.g. 0.05
         softens the movements on interactive graphs in which new nodes enter or
