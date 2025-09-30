@@ -281,8 +281,9 @@ class Accessor(Generic[U, V], Protocol):
     arguments.
 
     The first argument represents a value of the iterated array.
-    The second argument represents the index of this value.
-    The last and third argument is the original array without modification.
+    The second argument represents the index of the node.
+    The last and third argument is the group of nodes where :code:`node ==
+    group[i]`.
 
     Examples
     --------
@@ -291,7 +292,7 @@ class Accessor(Generic[U, V], Protocol):
 
     >>> lambda d: d["weights"]
     >>> lambda d, i: i * d["length"]
-    >>> lambda d, _, data: len(data) + d["count"]
+    >>> lambda d, _, group: len(group) + d["count"]
     """
 
     @overload
@@ -301,7 +302,7 @@ class Accessor(Generic[U, V], Protocol):
     def __call__(self, d: U, i: int) -> V: ...
 
     @overload
-    def __call__(self, d: U, i: int, data: list[etree.Element]) -> V: ...
+    def __call__(self, d: U, i: int, group: list[etree.Element]) -> V: ...
 
     def __call__(self, *args) -> V:
         """
@@ -312,8 +313,8 @@ class Accessor(Generic[U, V], Protocol):
         d : U
             Represents a value of :code:`data` such as :code:`d = data[i]`.
         i : int
-            Index of the value (i.e. :code:`data[i]`)
-        data : list[etree.Element]
+            Index of the node (i.e. :code:`node == group[i]`)
+        group : list[etree.Element]
             Group of selected nodes
 
         Returns
