@@ -401,7 +401,25 @@ class Force(Protocol):
         nodes: list[SimulationNode],
         random: Callable[[None], float],
     ):
+        """
+        Initializes the force.
+
+        Parameters
+        ----------
+        nodes : list[SimulationNode]
+            List of simulation nodes
+        random : Callable[[None], float]
+            Function which returns a random number
+        """
         ...
 
     def __call__(self, alpha: float | None):
+        """
+        Applies the force on simulation nodes.
+
+        Parameters
+        ----------
+        alpha : float | None
+            Parameter used during the call.
+        """
         ...

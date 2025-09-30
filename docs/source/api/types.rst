@@ -33,3 +33,12 @@ Types
    .. automethod:: __call__
 
 .. autoclass:: detroit.types.MultiPolygonGeoJSON
+
+.. autoclass:: detroit.types.SimulationNode
+
+.. autoclass:: detroit.types.SimulationLink
+
+.. autoclass:: detroit.types.Force
+
+   .. automethod:: initialize
+   .. automethod:: __call__
