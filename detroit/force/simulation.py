@@ -44,7 +44,7 @@ class ForceSimulation:
         This method does not dispatch events; events are only dispatched by the
         internal timer when the simulation is started automatically upon
         creation or by calling simulation.restart. The natural number of ticks
-        when the simulation is started is :code:`\\lceil
+        when the simulation is started is :math:`\\lceil
         \\log(\\alpha_{\\text{min}}) / \\log(1 - \\alpha_{\\text{decay}})
         \\rceil`; by default, this is 300.
 
