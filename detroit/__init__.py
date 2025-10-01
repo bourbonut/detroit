@@ -142,6 +142,7 @@ from .geo import (
     geo_transform,
     geo_transverse_mercator,
 )
+from .hierarchy import hierarchy
 from .interpolate import (
     interpolate,
     interpolate_array,
@@ -582,6 +583,7 @@ __all__ = [
     "group",
     "groups",
     "hcl",
+    "hierarchy",
     "hsl",
     "index",
     "indexes",
