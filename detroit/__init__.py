@@ -142,7 +142,10 @@ from .geo import (
     geo_transform,
     geo_transverse_mercator,
 )
-from .hierarchy import hierarchy
+from .hierarchy import (
+    hierarchy,
+    stratify,
+)
 from .interpolate import (
     interpolate,
     interpolate_array,
@@ -718,6 +721,7 @@ __all__ = [
     "stack_order_inside_out",
     "stack_order_none",
     "stack_order_reverse",
+    "stratify",
     "subset",
     "superset",
     "symbol",
