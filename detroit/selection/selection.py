@@ -1610,7 +1610,7 @@ class Selection(Generic[T]):
                     continue
                 cloned_node = copy_func(node)
                 if node in self._data:
-                    cloned_data[cloned_data] = copy_func(self._data[node])
+                    cloned_data[cloned_node] = copy_func(self._data[node])
                 cloned_group.append(cloned_node)
             cloned_groups.append(cloned_group)
 
@@ -1628,7 +1628,7 @@ class Selection(Generic[T]):
             cloned_parents,
             enter=cloned_enter,
             exit=cloned_exit,
-            data=self._data,
+            data=cloned_data,
         )
 
     def node(self) -> etree.Element:
