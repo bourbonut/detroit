@@ -1,23 +1,7 @@
+from pathlib import Path
 import detroit as d3
-# from detroit.hierarchy import Node
 import polars as pl
 import json
-
-# def init_node(values):
-#     node = Node(None)
-#     node.value = values.get("value")
-#     node.x0 = values.get("x0")
-#     node.y0 = values.get("y0")
-#     node.x1 = values.get("x1")
-#     node.y1 = values.get("y1")
-#     node.id = None
-#     node.parent = None
-#     node.data = None
-#     node._squarify = None
-#     node.height = None
-#     if children := values.get("children"):
-#         node.children = [init_node(child) for child in children]
-#     return node
 
 def special_round(d):
     return round(d * 100) / 100
@@ -67,13 +51,15 @@ def check(data, expected, tile):
     assert actual == expected
 
 def test_flare_1():
-    data = pl.read_csv("data/flare.csv").to_dicts()
-    with open("data/flare-phi.json") as file:
+    datapath = Path(__file__).resolve().parents[1] / "data"
+    data = pl.read_csv(datapath / "flare.csv").to_dicts()
+    with open(datapath / "flare-phi.json") as file:
         expected = json.load(file)
     check(data, expected, d3.treemap_squarify)
 
 def test_flare_2():
-    data = pl.read_csv("data/flare.csv").to_dicts()
-    with open("data/flare-one.json") as file:
+    datapath = Path(__file__).resolve().parents[1] / "data"
+    data = pl.read_csv(datapath / "flare.csv").to_dicts()
+    with open(datapath / "flare-one.json") as file:
         expected = json.load(file)
     check(data, expected, d3.treemap_squarify.set_ratio(1))
