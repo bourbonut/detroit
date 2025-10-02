@@ -145,6 +145,13 @@ from .geo import (
 from .hierarchy import (
     hierarchy,
     stratify,
+    treemap,
+    treemap_binary,
+    treemap_dice,
+    treemap_resquarify,
+    treemap_slice,
+    treemap_slice_dice,
+    treemap_squarify,
 )
 from .interpolate import (
     interpolate,
@@ -764,5 +771,12 @@ __all__ = [
     "time_wednesday",
     "time_week",
     "time_year",
+    "treemap",
+    "treemap_binary",
+    "treemap_dice",
+    "treemap_resquarify",
+    "treemap_slice",
+    "treemap_slice_dice",
+    "treemap_squarify",
     "union",
 ]

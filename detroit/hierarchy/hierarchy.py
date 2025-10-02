@@ -133,11 +133,20 @@ class Node:
             sum_value = 0 if v is None else v
             children = node.children
             i = 0 if children is None else len(children)
+            i -= 1
             while i >= 0:
                 sum_value += children[i].value
                 i -= 1
             node.value = sum_value
         return self.each_after(sum_node)
+
+    def __str__(self):
+        dict_ = self.__dict__
+        attributs = "\n    ".join(f"{key}: {dict_[key]}" for key in dict_)
+        return f"Node(\n    {attributs}\n)"
+
+    def __repr__(self):
+        return f"Node(value={self.value})"
 
 def node_children(d: Node) -> list[Node] | None:
     return d.children
