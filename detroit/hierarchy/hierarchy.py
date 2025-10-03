@@ -196,10 +196,12 @@ def compute_height(node: Node):
             break
 
 def hierarchy(
-    data: dict[str, Any],
+    data: dict[str, Any] | Node,
     children: Callable[[dict[str, Any]], Any | None] = None
 ) -> Node:
-    if children is None:
+    if isinstance(data, Node):
+        children = node_children
+    elif children is None:
         children = object_children
 
     root = Node(data)

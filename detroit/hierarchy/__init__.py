@@ -1,4 +1,9 @@
 from .hierarchy import Node, hierarchy
+from .pack import (
+    pack,
+    pack_enclose,
+    pack_siblings,
+)
 from .stratify import stratify
 from .treemap import (
     treemap,
@@ -13,6 +18,9 @@ from .treemap import (
 __all__ = [
     "Node",
     "hierarchy",
+    "pack",
+    "pack_enclose",
+    "pack_siblings",
     "stratify",
     "treemap",
     "treemap_binary",

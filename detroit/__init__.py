@@ -144,6 +144,9 @@ from .geo import (
 )
 from .hierarchy import (
     hierarchy,
+    pack,
+    pack_enclose,
+    pack_siblings,
     stratify,
     treemap,
     treemap_binary,
@@ -671,6 +674,9 @@ __all__ = [
     "link_radial",
     "link_vertical",
     "nice",
+    "pack",
+    "pack_enclose",
+    "pack_siblings",
     "path",
     "pie",
     "piecewise",
