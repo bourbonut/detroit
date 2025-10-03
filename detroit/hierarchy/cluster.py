@@ -36,7 +36,7 @@ class Cluster:
         x = 0
         previous_node = None
 
-        def cluster(node):
+        def cluster(node: Node):
             nonlocal previous_node, x
             children = node.children
             if children:
