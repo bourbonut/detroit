@@ -70,3 +70,6 @@ class Partition:
 
     def get_padding(self) -> float:
         return self._padding
+
+def partition() -> Partition:
+    return Partition()

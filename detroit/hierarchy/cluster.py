@@ -97,3 +97,6 @@ class Cluster:
         if self._node_size:
             return [self._dx, self._dy]
         return None
+
+def cluster() -> Cluster:
+    return Cluster()

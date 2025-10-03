@@ -256,3 +256,6 @@ class Tree:
         if self._node_size:
             return [self._dx, self._dy]
         return None
+
+def tree() -> Tree:
+    return Tree()

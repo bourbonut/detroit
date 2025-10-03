@@ -1,10 +1,13 @@
+from .cluster import cluster
 from .hierarchy import Node, hierarchy
 from .pack import (
     pack,
     pack_enclose,
     pack_siblings,
 )
+from .partition import partition
 from .stratify import stratify
+from .tree import tree
 from .treemap import (
     treemap,
     treemap_binary,
@@ -17,11 +20,14 @@ from .treemap import (
 
 __all__ = [
     "Node",
+    "cluster",
     "hierarchy",
     "pack",
     "pack_enclose",
     "pack_siblings",
+    "partition",
     "stratify",
+    "tree",
     "treemap",
     "treemap_binary",
     "treemap_dice",
