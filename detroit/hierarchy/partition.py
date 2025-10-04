@@ -60,7 +60,7 @@ class Partition:
 
     def set_padding(self, padding: float) -> TPartition:
         self._padding = padding
-        return padding
+        return self
 
     def get_round(self) -> bool:
         return self._round
