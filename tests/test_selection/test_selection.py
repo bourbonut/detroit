@@ -712,3 +712,15 @@ def test_selection_54():
 
     assert g1.node().get("class") == "foo bar"
     assert g2.node().get("class") == "bar"
+
+def test_selection_55():
+    svg = d3.create("svg")
+    a = svg.append("a")
+    a.attr("xlink:href", "https://www.google.com/")
+    assert a.attr("xlink:href") == "https://www.google.com/"
+
+def test_selection_56():
+    svg = d3.create("svg")
+    a = svg.append("a")
+    a.attr("xlink:href", lambda _: "https://www.google.com/")
+    assert a.attr("xlink:href") == "https://www.google.com/"
