@@ -12,7 +12,7 @@ def mean_x(children: list[Node]) -> float:
     return mean((child.x for child in children))
 
 def max_y(children: list[Node]) -> float:
-    return 1 + max((child["y"] for child in children))
+    return 1 + max((child.y for child in children))
 
 def leaf_left(node: Node) -> Node:
     while children := node.children:
@@ -56,16 +56,16 @@ class Cluster:
         left = leaf_left(root)
         right = leaf_right(root)
         x0 = left.x - self._separation(left, right) * 0.5
-        x1 = right.x - self._separation(right, left) * 0.5
+        x1 = right.x + self._separation(right, left) * 0.5
 
         if self._node_size:
             def update(node):
                 node.x = (node.x - root.x) * self._dx
-                node.y = (node.y - root.y) * self._dy
+                node.y = (root.y - node.y) * self._dy
         else:
             def update(node):
                 node.x = (node.x - x0) / (x1 - x0) * self._dx
-                node.y = (1 - (node.y / root.y if root.y else 1)) * self._dy
+                node.y = (1 - ((node.y / root.y) if root.y else 1)) * self._dy
 
         return root.each_after(update)
 
