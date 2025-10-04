@@ -135,7 +135,7 @@ def creator(node: etree.Element, fullname: dict | None = None) -> etree.SubEleme
         Subnode
     """
     return (
-        etree.SubElement(node, fullname["local"], nsmap=fullname["space"])
+        etree.SubElement(node, fullname["local"], nsmap={None: fullname["space"]})
         if isinstance(fullname, dict)
         else etree.SubElement(node, fullname, nsmap={})
     )
@@ -768,6 +768,12 @@ class Selection(Generic[T]):
           <g class="labels" transform="translate(20, 10)"/>
         </svg>
         """
+        fullname = namespace(name)
+        name = (
+            f"{{{fullname['space']}}}{fullname['local']}"
+            if isinstance(fullname, dict)
+            else fullname
+        )
         if value is None:
             return self.node().get(name)
         elif callable(value):

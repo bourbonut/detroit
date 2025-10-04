@@ -23,7 +23,7 @@ def create(name: str) -> Selection:
     """
     fullname = namespace(name)
     document = (
-        etree.Element(fullname["local"], attrib={"xmlns": fullname["space"][None]})
+        etree.Element(fullname["local"], attrib={"xmlns": fullname["space"]})
         if isinstance(fullname, dict)
         else etree.Element(fullname)
     )
