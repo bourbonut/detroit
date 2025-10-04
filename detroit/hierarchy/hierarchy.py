@@ -141,12 +141,15 @@ class Node:
         return self.each_after(sum_node)
 
     def __str__(self):
-        dict_ = self.__dict__
-        attributs = "\n    ".join(f"{key}: {dict_[key]}" for key in dict_)
-        return f"Node(\n    {attributs}\n)"
+        dict_ = self.__dict__.copy()
+        dict_["data"] = f"{dict_["data"].__class__.__name__}"
+        dict_["parent"] = f"{dict_["parent"].__class__.__name__}"
+        attributs = ",\n    ".join(f"{key}: {dict_[key]}" for key in dict_)
+        return f"Node(\n    {attributs},\n)"
 
     def __repr__(self):
-        return f"Node(value={self.value})"
+        children = f"list({len(self.children)}" if self.children else None
+        return f"Node(children={children}))"
 
 def node_children(d: Node) -> list[Node] | None:
     return d.children

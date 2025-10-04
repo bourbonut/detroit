@@ -63,7 +63,7 @@ def execute_shifts(v: TreeNode):
     """
     shift = 0
     change = 0
-    for w in v.children:
+    for w in reversed(v.children):
         w.z += shift
         w.m += shift
         change += w.c
@@ -71,7 +71,7 @@ def execute_shifts(v: TreeNode):
 
 def next_ancestor(vim: TreeNode, v: TreeNode, ancestor: TreeNode) -> TreeNode:
     """
-    If vi-’s ancestor is a sibling of v, returns vi-’s ancestor. Otherwise,
+    If vi-'s ancestor is a sibling of v, returns vi-'s ancestor. Otherwise,
     returns the specified (default) ancestor.
     """
     return vim.a if vim.a.parent == v.parent else ancestor
@@ -85,9 +85,10 @@ def tree_root(root: Node) -> TreeNode:
         node = nodes.pop()
         if children := node.node.children:
             node.children = [None] * len(children)
-            for i, c in reversed(enumerate(children)):
+            for i, c in reversed(list(enumerate(children))):
                 child = node.children[i] = TreeNode(c, i)
                 child.parent = node
+                nodes.append(child)
 
     parent = tree.parent = TreeNode(None, 0)
     parent.children = [tree]
@@ -173,7 +174,7 @@ class Tree:
         v.node.x = v.z + v.parent.m
         v.m += v.parent.m
 
-    def _apportion(self, v: TreeNode, w: TreeNode, ancestor: TreeNode):
+    def _apportion(self, v: TreeNode, w: TreeNode, ancestor: TreeNode) -> TreeNode:
         """
         The core of the algorithm. Here, a new subtree is combined with the
         previous subtrees. Threads are used to traverse the inside and outside
@@ -204,7 +205,7 @@ class Tree:
                 vom = next_left(vom)
                 vop = next_right(vop)
                 vop.a = v
-                shift = vim.z + sim - vim.z - sip + self._separation(vim.node, vip.node)
+                shift = vim.z + sim - vip.z - sip + self._separation(vim.node, vip.node)
                 if shift > 0:
                     move_subtree(next_ancestor(vim, v, ancestor), v, shift)
                     sip += shift
