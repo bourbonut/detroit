@@ -78,7 +78,7 @@ def pack_children_random(padding: Callable[[Node], float], k: float) -> Callable
             e = pack_siblings_random(children)
             if r:
                 for child in children:
-                    child.r += r
+                    child.r -= r
             node.r = e + r
     return pack_children
 
