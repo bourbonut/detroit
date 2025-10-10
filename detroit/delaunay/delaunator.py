@@ -87,7 +87,7 @@ def quicksort(ids, dists, left, right):
         if (dists[ids[left]] > dists[ids[right]]):
             swap(ids, left, right)
         if (dists[ids[i]] > dists[ids[right]]):
-                swap(ids, i, right)
+            swap(ids, i, right)
         if (dists[ids[left]] > dists[ids[i]]):
             swap(ids, left, i)
 
@@ -160,7 +160,25 @@ class Delaunator:
 
         return cls(coords)
 
+    @property
+    def coords(self):
+        return self._coords
+
+    @property
+    def triangles(self):
+        return self._triangles
+
+    @property
+    def hull(self):
+        return self._hull
+
+    @property
+    def halfedges(self):
+        return self._halfedges
     
+    def __len__(self):
+        return self._triangles_len
+
     def update(self):
         n = len(self._coords) >> 1
 
