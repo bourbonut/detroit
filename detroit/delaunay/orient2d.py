@@ -69,18 +69,18 @@ def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
         return det
 
     s1 = acxtail * bcy
-    c = splitter * acxtail
+    c = SPLITTER * acxtail
     ahi = c - (c - acxtail)
     alo = acxtail - ahi
-    c = splitter * bcy
+    c = SPLITTER * bcy
     bhi = c - (c - bcy)
     blo = bcy - bhi
     s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
     t1 = acytail * bcx
-    c = splitter * acytail
+    c = SPLITTER * acytail
     ahi = c - (c - acytail)
     alo = acytail - ahi
-    c = splitter * bcx
+    c = SPLITTER * bcx
     bhi = c - (c - bcx)
     blo = bcx - bhi
     t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
@@ -100,18 +100,18 @@ def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
     C1len = sum_zerolim(4, B, 4, u, C1)
 
     s1 = acx * bcytail
-    c = splitter * acx
+    c = SPLITTER * acx
     ahi = c - (c - acx)
     alo = acx - ahi
-    c = splitter * bcytail
+    c = SPLITTER * bcytail
     bhi = c - (c - bcytail)
     blo = bcytail - bhi
     s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
     t1 = acy * bcxtail
-    c = splitter * acy
+    c = SPLITTER * acy
     ahi = c - (c - acy)
     alo = acy - ahi
-    c = splitter * bcxtail
+    c = SPLITTER * bcxtail
     bhi = c - (c - bcxtail)
     blo = bcxtail - bhi
     t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
@@ -128,21 +128,21 @@ def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
     bvirt = u3 - _j
     u[2] = _j - (u3 - bvirt) + (_i - bvirt)
     u[3] = u3
-    C2len = sum_zerolim(C1Len, C1, 4, u, C2)
+    C2len = sum_zerolim(C1len, C1, 4, u, C2)
 
     s1 = acxtail * bcytail
-    c = splitter * acxtail
+    c = SPLITTER * acxtail
     ahi = c - (c - acxtail)
     alo = acxtail - ahi
-    c = splitter * bcytail
+    c = SPLITTER * bcytail
     bhi = c - (c - bcytail)
     blo = bcytail - bhi
     s0 = alo * blo - (s1 - ahi * bhi - alo * bhi - ahi * blo)
     t1 = acytail * bcxtail
-    c = splitter * acytail
+    c = SPLITTER * acytail
     ahi = c - (c - acytail)
     alo = acytail - ahi
-    c = splitter * bcxtail
+    c = SPLITTER * bcxtail
     bhi = c - (c - bcxtail)
     blo = bcxtail - bhi
     t0 = alo * blo - (t1 - ahi * bhi - alo * bhi - ahi * blo)
@@ -159,7 +159,7 @@ def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
     bvirt = u3 - _j
     u[2] = _j - (u3 - bvirt) + (_i - bvirt)
     u[3] = u3
-    Dlen = sum_zerolim(C2Len, C2, 4, u, D)
+    Dlen = sum_zerolim(C2len, C2, 4, u, D)
 
     return D[Dlen - 1]
 

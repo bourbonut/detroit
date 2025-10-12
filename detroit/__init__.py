@@ -46,6 +46,7 @@ from .color import (
 )
 from .contour import Contours as contours
 from .contour import Density as contour_density
+from .delaunay import Delaunay, Voronoi
 from .ease import (
     ease_back,
     ease_back_in,
@@ -429,6 +430,7 @@ from .time_format import (
 __version__ = importlib.metadata.version(__package__)
 
 __all__ = [
+    "Delaunay",
     "SCHEME_ACCENT",
     "SCHEME_BLUES",
     "SCHEME_BRBG",
@@ -469,6 +471,7 @@ __all__ = [
     "SCHEME_YLORRD",
     "SYMBOLS_FILL",
     "SYMBOLS_STROKE",
+    "Voronoi",
     "arc",
     "area",
     "area_radial",
