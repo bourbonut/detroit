@@ -29,7 +29,7 @@ class Path:
         self._y1 = y
         self._string.write(f"L{x},{y}")
 
-    def arc(self, x, y, r):
+    def arc(self, x, y, r, *args):
         x0 = x + r
         y0 = y
 

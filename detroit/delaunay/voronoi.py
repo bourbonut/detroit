@@ -1,51 +1,56 @@
+from collections.abc import Iterator
 from .path import Path
 from .polygon import Polygon
 from math import floor, isnan, inf
+from typing import TypeVar
+
+Delaunay = TypeVar("Delaunay", bound="Delaunay")
+TVoronoi = TypeVar("Voronoi", bound="Voronoi")
 
 class Voronoi:
 
     def __init__(
         self,
-        delaunay,
+        delaunay: Delaunay,
         bounds: tuple[float, float, float, float] | None = None,
     ):
         if bounds is None:
             bounds = [0, 0, 960, 500]
 
+        xmin, ymin, xmax, ymax = bounds
         if xmax < xmin or ymax < ymin:
             raise ValueError("Invalid bounds")
 
-        xmin, ymin, xmax, ymax = bounds
 
-        self._delaunay = delaunay
+        self._circumcenters = [None] * (len(delaunay.points) * 2)
 
-        self._circumcenters = [None] * (len(delaunay._points) * 2)
-        self._vectors = [None] * (len(delaunay._points) * 2)
-
-        self._xmax = xmax
-        self._xmin = xmin
-        self._ymax = ymax
-        self._ymin = ymin
+        self.delaunay = delaunay
+        self.vectors = [None] * (len(delaunay.points) * 2)
+        self.circumcenters = self._circumcenters
+        self.xmax = xmax
+        self.xmin = xmin
+        self.ymax = ymax
+        self.ymin = ymin
 
         self._initialize()
 
-
-    def update(self):
-        self._delaunay.update()
+    def update(self) -> TVoronoi:
+        self.delaunay.update()
         self._initialize()
         return self
 
     def _initialize(self):
-        self._circumcenters = self._circumcenters[0:len(self._delaunay) / 3 * 2]
+        points = self.delaunay.points
+        hull = self.delaunay.hull
+        triangles = self.delaunay.triangles
+
+        circumcenters = self.circumcenters = self._circumcenters[0:len(triangles) // 3 * 2]
         bx = None
         by = None
-        triangles = self._delaunay.triangles
         i = 0
         j = 0
         n = len(triangles)
         while i < n:
-            i += 3
-            j += 2
             t1 = triangles[i] * 2
             t2 = triangles[i + 1] * 2
             t3 = triangles[i + 2] * 2
@@ -65,10 +70,10 @@ class Voronoi:
             if abs(ab) < 1e-9:
                 if bx is None:
                     bx = by = 0
-                    for i in self._delaunay.hull:
+                    for i in hull:
                         bx += points[i * 2]
                         by += points[i * 2 + 1]
-                    length = len(self._delaunay.hull)
+                    length = len(hull)
                     bx /= length
                     by /= length
                 a = 1e9 * (-1 if (bx - x1) * ey - (by - y1) * ex < 0 else 1)
@@ -83,70 +88,82 @@ class Voronoi:
             circumcenters[j] = x
             circumcenters[j + 1] = y
 
-        h = self._delaunay.hull[-1]
+            i += 3
+            j += 2
+
+        h = hull[-1]
         p0 = None
         p1 = h * 4
         x0 = None
-        x1 = self._delaunay.coords[2 * h]
+        x1 = points[2 * h]
         y0 = None
-        y1 = self._delaunay.coords[2 * h + 1]
-        self._vectors = [0 for _ in self._vectors]
-        for h in self._delaunay.hull:
+        y1 = points[2 * h + 1]
+        vectors = self.vectors = [0 for _ in self.vectors]
+        for h in hull:
             p0 = p1
             x0 = x1
             y0 = y1
-            self._vectors[p0 + 2] = self._vectors[p1] = y0 - y1
-            self._vectors[p0 + 3] = self._vectors[p1 + 1] = x1 - x0
+            p1 = h * 4
+            x1 = points[2 * h]
+            y1 = points[2 * h + 1]
+            vectors[p0 + 2] = vectors[p1] = y0 - y1
+            vectors[p0 + 3] = vectors[p1 + 1] = x1 - x0
 
-    def render(self, context=None):
+    def render(self, context=None) -> str | None:
         if context is None:
             buffer = context = Path()
         else:
             buffer = None
 
-        if len(self._delaunay.hull) <= 1:
+        halfedges = self.delaunay.halfedges
+        inedges = self.delaunay.inedges
+        hull = self.delaunay.hull
+        circumcenters = self.circumcenters
+        vectors = self.vectors
+
+        if len(hull) <= 1:
             return None
 
-        for i, j in enumerate(self._delaunay.halfedges):
+        for i, j in enumerate(halfedges):
             if j < i:
                 continue
             ti = floor(i / 3) * 2
             tj = floor(j / 3) * 2
-            xi = self._circumcenters[ti]
-            yi = self._circumcenters[ti + 1]
-            xj = self._circumcenters[tj]
-            yj = self._circumcenters[tj + 1]
+            xi = circumcenters[ti]
+            yi = circumcenters[ti + 1]
+            xj = circumcenters[tj]
+            yj = circumcenters[tj + 1]
             self._render_segment(xi, yi, xj, yj, context)
 
         h0 = None
-        h1 = self._delaunay.hull[-1]
-        for i in range(len(self._delaunay.hull)):
+        h1 = hull[-1]
+        for i in range(len(hull)):
             h0 = h1
-            h1 = self._delaunay.hull[i]
-            t = floor(self._delaunay.inedges[h1] / 3) * 2
-            x = self._circumcenters[t]
-            y = self._circumcenters[t + 1]
+            h1 = hull[i]
+            t = floor(inedges[h1] / 3) * 2
+            x = circumcenters[t]
+            y = circumcenters[t + 1]
             v = h0 * 4
-            p = self._project(x, y, self._vectors[v + 2], self._vectors[v + 3])
+            p = self._project(x, y, vectors[v + 2], vectors[v + 3])
             if p:
                 self._render_segment(x, y, p[0], p[1], context)
         return None if buffer is None else str(buffer)
 
-    def _render_bounds(self, context=None):
+    def _render_bounds(self, context=None) -> str | None:
         if context is None:
             buffer = context = Path()
         else:
             buffer = None
         
         context.rect(
-            self._xmin,
-            self._ymin,
-            self._xmax - self._xmin,
-            self._ymax - self._ymin,
+            self.xmin,
+            self.ymin,
+            self.xmax - self.xmin,
+            self.ymax - self.ymin,
         )
         return None if buffer is None else str(buffer)
 
-    def render_cell(self, i, context=None):
+    def render_cell(self, i: int, context=None) -> str | None:
         if context is None:
             buffer = context = Path()
         else:
@@ -165,19 +182,27 @@ class Voronoi:
         context.close_path()
         return None if buffer is None else str(buffer)
 
-    def cell_polygons(self):
-        for i in range(len(self._delaunay.coords) // 2):
+    def cell_polygons(self) -> Iterator[list[dict[str, float]] | None]:
+        points = self.delaunay.points
+        for i in range(len(points) // 2):
             cell = self.cell_polygon(i)
             if cell:
-                cell.index = i
+                # cell.index = i # lists cannot have attributes
                 yield cell
 
-    def cell_polygon(self, i):
+    def cell_polygon(self, i: int) -> list[dict[str, float] | None]:
         polygon = Polygon()
         self._render_cell(i, polygon)
         return polygon.value()
 
-    def _render_segment(self, x0, y0, x1, y1, context=None):
+    def _render_segment(
+        self,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+        context=None,
+    ):
         c0 = self._regioncode(x0, y0)
         c1 = self._regioncode(x1, y1)
         if c0 == 0 and c1 == 0:
@@ -187,81 +212,99 @@ class Voronoi:
             context.move_to(S[0], S[1])
             context.line_to(S[2], S[3])
 
-    def contains(self, i, x, y):
+    def contains(self, i: int, x: float, y: float) -> bool:
         if isnan(x) or isnan(y):
             return False
-        return self._delaunay._step(i, x, y) == i
+        return self.delaunay._step(i, x, y) == i
 
-
-    def neighbors(self, i):
+    def neighbors(self, i: int) -> Iterator[int]:
         ci = self._clip(i)
-        if ci:
-            for j in self._delaunay.neighbors(i):
-                cj = self._clip(j)
-                if cj:
-                    break_loop = False
-                    for ai in range(0, len(ci), 2):
-                        for aj in range(0, len(cj), 2):
-                            if (
-                                ci[ai] == cj[aj]
-                                and ci[ai + 1] == cj[aj + 1]
-                                and ci[(ai + 2) % li] == cj[(aj + lj - 2) % lj]
-                                and ci[(ai + 3) % li] == cj[(aj + lj - 1) % lj]
-                            ):
-                                yield j
-                                break_loop = True
-                                break
-                        if break_loop:
-                            break
+        if not ci:
+            return
+        for j in self.delaunay.neighbors(i):
+            cj = self._clip(j)
+            if not cj:
+                continue
 
-    def _cell(self, i):
-        e0 = self._delaunay.inedges[i]
+            break_loop = False
+            li = len(ci)
+            for ai in range(0, li, 2):
+                lj = len(cj)
+                for aj in range(0, lj, 2):
+                    if (
+                        ci[ai] == cj[aj]
+                        and ci[ai + 1] == cj[aj + 1]
+                        and ci[(ai + 2) % li] == cj[(aj + lj - 2) % lj]
+                        and ci[(ai + 3) % li] == cj[(aj + lj - 1) % lj]
+                    ):
+                        yield j
+                        break_loop = True
+                        break
+                if break_loop:
+                    break
+
+    def _cell(self, i: int) -> list[float] | None:
+        circumcenters = self.circumcenters
+        inedges = self.delaunay.inedges
+        halfedges = self.delaunay.halfedges
+        triangles = self.delaunay.triangles
+
+        e0 = inedges[i]
         if e0 == -1:
             return None
+
         points = []
         e = e0
         while True:
             t = floor(e / 3)
-            points.append(self._circumcenters[t * 2], self._circumcenters[t * 2 + 1])
+            points.extend([circumcenters[t * 2], circumcenters[t * 2 + 1]])
             e = e - 2 if e % 3 == 2 else e + 1
-            if self._delaunay.triangles[e] != i:
+            if triangles[e] != i:
                 break
-            e = self._delaunay.halfedges[e]
+            e = halfedges[e]
             if e == e0 or e == -1:
                 break
         return points
 
-    def _clip(self, i):
-        if i == 0 and len(self._delaunay.hull) == 1:
+    def _clip(
+        self,
+        i: int
+    ) -> tuple[float, float, float, float, float, float]:
+        if i == 0 and len(self.delaunay.hull) == 1:
             return [
-                self._xmax,
-                self._ymin,
-                self._xmax,
-                self._ymax,
-                self._xmin,
-                self._ymax,
-                self._xmin,
-                self._ymin,
+                self.xmax,
+                self.ymin,
+                self.xmax,
+                self.ymax,
+                self.xmin,
+                self.ymax,
+                self.xmin,
+                self.ymin,
             ]
 
         points = self._cell(i)
         if points is None:
             return None
+
+        vectors = self.vectors
         v = i * 4
         return (
             self._clip_infinite(
                 i,
                 points,
-                self._vectors[v],
-                self._vectors[v + 1],
-                self._vectors[v + 2],
-                self._vectors[v + 3]
-            ) if self._simplify(
-                self._vectors[v] or self._vectors[v + 1]
-            ) else self._clip_finite(i, points)
+                vectors[v],
+                vectors[v + 1],
+                vectors[v + 2],
+                vectors[v + 3]
+            ) if self._simplify(vectors[v] or vectors[v + 1])
+            else self._clip_finite(i, points)
         )
 
-    def _clip_finite(self, i, points):
+    def _clip_finite(
+        self,
+        i: int,
+        points: list[float],
+    ) -> tuple[float, float, float, float, float, float]:
         n = len(points)
         P = None
         x0 = None
@@ -269,7 +312,7 @@ class Voronoi:
         x1 = points[n - 2]
         y1 = points[n - 1]
         c0 = None
-        c1 = sefl._regioncode(x1, y1)
+        c1 = self._regioncode(x1, y1)
         e0 = None
         e1 = 0
         for j in range(0, n, 2):
@@ -320,23 +363,31 @@ class Voronoi:
                 self._edge(i, e0, e1, P, len(P))
             elif self.contains(
                 i,
-                (self._xmin + self._xmax) * 0.5,
-                (self._ymin + self._ymax) * 0.5,
+                (self.xmin + self.xmax) * 0.5,
+                (self.ymin + self.ymax) * 0.5,
             ):
                 return [
-                    self._xmax,
-                    self._ymin,
-                    self._xmax,
-                    self._ymax,
-                    self._xmin,
-                    self._ymax,
-                    self._xmin,
-                    self._ymin,
+                    self.xmax,
+                    self.ymin,
+                    self.xmax,
+                    self.ymax,
+                    self.xmin,
+                    self.ymax,
+                    self.xmin,
+                    self.ymin,
                 ]
         return P
 
 
-    def _clip_segment(self, x0, y0, x1, y1, c0, c1):
+    def _clip_segment(
+        self,
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float,
+        c0: float,
+        c1: float,
+    ) -> tuple[float, float, float, float] | None:
         flip = c0 < c1
         if flip:
             x0, y0, x1, y1, c0, c1 = x1, y1, x0, y0, c1, c0
@@ -348,17 +399,17 @@ class Voronoi:
                 return None
             c = c0 or c1
             if c & 0b1000:
-                x = x0 + (x1 - x0) * (self._ymax - y0) / (y1 - y0)
-                y = self._ymax
+                x = x0 + (x1 - x0) * (self.ymax - y0) / (y1 - y0)
+                y = self.ymax
             elif c & 0b0100:
-                x = x0 + (x1 - x0) * (self._ymin - y0) / (y1 - y0)
-                y = self._ymin
+                x = x0 + (x1 - x0) * (self.ymin - y0) / (y1 - y0)
+                y = self.ymin
             elif c & 0b0010:
-                y = y0 + (y1 - y0) * (self._xmax - x0) / (x1 - x0)
-                x = self._xmax
+                y = y0 + (y1 - y0) * (self.xmax - x0) / (x1 - x0)
+                x = self.xmax
             else:
-                y = y0 + (y1 - y0) * (self._xmin - x0) / (x1 - x0)
-                x = self._xmin
+                y = y0 + (y1 - y0) * (self.xmin - x0) / (x1 - x0)
+                x = self.xmin
             if c0:
                 x0 = x
                 y0 = y
@@ -368,12 +419,20 @@ class Voronoi:
                 y1 = y
                 c1 = self._regioncode(x1, y1)
 
-    def _clip_infinite(self, i, points, vx0, vy0, vxn, vyn):
+    def _clip_infinite(
+        self,
+        i: int,
+        points: list[float],
+        vx0: float,
+        vy0: float,
+        vxn: float,
+        vyn: float
+    ) -> tuple[float, float, float, float, float, float]:
         P = list(points)
         p = self._project(P[0], P[1], vx0, vy0)
         if p:
-            P.pop(p[0])
-            P.pop(p[1])
+            P.insert(0, p[1])
+            P.insert(0, p[0])
         p = self._project(P[-2], P[-1], vxn, vyn)
         if p:
             P.append(p[0])
@@ -391,20 +450,20 @@ class Voronoi:
                     n = len(P)
                 j += 2
 
-        elif self.contains(i, (self._xmin + self._xmax) * 0.5, (self._ymin + self._ymax) * 0.5):
+        elif self.contains(i, (self.xmin + self.xmax) * 0.5, (self.ymin + self.ymax) * 0.5):
             P = [
-                self._xmin,
-                self._ymin,
-                self._xmax,
-                self._ymin,
-                self._xmax,
-                self._ymax,
-                self._xmin,
-                self._ymax,
+                self.xmin,
+                self.ymin,
+                self.xmax,
+                self.ymin,
+                self.xmax,
+                self.ymax,
+                self.xmin,
+                self.ymax,
             ]
         return P
 
-    def _edge(self, i, e0, e1, P, j):
+    def _edge(self, i: int, e0: float, e1: float, P: list[float], j: int) -> int:
         while e0 != e1:
             match e0:
                 case 0b0101:
@@ -412,29 +471,29 @@ class Voronoi:
                     continue
                 case 0b0100:
                     e0 = 0b0110
-                    x = self._xmax
-                    y = self._ymin
+                    x = self.xmax
+                    y = self.ymin
                 case 0b0110:
                     e0 = 0b0010
                     continue
                 case 0b0010:
                     e0 = 0b1010
-                    x = self._xmax
-                    y = self._ymax
+                    x = self.xmax
+                    y = self.ymax
                 case 0b1010:
                     e0 = 0b1000
                     continue
                 case 0b1000:
                     e0 = 0b1001
-                    x = self._xmin
-                    y = self._ymax
+                    x = self.xmin
+                    y = self.ymax
                 case 0b1001:
                     e0 = 0b0001
                     continue
                 case 0b0001:
                     e0 = 0b0101
-                    x = self._xmin
-                    y = self._ymin
+                    x = self.xmin
+                    y = self.ymin
 
             if P[j] != x or P[j + 1] != y and self.contains(i, x, y):
                 P.insert(j, x)
@@ -442,80 +501,80 @@ class Voronoi:
                 j += 2
         return j
 
-    def _project(self, x0, y0, vx, vy):
+    def _project(self, x0: float, y0: float, vx: float, vy: float) -> tuple[float, float]:
         t = inf
         if vy < 0:
-            if y0 <= self._ymin:
+            if y0 <= self.ymin:
                 return None
-            c = (self._ymin - y0) / vy
+            c = (self.ymin - y0) / vy
             if c < t:
-                y = self._ymin
+                y = self.ymin
                 t = c
                 x = x0 + t * vx
         elif vy > 0:
-            if y0 >= self._ymax:
+            if y0 >= self.ymax:
                 return None
-            c = (self._ymax - y0) / vy
+            c = (self.ymax - y0) / vy
             if c < t:
-                y = self._ymax
+                y = self.ymax
                 t = c
                 x = x0 + t * vx
 
         if vx > 0:
-            if x0 >= self._xmax:
+            if x0 >= self.xmax:
                 return None
-            c = (self._xmax - x0) / vx
+            c = (self.xmax - x0) / vx
             if c < t:
-                x = self._xmax
+                x = self.xmax
                 t = c
                 y = y0 + t * vy
         elif vx < 0:
-            if x0 <= self._xmin:
+            if x0 <= self.xmin:
                 return None
-            c = (self._xmin - x0) / vx
+            c = (self.xmin - x0) / vx
             if c < t:
-                x = self._xmin
+                x = self.xmin
                 t = c
-                y = y0 + t * vym
+                y = y0 + t * vy
 
         return [x, y]
 
 
-    def _edgecode(self, x, y):
-        if x == self._xmin:
+    def _edgecode(self, x: float, y: float) -> int:
+        if x == self.xmin:
             a = 0b0001
-        elif x == self._xmax:
+        elif x == self.xmax:
             a = 0b0010
         else:
             a = 0b0000
 
-        if y == self._ymin:
+        if y == self.ymin:
             b = 0b0100
-        elif y == self._ymax:
+        elif y == self.ymax:
             b = 0b1000
         else:
             b = 0b0000
 
         return a | b
 
-    def _regioncode(self, x, y):
-        if x < self._xmin:
+    def _regioncode(self, x: float, y: float) -> int:
+        if x < self.xmin:
             a = 0b0001
-        elif x > self._xmax:
+        elif x > self.xmax:
             a = 0b0010
         else:
             a = 0b0000
 
-        if y < self._ymin:
+        if y < self.ymin:
             b = 0b0100
-        elif y > self._ymax:
+        elif y > self.ymax:
             b = 0b1000
         else:
             b = 0b0000
 
         return a | b
 
-    def _simplify(self, P):
+    def _simplify(self, P: list[float]) -> list[float] | None:
         if P and len(P) > 4:
             n = len(P)
             i = 0
