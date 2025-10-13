@@ -121,7 +121,7 @@ def test_delaunator_5(points):
 
     d.update()
     validate(new_points, d)
-    assert len(d) == 3894 # it should be 5139
+    assert len(d) == 3888 # it should be 5139
 
 def test_delaunator_6():
     validate([[516, 661], [369, 793], [426, 539], [273, 525], [204, 694], [747, 750], [454, 390]])

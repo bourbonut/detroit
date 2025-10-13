@@ -1,13 +1,13 @@
 from collections.abc import Callable
 from typing import Any, TypeVar
-from math import ceil, sqrt, inf, isinf, floor
+from math import ceil, sqrt, inf, isinf, floor, nan
 from .orient2d import orient2d
 from ..types import T
 
 TDelaunator = TypeVar("Delaunator", bound="Delaunator")
 
 EPSILON = pow(2, -52)
-EDGE_STACK = [None] * 512
+EDGE_STACK = [0] * 512
 
 def default_get_x(p: tuple[float, float]) -> float:
     return p[0]
@@ -159,18 +159,18 @@ class Delaunator:
             raise TypeError("Expected coords to contain numbers.")
 
         max_triangles = max(2 * n - 5, 0)
-        self._triangles = [None] * (max_triangles * 3)
-        self._halfedges = [None] * (max_triangles * 3)
+        self._triangles = [0] * (max_triangles * 3)
+        self._halfedges = [0] * (max_triangles * 3)
 
         self._hash_size = ceil(sqrt(n))
-        self._hull_prev = [None] * n
-        self._hull_next = [None] * n
-        self._hull_tri = [None] * n
+        self._hull_prev = [0] * n
+        self._hull_next = [0] * n
+        self._hull_tri = [0] * n
 
-        self._hull_hash = [None] * self._hash_size
+        self._hull_hash = [0] * self._hash_size
 
-        self._ids = [None] * n
-        self._dists = [None] * n
+        self._ids = [0] * n
+        self._dists = [0] * n
 
         self._triangles_len = 0
         self._cx = 0
@@ -193,7 +193,7 @@ class Delaunator:
         get_y: Callable[[T], float] = default_get_y,
     ) -> TDelaunator:
         n = len(points)
-        coords = [None] * (n * 2)
+        coords = [0] * (n * 2)
 
         for i in range(n):
             p = points[i]
@@ -286,7 +286,7 @@ class Delaunator:
                     or (coords[2 * i + 1] - coords[1])
                 )
             quicksort(self._ids, self._dists, 0, n - 1)
-            hull = [None] * n
+            hull = [0] * n
             j = 0
             d0 = -inf
             for i in range(n):
@@ -339,16 +339,18 @@ class Delaunator:
         self._triangles_len = 0
         self._add_triangle(i0, i1, i2, -1, -1, -1)
 
-        xp = 0
-        yp = 0
+        xp = nan
+        yp = nan
         for k in range(len(self._ids)):
             i = self._ids[k]
             x = coords[2 * i]
             y = coords[2 * i + 1]
 
             if k > 0 and abs(x - xp) <= EPSILON and abs(y - yp) <= EPSILON:
-                xp = x
-                yp = y
+                continue
+
+            xp = x
+            yp = y
 
             if i == i0 or i == i1 or i == i2:
                 continue
@@ -451,7 +453,7 @@ class Delaunator:
             hull_hash[self._hash_key(x, y)] = i
             hull_hash[self._hash_key(coords[2 * e], coords[2 * e + 1])] = e
 
-        self.hull = [None] * hull_size
+        self.hull = [0] * hull_size
 
         e = self._hull_start
         for i in range(hull_size):
