@@ -7,6 +7,14 @@ from typing import TypeVar
 Delaunay = TypeVar("Delaunay", bound="Delaunay")
 TVoronoi = TypeVar("Voronoi", bound="Voronoi")
 
+def sign(x: float) -> float:
+    if x == 0:
+        return 0
+    elif x < 0:
+        return -1
+    else:
+        return 1
+
 class Voronoi:
 
     def __init__(
@@ -70,13 +78,13 @@ class Voronoi:
             if abs(ab) < 1e-9:
                 if bx is None:
                     bx = by = 0
-                    for i in hull:
-                        bx += points[i * 2]
-                        by += points[i * 2 + 1]
+                    for k in hull:
+                        bx += points[k * 2]
+                        by += points[k * 2 + 1]
                     length = len(hull)
                     bx /= length
                     by /= length
-                a = 1e9 * (-1 if (bx - x1) * ey - (by - y1) * ex < 0 else 1)
+                a = 1e9 * sign((bx - x1) * ey - (by - y1) * ex)
                 x = (x1 + x3) / 2 - a * ey
                 y = (y1 + y3) / 2 + a * ex
             else:
@@ -176,7 +184,7 @@ class Voronoi:
         n = len(points)
         while points[0] == points[n - 2] and points[1] == points[n - 1] and n > 1:
             n -= 2
-        for i in range(2, len(n), 2):
+        for i in range(2, n, 2):
             if points[i] != points[i - 2] or points[i + 1] != points[i - 1]:
                 context.line_to(points[i], points[i + 1])
         context.close_path()
@@ -192,7 +200,7 @@ class Voronoi:
 
     def cell_polygon(self, i: int) -> list[dict[str, float] | None]:
         polygon = Polygon()
-        self._render_cell(i, polygon)
+        self.render_cell(i, polygon)
         return polygon.value()
 
     def _render_segment(
@@ -288,7 +296,7 @@ class Voronoi:
 
         vectors = self.vectors
         v = i * 4
-        return (
+        return self._simplify(
             self._clip_infinite(
                 i,
                 points,
@@ -296,7 +304,7 @@ class Voronoi:
                 vectors[v + 1],
                 vectors[v + 2],
                 vectors[v + 3]
-            ) if self._simplify(vectors[v] or vectors[v + 1])
+            ) if vectors[v] or vectors[v + 1]
             else self._clip_finite(i, points)
         )
 
@@ -348,34 +356,34 @@ class Voronoi:
                         P.extend([sx0, sy0])
                     else:
                         P = [sx0, sy0]
-            e0 = e1
-            e1 = self._edgecode(sx1, sy1)
-            if e0 and e1:
-                self._edge(i, e0, e1, P, len(P))
-            if P:
-                P.extend([sx1, sy1])
-            else:
-                P = [sx1, sy1]
+                e0 = e1
+                e1 = self._edgecode(sx1, sy1)
+                if e0 and e1:
+                    self._edge(i, e0, e1, P, len(P))
+                if P:
+                    P.extend([sx1, sy1])
+                else:
+                    P = [sx1, sy1]
         if P:
             e0 = e1
             e1 = self._edgecode(P[0], P[1])
             if e0 and e1:
                 self._edge(i, e0, e1, P, len(P))
-            elif self.contains(
-                i,
-                (self.xmin + self.xmax) * 0.5,
-                (self.ymin + self.ymax) * 0.5,
-            ):
-                return [
-                    self.xmax,
-                    self.ymin,
-                    self.xmax,
-                    self.ymax,
-                    self.xmin,
-                    self.ymax,
-                    self.xmin,
-                    self.ymin,
-                ]
+        elif self.contains(
+            i,
+            (self.xmin + self.xmax) * 0.5,
+            (self.ymin + self.ymax) * 0.5,
+        ):
+            return [
+                self.xmax,
+                self.ymin,
+                self.xmax,
+                self.ymax,
+                self.xmin,
+                self.ymax,
+                self.xmin,
+                self.ymin,
+            ]
         return P
 
 
@@ -449,7 +457,6 @@ class Voronoi:
                     j = self._edge(i, c0, c1, P, j)
                     n = len(P)
                 j += 2
-
         elif self.contains(i, (self.xmin + self.xmax) * 0.5, (self.ymin + self.ymax) * 0.5):
             P = [
                 self.xmin,
@@ -495,7 +502,7 @@ class Voronoi:
                     x = self.xmin
                     y = self.ymin
 
-            if P[j] != x or P[j + 1] != y and self.contains(i, x, y):
+            if (j >= len(P) or P[j] != x or P[j + 1] != y) and self.contains(i, x, y):
                 P.insert(j, x)
                 P.insert(j + 1, y)
                 j += 2
