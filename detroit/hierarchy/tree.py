@@ -1,29 +1,32 @@
 # Comments from original code source
 # https://github.com/d3/d3-hierarchy/blob/main/src/tree.js
-from .hierarchy import Node
 from collections.abc import Callable
 from typing import TypeVar
 
+from .hierarchy import Node
+
 TTree = TypeVar("Tree", bound="Tree")
 
-class TreeNode(Node):
 
+class TreeNode(Node):
     def __init__(self, node: Node, i: int):
         super().__init__(None)
         self.node = node
         self.parent = None
         self.children = None
-        self.A = None # default ancestor
-        self.a = self # ancestor
-        self.z = 0 # prelim
-        self.m = 0 # mod
-        self.c = 0 # change
-        self.s = 0 # shift
-        self.t = None # thread
-        self.i = i # number
+        self.A = None  # default ancestor
+        self.a = self  # ancestor
+        self.z = 0  # prelim
+        self.m = 0  # mod
+        self.c = 0  # change
+        self.s = 0  # shift
+        self.t = None  # thread
+        self.i = i  # number
+
 
 def default_separation(a: TreeNode, b: TreeNode) -> int:
     return 1 if a.parent == b.parent else 2
+
 
 def next_left(v: TreeNode) -> TreeNode:
     """
@@ -36,12 +39,14 @@ def next_left(v: TreeNode) -> TreeNode:
     children = v.children
     return children[0] if children else v.t
 
+
 def next_right(v: TreeNode) -> TreeNode:
     """
     This function works analogously to next_left.
     """
     children = v.children
     return children[-1] if children else v.t
+
 
 def move_subtree(wm: TreeNode, wp: TreeNode, shift: float):
     """
@@ -54,6 +59,7 @@ def move_subtree(wm: TreeNode, wp: TreeNode, shift: float):
     wm.c += change
     wp.z += shift
     wp.m += shift
+
 
 def execute_shifts(v: TreeNode):
     """
@@ -68,6 +74,7 @@ def execute_shifts(v: TreeNode):
         w.m += shift
         change += w.c
         shift += w.s + change
+
 
 def next_ancestor(vim: TreeNode, v: TreeNode, ancestor: TreeNode) -> TreeNode:
     """
@@ -94,9 +101,9 @@ def tree_root(root: Node) -> TreeNode:
     parent.children = [tree]
     return tree
 
-# Node-link tree diagram using the Reingold-Tilford "tidy" algorithm 
-class Tree:
 
+# Node-link tree diagram using the Reingold-Tilford "tidy" algorithm
+class Tree:
     def __init__(self):
         self._separation = default_separation
         self._dx = 1
@@ -136,9 +143,11 @@ class Tree:
             tx = s - left.x
             kx = self._dx / (right.x + s + tx)
             ky = self._dy / (bottom.depth or 1)
+
             def walk(node: Node):
                 node.x = (node.x + tx) * kx
                 node.y = node.depth * ky
+
             root.each_before(walk)
         return root
 
@@ -164,7 +173,6 @@ class Tree:
         elif w:
             v.z = w.z + self._separation(v.node, w.node)
         v.parent.A = self._apportion(v, w, v.parent.A or siblings[0])
-
 
     def _second_walk(self, v: TreeNode):
         """
@@ -225,7 +233,6 @@ class Tree:
                 ancestor = v
         return ancestor
 
-
     def _size_node(self, node: Node):
         node.x *= self._dx
         node.y = node.depth * self._dy
@@ -257,6 +264,7 @@ class Tree:
         if self._node_size:
             return [self._dx, self._dy]
         return None
+
 
 def tree() -> Tree:
     return Tree()

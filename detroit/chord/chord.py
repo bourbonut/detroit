@@ -1,7 +1,7 @@
-from functools import cmp_to_key
 from collections.abc import Callable, Iterator
-from typing import Any, TypeVar
+from functools import cmp_to_key
 from math import pi
+from typing import Any, TypeVar
 
 TAU = 2 * pi
 
@@ -23,6 +23,7 @@ class ChordValue:
     value : float
         The flow value matrix[i][j]
     """
+
     __slots__ = ("index", "start_angle", "end_angle", "value")
 
     def __init__(self, index: int, start_angle: float, end_angle: float, value: float):
@@ -56,6 +57,7 @@ class ChordValue:
     def __repr__(self) -> str:
         return str(self)
 
+
 class ChordItem:
     """
     Chord object containing source and target subgroups
@@ -67,6 +69,7 @@ class ChordItem:
     target : ChordValue | None
         The target subgroup
     """
+
     __slots__ = ("source", "target")
 
     def __init__(
@@ -95,6 +98,7 @@ class ChordItem:
 
     def __repr__(self) -> str:
         return str(self)
+
 
 class Chords:
     __slots__ = ("_data", "groups")
@@ -137,6 +141,7 @@ class Chord:
     transpose : bool
         :code:`True` to transpose the specified matrix
     """
+
     def __init__(self, directed: bool, transpose: bool):
         self._directed = directed
         self._transpose = transpose
@@ -269,9 +274,7 @@ class Chord:
                 groups[i] = ChordValue(i, x0, x, group_sums[i])
             else:
                 subgroup_index = list(
-                    filter(
-                        lambda j: matrix[i * n + j] or matrix[j * n + i], range(n)
-                    )
+                    filter(lambda j: matrix[i * n + j] or matrix[j * n + i], range(n))
                 )
                 if self._sort_subgroups:
                     subgroup_index.sort(
@@ -336,7 +339,9 @@ class Chord:
         self._pad_angle = max(0, pad_angle)
         return self
 
-    def set_sort_groups(self, sort_groups: Callable[[float, float], float] | None = None) -> TChord:
+    def set_sort_groups(
+        self, sort_groups: Callable[[float, float], float] | None = None
+    ) -> TChord:
         """
         Sets the group comparator to the specified function or :code:`None` and
         returns this chord layout.

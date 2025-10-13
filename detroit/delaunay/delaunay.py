@@ -1,6 +1,6 @@
 from collections.abc import Callable, Iterator
-from math import pi, hypot, sin, isnan
 from functools import cmp_to_key
+from math import hypot, isnan, pi, sin
 from typing import TypeVar
 
 from ..array import argpass
@@ -14,11 +14,14 @@ TDelaunay = TypeVar("Delaunay", bound="Delaunay")
 
 TAU = 2 * pi
 
+
 def point_x(p):
     return p[0]
 
+
 def point_y(p):
     return p[1]
+
 
 def collinear(d: Delaunator) -> bool:
     triangles = d.triangles
@@ -27,19 +30,15 @@ def collinear(d: Delaunator) -> bool:
         a = 2 * triangles[i]
         b = 2 * triangles[i + 1]
         c = 2 * triangles[i + 2]
-        cross = (
-            (coords[c] - coords[a])
-            * (coords[b + 1] - coords[a + 1])
-            - (coords[b] - coords[a])
-            * (coords[c + 1] - coords[a + 1])
-        )
+        cross = (coords[c] - coords[a]) * (coords[b + 1] - coords[a + 1]) - (
+            coords[b] - coords[a]
+        ) * (coords[c + 1] - coords[a + 1])
         if cross > 1e-10:
             return False
     return True
 
 
 class Delaunay:
-
     def __init__(self, points: list[float]):
         self._delaunator = Delaunator(points)
         self._hull_index = [None] * (len(points) // 2)
@@ -79,10 +78,15 @@ class Delaunay:
     def _initialize(self):
         d = self._delaunator
         points = self.points
-    
+
         if d.hull and len(d.hull) > 2 and collinear(d):
+
             def compare(i, j):
-                return points[2 * i] - points[2 * j] or points[2 * i + 1] - points[2 * j + 1]
+                return (
+                    points[2 * i] - points[2 * j]
+                    or points[2 * i + 1] - points[2 * j + 1]
+                )
+
             self.collinear = sorted(range(len(points) // 2), key=cmp_to_key(compare))
             e = self.collinear[0] << 1
             f = self.collinear[-1] << 1
@@ -118,11 +122,10 @@ class Delaunay:
                 self.triangles[2] = hull[1]
 
     def voronoi(
-        self,
-        bounds: tuple[float, float, float, float] | None = None
+        self, bounds: tuple[float, float, float, float] | None = None
     ) -> Voronoi:
         return Voronoi(self, bounds)
-        
+
     def neighbors(self, i: int) -> Iterator[int]:
         inedges = self.inedges
         hull = self.hull
@@ -202,18 +205,14 @@ class Delaunay:
             if e == -1:
                 e = hull[(_hull_index[i] + 1) % len(hull)]
                 if e != t:
-                    if (
-                        pow(x - points[e * 2], 2)
-                        + pow(y - points[e * 2 + 1], 2)
-                    ) < dc:
+                    if (pow(x - points[e * 2], 2) + pow(y - points[e * 2 + 1], 2)) < dc:
                         return e
                 break
             if e == e0:
                 break
         return c
 
-
-    def render(self, context = None) -> str | None:
+    def render(self, context=None) -> str | None:
         if context is None:
             buffer = context = Path()
         else:
@@ -234,9 +233,10 @@ class Delaunay:
         self.render_hull(context)
         return None if buffer is None else str(buffer)
 
-    def render_points(self, context = None, r: float | None = None) -> str | None:
+    def render_points(self, context=None, r: float | None = None) -> str | None:
         if r is None and (
-            context is None or not(
+            context is None
+            or not (
                 hasattr(context, "move_to") and callable(getattr(context, "move_to"))
             )
         ):
@@ -260,7 +260,7 @@ class Delaunay:
 
         return None if buffer is None else str(buffer)
 
-    def render_hull(self, context = None):
+    def render_hull(self, context=None):
         if context is None:
             buffer = context = Path()
         else:
@@ -282,7 +282,7 @@ class Delaunay:
         self.render_hull(polygon)
         return polygon.value()
 
-    def render_triangle(self, i: int, context = None) -> str | None:
+    def render_triangle(self, i: int, context=None) -> str | None:
         if context is None:
             buffer = context = Path()
         else:

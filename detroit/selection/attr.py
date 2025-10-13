@@ -1,5 +1,6 @@
-from lxml import etree
 from typing import Any
+
+from lxml import etree
 
 from ..array import argpass
 from ..types import Accessor, EtreeFunction, Number, T

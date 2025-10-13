@@ -1,15 +1,16 @@
 from collections.abc import Callable
 from typing import TypeVar
-from .round import round_node
-from .squarify import squarify
+
 from ..accessors import required
 from ..constant import constant, constant_zero
 from ..hierarchy import Node
+from .round import round_node
+from .squarify import squarify
 
 TTreeMap = TypeVar("TreeMap", bound="TreeMap")
 
-class TreeMap:
 
+class TreeMap:
     def __init__(self):
         self._tile = squarify
         self._round = False
@@ -71,21 +72,27 @@ class TreeMap:
         self._dy = size[1]
         return self
 
-    def set_tile(self, tile: Callable[[Node, float, float, float, float], None]) -> TTreeMap:
+    def set_tile(
+        self, tile: Callable[[Node, float, float, float, float], None]
+    ) -> TTreeMap:
         self._tile = required(tile)
         return self
 
     def set_padding(self, padding: Callable[[Node], float] | float) -> TTreeMap:
         return self.set_padding_inner(padding).set_padding_outer(padding)
 
-    def set_padding_inner(self, padding_inner: Callable[[Node], float] | float) -> TTreeMap:
+    def set_padding_inner(
+        self, padding_inner: Callable[[Node], float] | float
+    ) -> TTreeMap:
         if callable(padding_inner):
             self._padding_inner = padding_inner
         else:
             self._padding_inner = constant(padding_inner)
         return self
 
-    def set_padding_outer(self, padding_outer: Callable[[Node], float] | float) -> TTreeMap:
+    def set_padding_outer(
+        self, padding_outer: Callable[[Node], float] | float
+    ) -> TTreeMap:
         return (
             self.set_padding_top(padding_outer)
             .set_padding_right(padding_outer)
@@ -100,21 +107,27 @@ class TreeMap:
             self._padding_top = constant(padding_top)
         return self
 
-    def set_padding_right(self, padding_right: Callable[[Node], float] | float) -> TTreeMap:
+    def set_padding_right(
+        self, padding_right: Callable[[Node], float] | float
+    ) -> TTreeMap:
         if callable(padding_right):
             self._padding_right = padding_right
         else:
             self._padding_right = constant(padding_right)
         return self
 
-    def set_padding_bottom(self, padding_bottom: Callable[[Node], float] | float) -> TTreeMap:
+    def set_padding_bottom(
+        self, padding_bottom: Callable[[Node], float] | float
+    ) -> TTreeMap:
         if callable(padding_bottom):
             self._padding_bottom = padding_bottom
         else:
             self._padding_bottom = constant(padding_bottom)
         return self
 
-    def set_padding_left(self, padding_left: Callable[[Node], float] | float) -> TTreeMap:
+    def set_padding_left(
+        self, padding_left: Callable[[Node], float] | float
+    ) -> TTreeMap:
         if callable(padding_left):
             self._padding_left = padding_left
         else:
@@ -150,6 +163,7 @@ class TreeMap:
 
     def get_padding_left(self) -> Callable[[Node], float] | float:
         return self._padding_left
+
 
 def treemap() -> TreeMap:
     return TreeMap()

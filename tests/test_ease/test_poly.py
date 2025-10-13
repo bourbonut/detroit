@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_poly_1():
     assert d3.ease_poly == d3.ease_poly_in_out
+
 
 def test_poly_2():
     assert d3.ease_poly_in(0.0) == 0.000
@@ -20,16 +24,20 @@ def test_poly_2():
     assert in_delta(d3.ease_poly_in(0.9), 0.729)
     assert d3.ease_poly_in(1.0) == 1.000
 
+
 def test_poly_3():
-    assert d3.ease_poly_in(.9) == d3.ease_poly_in(0.9)
+    assert d3.ease_poly_in(0.9) == d3.ease_poly_in(0.9)
+
 
 def test_poly_4():
     assert d3.ease_poly_in(0.1) == d3.ease_poly_in.exponent(3)(0.1)
     assert d3.ease_poly_in(0.2) == d3.ease_poly_in.exponent(3)(0.2)
     assert d3.ease_poly_in(0.3) == d3.ease_poly_in.exponent(3)(0.3)
 
+
 def test_poly_5():
-    assert d3.ease_poly_in.exponent(1.3)(.9) == d3.ease_poly_in.exponent(1.3)(0.9)
+    assert d3.ease_poly_in.exponent(1.3)(0.9) == d3.ease_poly_in.exponent(1.3)(0.9)
+
 
 def test_poly_6():
     assert d3.ease_poly_in.exponent(2.5)(0.0) == 0.000000
@@ -44,23 +52,28 @@ def test_poly_6():
     assert in_delta(d3.ease_poly_in.exponent(2.5)(0.9), 0.768433)
     assert d3.ease_poly_in.exponent(2.5)(1.0) == 1.000000
 
+
 def test_poly_7():
-    assert d3.ease_poly_out.exponent(1.3)(.9) == d3.ease_poly_out.exponent(1.3)(0.9)
+    assert d3.ease_poly_out.exponent(1.3)(0.9) == d3.ease_poly_out.exponent(1.3)(0.9)
+
 
 def test_poly_8():
     assert d3.ease_poly_out(0.1) == d3.ease_poly_out.exponent(3)(0.1)
     assert d3.ease_poly_out(0.2) == d3.ease_poly_out.exponent(3)(0.2)
     assert d3.ease_poly_out(0.3) == d3.ease_poly_out.exponent(3)(0.3)
 
+
 def test_poly_9():
     assert d3.ease_poly_out(0.1) == d3.ease_poly_out.exponent(3)(0.1)
     assert d3.ease_poly_out(0.2) == d3.ease_poly_out.exponent(3)(0.2)
     assert d3.ease_poly_out(0.3) == d3.ease_poly_out.exponent(3)(0.3)
 
+
 def test_poly_10():
     assert d3.ease_poly_out(0.1) == d3.ease_poly_out.exponent(3)(0.1)
     assert d3.ease_poly_out(0.2) == d3.ease_poly_out.exponent(3)(0.2)
     assert d3.ease_poly_out(0.3) == d3.ease_poly_out.exponent(3)(0.3)
+
 
 def test_poly_11():
     poly_out = out(d3.ease_poly_in.exponent(2.5))
@@ -76,13 +89,18 @@ def test_poly_11():
     assert in_delta(d3.ease_poly_out.exponent(2.5)(0.9), poly_out(0.9))
     assert d3.ease_poly_out.exponent(2.5)(1.0) == poly_out(1.0)
 
+
 def test_poly_12():
-    assert d3.ease_poly_in_out.exponent(1.3)(.9) == d3.ease_poly_in_out.exponent(1.3)(0.9)
+    assert d3.ease_poly_in_out.exponent(1.3)(0.9) == d3.ease_poly_in_out.exponent(1.3)(
+        0.9
+    )
+
 
 def test_poly_13():
     assert d3.ease_poly_in_out(0.1) == d3.ease_poly_in_out.exponent(3)(0.1)
     assert d3.ease_poly_in_out(0.2) == d3.ease_poly_in_out.exponent(3)(0.2)
     assert d3.ease_poly_in_out(0.3) == d3.ease_poly_in_out.exponent(3)(0.3)
+
 
 def test_poly_14():
     poly_in_out = in_out(d3.ease_poly_in.exponent(2.5))

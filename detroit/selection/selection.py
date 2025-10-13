@@ -1,6 +1,6 @@
-from copy import deepcopy, copy
 from collections import defaultdict
 from collections.abc import Callable, Iterator
+from copy import copy, deepcopy
 from itertools import zip_longest
 from typing import Any, Generic, TypeVar
 
@@ -966,9 +966,7 @@ class Selection(Generic[T]):
         return self.text(value)
 
     def classed(
-        self,
-        names: str,
-        value: Accessor[T, bool] | bool | None = None
+        self, names: str, value: Accessor[T, bool] | bool | None = None
     ) -> TSelection:
         """
         Assigns or unassigns the specified CSS class names on the selected
@@ -1021,7 +1019,6 @@ class Selection(Generic[T]):
         else:
             self.each(classed_constant(names, value))
         return self
-
 
     def datum(self, value: T) -> TSelection:
         """

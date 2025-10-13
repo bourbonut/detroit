@@ -1,5 +1,7 @@
-from ..types import Point2D
 from math import hypot
+
+from ..types import Point2D
+
 
 def length(polygon: list[Point2D]) -> float:
     """

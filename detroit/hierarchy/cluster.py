@@ -1,31 +1,37 @@
-from statistics import mean
 from collections.abc import Callable
+from statistics import mean
 from typing import TypeVar
+
 from .hierarchy import Node
 
 TCluster = TypeVar("Cluster", bound="Cluster")
 
+
 def default_separation(a: Node, b: Node) -> int:
     return 1 if a.parent == b.parent else 2
+
 
 def mean_x(children: list[Node]) -> float:
     return mean((child.x for child in children))
 
+
 def max_y(children: list[Node]) -> float:
     return 1 + max((child.y for child in children))
+
 
 def leaf_left(node: Node) -> Node:
     while children := node.children:
         node = children[0]
     return node
 
+
 def leaf_right(node: Node) -> Node:
     while children := node.children:
         node = children[-1]
     return node
 
-class Cluster:
 
+class Cluster:
     def __init__(self):
         self._separation = default_separation
         self._dx = 1
@@ -59,10 +65,12 @@ class Cluster:
         x1 = right.x + self._separation(right, left) * 0.5
 
         if self._node_size:
+
             def update(node):
                 node.x = (node.x - root.x) * self._dx
                 node.y = (root.y - node.y) * self._dy
         else:
+
             def update(node):
                 node.x = (node.x - x0) / (x1 - x0) * self._dx
                 node.y = (1 - ((node.y / root.y) if root.y else 1)) * self._dy
@@ -97,6 +105,7 @@ class Cluster:
         if self._node_size:
             return [self._dx, self._dy]
         return None
+
 
 def cluster() -> Cluster:
     return Cluster()

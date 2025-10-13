@@ -1,5 +1,6 @@
 from ..types import Point2D
 
+
 def cross(a: Point2D, b: Point2D, c: Point2D) -> float:
     """
     Returns the 2D cross product of AB and AC vectors, i.e., the z-component of

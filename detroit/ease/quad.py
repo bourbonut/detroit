@@ -19,6 +19,7 @@ def ease_quad_in(t: float) -> float:
     """
     return t * t
 
+
 def ease_quad_out(t: float) -> float:
     """
     Reverse quadratic easing; equivalent to :code:`1 - d3.ease_quad_in(1 - t)`.
@@ -40,6 +41,7 @@ def ease_quad_out(t: float) -> float:
     0.36000000000000004
     """
     return t * (2 - t)
+
 
 def ease_quad_in_out(t: float) -> float:
     """

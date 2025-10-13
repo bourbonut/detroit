@@ -45,6 +45,7 @@ class Quadtree(Generic[T]):
     y1 : float
         Inclusive upper bound :math:`y_1`
     """
+
     def __init__(
         self,
         x: Accessor[T, float],

@@ -53,6 +53,7 @@ area = (
     .y1(lambda d: y(d["upper"]))
 )
 
+
 # Grid function (passed to `svg.call(...)`).
 def grid(g):
     def horizontal_lines(g):

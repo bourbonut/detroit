@@ -6,6 +6,7 @@ TBackInOut = TypeVar("BackInOut", bound="BackInOut")
 
 OVERSHOOT = 1.70158
 
+
 class BackIn:
     """
     Anticipatory easing like a dancer bending her knees before jumping off the
@@ -28,6 +29,7 @@ class BackIn:
     >>> d3.ease_back_in.overshoot(1.5)(0.2)
     -0.040000000000000015
     """
+
     def __init__(self, overshoot: float):
         self._overshoot = overshoot
 
@@ -72,7 +74,9 @@ class BackIn:
         """
         return BackIn(overshoot)
 
+
 ease_back_in = BackIn(OVERSHOOT)
+
 
 class BackOut:
     """
@@ -96,6 +100,7 @@ class BackOut:
     >>> d3.ease_back_out.overshoot(1.5)(0.2)
     0.6799999999999999
     """
+
     def __init__(self, overshoot: float):
         self._overshoot = overshoot
 
@@ -141,7 +146,9 @@ class BackOut:
         """
         return BackOut(overshoot)
 
+
 ease_back_out = BackOut(OVERSHOOT)
+
 
 class BackInOut:
     """
@@ -167,6 +174,7 @@ class BackInOut:
     >>> d3.ease_back_in_out.overshoot(1.5)(0.2)
     -0.04000000000000001
     """
+
     def __init__(self, overshoot: float):
         self._overshoot = overshoot
 
@@ -217,5 +225,6 @@ class BackInOut:
             New easing function
         """
         return BackInOut(overshoot)
+
 
 ease_back_in_out = BackInOut(OVERSHOOT)

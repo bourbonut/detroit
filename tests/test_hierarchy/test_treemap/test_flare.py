@@ -1,16 +1,21 @@
-from pathlib import Path
-import detroit as d3
-import polars as pl
 import json
+from pathlib import Path
+
+import polars as pl
+
+import detroit as d3
+
 
 def special_round(d):
     return round(d * 100) / 100
+
 
 def check(data, expected, tile):
     def parent_id(d):
         parts = d["id"].split(".")
         if len(parts) > 1:
             return ".".join(parts[:-1])
+
     stratifier = d3.stratify().set_parent_id(parent_id)
     treemapper = d3.treemap().set_tile(tile).set_size([960, 500])
 
@@ -46,9 +51,11 @@ def check(data, expected, tile):
             children.reverse()
             for child in children:
                 visit(child)
+
     visit(expected)
 
     assert actual == expected
+
 
 def test_flare_1():
     datapath = Path(__file__).resolve().parents[1] / "data"
@@ -56,6 +63,7 @@ def test_flare_1():
     with open(datapath / "flare-phi.json") as file:
         expected = json.load(file)
     check(data, expected, d3.treemap_squarify)
+
 
 def test_flare_2():
     datapath = Path(__file__).resolve().parents[1] / "data"

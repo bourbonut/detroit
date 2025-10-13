@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_exp_1():
     assert d3.ease_exp == d3.ease_exp_in_out
+
 
 def test_exp_2():
     assert d3.ease_exp_in(0.0) == 0.000000
@@ -20,8 +24,10 @@ def test_exp_2():
     assert in_delta(d3.ease_exp_in(0.9), 0.499511)
     assert d3.ease_exp_in(1.0) == 1.000000
 
+
 def test_exp_3():
-    assert d3.ease_exp_in(.9) == d3.ease_exp_in(0.9)
+    assert d3.ease_exp_in(0.9) == d3.ease_exp_in(0.9)
+
 
 def test_exp_4():
     exp_out = out(d3.ease_exp_in)
@@ -37,8 +43,10 @@ def test_exp_4():
     assert in_delta(d3.ease_exp_out(0.9), exp_out(0.9))
     assert in_delta(d3.ease_exp_out(1.0), exp_out(1.0))
 
+
 def test_exp_5():
-    assert d3.ease_exp_out(.9) == d3.ease_exp_out(0.9)
+    assert d3.ease_exp_out(0.9) == d3.ease_exp_out(0.9)
+
 
 def test_exp_6():
     exp_in_out = in_out(d3.ease_exp_in)
@@ -54,5 +62,6 @@ def test_exp_6():
     assert in_delta(d3.ease_exp_in_out(0.9), exp_in_out(0.9))
     assert d3.ease_exp_in_out(1.0) == exp_in_out(1.0)
 
+
 def test_exp_7():
-    assert d3.ease_exp_in_out(.9) == d3.ease_exp_in_out(0.9)
+    assert d3.ease_exp_in_out(0.9) == d3.ease_exp_in_out(0.9)

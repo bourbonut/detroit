@@ -1,5 +1,6 @@
-import detroit as d3
 from math import nan
+
+import detroit as d3
 
 
 def test_add_all_1():

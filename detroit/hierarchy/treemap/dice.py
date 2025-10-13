@@ -1,5 +1,6 @@
 from ..hierarchy import Node
 
+
 def dice(parent: Node, x0: float, y0: float, x1: float, y1: float):
     nodes = parent.children
     k = 0 if parent.value is None or parent.value == 0 else (x1 - x0) / parent.value

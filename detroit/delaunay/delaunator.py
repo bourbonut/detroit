@@ -1,26 +1,32 @@
 from collections.abc import Callable
+from math import ceil, floor, inf, isinf, nan, sqrt
 from typing import Any, TypeVar
-from math import ceil, sqrt, inf, isinf, floor, nan
-from .orient2d import orient2d
+
 from ..types import T
+from .orient2d import orient2d
 
 TDelaunator = TypeVar("Delaunator", bound="Delaunator")
 
 EPSILON = pow(2, -52)
 EDGE_STACK = [0] * 512
 
+
 def default_get_x(p: tuple[float, float]) -> float:
     return p[0]
+
 
 def default_get_y(p: tuple[float, float]) -> float:
     return p[1]
 
+
 def swap(arr: list[Any], i: int, j: int):
     arr[i], arr[j] = arr[j], arr[i]
+
 
 def pseudo_angle(dx: float, dy: float) -> float:
     p = dx / (abs(dx) + abs(dy))
     return (3 - p if dy > 0 else 1 + p) * 0.25
+
 
 def dist(a: tuple[float, float], b: tuple[float, float]) -> float:
     ax, ay = a
@@ -28,6 +34,7 @@ def dist(a: tuple[float, float], b: tuple[float, float]) -> float:
     dx = ax - bx
     dy = ay - by
     return dx * dx + dy * dy
+
 
 def in_circle(
     ax: float,
@@ -51,10 +58,9 @@ def in_circle(
     cp = fx * fx + fy * fy
 
     return (
-        dx * (ey * cp - bp * fy) -
-        dy * (ex * cp - bp * fx) +
-        ap * (ex * fy - ey * fx)
+        dx * (ey * cp - bp * fy) - dy * (ex * cp - bp * fx) + ap * (ex * fy - ey * fx)
     ) < 0
+
 
 def circumradius(
     ax: float,
@@ -78,6 +84,7 @@ def circumradius(
     y = (dx * cl - ex * bl) * d
 
     return x * x + y * y
+
 
 def circumcenter(
     ax: float,
@@ -150,6 +157,7 @@ def quicksort(ids: list[int], dists: list[float], left: int, right: int):
             quicksort(ids, dists, left, j - 1)
             quicksort(ids, dists, i, right)
 
+
 class Delaunator:
     def __init__(self, coords: list[float]):
         if len(coords) == 0:
@@ -183,7 +191,6 @@ class Delaunator:
         self.halfedges = self._halfedges
 
         self.update()
-
 
     @classmethod
     def from_points(
@@ -281,9 +288,8 @@ class Delaunator:
 
         if isinf(min_radius):
             for i in range(n):
-                self._dists[i] = (
-                    (coords[2 * i] - coords[0])
-                    or (coords[2 * i + 1] - coords[1])
+                self._dists[i] = (coords[2 * i] - coords[0]) or (
+                    coords[2 * i + 1] - coords[1]
                 )
             quicksort(self._ids, self._dists, 0, n - 1)
             hull = [0] * n
@@ -365,14 +371,17 @@ class Delaunator:
             start = hull_prev[start]
             e = start
             q = hull_next[e]
-            while orient2d(
-                x,
-                y,
-                coords[2 * e],
-                coords[2 * e + 1],
-                coords[2 * q],
-                coords[2 * q + 1],
-            ) >= 0:
+            while (
+                orient2d(
+                    x,
+                    y,
+                    coords[2 * e],
+                    coords[2 * e + 1],
+                    coords[2 * q],
+                    coords[2 * q + 1],
+                )
+                >= 0
+            ):
                 e = q
                 if e == start:
                     e = -1
@@ -395,25 +404,20 @@ class Delaunator:
             hull_tri[e] = t
             hull_size += 1
 
-
             n = hull_next[e]
             q = hull_next[n]
-            while orient2d(
-                x,
-                y,
-                coords[2 * n],
-                coords[2 * n + 1],
-                coords[2 * q],
-                coords[2 * q + 1],
-            ) < 0:
-                t = self._add_triangle(
-                    n,
-                    i,
-                    q,
-                    hull_tri[i],
-                    -1,
-                    hull_tri[n]
+            while (
+                orient2d(
+                    x,
+                    y,
+                    coords[2 * n],
+                    coords[2 * n + 1],
+                    coords[2 * q],
+                    coords[2 * q + 1],
                 )
+                < 0
+            ):
+                t = self._add_triangle(n, i, q, hull_tri[i], -1, hull_tri[n])
                 hull_tri[i] = self._legalize(t + 2)
                 hull_next[n] = n
                 hull_size -= 1
@@ -422,22 +426,18 @@ class Delaunator:
 
             if e == start:
                 q = hull_prev[e]
-                while orient2d(
-                    x,
-                    y,
-                    coords[2 * q],
-                    coords[2 * q + 1],
-                    coords[2 * e],
-                    coords[2 * e + 1],
-                ) < 0:
-                    t = self._add_triangle(
-                        q,
-                        i,
-                        e,
-                        -1,
-                        hull_tri[e],
-                        hull_tri[q]
+                while (
+                    orient2d(
+                        x,
+                        y,
+                        coords[2 * q],
+                        coords[2 * q + 1],
+                        coords[2 * e],
+                        coords[2 * e + 1],
                     )
+                    < 0
+                ):
+                    t = self._add_triangle(q, i, e, -1, hull_tri[e], hull_tri[q])
                     self._legalize(t + 2)
                     hull_tri[q] = t
                     hull_next[e] = e
@@ -449,7 +449,6 @@ class Delaunator:
             hull_next[e] = hull_prev[n] = i
             hull_next[i] = n
 
-            
             hull_hash[self._hash_key(x, y)] = i
             hull_hash[self._hash_key(coords[2 * e], coords[2 * e + 1])] = e
 
@@ -460,14 +459,14 @@ class Delaunator:
             self.hull[i] = e
             e = hull_next[e]
 
-        self.triangles = self._triangles[0:self._triangles_len]
-        self.halfedges = self._halfedges[0:self._triangles_len]
-
+        self.triangles = self._triangles[0 : self._triangles_len]
+        self.halfedges = self._halfedges[0 : self._triangles_len]
 
     def _hash_key(self, x: float, y: float) -> int:
-        return floor(
-            pseudo_angle(x - self._cx, y - self._cy) * self._hash_size
-        ) % self._hash_size
+        return (
+            floor(pseudo_angle(x - self._cx, y - self._cy) * self._hash_size)
+            % self._hash_size
+        )
 
     def _legalize(self, a: int) -> int:
         triangles = self._triangles
@@ -499,10 +498,14 @@ class Delaunator:
             p1 = triangles[bl]
 
             illegal = in_circle(
-                coords[2 * p0], coords[2 * p0 + 1],
-                coords[2 * pr], coords[2 * pr + 1],
-                coords[2 * pl], coords[2 * pl + 1],
-                coords[2 * p1], coords[2 * p1 + 1]
+                coords[2 * p0],
+                coords[2 * p0 + 1],
+                coords[2 * pr],
+                coords[2 * pr + 1],
+                coords[2 * pl],
+                coords[2 * pl + 1],
+                coords[2 * p1],
+                coords[2 * p1 + 1],
             )
 
             if illegal:
@@ -542,15 +545,7 @@ class Delaunator:
         if b != -1:
             self._halfedges[b] = a
 
-    def _add_triangle(
-        self,
-        i0: int,
-        i1: int,
-        i2: int,
-        a: int,
-        b: int,
-        c: int
-    ) -> int:
+    def _add_triangle(self, i0: int, i1: int, i2: int, a: int, b: int, c: int) -> int:
         t = self._triangles_len
 
         self._triangles[t] = i0

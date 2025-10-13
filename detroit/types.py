@@ -344,6 +344,7 @@ class MultiPolygonGeoJSON(TypedDict):
     value: float
     coordinates: list[list[Point2D]]
 
+
 class SimulationNode(TypedDict):
     """
     Describes a simulation's node.
@@ -365,6 +366,7 @@ class SimulationNode(TypedDict):
     fy : float
         The node's fixed y-position
     """
+
     index: int
     x: float
     y: float
@@ -372,6 +374,7 @@ class SimulationNode(TypedDict):
     vy: float
     fx: float
     fy: float
+
 
 class SimulationLink(TypedDict):
     """
@@ -386,17 +389,25 @@ class SimulationLink(TypedDict):
     index : int
         The zero-based index into links
     """
+
     source: dict
     target: dict
     index: int
 
-SimulationNodeFunction: TypeAlias = Callable[[SimulationNode, int, list[SimulationNode]], T]
-SimulationLinkFunction: TypeAlias = Callable[[SimulationLink, int, list[SimulationLink]], T]
+
+SimulationNodeFunction: TypeAlias = Callable[
+    [SimulationNode, int, list[SimulationNode]], T
+]
+SimulationLinkFunction: TypeAlias = Callable[
+    [SimulationLink, int, list[SimulationLink]], T
+]
+
 
 class Force(Protocol):
     """
     Protocol class which represents Force object
     """
+
     def initialize(
         self,
         nodes: list[SimulationNode],

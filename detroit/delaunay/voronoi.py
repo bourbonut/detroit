@@ -1,11 +1,13 @@
 from collections.abc import Iterator
+from math import floor, inf, isnan
+from typing import TypeVar
+
 from .path import Path
 from .polygon import Polygon
-from math import floor, isnan, inf
-from typing import TypeVar
 
 Delaunay = TypeVar("Delaunay", bound="Delaunay")
 TVoronoi = TypeVar("Voronoi", bound="Voronoi")
+
 
 def sign(x: float) -> float:
     if x == 0:
@@ -15,8 +17,8 @@ def sign(x: float) -> float:
     else:
         return 1
 
-class Voronoi:
 
+class Voronoi:
     def __init__(
         self,
         delaunay: Delaunay,
@@ -28,7 +30,6 @@ class Voronoi:
         xmin, ymin, xmax, ymax = bounds
         if xmax < xmin or ymax < ymin:
             raise ValueError("Invalid bounds")
-
 
         self._circumcenters = [None] * (len(delaunay.points) * 2)
 
@@ -52,7 +53,9 @@ class Voronoi:
         hull = self.delaunay.hull
         triangles = self.delaunay.triangles
 
-        circumcenters = self.circumcenters = self._circumcenters[0:len(triangles) // 3 * 2]
+        circumcenters = self.circumcenters = self._circumcenters[
+            0 : len(triangles) // 3 * 2
+        ]
         bx = None
         by = None
         i = 0
@@ -162,7 +165,7 @@ class Voronoi:
             buffer = context = Path()
         else:
             buffer = None
-        
+
         context.rect(
             self.xmin,
             self.ymin,
@@ -216,7 +219,7 @@ class Voronoi:
         if c0 == 0 and c1 == 0:
             context.move_to(x0, y0)
             context.line_to(x1, y1)
-        elif S:=self._clip_segment(x0, y0, x1, y1, c0, c1):
+        elif S := self._clip_segment(x0, y0, x1, y1, c0, c1):
             context.move_to(S[0], S[1])
             context.line_to(S[2], S[3])
 
@@ -274,10 +277,7 @@ class Voronoi:
                 break
         return points
 
-    def _clip(
-        self,
-        i: int
-    ) -> tuple[float, float, float, float, float, float]:
+    def _clip(self, i: int) -> tuple[float, float, float, float, float, float]:
         if i == 0 and len(self.delaunay.hull) == 1:
             return [
                 self.xmax,
@@ -298,13 +298,9 @@ class Voronoi:
         v = i * 4
         return self._simplify(
             self._clip_infinite(
-                i,
-                points,
-                vectors[v],
-                vectors[v + 1],
-                vectors[v + 2],
-                vectors[v + 3]
-            ) if vectors[v] or vectors[v + 1]
+                i, points, vectors[v], vectors[v + 1], vectors[v + 2], vectors[v + 3]
+            )
+            if vectors[v] or vectors[v + 1]
             else self._clip_finite(i, points)
         )
 
@@ -386,7 +382,6 @@ class Voronoi:
             ]
         return P
 
-
     def _clip_segment(
         self,
         x0: float,
@@ -434,7 +429,7 @@ class Voronoi:
         vx0: float,
         vy0: float,
         vxn: float,
-        vyn: float
+        vyn: float,
     ) -> tuple[float, float, float, float, float, float]:
         P = list(points)
         p = self._project(P[0], P[1], vx0, vy0)
@@ -457,7 +452,9 @@ class Voronoi:
                     j = self._edge(i, c0, c1, P, j)
                     n = len(P)
                 j += 2
-        elif self.contains(i, (self.xmin + self.xmax) * 0.5, (self.ymin + self.ymax) * 0.5):
+        elif self.contains(
+            i, (self.xmin + self.xmax) * 0.5, (self.ymin + self.ymax) * 0.5
+        ):
             P = [
                 self.xmin,
                 self.ymin,
@@ -508,7 +505,9 @@ class Voronoi:
                 j += 2
         return j
 
-    def _project(self, x0: float, y0: float, vx: float, vy: float) -> tuple[float, float]:
+    def _project(
+        self, x0: float, y0: float, vx: float, vy: float
+    ) -> tuple[float, float]:
         t = inf
         if vy < 0:
             if y0 <= self.ymin:
@@ -545,7 +544,6 @@ class Voronoi:
                 y = y0 + t * vy
 
         return [x, y]
-
 
     def _edgecode(self, x: float, y: float) -> int:
         if x == self.xmin:
@@ -588,7 +586,12 @@ class Voronoi:
             while i < n:
                 j = (i + 2) % n
                 k = (i + 4) % n
-                if P[i] == P[j] and P[j] == P[k] or P[i + 1] == P[j + 1] and P[j + 1] == P[k + 1]:
+                if (
+                    P[i] == P[j]
+                    and P[j] == P[k]
+                    or P[i + 1] == P[j + 1]
+                    and P[j + 1] == P[k + 1]
+                ):
                     P.pop(j)
                     P.pop(j)
                     n = len(P)

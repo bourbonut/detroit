@@ -1,5 +1,6 @@
 from ..types import Point2D
 
+
 def centroid(polygon: list[Point2D]) -> Point2D:
     """
     Returns the centroid of the specified polygon.

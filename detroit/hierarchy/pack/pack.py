@@ -1,18 +1,20 @@
-from ..accessors import optional
-from ..hierarchy import Node
-from ..constant import constant, constant_zero
-from .siblings import pack_siblings_random
 from collections.abc import Callable
-from typing import TypeVar
 from math import sqrt
+from typing import TypeVar
+
+from ..accessors import optional
+from ..constant import constant, constant_zero
+from ..hierarchy import Node
+from .siblings import pack_siblings_random
 
 TPack = TypeVar("Pack", bound="Pack")
+
 
 def default_radius(d: Node) -> float:
     return sqrt(d.value)
 
-class Pack:
 
+class Pack:
     def __init__(self):
         self._radius = None
         self._dx = 1
@@ -32,7 +34,11 @@ class Pack:
             (
                 root.each_before(radius_leaf(default_radius))
                 .each_after(pack_children_random(constant_zero, 1))
-                .each_after(pack_children_random(self._padding, root.r / min(self._dx, self._dy)))
+                .each_after(
+                    pack_children_random(
+                        self._padding, root.r / min(self._dx, self._dy)
+                    )
+                )
                 .each_before(translate_child(min(self._dx, self._dy) / (2 * root.r)))
             )
         return root
@@ -62,13 +68,18 @@ class Pack:
     def get_padding(self) -> Callable[[Node], None]:
         return self._padding
 
+
 def radius_leaf(radius: Callable[[Node], float] | None) -> Callable[[Node], None]:
     def leaf(node: Node):
         if node.children is None:
             node.r = max(0, 0 if radius is None else radius(node))
+
     return leaf
 
-def pack_children_random(padding: Callable[[Node], float], k: float) -> Callable[[Node], None]:
+
+def pack_children_random(
+    padding: Callable[[Node], float], k: float
+) -> Callable[[Node], None]:
     def pack_children(node: Node):
         if children := node.children:
             r = padding(node) * k
@@ -80,7 +91,9 @@ def pack_children_random(padding: Callable[[Node], float], k: float) -> Callable
                 for child in children:
                     child.r -= r
             node.r = e + r
+
     return pack_children
+
 
 def translate_child(k: float) -> Callable[[Node], None]:
     def translate(node: Node):
@@ -89,7 +102,9 @@ def translate_child(k: float) -> Callable[[Node], None]:
         if parent is not None:
             node.x = parent.x + k * node.x
             node.y = parent.y + k * node.y
+
     return translate
+
 
 def pack() -> Pack:
     return Pack()

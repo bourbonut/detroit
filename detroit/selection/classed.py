@@ -1,9 +1,12 @@
-from ..types import T, Accessor, EtreeFunction
-from ..array import argpass
-from lxml import etree
 import re
 
+from lxml import etree
+
+from ..array import argpass
+from ..types import Accessor, EtreeFunction, T
+
 CLASS_PATTERN = re.compile(r"^|\s+")
+
 
 def class_array(string: str) -> list[str]:
     """
@@ -20,6 +23,7 @@ def class_array(string: str) -> list[str]:
         Class names
     """
     return CLASS_PATTERN.split(string.strip())
+
 
 def classed_add(node: etree.Element, names: list[str]):
     """
@@ -39,6 +43,7 @@ def classed_add(node: etree.Element, names: list[str]):
         if name not in class_names:
             class_names.append(name)
     node.set("class", " ".join(class_names).strip())
+
 
 def classed_remove(node: etree.Element, names: list[str]):
     """
@@ -64,6 +69,7 @@ def classed_remove(node: etree.Element, names: list[str]):
             pass
     if len(class_names) != length:
         node.set("class", " ".join(class_names).strip())
+
 
 def classed_constant(class_names: str, value: bool) -> EtreeFunction[T, None]:
     """

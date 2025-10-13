@@ -8,17 +8,21 @@ URL = "https://static.observableusercontent.com/files/e65374209781891f37dea1e7a6
 
 flare = json.loads(requests.get(URL).content)
 
+
 def label(d):
     return d.data["name"]
+
 
 def title(node):
     return ".".join((d.data["name"] for d in reversed(node.ancestors())))
 
+
 def link(node):
-    p1 = 'tree' if node.children else 'blob'
-    p2 = '/'.join((d.data['name'] for d in reversed(node.ancestors())))
-    p3 = '' if node.children else '.as'
+    p1 = "tree" if node.children else "blob"
+    p2 = "/".join((d.data["name"] for d in reversed(node.ancestors())))
+    p3 = "" if node.children else ".as"
     return f"https://github.com/prefuse/Flare/{p1}/master/flare/src/{p2}{p3}"
+
 
 width = 1152
 padding = 1
@@ -31,11 +35,14 @@ dy = width / (root.height + padding)
 d3.tree().set_node_size([dx, dy])(root)
 
 x = [inf, -inf]
+
+
 def visit(d):
     if d.x > x[1]:
         x[1] = d.x
     if d.x < x[0]:
         x[0] = d.x
+
 
 root.each(visit)
 
@@ -79,10 +86,7 @@ node = (
     .attr("fill", lambda d: "#555" if d.children else "#999")
     .attr("r", 3)
 )
-(
-    node.append("title")
-    .text(title)
-)
+(node.append("title").text(title))
 
 (
     node.append("text")

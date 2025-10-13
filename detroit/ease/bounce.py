@@ -9,6 +9,7 @@ B8 = 21 / 22
 B9 = 63 / 64
 B0 = 1 / B1 / B1
 
+
 def ease_bounce_in(t: float) -> float:
     """
     Bounce easing, like a rubber ball.
@@ -29,6 +30,7 @@ def ease_bounce_in(t: float) -> float:
     0.06000000000000005
     """
     return 1 - ease_bounce_out(1 - t)
+
 
 def ease_bounce_out(t: float) -> float:
     """
@@ -60,6 +62,7 @@ def ease_bounce_out(t: float) -> float:
     else:
         t -= B8
         return B0 * t * t + B9
+
 
 def ease_bounce_in_out(t: float) -> float:
     """

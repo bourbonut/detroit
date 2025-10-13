@@ -19,11 +19,7 @@ root = (
     .set_size([width, height])
     .set_padding(1)
     .set_round(True)
-)(
-    d3.hierarchy(data)
-    .sum(lambda d: d.get("value"))
-    .sort(lambda d: -d.value)
-)
+)(d3.hierarchy(data).sum(lambda d: d.get("value")).sort(lambda d: -d.value))
 
 svg = (
     d3.create("svg")
@@ -42,27 +38,33 @@ leaf = (
 
 format_func = d3.format(",d")
 
+
 def title(node):
     names = ".".join((d.data["name"] for d in reversed(node.ancestors())))
     return f"{names}\n{format_func(node.value)}"
 
+
 leaf.append("title").text(title)
 
 leaf_index = 1
+
+
 def leaf_uid(node, i):
     global leaf_index
     id_value = node.leaf_uid = f"O-leaf-{leaf_index}"
     leaf_index += 1
     return id_value
 
+
 def fill(d):
     while d.depth > 1:
         d = d.parent
     return color(d.data["name"])
 
+
 (
     leaf.append("rect")
-    .attr("id",  leaf_uid)
+    .attr("id", leaf_uid)
     .attr("fill", fill)
     .attr("fill-opacity", 0.6)
     .attr("width", lambda d: d.x1 - d.x0)
@@ -70,11 +72,14 @@ def fill(d):
 )
 
 clip_index = 1
+
+
 def clip_uid(node):
     global clip_index
     id_value = node.clip_uid = f"O-clip-{clip_index}"
     clip_index += 1
     return id_value
+
 
 (
     leaf.append("clipPath")
@@ -87,7 +92,10 @@ def clip_uid(node):
     leaf.append("text")
     .attr("clip-path", lambda d: f"url(#{d.clip_uid})")
     .select_all("tspan")
-    .data(lambda _, d: [x for x in re.split(r"(?=[A-Z][a-z])|\s+", d.data["name"]) if x] + [format_func(d.value)])
+    .data(
+        lambda _, d: [x for x in re.split(r"(?=[A-Z][a-z])|\s+", d.data["name"]) if x]
+        + [format_func(d.value)]
+    )
     .join("tspan")
     .attr("x", 3)
     .attr("y", lambda d, i, nodes: f"{(i == len(nodes) - 1) * 0.3 + 1.1 + i * 0.9}em")

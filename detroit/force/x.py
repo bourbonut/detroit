@@ -1,14 +1,15 @@
 from collections.abc import Callable
 from math import isnan
 from typing import TypeVar
-from .constant import constant
+
 from ..array import argpass
 from ..types import SimulationNode, SimulationNodeFunction
+from .constant import constant
 
 TForceX = TypeVar("ForceX", bound="ForceX")
 
-class ForceX:
 
+class ForceX:
     def __init__(self, x: SimulationNodeFunction[float]):
         self._x = x
         self._strength = constant(0.1)
@@ -88,7 +89,7 @@ class ForceX:
             * **nodes** (:code:`list[SimulationNode]`) - the list of nodes
 
             It returns the x-coordinate value (:code:`float`)
-            
+
         Returns
         -------
         ForceX
@@ -106,6 +107,7 @@ class ForceX:
 
     def get_x(self) -> SimulationNodeFunction[float]:
         return self._x
+
 
 def force_x(x: SimulationNodeFunction[float] | float | None = None) -> ForceX:
     """

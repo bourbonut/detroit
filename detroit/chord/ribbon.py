@@ -1,10 +1,10 @@
 from collections.abc import Callable
+from math import cos, pi, sin
 from typing import Any, TypeVar
-from ..path import Path
-from ..array import argpass
-from .chord import ChordItem, ChordValue
 
-from math import cos, sin, pi
+from ..array import argpass
+from ..path import Path
+from .chord import ChordItem, ChordValue
 
 HALF_PI = pi * 0.5
 EPSILON = 1e-6
@@ -56,6 +56,7 @@ class Ribbon:
     head_radius : Callable[..., float] | None
         Arrow head radius accessor function
     """
+
     def __init__(self, head_radius: Callable[..., float] | None = None):
         self._head_radius = argpass(head_radius) if callable(head_radius) else None
         self._source = argpass(default_source)
@@ -140,7 +141,9 @@ class Ribbon:
             self._context = None
             return str(buffer) or None
 
-    def set_head_radius(self, head_radius: Callable[..., float] | float | None = None) -> TRibbon:
+    def set_head_radius(
+        self, head_radius: Callable[..., float] | float | None = None
+    ) -> TRibbon:
         """
         Sets the arrowhead radius accessor to the specified function and
         returns this ribbon generator.

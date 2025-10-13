@@ -1,5 +1,6 @@
 from collections.abc import Iterator
 from typing import TypeVar
+
 from ..hierarchy import Node
 from .dice import dice
 from .slice import slice
@@ -7,8 +8,8 @@ from .squarify import PHI, squarify_ratio
 
 TResquarify = TypeVar("Resquarify", bound="Resquarify")
 
-class SquarifyList:
 
+class SquarifyList:
     def __init__(self, values: list[Node]):
         self._values = values
         self.ratio = None
@@ -25,8 +26,8 @@ class SquarifyList:
     def __getitem__(self, index: int) -> Node:
         return self._values[index]
 
-class Resquarify:
 
+class Resquarify:
     def __init__(self, ratio: float):
         self._ratio = ratio
 
@@ -36,7 +37,6 @@ class Resquarify:
             j = 0
             m = len(rows)
             value = parent.value
-
 
             while j < m:
                 row = rows[j]
@@ -66,5 +66,6 @@ class Resquarify:
 
     def set_ratio(self, ratio: float) -> TResquarify:
         return Resquarify(ratio if ratio > 1 else 1)
+
 
 resquarify = Resquarify(PHI)

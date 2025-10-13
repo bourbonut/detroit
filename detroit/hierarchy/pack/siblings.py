@@ -1,5 +1,7 @@
-from .enclose import pack_enclose_random, Circle
 from math import sqrt
+
+from .enclose import Circle, pack_enclose_random
+
 
 def place(b: Circle, a: Circle, c: Circle):
     dx = b.x - a.x
@@ -24,18 +26,20 @@ def place(b: Circle, a: Circle, c: Circle):
         c.x = a.x + c.r
         c.y = a.y
 
+
 def intersects(a: Circle, b: Circle) -> bool:
     dr = a.r + b.r - 1e-6
     dx = b.x - a.x
     dy = b.y - a.y
     return dr > 0 and dr * dr > dx * dx + dy * dy
 
-class Node:
 
+class Node:
     def __init__(self, circle: Circle):
         self.circle = circle
         self.next = None
         self.previous = None
+
 
 def score(node: Node) -> float:
     a = node.circle
@@ -44,6 +48,7 @@ def score(node: Node) -> float:
     dx = (a.x * b.r + b.x * a.r) / ab
     dy = (a.y * b.r + b.y * a.r) / ab
     return dx * dx + dy * dy
+
 
 def pack_siblings_random(circles: list[Circle]) -> float:
     circles = list(circles)
@@ -140,6 +145,7 @@ def pack_siblings_random(circles: list[Circle]) -> float:
         a.y -= c.y
 
     return c.r
+
 
 def pack_siblings(circles: list[Circle]) -> list[Circle]:
     pack_siblings_random(circles)

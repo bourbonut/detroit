@@ -1,10 +1,12 @@
-from ..array import argpass
-from .accessors import optional
-from .hierarchy import Node, compute_height
 from collections.abc import Callable
 from typing import Any, TypeVar
 
+from ..array import argpass
+from .accessors import optional
+from .hierarchy import Node, compute_height
+
 TStratify = TypeVar("Stratify", bound="Stratify")
+
 
 class SparseNode:
     def __init__(self):
@@ -12,17 +14,21 @@ class SparseNode:
         self.height = 0
         self.parent = None
 
+
 preroot = SparseNode()
 ambiguous = {}
 imputed = {}
+
 
 @argpass
 def default_id(d: dict[str, Any]) -> Any | None:
     return d.get("id")
 
+
 @argpass
 def default_parent_id(d: dict[str, Any]) -> Any | None:
     return d.get("parent_id")
+
 
 class Stratify:
     def __init__(self):
@@ -52,6 +58,7 @@ class Stratify:
             @argpass
             def current_id(_, i):
                 return norms[i]
+
             @argpass
             def current_parent_id(_, i):
                 return parents[i]
@@ -65,7 +72,9 @@ class Stratify:
                 node_id = str(node_id)
                 if node_id != "":
                     node_key = node.id = node_id
-                    node_by_key[node_key] = ambiguous if node_key in node_by_key else node
+                    node_by_key[node_key] = (
+                        ambiguous if node_key in node_by_key else node
+                    )
 
             node_id = current_parent_id(d, i, data)
             if node_id is not None:
@@ -104,26 +113,33 @@ class Stratify:
                 node.data = None
 
         root.parent = preroot
+
         def update(node):
             nonlocal n
             node.depth = node.parent.depth + 1
             n -= 1
+
         root.each_before(update).each_before(compute_height)
         root.parent = None
         if n > 0:
             raise RuntimeError("Cycle")
         return root
 
-
-    def set_id(self, id_func: Callable[[Node, int, list[dict[str, Any]]], int]) -> TStratify:
+    def set_id(
+        self, id_func: Callable[[Node, int, list[dict[str, Any]]], int]
+    ) -> TStratify:
         self._id = argpass(optional(id_func))
         return self
 
-    def set_parent_id(self, parent_id: Callable[[Node, int, list[dict[str, Any]]], int]) -> TStratify:
+    def set_parent_id(
+        self, parent_id: Callable[[Node, int, list[dict[str, Any]]], int]
+    ) -> TStratify:
         self._parent_id = argpass(optional(parent_id))
         return self
 
-    def set_path(self, path: Callable[[Node, int, list[dict[str, Any]]], int]) -> TStratify:
+    def set_path(
+        self, path: Callable[[Node, int, list[dict[str, Any]]], int]
+    ) -> TStratify:
         self._path = argpass(optional(path))
         return self
 
@@ -146,6 +162,7 @@ def normalize(path: str) -> str:
         path = path[:-1]
     return path if path[0] == "/" else f"/{path}"
 
+
 def slash(path: str, i: int) -> str:
     if path[i] == "/":
         k = 0
@@ -157,6 +174,7 @@ def slash(path: str, i: int) -> str:
             return True
     return False
 
+
 def parent_of(path: str) -> str:
     i = len(path)
     if i < 2:
@@ -167,6 +185,7 @@ def parent_of(path: str) -> str:
             break
         i -= 1
     return path[:i]
+
 
 def stratify() -> Stratify:
     return Stratify()

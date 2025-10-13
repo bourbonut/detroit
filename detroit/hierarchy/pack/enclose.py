@@ -1,6 +1,7 @@
+from math import sqrt
 from random import shuffle
 from typing import Any
-from math import sqrt
+
 
 class Circle:
     def __init__(self, x: float, y: float, r: float):
@@ -11,10 +12,11 @@ class Circle:
     @classmethod
     def from_other(cls, circle: Any):
         return cls(
-            x = circle.get("x") if isinstance(circle, dict) else circle.x,
-            y = circle.get("y") if isinstance(circle, dict) else circle.y,
-            r = circle.get("r") if isinstance(circle, dict) else circle.r,
+            x=circle.get("x") if isinstance(circle, dict) else circle.x,
+            y=circle.get("y") if isinstance(circle, dict) else circle.y,
+            r=circle.get("r") if isinstance(circle, dict) else circle.r,
         )
+
 
 def pack_enclose_random(circles: list[dict[str, float]]) -> Circle:
     i = 0
@@ -33,14 +35,14 @@ def pack_enclose_random(circles: list[dict[str, float]]) -> Circle:
             i = 0
     return e
 
+
 def extend_basis(basis: list[Circle], p: Circle):
     if encloses_weak_all(p, basis):
         return [p]
 
     for i in range(len(basis)):
-        if (
-            encloses_not(p, basis[i])
-            and encloses_weak_all(enclose_basis_2(basis[i], p), basis)
+        if encloses_not(p, basis[i]) and encloses_weak_all(
+            enclose_basis_2(basis[i], p), basis
         ):
             return [basis[i], p]
 
@@ -56,11 +58,13 @@ def extend_basis(basis: list[Circle], p: Circle):
 
     raise RuntimeError("This error should not be raised.")
 
+
 def encloses_not(a: Circle, b: Circle) -> bool:
     dr = a.r - b.r
     dx = b.x - a.x
     dy = b.y - a.y
     return dr < 0 or dr * dr < dx * dx + dy * dy
+
 
 def encloses_weak(a: Circle, b: Circle) -> bool:
     dr = a.r - b.r + max(a.r, b.r, 1) * 1e-9
@@ -75,6 +79,7 @@ def encloses_weak_all(a: Circle, basis: list[Circle]) -> bool:
             return False
     return True
 
+
 def enclose_basis(basis: list[Circle]) -> Circle:
     match len(basis):
         case 1:
@@ -84,8 +89,10 @@ def enclose_basis(basis: list[Circle]) -> Circle:
         case 3:
             return enclose_basis_3(basis[0], basis[1], basis[2])
 
+
 def enclose_basis_1(a: Circle) -> Circle:
     return Circle(a.x, a.y, a.r)
+
 
 def enclose_basis_2(a: Circle, b: Circle) -> Circle:
     x1 = a.x
@@ -101,8 +108,9 @@ def enclose_basis_2(a: Circle, b: Circle) -> Circle:
     return Circle(
         (x1 + x2 + x21 / length * r21) * 0.5,
         (y1 + y2 + y21 / length * r21) * 0.5,
-        (length + r1 + r2) * 0.5
+        (length + r1 + r2) * 0.5,
     )
+
 
 def enclose_basis_3(a: Circle, b: Circle, c: Circle) -> Circle:
     x1 = a.x
@@ -132,8 +140,4 @@ def enclose_basis_3(a: Circle, b: Circle, c: Circle) -> Circle:
     B = 2 * (r1 + xa * xb + ya * yb)
     C = xa * xa + ya * ya - r1 * r1
     r = -((B + sqrt(B * B - 4 * A * C)) / (2 * A) if abs(A) > 1e-6 else C / B)
-    return Circle(
-        x1 + xa + xb * r,
-        y1 + ya + yb * r,
-        r
-    )
+    return Circle(x1 + xa + xb * r, y1 + ya + yb * r, r)

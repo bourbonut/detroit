@@ -1,21 +1,24 @@
+from math import sqrt
 from typing import TypeVar
+
 from ..hierarchy import Node
 from .dice import dice
 from .slice import slice
-from math import sqrt
 
 TSquarify = TypeVar("Squarify", bound="Squarify")
 
 PHI = (1 + sqrt(5)) * 0.5
 
-def squarify_ratio(ratio: float, parent: Node, x0: float, y0: float, x1: float, y1: float) -> list[Node]:
+
+def squarify_ratio(
+    ratio: float, parent: Node, x0: float, y0: float, x1: float, y1: float
+) -> list[Node]:
     rows = []
     nodes = parent.children
     i0 = 0
     i1 = 0
     n = len(nodes)
     value = parent.value
-
 
     while i0 < n:
         dx = x1 - x0
@@ -29,7 +32,7 @@ def squarify_ratio(ratio: float, parent: Node, x0: float, y0: float, x1: float, 
 
         min_value = max_value = sum_value
         alpha = 0
-        if value != 0 and  dx != 0 and dy != 0:
+        if value != 0 and dx != 0 and dy != 0:
             alpha = max(dy / dx, dx / dy) / (value * ratio)
         beta = sum_value * sum_value * alpha
         min_ratio = 0
@@ -56,7 +59,7 @@ def squarify_ratio(ratio: float, parent: Node, x0: float, y0: float, x1: float, 
         row = Node(None)
         row.value = sum_value
         row.dice = dx < dy
-        row.children = nodes[i0: i1]
+        row.children = nodes[i0:i1]
         rows.append(row)
         if row.dice:
             if value:
@@ -86,5 +89,6 @@ class Squarify:
 
     def set_ratio(self, ratio: float) -> TSquarify:
         return Squarify(ratio if ratio > 1 else 1)
+
 
 squarify = Squarify(PHI)

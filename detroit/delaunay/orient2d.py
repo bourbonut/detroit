@@ -1,4 +1,4 @@
-from .utils import EPSILON, SPLITTER, RESULTERRBOUND, estimate, sum_zerolim
+from .utils import EPSILON, RESULTERRBOUND, SPLITTER, estimate, sum_zerolim
 
 CCWERRBOUNDA = (3 + 16 * EPSILON) * EPSILON
 CCWERRBOUNDB = (2 + 12 * EPSILON) * EPSILON
@@ -10,12 +10,13 @@ C2 = [None] * 12
 D = [None] * 16
 u = [None] * 4
 
+
 def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
     acx = ax - cx
     bcx = bx - cx
     acy = ay - cy
     bcy = bx - cy
-    
+
     s1 = acx * bcy
     c = SPLITTER * acx
     ahi = c - (c - acx)
@@ -163,6 +164,7 @@ def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
 
     return D[Dlen - 1]
 
+
 def orient2d(ax, ay, bx, by, cx, cy):
     detleft = (ay - cy) * (bx - cx)
     detright = (ax - cx) * (by - cy)
@@ -173,6 +175,7 @@ def orient2d(ax, ay, bx, by, cx, cy):
         return det
 
     return -orient2dadapt(ax, ay, bx, by, cx, cy, detsum)
+
 
 def orient2dfast(ax, ay, bx, by, cx, cy):
     return (ay - cy) * (bx - cx) - (ax - cx) * (by - cy)

@@ -1,11 +1,12 @@
-from ..array import argpass
 from collections.abc import Callable, Iterable
 from typing import Any, TypeVar
 
+from ..array import argpass
+
 TNode = TypeVar("Node", bound="Node")
 
-class Node:
 
+class Node:
     def __init__(self, data: Any):
         self.data = data
         self.depth = 0
@@ -92,18 +93,22 @@ class Node:
 
     def leaves(self) -> list[TNode]:
         leaves = []
+
         def leave(node):
             if node.children is None:
                 leaves.append(node)
+
         self.each_before(leave)
         return leaves
 
     def links(self) -> list[dict[str, TNode]]:
         root = self
         links = []
+
         def link(node):
             if node != root:
                 links.append({"source": node.parent, "target": node})
+
         root.each(link)
         return links
 
@@ -125,6 +130,7 @@ class Node:
         def sort(node):
             if node.children is not None:
                 node.children.sort(key=compare)
+
         return self.each_before(sort)
 
     def sum(self, value: Callable[[dict[str, Any]], float]) -> TNode:
@@ -138,12 +144,13 @@ class Node:
                 sum_value += children[i].value
                 i -= 1
             node.value = sum_value
+
         return self.each_after(sum_node)
 
     def __str__(self):
         dict_ = self.__dict__.copy()
-        dict_["data"] = f"{dict_["data"].__class__.__name__}"
-        dict_["parent"] = f"{dict_["parent"].__class__.__name__}"
+        dict_["data"] = f"{dict_['data'].__class__.__name__}"
+        dict_["parent"] = f"{dict_['parent'].__class__.__name__}"
         attributs = ",\n    ".join(f"{key}: {dict_[key]}" for key in dict_)
         return f"Node(\n    {attributs},\n)"
 
@@ -151,16 +158,20 @@ class Node:
         children = f"list({len(self.children)}" if self.children else None
         return f"Node(children={children}))"
 
+
 def node_children(d: Node) -> list[Node] | None:
     return d.children
 
+
 def object_children(d: dict[str, Any]) -> Any | None:
     return d.get("children")
+
 
 def copy_data(node: Node):
     if node.data.value is not None:
         node.value = node.data.value
     node.data = node.data.data
+
 
 def count(node: Node):
     sum_value = 0
@@ -174,6 +185,7 @@ def count(node: Node):
             sum_value += children[i].value
             i -= 1
     node.value = sum_value
+
 
 def least_common_ancestor(a: Node, b: Node):
     if a == b:
@@ -189,6 +201,7 @@ def least_common_ancestor(a: Node, b: Node):
         b = b_nodes.pop()
     return c
 
+
 def compute_height(node: Node):
     height = 0
     while True:
@@ -198,9 +211,9 @@ def compute_height(node: Node):
         if node is None or node.height >= height:
             break
 
+
 def hierarchy(
-    data: dict[str, Any] | Node,
-    children: Callable[[dict[str, Any]], Any | None] = None
+    data: dict[str, Any] | Node, children: Callable[[dict[str, Any]], Any | None] = None
 ) -> Node:
     if isinstance(data, Node):
         children = node_children

@@ -1,6 +1,7 @@
+import pytest
+
 import detroit as d3
 from detroit.hierarchy.hierarchy import Node
-import pytest
 
 
 def noparent(node):
@@ -570,7 +571,9 @@ def test_stratify_23():
 
 
 def test_stratify_24():
-    root = d3.stratify().set_path(lambda d: d["path"])([{"path": "/"}, {"path": "/d/123"}])
+    root = d3.stratify().set_path(lambda d: d["path"])(
+        [{"path": "/"}, {"path": "/d/123"}]
+    )
     assert isinstance(root, Node)
     assert noparent(root) == {
         "id": "/",
@@ -748,7 +751,9 @@ def test_stratify_30():
 
 
 def test_stratify_31():
-    root = d3.stratify().set_path(lambda d: d["path"])([{"path": "/aa//"}, {"path": "/b"}])
+    root = d3.stratify().set_path(lambda d: d["path"])(
+        [{"path": "/aa//"}, {"path": "/b"}]
+    )
     assert isinstance(root, Node)
     assert noparent(root) == {
         "id": "/",

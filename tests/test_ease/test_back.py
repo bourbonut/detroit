@@ -1,14 +1,18 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_back_1():
     assert d3.ease_back == d3.ease_back_in_out
 
+
 def test_back_2():
-    assert abs(d3.ease_back_in(0.0)) ==    0.000000
+    assert abs(d3.ease_back_in(0.0)) == 0.000000
     assert in_delta(d3.ease_back_in(0.1), -0.014314)
     assert in_delta(d3.ease_back_in(0.2), -0.046451)
     assert in_delta(d3.ease_back_in(0.3), -0.080200)
@@ -20,8 +24,10 @@ def test_back_2():
     assert in_delta(d3.ease_back_in(0.9), +0.591172)
     assert d3.ease_back_in(1.0) == +1.000000
 
+
 def test_back_3():
-    assert d3.ease_back_in(.9) == d3.ease_back_in(0.9)
+    assert d3.ease_back_in(0.9) == d3.ease_back_in(0.9)
+
 
 def test_back_4():
     back_out = out(d3.ease_back_in)
@@ -37,8 +43,10 @@ def test_back_4():
     assert in_delta(d3.ease_back_out(0.9), back_out(0.9))
     assert d3.ease_back_out(1.0) == back_out(1.0)
 
+
 def test_back_5():
-    assert d3.ease_back_out(.9) == d3.ease_back_out(0.9)
+    assert d3.ease_back_out(0.9) == d3.ease_back_out(0.9)
+
 
 def test_back_6():
     back_in_out = in_out(d3.ease_back_in)
@@ -54,5 +62,6 @@ def test_back_6():
     assert in_delta(d3.ease_back_in_out(0.9), back_in_out(0.9))
     assert d3.ease_back_in_out(1.0) == back_in_out(1.0)
 
+
 def test_back_7():
-    assert d3.ease_back_in_out(.9) == d3.ease_back_in_out(0.9)
+    assert d3.ease_back_in_out(0.9) == d3.ease_back_in_out(0.9)

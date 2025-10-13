@@ -19,6 +19,7 @@ def ease_cubic_in(t: float) -> float:
     """
     return t * t * t
 
+
 def ease_cubic_out(t: float) -> float:
     """
     Reverse cubic easing; equivalent to :code:`1 - d3.ease_cubic_in(1 - t)`.
@@ -41,6 +42,7 @@ def ease_cubic_out(t: float) -> float:
     """
     t -= 1
     return t * t * t + 1
+
 
 def ease_cubic_in_out(t: float) -> float:
     """

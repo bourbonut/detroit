@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_cubic_1():
     assert d3.ease_cubic == d3.ease_cubic_in_out
+
 
 def test_cubic_2():
     assert d3.ease_cubic_in(0.0) == 0.000
@@ -20,8 +24,10 @@ def test_cubic_2():
     assert in_delta(d3.ease_cubic_in(0.9), 0.729)
     assert d3.ease_cubic_in(1.0) == 1.000
 
+
 def test_cubic_3():
-    assert d3.ease_cubic_in(.9) == d3.ease_cubic_in(0.9)
+    assert d3.ease_cubic_in(0.9) == d3.ease_cubic_in(0.9)
+
 
 def test_cubic_4():
     cubic_out = out(d3.ease_cubic_in)
@@ -37,8 +43,10 @@ def test_cubic_4():
     assert in_delta(d3.ease_cubic_out(0.9), cubic_out(0.9))
     assert d3.ease_cubic_out(1.0) == cubic_out(1.0)
 
+
 def test_cubic_5():
-    assert d3.ease_cubic_out(.9) == d3.ease_cubic_out(0.9)
+    assert d3.ease_cubic_out(0.9) == d3.ease_cubic_out(0.9)
+
 
 def test_cubic_6():
     cubic_in_out = in_out(d3.ease_cubic_in)
@@ -54,5 +62,6 @@ def test_cubic_6():
     assert in_delta(d3.ease_cubic_in_out(0.9), cubic_in_out(0.9))
     assert d3.ease_cubic_in_out(1.0) == cubic_in_out(1.0)
 
+
 def test_cubic_7():
-    assert d3.ease_cubic_in_out(.9) == d3.ease_cubic_in_out(0.9)
+    assert d3.ease_cubic_in_out(0.9) == d3.ease_cubic_in_out(0.9)

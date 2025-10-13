@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_bounce_1():
     assert d3.ease_bounce == d3.ease_bounce_out
+
 
 def test_bounce_2():
     assert d3.ease_bounce_in(0.0) == 0.000000
@@ -20,8 +24,10 @@ def test_bounce_2():
     assert in_delta(d3.ease_bounce_in(0.9), 0.924375)
     assert d3.ease_bounce_in(1.0) == 1.000000
 
+
 def test_bounce_3():
-    assert d3.ease_bounce_in(.9) == d3.ease_bounce_in(0.9)
+    assert d3.ease_bounce_in(0.9) == d3.ease_bounce_in(0.9)
+
 
 def test_bounce_4():
     bounce_out = out(d3.ease_bounce_in)
@@ -37,8 +43,10 @@ def test_bounce_4():
     assert in_delta(d3.ease_bounce_out(0.9), bounce_out(0.9))
     assert d3.ease_bounce_out(1.0) == bounce_out(1.0)
 
+
 def test_bounce_5():
-    assert d3.ease_bounce_out(.9) == d3.ease_bounce_out(0.9)
+    assert d3.ease_bounce_out(0.9) == d3.ease_bounce_out(0.9)
+
 
 def test_bounce_6():
     bounce_in_out = in_out(d3.ease_bounce_in)
@@ -54,5 +62,6 @@ def test_bounce_6():
     assert in_delta(d3.ease_bounce_in_out(0.9), bounce_in_out(0.9))
     assert d3.ease_bounce_in_out(1.0) == bounce_in_out(1.0)
 
+
 def test_bounce_7():
-    assert d3.ease_bounce_in_out(.9) == d3.ease_bounce_in_out(0.9)
+    assert d3.ease_bounce_in_out(0.9) == d3.ease_bounce_in_out(0.9)

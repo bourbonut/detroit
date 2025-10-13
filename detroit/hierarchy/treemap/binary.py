@@ -1,5 +1,6 @@
 from ..hierarchy import Node
 
+
 def binary(parent: Node, x0: float, y0: float, x1: float, y1: float):
     nodes = parent.children
     n = len(nodes)
@@ -30,7 +31,6 @@ def binary(parent: Node, x0: float, y0: float, x1: float, y1: float):
                 k = mid + 1
             else:
                 hi = mid
-
 
         if (value_target - sums[k - 1]) < (sums[k] - value_target) and i + 1 < k:
             k -= 1

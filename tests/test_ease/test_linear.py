@@ -1,7 +1,9 @@
 import detroit as d3
 
+
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
+
 
 def test_linear_1():
     assert d3.ease_linear(0.0) == 0.0
@@ -16,5 +18,6 @@ def test_linear_1():
     assert in_delta(d3.ease_linear(0.9), 0.9)
     assert d3.ease_linear(1.0) == 1.0
 
+
 def test_linear_2():
-    assert d3.ease_linear(.9) == d3.ease_linear(0.9)
+    assert d3.ease_linear(0.9) == d3.ease_linear(0.9)

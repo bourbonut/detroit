@@ -1,5 +1,6 @@
-import detroit as d3
 from math import inf, sqrt
+
+import detroit as d3
 
 SQRT2 = sqrt(2)
 

@@ -1,12 +1,16 @@
+from math import sqrt
+
+import pytest
+
 import detroit as d3
 from detroit.hierarchy.pack.enclose import Circle
-from math import sqrt
-import pytest
+
 
 def swap(array, i, j):
     array[i], array[j] = array[j], array[i]
 
-def permute(array, f, n = None):
+
+def permute(array, f, n=None):
     if n is None:
         n = len(array)
     if n == 1:
@@ -17,15 +21,14 @@ def permute(array, f, n = None):
         swap(array, 0 if n & 1 else i, n - 1)
     permute(array, f, n - 1)
 
+
 def circle_value(value):
-    return Circle.from_other(
-        {'r': sqrt(value)}
-    )
+    return Circle.from_other({"r": sqrt(value)})
+
 
 def circle_radius(radius):
-    return Circle.from_other(
-        {'r': radius}
-    )
+    return Circle.from_other({"r": radius})
+
 
 def intersects_any(circles):
     n = len(circles)
@@ -36,24 +39,28 @@ def intersects_any(circles):
                 return True
     return False
 
+
 def intersects(a, b):
     dr = a.r + b.r - 1e-6
     dx = b.x - a.x
     dy = b.y - a.y
     return dr > 0 and dr * dr > dx * dx + dy * dy
 
+
 @pytest.mark.parametrize(
-    "radii", [
+    "radii",
+    [
         [100, 200, 500, 70, 4],
         [3, 30, 50, 400, 600],
         [1, 1, 3, 30, 50, 400, 600],
-    ]
+    ],
 )
 def test_siblings_1(radii):
     permute(
         [circle_value(x) for x in radii],
-        lambda p: not (intersects_any(d3.pack_siblings(p)) and [c.r for c in p])
+        lambda p: not (intersects_any(d3.pack_siblings(p)) and [c.r for c in p]),
     )
+
 
 @pytest.mark.parametrize(
     "circle_func, radii",
@@ -96,7 +103,7 @@ def test_siblings_1(radii):
                 33559,
                 234,
                 4207,
-            ]
+            ],
         ),
         (
             circle_radius,
@@ -146,7 +153,7 @@ def test_siblings_1(radii):
                 2.4616388562274896,
                 0.5444633747829343,
                 9.005740508584667,
-            ]
+            ],
         ),
         (
             circle_radius,
@@ -177,29 +184,31 @@ def test_siblings_1(radii):
                 1.0716990115071823,
                 0.31686823341701664,
                 2.8766442376551415e-7,
-            ]
-        )
-    ]
+            ],
+        ),
+    ],
 )
 def test_siblings_2(circle_func, radii):
     assert intersects_any(d3.pack_siblings([circle_func(x) for x in radii])) is False
 
+
 def test_siblings_3():
     assert [
         {"r": c.r, "x": c.x, "y": c.y}
-        for c in d3.pack_siblings([circle_radius(x) for x in [1e+11, 1, 1]])
+        for c in d3.pack_siblings([circle_radius(x) for x in [1e11, 1, 1]])
     ] == [
-        {"r": 1e+11, "x": 0, "y": 0},
-        {"r": 1, "x": 1e+11 + 1, "y": 0},
-        {"r": 1, "x": 1e+11 + 1, "y": 2}
+        {"r": 1e11, "x": 0, "y": 0},
+        {"r": 1, "x": 1e11 + 1, "y": 0},
+        {"r": 1, "x": 1e11 + 1, "y": 2},
     ]
+
 
 def test_siblings_4():
     assert [
         {"r": c.r, "x": c.x, "y": c.y}
-        for c in d3.pack_siblings([circle_radius(x) for x in [1e+16, 1, 1]])
+        for c in d3.pack_siblings([circle_radius(x) for x in [1e16, 1, 1]])
     ] == [
-        {"r": 1e+16, "x": 0, "y": 0},
-        {"r": 1, "x": 1e+16 + 1, "y": 0},
-        {"r": 1, "x": 1e+16 + 1, "y": 2}
+        {"r": 1e16, "x": 0, "y": 0},
+        {"r": 1, "x": 1e16 + 1, "y": 0},
+        {"r": 1, "x": 1e16 + 1, "y": 2},
     ]

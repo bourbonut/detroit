@@ -1,13 +1,14 @@
 from collections.abc import Callable
 from typing import TypeVar
+
 from .hierarchy import Node
-from .treemap.round import round_node
 from .treemap.dice import dice
+from .treemap.round import round_node
 
 TPartition = TypeVar("Partition", bound="Partition")
 
-class Partition:
 
+class Partition:
     def __init__(self):
         self._dx = 1
         self._dy = 1
@@ -47,6 +48,7 @@ class Partition:
             node.y0 = y0
             node.x1 = x1
             node.y1 = y1
+
         return local_function
 
     def set_round(self, round: bool) -> TPartition:
@@ -70,6 +72,7 @@ class Partition:
 
     def get_padding(self) -> float:
         return self._padding
+
 
 def partition() -> Partition:
     return Partition()

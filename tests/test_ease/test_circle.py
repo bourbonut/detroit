@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_circle_1():
     assert d3.ease_circle == d3.ease_circle_in_out
+
 
 def test_circle_2():
     assert d3.ease_circle_in(0.0) == 0.000000
@@ -20,8 +24,10 @@ def test_circle_2():
     assert in_delta(d3.ease_circle_in(0.9), 0.564110)
     assert d3.ease_circle_in(1.0) == 1.000000
 
+
 def test_circle_3():
-    assert d3.ease_circle_in(.9) == d3.ease_circle_in(0.9)
+    assert d3.ease_circle_in(0.9) == d3.ease_circle_in(0.9)
+
 
 def test_circle_4():
     circle_out = out(d3.ease_circle_in)
@@ -37,8 +43,10 @@ def test_circle_4():
     assert in_delta(d3.ease_circle_out(0.9), circle_out(0.9))
     assert d3.ease_circle_out(1.0) == circle_out(1.0)
 
+
 def test_circle_5():
-    assert d3.ease_circle_out(.9) == d3.ease_circle_out(0.9)
+    assert d3.ease_circle_out(0.9) == d3.ease_circle_out(0.9)
+
 
 def test_circle_6():
     circle_in_out = in_out(d3.ease_circle_in)
@@ -54,5 +62,6 @@ def test_circle_6():
     assert in_delta(d3.ease_circle_in_out(0.9), circle_in_out(0.9))
     assert d3.ease_circle_in_out(1.0) == circle_in_out(1.0)
 
+
 def test_circle_7():
-    assert d3.ease_circle_in_out(.9) == d3.ease_circle_in_out(0.9)
+    assert d3.ease_circle_in_out(0.9) == d3.ease_circle_in_out(0.9)

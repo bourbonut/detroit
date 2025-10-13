@@ -1,22 +1,26 @@
 from collections.abc import Callable
-from .lcg import lcg
-from math import pi, sqrt, isnan, cos, sin, inf, nan
+from math import cos, inf, isnan, nan, pi, sin, sqrt
 from typing import TypeVar
-from ..types import SimulationNode, Force
+
+from ..types import Force, SimulationNode
+from .lcg import lcg
 
 TForceSimulation = TypeVar("ForceSimulation", bound="ForceSimulation")
+
 
 def x(d: SimulationNode) -> float:
     return d["x"]
 
+
 def y(d: SimulationNode) -> float:
     return d["y"]
+
 
 INITIAL_RADIUS = 10
 INITIAL_ANGLE = pi * (3 - sqrt(5))
 
-class ForceSimulation:
 
+class ForceSimulation:
     def __init__(self, nodes: list[SimulationNode]):
         self._nodes = nodes
         self._alpha = 1
@@ -27,7 +31,6 @@ class ForceSimulation:
         self._forces = {}
         self._random = lcg()
         self._initialize_nodes()
-
 
     def tick(self, iterations: float | None = None) -> TForceSimulation:
         """
@@ -219,7 +222,7 @@ class ForceSimulation:
     def set_alpha_min(self, alpha_min: float) -> TForceSimulation:
         """
         Sets the minimum alpha to the specified number in the range
-        :math:`[0,1]` and returns this simulation. 
+        :math:`[0,1]` and returns this simulation.
 
         The simulation's internal timer stops when the current alpha is less
         than the minimum alpha. The default alpha decay rate of ~0.0228
@@ -308,7 +311,9 @@ class ForceSimulation:
         self._velocity_decay = 1 - velocity_decay
         return self
 
-    def set_random_source(self, random_source: Callable[[None], float]) -> TForceSimulation:
+    def set_random_source(
+        self, random_source: Callable[[None], float]
+    ) -> TForceSimulation:
         """
         Sets the function used to generate random numbers; this should be a
         function that returns a number between 0 (inclusive) and 1 (exclusive).
@@ -370,7 +375,7 @@ class ForceSimulation:
 
     def get_velocity_decay(self) -> float:
         return 1 - self._velocity_decay
-    
+
     def get_random_source(self) -> Callable[[None], float]:
         return self._random
 
@@ -379,6 +384,7 @@ class ForceSimulation:
 
     def get_nodes(self) -> list[SimulationNode]:
         return self._nodes
+
 
 def force_simulation(nodes: list[SimulationNode] | None = None) -> ForceSimulation:
     """

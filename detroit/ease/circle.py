@@ -1,5 +1,6 @@
 from math import sqrt
 
+
 def ease_circle_in(t: float) -> float:
     """
     Circular easing.
@@ -20,6 +21,7 @@ def ease_circle_in(t: float) -> float:
     0.020204102886728803
     """
     return 1 - sqrt(1 - t * t)
+
 
 def ease_circle_out(t: float) -> float:
     """
@@ -43,6 +45,7 @@ def ease_circle_out(t: float) -> float:
     """
     t -= 1
     return sqrt(1 - t * t)
+
 
 def ease_circle_in_out(t: float) -> float:
     """

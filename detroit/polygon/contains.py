@@ -1,5 +1,6 @@
 from ..types import Point2D
 
+
 def contains(polygon: list[Point2D], point: Point2D) -> bool:
     """
     Returns :code:`True` if and only if the specified point is inside the

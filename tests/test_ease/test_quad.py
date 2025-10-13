@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_quad_1():
     assert d3.ease_quad == d3.ease_quad_in_out
+
 
 def test_quad_2():
     assert d3.ease_quad_in(0.0) == 0.00
@@ -20,8 +24,10 @@ def test_quad_2():
     assert in_delta(d3.ease_quad_in(0.9), 0.81)
     assert d3.ease_quad_in(1.0) == 1.00
 
+
 def test_quad_3():
-    assert d3.ease_quad_in(.9) == d3.ease_quad_in(0.9)
+    assert d3.ease_quad_in(0.9) == d3.ease_quad_in(0.9)
+
 
 def test_quad_4():
     quad_out = out(d3.ease_quad_in)
@@ -37,8 +43,10 @@ def test_quad_4():
     assert in_delta(d3.ease_quad_out(0.9), quad_out(0.9))
     assert in_delta(d3.ease_quad_out(1.0), quad_out(1.0))
 
+
 def test_quad_5():
-    assert d3.ease_quad_out(.9) == d3.ease_quad_out(0.9)
+    assert d3.ease_quad_out(0.9) == d3.ease_quad_out(0.9)
+
 
 def test_quad_6():
     quad_in_out = in_out(d3.ease_quad_in)
@@ -54,5 +62,6 @@ def test_quad_6():
     assert in_delta(d3.ease_quad_in_out(0.9), quad_in_out(0.9))
     assert in_delta(d3.ease_quad_in_out(1.0), quad_in_out(1.0))
 
+
 def test_quad_7():
-    assert d3.ease_quad_in_out(.9) == d3.ease_quad_in_out(0.9)
+    assert d3.ease_quad_in_out(0.9) == d3.ease_quad_in_out(0.9)

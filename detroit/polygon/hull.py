@@ -1,6 +1,8 @@
+from functools import cmp_to_key
+
 from ..types import Point2D
 from .cross import cross
-from functools import cmp_to_key
+
 
 def lexicographic_order(a: Point2D, b: Point2D) -> float:
     return a[0] - b[0] or a[1] - b[1]
@@ -11,12 +13,17 @@ def compute_upper_hull_indexes(points: list[Point2D]) -> list[int]:
     size = 2
 
     for i in range(2, len(points)):
-        while size > 1 and cross(points[indexes[size - 2]], points[indexes[size - 1]], points[i]) <= 0:
+        while (
+            size > 1
+            and cross(points[indexes[size - 2]], points[indexes[size - 1]], points[i])
+            <= 0
+        ):
             size -= 1
         indexes[size] = i
         size += 1
 
     return indexes[:size]
+
 
 def hull(points: list[Point2D]) -> list[Point2D] | None:
     """
@@ -37,7 +44,7 @@ def hull(points: list[Point2D]) -> list[Point2D] | None:
     list[Point2D] | None
         Convex hull or :code:`None` if :code:`points` has fewer than three
         elements.
-    
+
     Examples
     --------
     >>> points = [
@@ -62,7 +69,7 @@ def hull(points: list[Point2D]) -> list[Point2D] | None:
 
     sorted_points = [None] * n
     flipped_points = [None] * n
-    
+
     for i, point in enumerate(points):
         sorted_points[i] = [point[0], point[1], i]
 

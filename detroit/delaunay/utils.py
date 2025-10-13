@@ -2,6 +2,7 @@ EPSILON = 1.1102230246251565e-16
 SPLITTER = 134217729
 RESULTERRBOUND = (3 + 8 * EPSILON) * EPSILON
 
+
 def sum_zerolim(elen, e, flen, f, h):
     enow = e[0]
     fnow = f[0]
@@ -79,8 +80,10 @@ def sum_zerolim(elen, e, flen, f, h):
 
     return hindex
 
+
 def sum_three(alen, a, blen, b, clen, c, tmp, out):
     return sum_zerolim(sum_zerolim(alen, a, blen, b, tmp), tmp, clen, c, out)
+
 
 def scale(elen, e, b, h):
     c = SPLITTER * b
@@ -119,10 +122,12 @@ def scale(elen, e, b, h):
         hindex += 1
     return hindex
 
+
 def negate(elen, e):
     for i in range(elen):
         e[i] = -e[i]
     return elen
+
 
 def estimate(elen, e):
     Q = e[0]

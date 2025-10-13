@@ -2,8 +2,8 @@ from io import StringIO
 
 EPSILON = 1e-6
 
-class Path:
 
+class Path:
     def __init__(self):
         self._x0 = None
         self._y0 = None

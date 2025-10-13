@@ -6,6 +6,7 @@ TPolyInOut = TypeVar("PolyInOut", bound="PolyInOut")
 
 EXPONENT = 3
 
+
 class PolyIn:
     """
     Polynomial easing; raises t to the specified exponent. If the
@@ -29,6 +30,7 @@ class PolyIn:
     >>> d3.ease_poly_in.exponent(5)(0.2)
     0.0003200000000000001
     """
+
     def __init__(self, exponent: float):
         self._exponent = exponent
 
@@ -73,7 +75,9 @@ class PolyIn:
         """
         return PolyIn(exponent)
 
+
 ease_poly_in = PolyIn(EXPONENT)
+
 
 class PolyOut:
     """
@@ -98,6 +102,7 @@ class PolyOut:
     >>> d3.ease_poly_out.exponent(5)(0.2)
     0.6723199999999999
     """
+
     def __init__(self, exponent: float):
         self._exponent = exponent
 
@@ -143,7 +148,9 @@ class PolyOut:
         """
         return PolyOut(exponent)
 
+
 ease_poly_out = PolyOut(EXPONENT)
+
 
 class PolyInOut:
     """
@@ -170,6 +177,7 @@ class PolyInOut:
     >>> d3.ease_poly_in_out.exponent(5)(0.2)
     0.005120000000000001
     """
+
     def __init__(self, exponent: float):
         self._exponent = exponent
 
@@ -219,5 +227,6 @@ class PolyInOut:
             New easing function
         """
         return PolyInOut(exponent)
+
 
 ease_poly_in_out = PolyInOut(EXPONENT)

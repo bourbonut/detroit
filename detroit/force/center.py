@@ -1,8 +1,10 @@
 from collections.abc import Callable
 from typing import TypeVar
+
 from ..types import SimulationNode
 
 TForceCenter = TypeVar("ForceCenter", bound="ForceCenter")
+
 
 class ForceCenter:
     def __init__(self, x: float, y: float):
@@ -93,6 +95,7 @@ class ForceCenter:
 
     def get_strength(self) -> float:
         return self._strength
+
 
 def force_center(x: float | None = None, y: float | None = None) -> ForceCenter:
     """

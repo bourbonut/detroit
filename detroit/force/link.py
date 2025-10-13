@@ -11,23 +11,33 @@
 # add a fifth element (of type `dict`) in `quad` objects in order to *mimic*
 # the same behavior.
 from collections.abc import Callable
-from typing import TypeVar
 from math import sqrt
+from typing import TypeVar
+
+from ..array import argpass
+from ..types import (
+    SimulationLink,
+    SimulationLinkFunction,
+    SimulationNode,
+    SimulationNodeFunction,
+    T,
+)
 from .constant import constant
 from .jiggle import jiggle
-from ..array import argpass
-from ..types import T, SimulationNode, SimulationLink, SimulationNodeFunction, SimulationLinkFunction
 
 TForceLink = TypeVar("ForceLink", bound="ForceLink")
 
+
 def index(d: SimulationNode) -> int:
     return d["index"]
+
 
 def find(node_by_id: dict[T, SimulationNode], node_id: T) -> SimulationNode:
     node = node_by_id.get(node_id)
     if node is None:
         raise RuntimeError(f"Node not found: {node_id}")
     return node
+
 
 class ForceLink:
     def __init__(self, links: list[SimulationLink]):
@@ -43,8 +53,9 @@ class ForceLink:
         self._random = None
         self._iterations = 1
 
-
-    def _default_strength(self, link: SimulationLink, i: int, links: list[SimulationLink]) -> float:
+    def _default_strength(
+        self, link: SimulationLink, i: int, links: list[SimulationLink]
+    ) -> float:
         return 1 / min(
             self._count[link["source"]["index"]],
             self._count[link["target"]["index"]],
@@ -56,11 +67,17 @@ class ForceLink:
                 source = link["source"]
                 target = link["target"]
 
-                x = (target["x"] + target["vx"] - source["x"] - source["vx"]) or jiggle(self._random)
-                y = (target["y"] + target["vy"] - source["y"] - source["vy"]) or jiggle(self._random)
+                x = (target["x"] + target["vx"] - source["x"] - source["vx"]) or jiggle(
+                    self._random
+                )
+                y = (target["y"] + target["vy"] - source["y"] - source["vy"]) or jiggle(
+                    self._random
+                )
 
                 length = sqrt(x * x + y * y)
-                length = (length - self._distances[i]) / length * alpha * self._strengths[i]
+                length = (
+                    (length - self._distances[i]) / length * alpha * self._strengths[i]
+                )
 
                 x *= length
                 y *= length
@@ -78,23 +95,29 @@ class ForceLink:
             return
 
         node_by_id = {
-            self._id(node, i, self._nodes): node
-            for i, node in enumerate(self._nodes)
+            self._id(node, i, self._nodes): node for i, node in enumerate(self._nodes)
         }
-        
+
         self._count = [None] * len(self._nodes)
         for i, link in enumerate(self._links):
             link["index"] = i
-            if not isinstance(link["source"], dict): # TODO: check real type
+            if not isinstance(link["source"], dict):  # TODO: check real type
                 link["source"] = find(node_by_id, link["source"])
-            if not isinstance(link["target"], dict): # TODO: check real type
+            if not isinstance(link["target"], dict):  # TODO: check real type
                 link["target"] = find(node_by_id, link["target"])
-            self._count[link["source"]["index"]] = (self._count[link["source"]["index"]] or 0) + 1
-            self._count[link["target"]["index"]] = (self._count[link["target"]["index"]] or 0) + 1
+            self._count[link["source"]["index"]] = (
+                self._count[link["source"]["index"]] or 0
+            ) + 1
+            self._count[link["target"]["index"]] = (
+                self._count[link["target"]["index"]] or 0
+            ) + 1
 
         self._bias = [None] * len(self._links)
         for i, link in enumerate(self._links):
-            self._bias[i] = self._count[link["source"]["index"]] / (self._count[link["source"]["index"]] + self._count[link["target"]["index"]])
+            self._bias[i] = self._count[link["source"]["index"]] / (
+                self._count[link["source"]["index"]]
+                + self._count[link["target"]["index"]]
+            )
 
         self._strengths = [None] * len(self._links)
         self._initialize_strength()
@@ -104,7 +127,7 @@ class ForceLink:
     def _initialize_strength(self):
         if self._nodes is None:
             return
-        
+
         for i, link in enumerate(self._links):
             self._strengths[i] = self._strength(link, i, self._links)
 
@@ -191,7 +214,9 @@ class ForceLink:
         self._iterations = iterations
         return self
 
-    def set_strength(self, strength: SimulationLinkFunction[float] | float) -> TForceLink:
+    def set_strength(
+        self, strength: SimulationLinkFunction[float] | float
+    ) -> TForceLink:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each link, and returns this
@@ -221,7 +246,9 @@ class ForceLink:
         self._initialize_strength()
         return self
 
-    def set_distance(self, distance: SimulationNodeFunction[float] | float) -> TForceLink:
+    def set_distance(
+        self, distance: SimulationNodeFunction[float] | float
+    ) -> TForceLink:
         """
         Sets the distance accessor to the specified number or function,
         re-evaluates the distance accessor for each link, and returns this
@@ -265,6 +292,7 @@ class ForceLink:
 
     def get_distance(self) -> SimulationNodeFunction[float]:
         return self._distance
+
 
 def force_link(links: list[SimulationLink] | None = None) -> ForceLink:
     """

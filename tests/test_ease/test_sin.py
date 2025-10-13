@@ -1,11 +1,15 @@
 import detroit as d3
-from .generic import out, in_out
+
+from .generic import in_out, out
+
 
 def in_delta(actual, expected):
     return expected - 1e-6 < actual and actual < expected + 1e-6
 
+
 def test_sin_1():
     assert d3.ease_sin == d3.ease_sin_in_out
+
 
 def test_sin_2():
     assert d3.ease_sin_in(0.0) == 0.000000
@@ -20,8 +24,10 @@ def test_sin_2():
     assert in_delta(d3.ease_sin_in(0.9), 0.843566)
     assert d3.ease_sin_in(1.0) == 1.000000
 
+
 def test_sin_3():
-    assert d3.ease_sin_in(.9) == d3.ease_sin_in(0.9)
+    assert d3.ease_sin_in(0.9) == d3.ease_sin_in(0.9)
+
 
 def test_sin_4():
     sin_out = out(d3.ease_sin_in)
@@ -37,8 +43,10 @@ def test_sin_4():
     assert in_delta(d3.ease_sin_out(0.9), sin_out(0.9))
     assert in_delta(d3.ease_sin_out(1.0), sin_out(1.0))
 
+
 def test_sin_5():
-    assert d3.ease_sin_out(.9) == d3.ease_sin_out(0.9)
+    assert d3.ease_sin_out(0.9) == d3.ease_sin_out(0.9)
+
 
 def test_sin_6():
     sin_in_out = in_out(d3.ease_sin_in)
@@ -54,5 +62,6 @@ def test_sin_6():
     assert in_delta(d3.ease_sin_in_out(0.9), sin_in_out(0.9))
     assert in_delta(d3.ease_sin_in_out(1.0), sin_in_out(1.0))
 
+
 def test_sin_7():
-    assert d3.ease_sin_in_out(.9) == d3.ease_sin_in_out(0.9)
+    assert d3.ease_sin_in_out(0.9) == d3.ease_sin_in_out(0.9)

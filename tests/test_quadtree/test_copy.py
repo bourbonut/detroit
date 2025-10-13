@@ -1,5 +1,6 @@
 import detroit as d3
 
+
 def test_copy_1():
     q0 = d3.quadtree().add_all([[0, 0], [1, 0], [0, 1], [1, 1]])
     assert q0.copy().get_root() == q0.get_root()

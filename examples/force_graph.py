@@ -14,7 +14,7 @@
 # ]
 # ```
 
-import detroit as  d3
+import detroit as d3
 
 from math import hypot
 from functools import reduce
@@ -56,7 +56,9 @@ height = 600
 types = list(set(map(itemgetter("type"), suits)))
 nodes = [
     {"id": id_}
-    for id_ in reduce(ior, map(lambda link: set((link["source"], link["target"])), suits), set())
+    for id_ in reduce(
+        ior, map(lambda link: set((link["source"], link["target"])), suits), set()
+    )
 ]
 links = suits
 
@@ -110,9 +112,11 @@ link = (
     .attr("marker-end", lambda d: f"url(#arrow-{d['type']})")
 )
 
+
 def link_arc(d):
     r = hypot(d["target"]["x"] - d["source"]["x"], d["target"]["y"] - d["source"]["y"])
     return f"M{d['source']['x']},{d['source']['y']}A{r},{r} 0 0,1 {d['target']['x']},{d['target']['y']}"
+
 
 link.attr("d", link_arc)
 

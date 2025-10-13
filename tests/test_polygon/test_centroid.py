@@ -1,18 +1,23 @@
 import detroit as d3
 
+
 def test_centroid_1():
     assert d3.polygon_centroid([[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]) == [0.5, 0.5]
+
 
 def test_centroid_2():
     assert d3.polygon_centroid([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]) == [0.5, 0.5]
     assert d3.polygon_centroid([[1, 1], [3, 2], [2, 3], [1, 1]]) == [2, 2]
 
+
 def test_centroid_3():
     assert d3.polygon_centroid([[0, 0], [0, 1], [1, 1], [1, 0]]) == [0.5, 0.5]
+
 
 def test_centroid_4():
     assert d3.polygon_centroid([[0, 0], [1, 0], [1, 1], [0, 1]]) == [0.5, 0.5]
     assert d3.polygon_centroid([[1, 1], [3, 2], [2, 3]]) == [2, 2]
+
 
 def test_centroid_5():
     stop = 1e8

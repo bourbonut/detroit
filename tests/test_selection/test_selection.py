@@ -641,17 +641,20 @@ def test_selection_48():
     assert text.style("stroke") == "white"
     assert text.attr("style") == "fill:blue;stroke:white;"
 
+
 def test_selection_49():
     svg = d3.create("svg")
 
     svg.attr("viewBox", [0, 0, 100, 200])
     assert svg.attr("viewBox") == "0 0 100 200"
 
+
 def test_selection_50():
     svg = d3.create("svg")
 
     svg.attr("viewBox", lambda: [0, 0, 100, 200])
     assert svg.attr("viewBox") == "0 0 100 200"
+
 
 def test_selection_51():
     svg = d3.create("svg").append("g").attr("class", "main")
@@ -662,6 +665,7 @@ def test_selection_51():
 
     assert text1.text() == "258"
     assert text2.text() == "284"
+
 
 def test_selection_52():
     d1 = datetime(2001, 1, 1)
@@ -675,6 +679,7 @@ def test_selection_52():
     assert text1.text() == str(d1)
     assert text2.text() == str(d2)
 
+
 def test_selection_53():
     data = ["hello", "world"]
     svg = d3.create("svg")
@@ -685,6 +690,7 @@ def test_selection_53():
     assert len(text_enter1._data.keys() & text_enter2._data.keys()) == 0
     for enter_node1, enter_node2 in zip(text_enter1.nodes(), text_enter2.nodes()):
         assert enter_node1 != enter_node2
+
 
 def test_selection_54():
     data = ["Hello", "world"]
@@ -713,11 +719,13 @@ def test_selection_54():
     assert g1.node().get("class") == "foo bar"
     assert g2.node().get("class") == "bar"
 
+
 def test_selection_55():
     svg = d3.create("svg")
     a = svg.append("a")
     a.attr("xlink:href", "https://www.google.com/")
     assert a.attr("xlink:href") == "https://www.google.com/"
+
 
 def test_selection_56():
     svg = d3.create("svg")

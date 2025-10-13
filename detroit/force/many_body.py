@@ -11,8 +11,8 @@ from .simulation import x, y
 
 TForceManyBody = TypeVar("ForceManyBody", bound="ForceManyBody")
 
-class Apply:
 
+class Apply:
     def __init__(
         self,
         alpha: float,
@@ -30,11 +30,13 @@ class Apply:
         self._random = random
         self._node = None
 
-    def __call__(self, quad: list[dict] | dict, x1: float, y1: float, x2: float, y2: float):
+    def __call__(
+        self, quad: list[dict] | dict, x1: float, y1: float, x2: float, y2: float
+    ):
         value = quad["value"] if isinstance(quad, dict) else quad[4]["value"]
         if not value:
             return True
-    
+
         qx = quad["x"] if isinstance(quad, dict) else quad[4]["x"]
         qy = quad["y"] if isinstance(quad, dict) else quad[4]["y"]
         x = qx - self._node["x"]
@@ -78,8 +80,8 @@ class Apply:
     def update(self, node: SimulationNode):
         self._node = node
 
-class ForceManyBody:
 
+class ForceManyBody:
     def __init__(self):
         self._nodes = None
         self._node = None
@@ -127,7 +129,7 @@ class ForceManyBody:
                     value = q["value"]
                     qx = q["x"]
                     qy = q["y"]
-                else: # fifth element of a quad as a list
+                else:  # fifth element of a quad as a list
                     value = q[4]["value"]
                     qx = q[4]["x"]
                     qy = q[4]["y"]
@@ -159,7 +161,9 @@ class ForceManyBody:
         self._random = random
         self._initialize()
 
-    def set_strength(self, strength: SimulationNodeFunction[float] | float) -> TForceManyBody:
+    def set_strength(
+        self, strength: SimulationNodeFunction[float] | float
+    ) -> TForceManyBody:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each node, and returns this
@@ -204,7 +208,7 @@ class ForceManyBody:
         Parameters
         ----------
         distance_min : float
-            Minimum distance value   
+            Minimum distance value
 
         Returns
         -------
@@ -225,7 +229,7 @@ class ForceManyBody:
         Parameters
         ----------
         distance_max : float
-            Maximum distance value   
+            Maximum distance value
 
         Returns
         -------
@@ -278,6 +282,7 @@ class ForceManyBody:
 
     def get_theta(self) -> float:
         return sqrt(self._theta2)
+
 
 def force_many_body() -> ForceManyBody:
     """

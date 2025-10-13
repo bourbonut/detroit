@@ -36,10 +36,13 @@ cell = (
     .attr("transform", lambda d: f"translate({d.y0}, {d.x0})")
 )
 
+
 def title(node):
     return ".".join((d.data["name"] for d in reversed(node.ancestors())))
 
+
 cell.append("title").text(title)
+
 
 def fill(d):
     if not d.depth:
@@ -47,6 +50,7 @@ def fill(d):
     while d.depth > 1:
         d = d.parent
     return color(d.data["name"])
+
 
 (
     cell.append("rect")
@@ -57,14 +61,13 @@ def fill(d):
 )
 
 text = (
-    cell.filter(lambda d: (d.x1 - d.x0) > 16)
-    .append("text")
-    .attr("x", 4)
-    .attr("y", 13)
+    cell.filter(lambda d: (d.x1 - d.x0) > 16).append("text").attr("x", 4).attr("y", 13)
 )
 
 text.append("tspan").text(lambda d: d.data["name"])
-text.append("tspan").attr("fill-opacity", 0.7).text(lambda d: f" {format_func(d.value)}")
+text.append("tspan").attr("fill-opacity", 0.7).text(
+    lambda d: f" {format_func(d.value)}"
+)
 
 with open("partition.svg", "w") as file:
     file.write(str(svg))

@@ -36,6 +36,7 @@ class Orient:
     def left(text):
         return text.attr("text-anchor", "end").attr("dy", "0.35em").attr("x", -6)
 
+
 delaunay = d3.Delaunay.from_points(data)
 voronoi = delaunay.voronoi([-1, -1, width + 1, height + 1])
 
@@ -49,12 +50,15 @@ svg = (
 
 cells = [[d, voronoi.cell_polygon(i)] for i, d in enumerate(data)]
 
+
 def path(d):
     p, cell = d
     if cell is None:
         return ""
     centroid = d3.polygon_centroid(cell)
     return f"M{centroid[0]},{centroid[1]}L{p[0]},{p[1]}"
+
+
 (
     svg.append("g")
     .attr("stroke", "orange")
@@ -93,6 +97,7 @@ def each(node, d):
             call = Orient.left
     d3.select(node).call(call)
 
+
 def display(d):
     cell = d[1]
     if cell is None:
@@ -101,6 +106,7 @@ def display(d):
         return ""
     else:
         return "none"
+
 
 (
     svg.append("g")

@@ -11,7 +11,7 @@
 # add a fifth element (of type `dict`) in `quad` objects in order to *mimic*
 # the same behavior.
 from collections.abc import Callable
-from math import sqrt, nan
+from math import nan, sqrt
 from typing import TypeVar
 
 from ..array import argpass
@@ -22,14 +22,18 @@ from .jiggle import jiggle
 
 TForceCollide = TypeVar("ForceCollide", bound="ForceCollide")
 
+
 def x(d: dict[str, float]) -> float:
     return d["x"] + d["vx"]
+
 
 def y(d: dict[str, float]) -> float:
     return d["y"] + d["vy"]
 
+
 def quadr(quad: dict | list) -> float:
     return quad["r"] if isinstance(quad, dict) else quad[4]["r"]
+
 
 class Apply:
     def __init__(self, strength: float, random: Callable[[None], float]):
@@ -41,7 +45,9 @@ class Apply:
         self._ri = nan
         self._ri2 = nan
 
-    def __call__(self, quad: dict | list[dict], x0: float, y0: float, x1: float, y1: float):
+    def __call__(
+        self, quad: dict | list[dict], x0: float, y0: float, x1: float, y1: float
+    ):
         rj = quadr(quad)
         r = self._ri + rj
         if isinstance(quad, dict) and quad["data"]:
@@ -63,7 +69,7 @@ class Apply:
                     x *= length
                     y *= length
                     rj *= rj
-                    r = rj / (self._ri2  + rj)
+                    r = rj / (self._ri2 + rj)
                     self._node["vx"] += x * r
                     self._node["vy"] += y * r
 
@@ -71,7 +77,12 @@ class Apply:
                     data["vx"] -= x * r
                     data["vy"] -= y * r
             return
-        return x0 > self._xi + r or x1 < self._xi - r or y0 > self._yi + r or y1 < self._yi - r
+        return (
+            x0 > self._xi + r
+            or x1 < self._xi - r
+            or y0 > self._yi + r
+            or y1 < self._yi - r
+        )
 
     def update(self, node: dict, xi: float, yi: float, ri: float, ri2: float):
         self._node = node
@@ -80,8 +91,8 @@ class Apply:
         self._ri = ri
         self._ri2 = ri2
 
-class ForceCollide:
 
+class ForceCollide:
     def __init__(self, radius: SimulationNodeFunction[float]):
         self._radius = radius
         self._nodes = None
@@ -108,7 +119,7 @@ class ForceCollide:
             return r
         if len(quad) == 4:
             quad.append({"r": 0})
-        else: # it assumes there is a fifth element of type `dict`
+        else:  # it assumes there is a fifth element of type `dict`
             quad[4]["r"] = 0
         for i in range(4):
             if quad[i] and quadr(quad[i]) > quad[4]["r"]:
@@ -174,7 +185,9 @@ class ForceCollide:
         self._strength = strength
         return self
 
-    def set_radius(self, radius: SimulationNodeFunction[float] | float) -> TForceCollide:
+    def set_radius(
+        self, radius: SimulationNodeFunction[float] | float
+    ) -> TForceCollide:
         """
         Sets the radius accessor to the specified number or function,
         re-evaluates the radius accessor for each node, and returns this force.
@@ -218,8 +231,9 @@ class ForceCollide:
     def get_radius(self) -> SimulationNodeFunction[float]:
         return self._radius
 
+
 def force_collide(
-    radius: SimulationNodeFunction[float] | float | None = None
+    radius: SimulationNodeFunction[float] | float | None = None,
 ) -> ForceCollide:
     """
     The collide force treats nodes as circles with a given radius, rather than

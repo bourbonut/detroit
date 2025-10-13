@@ -1,5 +1,6 @@
 from ..types import Point2D
 
+
 def area(polygon: list[Point2D]) -> float:
     """
     Returns the signed area of the specified polygon. If the vertices of the

@@ -7,9 +7,11 @@ theme = "light"
 main_color = "#000000" if theme == "light" else "#ffffff"
 stroke_color = "white" if theme == "light" else "black"
 
+
 # https://docs.python.org/3/library/itertools.html#itertools-recipes
 def flatten(list_of_lists):
     return chain.from_iterable(list_of_lists)
+
 
 # Declare data
 matrix = [
@@ -83,7 +85,7 @@ group_tick = (
     .join("g")
     .attr(
         "transform",
-        lambda d: f"rotate({degrees(d["angle"]) - 90}) translate({outer_radius},0)",
+        lambda d: f"rotate({degrees(d['angle']) - 90}) translate({outer_radius},0)",
     )
 )
 
@@ -95,7 +97,8 @@ group_tick.append("line").attr("stroke", main_color).attr("x2", 6)
     .attr("x", 8)
     .attr("dy", ".35em")
     .attr(
-        "transform", lambda d: "rotate(180) translate(-16)" if d["angle"] > pi else "none"
+        "transform",
+        lambda d: "rotate(180) translate(-16)" if d["angle"] > pi else "none",
     )
     .attr("text-anchor", lambda d: "end" if d["angle"] > pi else "none")
     .attr("fill", main_color)
@@ -106,10 +109,14 @@ group_tick.append("line").attr("stroke", main_color).attr("x2", 6)
 # Add chord values in the SVG containers.
 def alt(d):
     if d.source.index != d.target.index:
-        value = f"\n{d.target.value:,} {names[d.target.index]} → {names[d.source.index]}"
+        value = (
+            f"\n{d.target.value:,} {names[d.target.index]} → {names[d.source.index]}"
+        )
     else:
         value = ""
-    return f"{d.source.value:,} {names[d.source.index]} → {names[d.target.index]}{value}"
+    return (
+        f"{d.source.value:,} {names[d.source.index]} → {names[d.target.index]}{value}"
+    )
 
 
 (

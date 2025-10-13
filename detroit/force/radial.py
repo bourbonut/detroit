@@ -1,11 +1,13 @@
 from collections.abc import Callable
-from math import sqrt, isnan
+from math import isnan, sqrt
 from typing import TypeVar
-from .constant import constant
+
 from ..array import argpass
 from ..types import SimulationNode, SimulationNodeFunction
+from .constant import constant
 
 TForceRadial = TypeVar("ForceRadial", bound="ForceRadial")
+
 
 class ForceRadial:
     def __init__(self, radius: SimulationNodeFunction[float], x: float, y: float):
@@ -41,13 +43,15 @@ class ForceRadial:
         self._nodes = nodes
         self._initialize()
 
-    def set_strength(self, strength: SimulationNodeFunction[float] | float) -> TForceRadial:
+    def set_strength(
+        self, strength: SimulationNodeFunction[float] | float
+    ) -> TForceRadial:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each node, and returns this
         force. The strength determines how much to increment the node's x- and
         y-velocity.
-    
+
         For example, a value of :math:`0.1` indicates that the node should move
         a tenth of the way from its current position to the closest point on
         the circle with each application. Higher values moves nodes more
@@ -116,7 +120,7 @@ class ForceRadial:
         Parameters
         ----------
         x : float
-            X-coordinate of circle center   
+            X-coordinate of circle center
 
         Returns
         -------
@@ -134,7 +138,7 @@ class ForceRadial:
         Parameters
         ----------
         y : float
-            y-coordinate of circle center   
+            y-coordinate of circle center
 
         Returns
         -------
@@ -155,6 +159,7 @@ class ForceRadial:
 
     def get_y(self) -> float:
         return self._y
+
 
 def force_radial(
     radius: SimulationNodeFunction[float] | float,

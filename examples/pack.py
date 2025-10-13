@@ -9,18 +9,22 @@ URL = "https://static.observableusercontent.com/files/e65374209781891f37dea1e7a6
 
 flare = json.loads(requests.get(URL).content)
 
+
 def label(d, n):
     return "\n".join(re.split(r"(?=[A-Z][a-z])", d["name"]) + [str(n.value)])
 
+
 def title(d, n):
-    names = '.'.join((node.data['name'] for node in reversed(n.ancestors())))
+    names = ".".join((node.data["name"] for node in reversed(n.ancestors())))
     return f"{names}\n{n.value}"
+
 
 def link(d, n):
     p1 = "tree" if n.children else "blob"
-    p2 = '/'.join((node.data['name'] for node in reversed(n.ancestors())))
+    p2 = "/".join((node.data["name"] for node in reversed(n.ancestors())))
     p3 = "" if n.children else ".as"
     return f"https://github.com/prefuse/Flare/{p1}/master/flare/src/{p2}{p3}"
+
 
 width = 1152
 height = 1152
@@ -37,11 +41,7 @@ titles = [title(d.data, d) for d in descendants]
 
 root.sort(lambda d: -d.value)
 
-(
-    d3.pack()
-    .set_size([width - 2, height - 2])
-    .set_padding(3)
-)(root)
+(d3.pack().set_size([width - 2, height - 2]).set_padding(3))(root)
 
 svg = (
     d3.create("svg")
@@ -73,7 +73,9 @@ node = (
 node.append("title").text(lambda d, i: titles[i])
 
 uid = f"O-{uuid4().hex[:16]}"
-leaf = node.filter(lambda d: not d.children and d.r > 10 and labels[d.index] is not None)
+leaf = node.filter(
+    lambda d: not d.children and d.r > 10 and labels[d.index] is not None
+)
 (
     leaf.append("clipPath")
     .attr("id", lambda d: f"{uid}-clip-{d.index}")

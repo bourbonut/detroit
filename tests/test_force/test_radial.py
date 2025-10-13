@@ -1,6 +1,9 @@
-import detroit as d3
-from .expected import expected_radial
 import pytest
+
+import detroit as d3
+
+from .expected import expected_radial
+
 
 def node_equal(actual, expected, delta=1e-6):
     return (
@@ -12,6 +15,7 @@ def node_equal(actual, expected, delta=1e-6):
         and abs(actual["y"] - expected["y"]) < delta
         and abs(actual["vy"] - expected["vy"]) < delta
     )
+
 
 @pytest.fixture
 def data():
@@ -42,17 +46,13 @@ def data():
         ],
     }
 
+
 def test_radial_1(data):
     expected = expected_radial()
     f = (
         d3.force_simulation(data["nodes"])
         .set_force(
-            "link",
-            (
-                d3.force_link()
-                .set_id(lambda d: d["id"])
-                .set_links(data["links"])
-            )
+            "link", (d3.force_link().set_id(lambda d: d["id"]).set_links(data["links"]))
         )
         .set_force("radial", d3.force_radial(10))
     )

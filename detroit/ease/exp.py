@@ -1,5 +1,6 @@
 from .tqmt import tqmt
 
+
 def ease_exp_in(t: float) -> float:
     """
     Exponential easing; raises 2 to the exponent :math:`10 \\times (t - 1)`.
@@ -20,6 +21,7 @@ def ease_exp_in(t: float) -> float:
     0.002932551319648094
     """
     return tqmt(1 - t)
+
 
 def ease_exp_out(t: float) -> float:
     """
@@ -42,6 +44,7 @@ def ease_exp_out(t: float) -> float:
     0.750733137829912
     """
     return 1 - tqmt(t)
+
 
 def ease_exp_in_out(t: float) -> float:
     """
