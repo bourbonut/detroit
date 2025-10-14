@@ -11,5 +11,5 @@ class Polygon:
     def line_to(self, x: float, y: float):
         self._values.append([x, y])
 
-    def value(self) -> list[dict[str, float]] | None:
+    def value(self) -> list[tuple[float, float]] | None:
         return self._values or None

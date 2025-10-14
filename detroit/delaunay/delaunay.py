@@ -5,6 +5,7 @@ from typing import TypeVar
 
 from ..array import argpass
 from ..types import T
+from .context import Context
 from .delaunator import Delaunator
 from .path import Path
 from .polygon import Polygon
@@ -15,11 +16,11 @@ TDelaunay = TypeVar("Delaunay", bound="Delaunay")
 TAU = 2 * pi
 
 
-def point_x(p):
+def point_x(p: tuple[float, float]) -> float:
     return p[0]
 
 
-def point_y(p):
+def point_y(p: tuple[float, float]) -> float:
     return p[1]
 
 
@@ -39,11 +40,52 @@ def collinear(d: Delaunator) -> bool:
 
 
 class Delaunay:
+    """
+    Delaunay triangulation for the given flat array :math:`[x_0, y_0, x_1, y_1,
+    \\ldots]` of points.
+
+    Parameters
+    ----------
+    points : list[float]
+        The coordinates of the points as an array :math:`[x_0, y_0, x_1, y_1,
+        \\ldots]`.
+
+    Attributes
+    ----------
+    inedges : list[int]
+        The incoming halfedge indexes :math:`[e_0, e_1, e_2, \\ldots]`. For
+        each point :code:`i`, :code:`inedges[i]` is the halfedge index
+        :code:`e` of an incoming halfedge. For coincident points, the halfedge
+        index is :code:`-1`; for points on the convex hull, the incoming
+        halfedge is on the convex hull; for other points, the choice of
+        incoming halfedge is arbitrary. The inedges table can be used to
+        traverse the Delaunay triangulation.
+    points : list[float]
+        The coordinates of the points as an array :math:`[x_0, y_0, x_1, y_1,
+        \\ldots]`.
+    halfedges : list[int]
+        The halfedge indexes as an Int32Array :math:`[j_0, j_1, \\ldots]`. For
+        each index :math:`0 \\le i \\lt \\text{halfedges.length}`, there is a
+        halfedge from triangle vertex :code:`j = halfedges[i]` to triangle
+        vertex :code:`i`. Equivalently, this means that triangle
+        :math:`\\floor{i / 3}` is adjacent to triangle :math:`\\floor{j / 3}`.
+        If j is negative, then triangle :math:`\\floor{i / 3}` is an exterior
+        triangle on the convex hull.
+    hull : list[int]
+        A list of point indexes that form the convex hull in counterclockwise
+        order. If the points are collinear, returns them ordered.
+    triangles : list[int]
+        The triangle vertex indexes :math:`[i_0, j_0, k_0, i_1, j_1, k_1,
+        \\ldots]`. Each contiguous triplet of indexes :code:`i`, :code:`j`,
+        :code:`k` forms a counterclockwise triangle. The coordinates of the
+        triangle's points can be found by going through
+        :code:`delaunay.points`.
+    """
     def __init__(self, points: list[float]):
         self._delaunator = Delaunator(points)
-        self._hull_index = [None] * (len(points) // 2)
+        self._hull_index = [0] * (len(points) // 2)
 
-        self.inedges = [None] * (len(points) // 2)
+        self.inedges = [0] * (len(points) // 2)
         self.points = self._delaunator.coords
 
         self.collinear = None
@@ -60,6 +102,26 @@ class Delaunay:
         fx: Callable[[T, int, list[T]], float] = point_x,
         fy: Callable[[T, int, list[T]], float] = point_y,
     ) -> TDelaunay:
+        """
+        Returns the Delaunay triangulation for the given array or iterable of
+        points. If :code:`fx` and :code:`fy` are not specified, then points is
+        assumed to be an array of two-element arrays of numbers: :math:`[[x_0,
+        y_0], [x_1, y_1], \\ldots]`.
+
+        Parameters
+        ----------
+        points : list[T]
+            List of points
+        fx : Callable[[T, int, list[T]], float]
+            X-coordinate accessor
+        fy : Callable[[T, int, list[T]], float]
+            Y-coordinate accessor
+
+        Returns
+        -------
+        Delaunay
+            Delaunay object
+        """
         n = len(points)
         array = [None] * (n * 2)
         fx = argpass(fx)
@@ -70,7 +132,16 @@ class Delaunay:
             array[i * 2 + 1] = fy(p, i, points)
         return cls(array)
 
-    def update(self):
+    def update(self) -> TDelaunay:
+        """
+        Recomputes the triangulation after the points have been modified
+        in-place.
+
+        Returns
+        -------
+        Delaunay
+            Itself
+        """
         self._delaunator.update()
         self._initialize()
         return self
@@ -124,9 +195,39 @@ class Delaunay:
     def voronoi(
         self, bounds: tuple[float, float, float, float] | None = None
     ) -> Voronoi:
+        """
+        Returns the Voronoi diagram for the given Delaunay triangulation. When
+        rendering, the diagram will be clipped to the specified :code:`bounds =
+        [xmin, ymin, xmax, ymax]`.
+
+        Parameters
+        ----------
+        bounds : tuple[float, float, float, float] | None
+            :code:`[xmin, ymin, xmax, ymax]` values
+            
+        Returns
+        -------
+        Voronoi
+            Voronoi object
+        """
         return Voronoi(self, bounds)
 
     def neighbors(self, i: int) -> Iterator[int]:
+        """
+        Returns an iterable over the indexes of the neighboring points to the
+        specified point :code:`i`. The iterable is empty if :code:`i` is a
+        coincident point.
+
+        Parameters
+        ----------
+        i : int
+            Point index
+
+        Returns
+        -------
+        Iterator[int]
+            Indexes of the neighboring points
+        """
         inedges = self.inedges
         hull = self.hull
         halfedges = self.halfedges
@@ -165,6 +266,25 @@ class Delaunay:
                 break
 
     def find(self, x: float, y: float, i: int = 0) -> int:
+        """
+        Returns the index of the input point that is closest to the specified
+        point :math:`(x, y)`. The search is started at the specified point
+        :code:`i`. If :code:`i` is not specified, it defaults to zero.
+
+        Parameters
+        ----------
+        x : float
+            X-coordinate point
+        y : float
+            Y-coordinate point
+        i : int
+            Starting point index
+
+        Returns
+        -------
+        int
+            Index of the input point
+        """
         if isnan(x) or isnan(y):
             return -1
 
@@ -212,7 +332,22 @@ class Delaunay:
                 break
         return c
 
-    def render(self, context=None) -> str | None:
+    def render(self, context: Context | None = None) -> str | None:
+        """
+        Renders the edges of the Delaunay triangulation to the specified
+        context. If a :code:`context` is not specified, an SVG path string is
+        returned instead.
+
+        Parameters
+        ----------
+        context : Context | None
+            Context object
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if context is None:
             buffer = context = Path()
         else:
@@ -233,7 +368,29 @@ class Delaunay:
         self.render_hull(context)
         return None if buffer is None else str(buffer)
 
-    def render_points(self, context=None, r: float | None = None) -> str | None:
+    def render_points(
+        self,
+        context: Context | None = None,
+        r: float | None = None,
+    ) -> str | None:
+        """
+        Renders the input points of the Delaunay triangulation to the specified
+        context as circles with the specified radius. If :code:`radius` is not
+        specified, it defaults to 2. If a :code:`context` is not specified, an
+        SVG path string is returned instead.
+
+        Parameters
+        ----------
+        context : Context | None
+            Context object
+        r : float | None
+            Radius value
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if r is None and (
             context is None
             or not (
@@ -260,7 +417,22 @@ class Delaunay:
 
         return None if buffer is None else str(buffer)
 
-    def render_hull(self, context=None):
+    def render_hull(self, context: Context | None = None) -> str | None:
+        """
+        Renders the convex hull of the Delaunay triangulation to the specified
+        context. If a :code:`context` is not specified, an SVG path string is
+        returned instead.
+
+        Parameters
+        ----------
+        context : Context | None
+            Context object
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if context is None:
             buffer = context = Path()
         else:
@@ -277,12 +449,38 @@ class Delaunay:
         context.close_path()
         return None if buffer is None else str(buffer)
 
-    def hull_polygon(self) -> list[dict[str, float]] | None:
+    def hull_polygon(self) -> list[tuple[float, float]] | None:
+        """
+        Returns the closed polygon :math:`[[x_0, y_0], [x_1, y_1], \\ldots,
+        [x_0, y_0]]` representing the convex hull.
+
+        Returns
+        -------
+        list[tuple[float, float]] | None
+            Closed polygon
+        """
         polygon = Polygon()
         self.render_hull(polygon)
         return polygon.value()
 
-    def render_triangle(self, i: int, context=None) -> str | None:
+    def render_triangle(self, i: int, context: Context | None = None) -> str | None:
+        """
+        Renders triangle :code:`i` of the Delaunay triangulation to the
+        specified context. If a :code:`context` is not specified, an SVG path
+        string is returned instead.
+
+        Parameters
+        ----------
+        i : int
+            Triangle index
+        context : Context | None
+            Context object
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if context is None:
             buffer = context = Path()
         else:
@@ -302,12 +500,35 @@ class Delaunay:
 
         return None if buffer is None else str(buffer)
 
-    def triangle_polygons(self) -> Iterator[list[dict[str, float]] | None]:
+    def triangle_polygons(self) -> Iterator[list[tuple[float, float]] | None]:
+        """
+        Returns an iterable over the polygons for each triangle, in order.
+
+        Returns
+        -------
+        Iterator[list[tuple[float, float]] | None]
+            Iterator over the polygons for each triangle
+        """
         triangles = self.triangles
         for i in range(len(triangles) // 3):
             yield self.triangle_polygon(i)
 
-    def triangle_polygon(self, i: int) -> list[dict[str, float]] | None:
+    def triangle_polygon(self, i: int) -> list[tuple[float, float]] | None:
+        """
+        Returns the closed polygon :math:`[[x_0, y_0], [x_1, y_1], [x_2, y_2],
+        [x_0, y_0]]` representing the triangle :code:`i`.
+
+
+        Parameters
+        ----------
+        i : int
+            Triangle index
+
+        Returns
+        -------
+        list[tuple[float, float]] | None
+            Closed polygon
+        """
         polygon = Polygon()
         self.render_triangle(i, polygon)
         return polygon.value()

@@ -2,6 +2,7 @@ from collections.abc import Iterator
 from math import floor, inf, isnan
 from typing import TypeVar
 
+from .context import Context
 from .path import Path
 from .polygon import Polygon
 
@@ -19,6 +20,43 @@ def sign(x: float) -> float:
 
 
 class Voronoi:
+    """
+    Voronoi diagram for the given Delaunay triangulation. When rendering, the
+    diagram will be clipped to the specified :code:`bounds = [xmin, ymin, xmax,
+    ymax]`.
+
+    Parameters
+    ----------
+    delaunay : Delaunay
+        Delaunay object
+    bounds : tuple[float, float, float, float] | None
+        The bounds of the viewport :code:`[xmin, ymin, xmax, ymax]` for
+        rendering the Voronoi diagram. If :code:`bounds` is not specified, it
+        defaults to :code:`[0, 0, 960, 500]`
+
+    Attributes
+    ----------
+    delaunay : Delaunay
+        Delaunay object
+    vectors : list[float]
+        List :math:`[v_{x_0}, v_{y_0}, w_{x_0}, w_{y_0}, \\ldots]`  where each
+        non-zero quadruple describes an open (infinite) cell on the outer hull,
+        giving the directions of two open half-lines.
+    circumcenters : list[float]
+        The circumcenters of the Delaunay triangles :math:`[c_{x_0}, c_{y_0},
+        c_{x_1}, c_{y_1}, \\ldots]`. Each contiguous pair of coordinates
+        :math:`c_x`, :math:`c_y` is the circumcenter for the corresponding
+        triangle. These circumcenters form the coordinates of the Voronoi cell
+        polygons.
+    xmin : float
+        Bound of viewport
+    xmax : float
+        Bound of viewport
+    ymin : float
+        Bound of viewport
+    ymax : float
+        Bound of viewport
+    """
     def __init__(
         self,
         delaunay: Delaunay,
@@ -31,10 +69,10 @@ class Voronoi:
         if xmax < xmin or ymax < ymin:
             raise ValueError("Invalid bounds")
 
-        self._circumcenters = [None] * (len(delaunay.points) * 2)
+        self._circumcenters = [0.] * (len(delaunay.points) * 2)
 
         self.delaunay = delaunay
-        self.vectors = [None] * (len(delaunay.points) * 2)
+        self.vectors = [0.] * (len(delaunay.points) * 2)
         self.circumcenters = self._circumcenters
         self.xmax = xmax
         self.xmin = xmin
@@ -44,6 +82,15 @@ class Voronoi:
         self._initialize()
 
     def update(self) -> TVoronoi:
+        """
+        Updates the Voronoi diagram and underlying triangulation after the
+        points have been modified in-place — useful for Lloyd's relaxation.
+
+        Returns
+        -------
+        Voronoi
+            Itself
+        """
         self.delaunay.update()
         self._initialize()
         return self
@@ -120,7 +167,22 @@ class Voronoi:
             vectors[p0 + 2] = vectors[p1] = y0 - y1
             vectors[p0 + 3] = vectors[p1 + 1] = x1 - x0
 
-    def render(self, context=None) -> str | None:
+    def render(self, context: Context | None = None) -> str | None:
+        """
+        Renders the mesh of Voronoi cells to the specified context. If a
+        :code:`context` is not specified, an SVG path string is returned
+        instead.
+
+        Parameters
+        ----------
+        context : Context | None
+            Context object
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if context is None:
             buffer = context = Path()
         else:
@@ -160,7 +222,24 @@ class Voronoi:
                 self._render_segment(x, y, p[0], p[1], context)
         return None if buffer is None else str(buffer)
 
-    def _render_bounds(self, context=None) -> str | None:
+    def render_bounds(self, context: Context | None = None) -> str | None:
+        """
+        Renders the viewport extent to the specified :code:`context`.
+        Equivalent to :code:`context.rect(voronoi.xmin, voronoi.ymin,
+        voronoi.xmax - voronoi.xmin, voronoi.ymax - voronoi.ymin)`. If a
+        :code:`context` is not specified, an SVG path string is returned
+        instead.
+
+        Parameters
+        ----------
+        context : Context | None
+            Context object
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if context is None:
             buffer = context = Path()
         else:
@@ -174,7 +253,24 @@ class Voronoi:
         )
         return None if buffer is None else str(buffer)
 
-    def render_cell(self, i: int, context=None) -> str | None:
+    def render_cell(self, i: int, context: Context | None = None) -> str | None:
+        """
+        Renders the cell with the specified index :code:`i` to the specified
+        context. If a :code:`context` is not specified, an SVG path string is
+        returned instead.
+
+        Parameters
+        ----------
+        context : Context | None
+            Context object
+        i : int
+           Cell index
+
+        Returns
+        -------
+        str | None
+            SVG path string
+        """
         if context is None:
             buffer = context = Path()
         else:
@@ -193,7 +289,16 @@ class Voronoi:
         context.close_path()
         return None if buffer is None else str(buffer)
 
-    def cell_polygons(self) -> Iterator[list[dict[str, float]] | None]:
+    def cell_polygons(self) -> Iterator[list[tuple[float, float]] | None]:
+        """
+        Returns an iterable over the non-empty polygons for each cell, with the
+        cell index as property.
+
+        Returns
+        -------
+        Iterator[list[tuple[float, float]] | None]
+            Non-empty polygons for each cell
+        """
         points = self.delaunay.points
         for i in range(len(points) // 2):
             cell = self.cell_polygon(i)
@@ -201,7 +306,22 @@ class Voronoi:
                 # cell.index = i # lists cannot have attributes
                 yield cell
 
-    def cell_polygon(self, i: int) -> list[dict[str, float] | None]:
+    def cell_polygon(self, i: int) -> list[tuple[float, float]] | None:
+        """
+        Returns the convex, closed polygon :math:`[[x_0, y_0], [x_1, y_1],
+        \\ldots, [x_0, y_0]]` representing the cell for the specified point
+        :code:`i`.
+
+        Parameters
+        ----------
+        i : int
+            Point index
+
+        Returns
+        -------
+        list[tuple[float, float]] | None
+            Closed path
+        """
         polygon = Polygon()
         self.render_cell(i, polygon)
         return polygon.value()
@@ -224,11 +344,48 @@ class Voronoi:
             context.line_to(S[2], S[3])
 
     def contains(self, i: int, x: float, y: float) -> bool:
+        """
+        Returns :code:`True` if the cell with the specified index :code:`i`
+        contains the specified point :math:`(x, y)`; i.e., whether the point
+        :code:`i` is the closest point in the diagram to the specified point.
+        (This method is not affected by the associated Voronoi diagram's
+        viewport bounds.)
+
+        Parameters
+        ----------
+        i : int
+            Cell index
+        x : float
+            X-coordinate point
+        y : float
+            Y-coordinate point
+
+        Returns
+        -------
+        bool
+            :code:`True` if cell contains the specified point
+        """
         if isnan(x) or isnan(y):
             return False
         return self.delaunay._step(i, x, y) == i
 
     def neighbors(self, i: int) -> Iterator[int]:
+        """
+        Returns an iterable over the indexes of the cells that share a common
+        edge with the specified cell :code:`i`. Voronoi neighbors are always
+        neighbors on the Delaunay graph, but the converse is false when the
+        common edge has been clipped out by the Voronoi diagram's viewport.
+
+        Parameters
+        ----------
+        i : int
+            Cell index
+
+        Returns
+        -------
+        Iterator[int]
+            Iterable over the indexes of the cells
+        """
         ci = self._clip(i)
         if not ci:
             return

@@ -3,7 +3,13 @@ SPLITTER = 134217729
 RESULTERRBOUND = (3 + 8 * EPSILON) * EPSILON
 
 
-def sum_zerolim(elen, e, flen, f, h):
+def sum_zerolim(
+    elen: float,
+    e: list[float],
+    flen: float,
+    f: list[float],
+    h: list[float],
+) -> int:
     enow = e[0]
     fnow = f[0]
     eindex = 0
@@ -81,11 +87,20 @@ def sum_zerolim(elen, e, flen, f, h):
     return hindex
 
 
-def sum_three(alen, a, blen, b, clen, c, tmp, out):
+def sum_three(
+    alen: int,
+    a: list[float],
+    blen: int,
+    b: list[float],
+    clen: int,
+    c: list[float],
+    tmp: list[float],
+    out: list[float],
+) -> int:
     return sum_zerolim(sum_zerolim(alen, a, blen, b, tmp), tmp, clen, c, out)
 
 
-def scale(elen, e, b, h):
+def scale(elen: int, e: list[float], b: float, h: list[float]) -> int:
     c = SPLITTER * b
     bhi = c - (c - b)
     blo = b - bhi
@@ -123,13 +138,13 @@ def scale(elen, e, b, h):
     return hindex
 
 
-def negate(elen, e):
+def negate(elen: int, e: list[float]) -> list[float]:
     for i in range(elen):
         e[i] = -e[i]
     return elen
 
 
-def estimate(elen, e):
+def estimate(elen: int, e: list[float]) -> float:
     Q = e[0]
     for i in range(1, elen):
         Q += e[i]

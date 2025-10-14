@@ -24,11 +24,42 @@ def swap(arr: list[Any], i: int, j: int):
 
 
 def pseudo_angle(dx: float, dy: float) -> float:
+    """
+    Monotonically increases with real angle, but doesn't need expensive
+    trigonometry.
+
+    Parameters
+    ----------
+    dx : float
+        Delta x difference
+    dy : float
+        Delta y difference
+
+    Returns
+    -------
+    float
+        Pseudo angle
+    """
     p = dx / (abs(dx) + abs(dy))
     return (3 - p if dy > 0 else 1 + p) * 0.25
 
 
 def dist(a: tuple[float, float], b: tuple[float, float]) -> float:
+    """
+    Returns the squared distance between two points.
+
+    Parameters
+    ----------
+    a : tuple[float, float]
+        Point A
+    b : tuple[float, float]
+        Point B
+
+    Returns
+    -------
+    float
+        Squared distance between :code:`a` and :code:`b`
+    """
     ax, ay = a
     bx, by = b
     dx = ax - bx
@@ -45,7 +76,34 @@ def in_circle(
     cy: float,
     px: float,
     py: float,
-) -> float:
+) -> bool:
+    """
+    Checks whether point P is inside a circle formed by points A, B, C.
+
+    Parameters
+    ----------
+    ax : float
+        X-coordinate of point A
+    ay : float
+        Y-coordinate of point A
+    bx : float
+        X-coordinate of point B
+    by : float
+        Y-coordinate of point B
+    cx : float
+        X-coordinate of point C
+    cy : float
+        Y-coordinate of point C
+    px : float
+        X-coordinate of point P
+    py : float
+        Y-coordinate of point P
+
+    Returns
+    -------
+    bool
+        :code:`True` if P is in the circle formed by points A, B, C.
+    """
     dx = ax - px
     dy = ay - py
     ex = bx - px
@@ -70,6 +128,29 @@ def circumradius(
     cx: float,
     cy: float,
 ) -> float:
+    """
+    Computes the squared radius of the circle formed by points A, B, C.
+
+    Parameters
+    ----------
+    ax : float
+        X-coordinate of point A
+    ay : float
+        Y-coordinate of point A
+    bx : float
+        X-coordinate of point B
+    by : float
+        Y-coordinate of point B
+    cx : float
+        X-coordinate of point C
+    cy : float
+        Y-coordinate of point C
+
+    Returns
+    -------
+    float
+        Squared radius of the circle formed by points A, B, C.
+    """
     dx = bx - ax
     dy = by - ay
     ex = cx - ax
@@ -93,7 +174,30 @@ def circumcenter(
     by: float,
     cx: float,
     cy: float,
-) -> float:
+) -> tuple[float, float]:
+    """
+    Computes the center of the circle formed by points A, B, C.
+
+    Parameters
+    ----------
+    ax : float
+        X-coordinate of point A
+    ay : float
+        Y-coordinate of point A
+    bx : float
+        X-coordinate of point B
+    by : float
+        Y-coordinate of point B
+    cx : float
+        X-coordinate of point C
+    cy : float
+        Y-coordinate of point C
+
+    Returns
+    -------
+    tuple[float, float]
+        Center of the circle formed by points A, B, C.
+    """
     dx = bx - ax
     dy = by - ay
     ex = cx - ax
@@ -111,6 +215,21 @@ def circumcenter(
 
 
 def quicksort(ids: list[int], dists: list[float], left: int, right: int):
+    """
+    Sort points by distance via an array of point indices and an array of
+    calculated distances.
+
+    Parameters
+    ----------
+    ids : list[int]
+        List of point indices
+    dists : list[float]
+        List of calculated distances
+    left : int
+        Left index used recursively by the function itself
+    right : int
+        Right index used recursively by the function itself
+    """
     if right - left <= 20:
         for i in range(left + 1, right + 1):
             temp = ids[i]
@@ -159,6 +278,33 @@ def quicksort(ids: list[int], dists: list[float], left: int, right: int):
 
 
 class Delaunator:
+    """
+    Delaunay triangulation object based an list of point coordinates of the
+    form: :math:`[x_0, y_0, x_1, y_1, \\ldots]`.
+
+    Parameters
+    ----------
+    points : list[float]
+        The coordinates of the points as an array :math:`[x_0, y_0, x_1, y_1,
+        \\ldots]`.
+
+    Attributes
+    ----------
+    coords : list[float]
+        Point coordinates
+    hull : list[int]
+        Array of indices that reference points on the convex hull of the input
+        data, counter-clockwise.
+    triangles : list[int]
+        Array of triangle vertex indices (each group of three numbers forms a
+        triangle). All triangles are directed counterclockwise.
+    halfedges : list[int]
+         Array of triangle half-edge indices that allows you to traverse the
+         triangulation. :code:`i`-th half-edge in the array corresponds to
+         vertex :code:`triangles[i]` the half-edge is coming from.
+         :code:`halfedges[i]` is the index of a twin half-edge in an adjacent
+         triangle (or :code:`-1` for outer half-edges on the convex hull).
+    """
     def __init__(self, coords: list[float]):
         if len(coords) == 0:
             raise ValueError("Invalid array length")
@@ -199,6 +345,23 @@ class Delaunator:
         get_x: Callable[[T], float] = default_get_x,
         get_y: Callable[[T], float] = default_get_y,
     ) -> TDelaunator:
+        """
+        Creates a :code:`Delaunator` object given a list of points.
+
+        Parameters
+        ----------
+        points : list[T]
+            List of points
+        get_x : Callable[[T], float]
+            X-coordinate accessor
+        get_y : Callable[[T], float]
+            Y-coordinate accessor
+
+        Returns
+        -------
+        Delaunator
+            Delaunator object
+        """
         n = len(points)
         coords = [0] * (n * 2)
 
@@ -213,6 +376,11 @@ class Delaunator:
         return self._triangles_len
 
     def update(self):
+        """
+        Updates the triangulation if you modified :code:`delaunay.coords`
+        values in place, avoiding expensive memory allocations. Useful for
+        iterative relaxation algorithms such as Lloyd's.
+        """
         coords = self.coords
         hull_prev = self._hull_prev
         hull_next = self._hull_next
@@ -463,12 +631,42 @@ class Delaunator:
         self.halfedges = self._halfedges[0 : self._triangles_len]
 
     def _hash_key(self, x: float, y: float) -> int:
+        """
+        Calculate an angle-based key for the edge hash used for advancing
+        convex hull.
+
+        Parameters
+        ----------
+        x : float
+            X-coordinate point
+        y : float
+            Y-coordinate point
+
+        Returns
+        -------
+        int
+            angle-based key
+        """
         return (
             floor(pseudo_angle(x - self._cx, y - self._cy) * self._hash_size)
             % self._hash_size
         )
 
     def _legalize(self, a: int) -> int:
+        """
+        Flip an edge in a pair of triangles if it doesn't satisfy the Delaunay
+        condition.
+
+        Parameters
+        ----------
+        a : int
+            Edge index
+
+        Returns
+        -------
+        int
+            New index
+        """
         triangles = self._triangles
         halfedges = self._halfedges
         coords = self.coords
@@ -541,11 +739,45 @@ class Delaunator:
         return ar
 
     def _link(self, a: int, b: int):
+        """
+        Link two half-edges to each other.
+
+        Parameters
+        ----------
+        a : int
+            First half-edge id
+        b : int
+            Second half-edge id
+        """
         self._halfedges[a] = b
         if b != -1:
             self._halfedges[b] = a
 
     def _add_triangle(self, i0: int, i1: int, i2: int, a: int, b: int, c: int) -> int:
+        """
+        Add a new triangle given vertex indices and adjacent half-edge ids.
+
+        Parameters
+        ----------
+        i0 : int
+            First vertex index
+        i1 : int
+            Second vertex index
+        i2 : int
+            Third vertex index
+        a : int
+            First adjacent half-edge id
+        b : int
+            Second adjacent half-edge id
+        c : int
+            Third adjacent half-edge id
+
+        Returns
+        -------
+        int
+            
+
+        """
         t = self._triangles_len
 
         self._triangles[t] = i0

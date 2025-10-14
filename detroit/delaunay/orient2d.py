@@ -11,7 +11,15 @@ D = [None] * 16
 u = [None] * 4
 
 
-def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
+def orient2dadapt(
+    ax: float,
+    ay: float,
+    bx: float,
+    by: float,
+    cx: float,
+    cy: float,
+    detsum: float,
+) -> float:
     acx = ax - cx
     bcx = bx - cx
     acy = ay - cy
@@ -165,7 +173,51 @@ def orient2dadapt(ax, ay, bx, by, cx, cy, detsum):
     return D[Dlen - 1]
 
 
-def orient2d(ax, ay, bx, by, cx, cy):
+def orient2d(
+    ax: float,
+    ay: float,
+    bx: float,
+    by: float,
+    cx: float,
+    cy: float,
+) -> float:
+    """
+    Returns a positive value if the points :code:`a`, :code:`b`, and :code:`c`
+    occur in counterclockwise order (:code:`c` lies to the left of the directed
+    line defined by points :code:`a` and :code:`b`).
+
+    Returns a negative value if they occur in clockwise order (:code:`c` lies
+    to the right of the directed line :code:`ab`).
+
+    Returns zero if they are collinear.
+
+    Parameters
+    ----------
+    ax : float
+        X-coordinate of point A
+    ay : float
+        Y-coordinate of point A
+    bx : float
+        X-coordinate of point B
+    by : float
+        Y-coordinate of point B
+    cx : float
+        X-coordinate of point C
+    cy : float
+        Y-coordinate of point C
+
+    Returns
+    -------
+    float
+        Value which indicates if the points :code:`a`, :code:`b`, and :code:`c`
+        occur in counterclockwise order
+
+    Notes
+    -----
+
+    The result is also an approximation of twice the signed area of the
+    triangle defined by the three points.
+    """
     detleft = (ay - cy) * (bx - cx)
     detright = (ax - cx) * (by - cy)
     det = detleft - detright
@@ -177,5 +229,37 @@ def orient2d(ax, ay, bx, by, cx, cy):
     return -orient2dadapt(ax, ay, bx, by, cx, cy, detsum)
 
 
-def orient2dfast(ax, ay, bx, by, cx, cy):
+def orient2dfast(
+    ax: float,
+    ay: float,
+    bx: float,
+    by: float,
+    cx: float,
+    cy: float,
+) -> float:
+    """
+    Simple, approximate, non-robust versions of :code:`orient2d` predicates.
+    Use when robustness isn't needed.
+
+    Parameters
+    ----------
+    ax : float
+        X-coordinate of point A
+    ay : float
+        Y-coordinate of point A
+    bx : float
+        X-coordinate of point B
+    by : float
+        Y-coordinate of point B
+    cx : float
+        X-coordinate of point C
+    cy : float
+        Y-coordinate of point C
+
+    Returns
+    -------
+    float
+        Value which indicates if the points :code:`a`, :code:`b`, and :code:`c`
+        occur in counterclockwise order
+    """
     return (ay - cy) * (bx - cx) - (ax - cx) * (by - cy)

@@ -11,7 +11,7 @@ class Path:
         self._y1 = None
         self._string = StringIO()
 
-    def move_to(self, x, y):
+    def move_to(self, x: float, y: float):
         self._x0 = x
         self._x1 = x
         self._y0 = y
@@ -24,12 +24,12 @@ class Path:
             self._y1 = self._y0
             self._string.write("Z")
 
-    def line_to(self, x, y):
+    def line_to(self, x: float, y: float):
         self._x1 = x
         self._y1 = y
         self._string.write(f"L{x},{y}")
 
-    def arc(self, x, y, r, *args):
+    def arc(self, x: float, y: float, r: float, *args):
         x0 = x + r
         y0 = y
 
@@ -46,7 +46,7 @@ class Path:
         self._y1 = y0
         self._string.write(f"A{r},{r},0,1,1,{x - r},{y}A{r},{r},0,1,1,{x0},{y0}")
 
-    def rect(self, x, y, w, h):
+    def rect(self, x: float, y: float, w: float, h: float):
         self._x0 = x
         self._x1 = x
         self._y0 = y
