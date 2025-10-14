@@ -81,6 +81,7 @@ class Delaunay:
         triangle's points can be found by going through
         :code:`delaunay.points`.
     """
+
     def __init__(self, points: list[float]):
         self._delaunator = Delaunator(points)
         self._hull_index = [0] * (len(points) // 2)
@@ -204,7 +205,7 @@ class Delaunay:
         ----------
         bounds : tuple[float, float, float, float] | None
             :code:`[xmin, ymin, xmax, ymax]` values
-            
+
         Returns
         -------
         Voronoi

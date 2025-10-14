@@ -57,6 +57,7 @@ class Voronoi:
     ymax : float
         Bound of viewport
     """
+
     def __init__(
         self,
         delaunay: Delaunay,
@@ -69,10 +70,10 @@ class Voronoi:
         if xmax < xmin or ymax < ymin:
             raise ValueError("Invalid bounds")
 
-        self._circumcenters = [0.] * (len(delaunay.points) * 2)
+        self._circumcenters = [0.0] * (len(delaunay.points) * 2)
 
         self.delaunay = delaunay
-        self.vectors = [0.] * (len(delaunay.points) * 2)
+        self.vectors = [0.0] * (len(delaunay.points) * 2)
         self.circumcenters = self._circumcenters
         self.xmax = xmax
         self.xmin = xmin

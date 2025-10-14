@@ -305,6 +305,7 @@ class Delaunator:
          :code:`halfedges[i]` is the index of a twin half-edge in an adjacent
          triangle (or :code:`-1` for outer half-edges on the convex hull).
     """
+
     def __init__(self, coords: list[float]):
         if len(coords) == 0:
             raise ValueError("Invalid array length")
@@ -775,7 +776,7 @@ class Delaunator:
         Returns
         -------
         int
-            
+
 
         """
         t = self._triangles_len
