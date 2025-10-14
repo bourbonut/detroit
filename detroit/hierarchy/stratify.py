@@ -31,12 +31,28 @@ def default_parent_id(d: dict[str, Any]) -> Any | None:
 
 
 class Stratify:
+    """
+    Stratify operator
+    """
     def __init__(self):
         self._id = default_id
         self._parent_id = default_parent_id
         self._path = None
 
     def __call__(self, data: list[dict[str, Any]]) -> Node:
+        """
+        Generates a new hierarchy from the specified tabular data.
+
+        Parameters
+        ----------
+        data : list[dict[str, Any]]
+            Data
+
+        Returns
+        -------
+        Node
+            Node object
+        """
         nodes = list(data)
         current_id = self._id
         current_parent_id = self._parent_id
@@ -126,30 +142,97 @@ class Stratify:
         return root
 
     def set_id(
-        self, id_func: Callable[[Node, int, list[dict[str, Any]]], int]
+        self, id_func: Callable[[Node, int, list[dict[str, Any]]], str]
     ) -> TStratify:
+        """
+        Sets the id accessor to the given function and returns this stratify
+        operator.
+
+        Parameters
+        ----------
+        id_func : Callable[[Node, int, list[dict[str, Any]]], str]
+            Function to call which takes as argument:
+
+            * **node** (:code:`Node`) - the descendant node
+            * **i** (:code:`int`) - the index of the descendant node
+            * **data** (:code:`list[dict[str, Any]]`) - Data
+
+            It should return an ID for the node's relationships in the
+            conjuction with the parent ID.
+
+        Returns
+        -------
+        Stratify
+            Itself
+        """
         self._id = argpass(optional(id_func))
         return self
 
     def set_parent_id(
-        self, parent_id: Callable[[Node, int, list[dict[str, Any]]], int]
+        self, parent_id: Callable[[Node, int, list[dict[str, Any]]], str]
     ) -> TStratify:
+        """
+        Sets the parent id accessor to the given function and returns this
+        stratify operator.
+
+        Parameters
+        ----------
+        parent_id : Callable[[Node, int, list[dict[str, Any]]], str]
+            Function to call which takes as argument:
+
+            * **node** (:code:`Node`) - the descendant node
+            * **i** (:code:`int`) - the index of the descendant node
+            * **data** (:code:`list[dict[str, Any]]`) - Data
+
+            It should return an parent ID for the node's relationships in the
+            conjuction with the ID.
+
+        Returns
+        -------
+        Stratify
+            Itself
+        """
         self._parent_id = argpass(optional(parent_id))
         return self
 
     def set_path(
-        self, path: Callable[[Node, int, list[dict[str, Any]]], int]
+        self, path: Callable[[Node, int, list[dict[str, Any]]], str]
     ) -> TStratify:
+        """
+        Sets the :code:`path` accessor to the given function and returns this
+        stratify operator.
+
+        If a :code:`path` accessor is set, the :code:`id` and :code:`parent_id`
+        accessors are ignored, and a unix-like hierarchy is computed on the
+        slash-delimited strings returned by the path accessor, imputing parent
+        nodes and ids as necessary.
+
+        Parameters
+        ----------
+        path : Callable[[Node, int, list[dict[str, Any]]], str]
+            Function to call which takes as argument:
+
+            * **node** (:code:`Node`) - the descendant node
+            * **i** (:code:`int`) - the index of the descendant node
+            * **data** (:code:`list[dict[str, Any]]`) - Data
+
+            It should return the path.
+
+        Returns
+        -------
+        Stratify
+            Itself
+        """
         self._path = argpass(optional(path))
         return self
 
-    def get_id(self) -> Callable[[Node, int, list[dict[str, Any]]], int]:
+    def get_id(self) -> Callable[[Node, int, list[dict[str, Any]]], str]:
         return self._id
 
-    def get_parent_id(self) -> Callable[[Node, int, list[dict[str, Any]]], int]:
+    def get_parent_id(self) -> Callable[[Node, int, list[dict[str, Any]]], str]:
         return self._parent_id
 
-    def get_path(self) -> Callable[[Node, int, list[dict[str, Any]]], int]:
+    def get_path(self) -> Callable[[Node, int, list[dict[str, Any]]], str]:
         return self._path
 
 
@@ -188,4 +271,12 @@ def parent_of(path: str) -> str:
 
 
 def stratify() -> Stratify:
+    """
+    Builds a new stratify operator with the default settings.
+
+    Returns
+    -------
+    Stratify
+        Stratify object
+    """
     return Stratify()

@@ -15,6 +15,9 @@ def default_radius(d: Node) -> float:
 
 
 class Pack:
+    """
+    Pack layout
+    """
     def __init__(self):
         self._radius = None
         self._dx = 1
@@ -22,6 +25,29 @@ class Pack:
         self._padding = constant_zero
 
     def __call__(self, root: Node) -> Node:
+        """
+        Lays out the specified root hierarchy, assigning the following
+        properties on root and its descendants:
+
+        * :code:`node.x` - the x-coordinate of the circle’s center
+        * :code:`node.y` - the y coordinate of the circle’s center
+        * :code:`node.r` - the radius of the circle
+
+        You must call root.sum before passing the hierarchy to the pack layout.
+        You probably also want to call root.sort to order the hierarchy before
+        computing the layout.
+
+
+        Parameters
+        ----------
+        root : Node
+            Root node
+
+        Returns
+        -------
+        Node
+            Node organized as pack
+        """
         root.x = self._dx * 0.5
         root.y = self._dy * 0.5
         if self._radius:
@@ -44,15 +70,71 @@ class Pack:
         return root
 
     def set_radius(self, radius: Callable[[Node], float] | None) -> TPack:
+        """
+        Sets the pack layout's radius accessor to the specified function and
+        returns this pack layout. If :code:`radius` is not specified, returns
+        the current radius accessor, which defaults to :code:`None`. If the
+        radius accessor is :code:`None`, the radius of each leaf circle is
+        derived from the leaf :code:`node.value` (computed by
+        :code:`node.sum`); the radii are then scaled proportionally to fit the
+        layout size. If the :code:`radius` accessor is not :code:`None`, the
+        radius of each leaf circle is specified exactly by the function.
+
+        Parameters
+        ----------
+        radius : Callable[[Node], float] | None
+            Radius function or :code:`None` value
+
+        Returns
+        -------
+        Pack
+            Itself
+        """
         self._radius = optional(radius)
         return self
 
     def set_size(self, size: tuple[float, float]) -> TPack:
+        """
+        Sets this pack layout's size to the specified two-element array of
+        numbers :code:`[width, height]` and returns this pack layout.
+
+        Parameters
+        ----------
+        size : tuple[float, float]
+            Size values
+
+        Returns
+        -------
+        Pack
+            Itself
+        """
         self._dx = size[0]
         self._dy = size[1]
         return self
 
     def set_padding(self, padding: Callable[[Node], float] | float) -> TPack:
+        """
+        If :code:`padding` is specified, sets this pack layout's padding
+        accessor to the specified number or function and returns this pack
+        layout. When siblings are packed, tangent siblings will be separated by
+        approximately the specified padding; the enclosing parent circle will
+        also be separated from its children by approximately the specified
+        padding. If an explicit radius is not specified, the padding is
+        approximate because a two-pass algorithm is needed to fit within the
+        layout size: the circles are first packed without padding; a scaling
+        factor is computed and applied to the specified padding; and lastly the
+        circles are re-packed with padding.
+
+        Parameters
+        ----------
+        padding : Callable[[Node], float] | float
+            Padding function or constant padding value
+
+        Returns
+        -------
+        Pack
+            Itself
+        """
         if callable(padding):
             self._padding = padding
         else:

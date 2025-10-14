@@ -2,6 +2,24 @@ from ..hierarchy import Node
 
 
 def binary(parent: Node, x0: float, y0: float, x1: float, y1: float):
+    """
+    Recursively partitions the specified nodes into an approximately-balanced
+    binary tree, choosing horizontal partitioning for wide rectangles and
+    vertical partitioning for tall rectangles.
+
+    Parameters
+    ----------
+    parent : Node
+        Parent node
+    x0 : float
+        X-coordinate rectangular edge
+    y0 : float
+        Y-coordinate rectangular edge
+    x1 : float
+        X-coordinate rectangular edge
+    y1 : float
+        Y-coordinate rectangular edge
+    """
     nodes = parent.children
     n = len(nodes)
     sums = [None] * (n + 1)

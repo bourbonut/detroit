@@ -11,6 +11,9 @@ TTreeMap = TypeVar("TreeMap", bound="TreeMap")
 
 
 class TreeMap:
+    """
+    TreeMap layout
+    """
     def __init__(self):
         self._tile = squarify
         self._round = False
@@ -24,6 +27,29 @@ class TreeMap:
         self._padding_left = constant_zero
 
     def __call__(self, root: Node) -> Node:
+        """
+        Lays out the specified root hierarchy, assigning the following
+        properties on root and its descendants:
+
+        * :code:`node.x0 ` - the left edge of the rectangle
+        * :code:`node.y0 ` - the top edge of the rectangle
+        * :code:`node.x1 ` - the right edge of the rectangle
+        * :code:`node.y1 ` - the bottom edge of the rectangle
+
+        You must call :code:`root.sum` before passing the hierarchy to the treemap
+        layout. You probably also want to call root.sort to order the hierarchy
+        before computing the layout.
+
+        Parameters
+        ----------
+        root : Node
+            Root node
+
+        Returns
+        -------
+        Node
+            Node organized as treemap
+        """
         root.x0 = 0
         root.y0 = 0
         root.x1 = self._dx
@@ -64,10 +90,39 @@ class TreeMap:
             self._tile(node, x0, y0, x1, y1)
 
     def set_round(self, round_value: bool) -> TTreeMap:
+        """
+        If :code:`round` is specified, enables or disables rounding according
+        to the given boolean and returns this treemap layout.
+
+        Parameters
+        ----------
+        round_value : bool
+            Round value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         self._round = round_value
         return self
 
     def set_size(self, size: tuple[float, float]) -> TTreeMap:
+        """
+        If :code:`size` is specified, sets this treemap layout's size to the
+        specified two-element array of numbers :code:`[width, height]` and
+        returns this treemap layout.
+
+        Parameters
+        ----------
+        size : tuple[float, float]
+            Size values
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         self._dx = size[0]
         self._dy = size[1]
         return self
@@ -75,15 +130,67 @@ class TreeMap:
     def set_tile(
         self, tile: Callable[[Node, float, float, float, float], None]
     ) -> TTreeMap:
+        """
+        Sets this treemap layout's tile and returns this treemap layout.
+
+        Available treemap tiles:
+
+        * :func:`d3.treemap_binary <detroit.treemap_binary>`
+        * :func:`d3.treemap_dice <detroit.treemap_dice>`
+        * :func:`d3.treemap_slice <detroit.treemap_slice>`
+        * :func:`d3.treemap_slice_dice <detroit.treemap_slice_dice>`
+        * :func:`d3.treemap_squarify <detroit.treemap_squarify>`
+        * :func:`d3.treemap_resquarify <detroit.treemap_resquarify>`
+
+        Parameters
+        ----------
+        tile : Callable[[Node, float, float, float, float], None]
+            Tile function
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         self._tile = required(tile)
         return self
 
     def set_padding(self, padding: Callable[[Node], float] | float) -> TTreeMap:
+        """
+        Sets the inner and outer padding to the specified number or function
+        and returns this treemap layout.
+
+        Parameters
+        ----------
+        padding : Callable[[Node], float] | float
+            Padding function or constant padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         return self.set_padding_inner(padding).set_padding_outer(padding)
 
     def set_padding_inner(
         self, padding_inner: Callable[[Node], float] | float
     ) -> TTreeMap:
+        """
+        Sets the inner padding to the specified number or function and returns
+        this treemap layout. If :code:`padding_inner` is a function, it is
+        invoked for each node with children, being passed the current node. The
+        inner padding is used to separate a node's adjacent children.
+
+        Parameters
+        ----------
+        padding_inner : Callable[[Node], float] | float
+            Inner padding function or constant inner padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         if callable(padding_inner):
             self._padding_inner = padding_inner
         else:
@@ -93,6 +200,20 @@ class TreeMap:
     def set_padding_outer(
         self, padding_outer: Callable[[Node], float] | float
     ) -> TTreeMap:
+        """
+        Sets the top, right, bottom and left padding to the specified number or
+        function and returns this treemap layout.
+
+        Parameters
+        ----------
+        padding_outer : Callable[[Node], float] | float
+            Outer padding function or constant outer padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         return (
             self.set_padding_top(padding_outer)
             .set_padding_right(padding_outer)
@@ -101,6 +222,23 @@ class TreeMap:
         )
 
     def set_padding_top(self, padding_top: Callable[[Node], float] | float) -> TTreeMap:
+        """
+        Sets the top padding to the specified number or function and returns
+        this treemap layout. If :code:`padding_top` is a function, it is
+        invoked for each node with children, being passed the current node. The
+        top padding is used to separate the top edge of a node from its
+        children.
+
+        Parameters
+        ----------
+        padding_top : Callable[[Node], float] | float
+            Top padding function or constant top padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         if callable(padding_top):
             self._padding_top = padding_top
         else:
@@ -110,6 +248,23 @@ class TreeMap:
     def set_padding_right(
         self, padding_right: Callable[[Node], float] | float
     ) -> TTreeMap:
+        """
+        Sets the right padding to the specified number or function and returns
+        this treemap layout. If :code:`padding_right` is a function, it is
+        invoked for each node with children, being passed the current node. The
+        right padding is used to separate the right edge of a node from its
+        children.
+
+        Parameters
+        ----------
+        padding_right : Callable[[Node], float] | float
+            Right padding function or constant right padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         if callable(padding_right):
             self._padding_right = padding_right
         else:
@@ -119,6 +274,23 @@ class TreeMap:
     def set_padding_bottom(
         self, padding_bottom: Callable[[Node], float] | float
     ) -> TTreeMap:
+        """
+        Sets the bottom padding to the specified number or function and returns
+        this treemap layout. If :code:`padding_bottom` is a function, it is
+        invoked for each node with children, being passed the current node. The
+        bottom padding is used to separate the bottom edge of a node from its
+        children.
+
+        Parameters
+        ----------
+        padding_bottom : Callable[[Node], float] | float
+            Bottom padding function or constant bottom padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         if callable(padding_bottom):
             self._padding_bottom = padding_bottom
         else:
@@ -128,6 +300,23 @@ class TreeMap:
     def set_padding_left(
         self, padding_left: Callable[[Node], float] | float
     ) -> TTreeMap:
+        """
+        Sets the left padding to the specified number or function and returns
+        this treemap layout. If :code:`padding_left` is a function, it is
+        invoked for each node with children, being passed the current node. The
+        left padding is used to separate the left edge of a node from its
+        children.
+
+        Parameters
+        ----------
+        padding_left : Callable[[Node], float] | float
+            Left padding function or constant left padding value
+
+        Returns
+        -------
+        TreeMap
+            Itself
+        """
         if callable(padding_left):
             self._padding_left = padding_left
         else:
@@ -166,4 +355,12 @@ class TreeMap:
 
 
 def treemap() -> TreeMap:
+    """
+    Builds a new treemap layout with default settings.
+
+    Returns
+    -------
+    TreeMap
+        TreeMap object
+    """
     return TreeMap()

@@ -148,5 +148,26 @@ def pack_siblings_random(circles: list[Circle]) -> float:
 
 
 def pack_siblings(circles: list[Circle]) -> list[Circle]:
+    """
+    Packs the specified array of circles, each of which must have a
+    :code:`circle.r` property specifying the circle's radius. Assigns the
+    following properties to each circle:
+
+    * :code:`circle.x` - the x-coordinate of the circle's center
+    * :code:`circle.y` - the y coordinate of the circle's center
+
+    The circles are positioned according to the front-chain packing algorithm
+    by `Wang et al<https://dl.acm.org/doi/10.1145/1124772.1124851>`_.
+
+    Parameters
+    ----------
+    circles : list[Circle]
+        List of circles
+
+    Returns
+    -------
+    list[Circle]
+        Packed list of circles
+    """
     pack_siblings_random(circles)
     return circles

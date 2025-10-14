@@ -32,13 +32,38 @@ def leaf_right(node: Node) -> Node:
 
 
 class Cluster:
+    """
+    Cluster layout
+    """
     def __init__(self):
         self._separation = default_separation
         self._dx = 1
         self._dy = 1
         self._node_size = False
 
-    def __call__(self, root: Node) -> TCluster:
+    def __call__(self, root: Node) -> Node:
+        """
+        Lays out the specified root hierarchy, assigning the following
+        properties on root and its descendants:
+
+        * :code:`node.x` - the x-coordinate of the node
+        * :code:`node.y` - the y coordinate of the node
+
+        The coordinates :code:`x` and :code:`y` represent an arbitrary
+        coordinate system; for example, you can treat :code:`x` as an angle and
+        :code:`y` as a radius to produce a radial layout. You may want to call
+        :code:`root.sort` before passing the hierarchy to the cluster layout.
+
+        Parameters
+        ----------
+        root : Node
+            Root node
+
+        Returns
+        -------
+        Node
+            Node organized as cluster
+        """
         x = 0
         previous_node = None
 
@@ -78,16 +103,66 @@ class Cluster:
         return root.each_after(update)
 
     def set_separation(self, separation: Callable[[Node, Node], int]) -> TCluster:
+        """
+        Sets the :code:`separation` accessor to the specified function and
+        returns this cluster layout.
+
+        Parameters
+        ----------
+        separation : Callable[[Node, Node], int]
+            Separation function which compares two nodes.
+
+        Returns
+        -------
+        Cluster
+            Itself
+        """
         self._separation = separation
         return self
 
     def set_size(self, size: tuple[float, float]) -> TCluster:
+        """
+        Sets this cluster layout's size to the specified two-element array of
+        numbers :code:`[width, height]` and returns this cluster layout. A
+        layout size of :code:`None` indicates that a node size will be used
+        instead. The coordinates :code:`x` and :code:`y` represent an arbitrary
+        coordinate system; for example, to produce a radial layout, a size of
+        :code:`[360, radius]` corresponds to a breadth of 360° and a depth of
+        radius.
+
+        Parameters
+        ----------
+        size : tuple[float, float]
+            Size values
+
+        Returns
+        -------
+        Cluster
+            Itself
+        """
         self._node_size = False
         self._dx = size[0]
         self._dy = size[1]
         return self
 
     def set_node_size(self, size: tuple[float, float]) -> TCluster:
+        """
+        Sets this cluster layout's node size to the specified two-element array
+        of numbers :code:`[width, height]` and returns this cluster layout. A
+        node size of null indicates that a layout size will be used instead.
+        When a :code:`size` is specified, the root node is always positioned at
+        :math:`(0, 0)`.
+
+        Parameters
+        ----------
+        size : tuple[float, float]
+            Size values
+
+        Returns
+        -------
+        Cluster
+            Itself
+        """
         self._node_size = True
         self._dx = size[0]
         self._dy = size[1]
@@ -108,4 +183,12 @@ class Cluster:
 
 
 def cluster() -> Cluster:
+    """
+    Builds a new cluster layout with default settings.
+
+    Returns
+    -------
+    Cluster
+        Cluster object
+    """
     return Cluster()

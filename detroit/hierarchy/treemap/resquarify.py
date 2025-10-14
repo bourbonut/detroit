@@ -28,10 +28,42 @@ class SquarifyList:
 
 
 class Resquarify:
+    """
+    Resquarify object
+
+    Parameters
+    ----------
+    ratio : float
+        Ratio value
+    """
     def __init__(self, ratio: float):
         self._ratio = ratio
 
     def __call__(self, parent: Node, x0: float, y0: float, x1: float, y1: float):
+        """
+        Like :func:`d3.treemap_resquarify <detroit.resquarify>`, except
+        preserves the topology (node adjacencies) of the previous layout
+        computed by this function, if there is one and it used the same target
+        aspect ratio. This tiling method is good for animating changes to
+        treemaps because it only changes node sizes and not their relative
+        positions, thus avoiding distracting shuffling and occlusion. The
+        downside of a stable update, however, is a suboptimal layout for
+        subsequent updates: only the first layout uses the Bruls et al.
+        squarified algorithm.
+
+        Parameters
+        ----------
+        parent : Node
+            Parent node
+        x0 : float
+            X-coordinate rectangular edge
+        y0 : float
+            Y-coordinate rectangular edge
+        x1 : float
+            X-coordinate rectangular edge
+        y1 : float
+            Y-coordinate rectangular edge
+        """
         rows = parent._squarify if hasattr(parent, "_squarify") else None
         if rows and rows.ratio == self._ratio:
             j = 0
@@ -65,6 +97,31 @@ class Resquarify:
             rows.ratio = self._ratio
 
     def set_ratio(self, ratio: float) -> TResquarify:
+        """
+        Specifies the desired aspect ratio of the generated rectangles. The
+        ratio must be specified as a number greater than or equal to one. Note
+        that the orientation of the generated rectangles (tall or wide) is not
+        implied by the ratio; for example, a ratio of two will attempt to
+        produce a mixture of rectangles whose width:height ratio is either
+        :code:`2:1` or :code:`1:2`. (However, you can approximately achieve
+        this result by generating a square treemap at different dimensions, and
+        then stretching the treemap to the desired aspect ratio.) Furthermore,
+        the specified ratio is merely a hint to the tiling algorithm; the
+        rectangles are not guaranteed to have the specified aspect ratio. If
+        not specified, the aspect ratio defaults to the golden ratio,
+        :math:`\\phi = (1 + \\sqrt{5}) / 2`, per `Kong et
+        al<http://vis.stanford.edu/papers/perception-treemaps>_`.
+
+        Parameters
+        ----------
+        ratio : float
+            Ratio value
+
+        Returns
+        -------
+        Resquarify
+            New Resquarify object
+        """
         return Resquarify(ratio if ratio > 1 else 1)
 
 

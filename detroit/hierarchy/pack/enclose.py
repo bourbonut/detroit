@@ -19,6 +19,27 @@ class Circle:
 
 
 def pack_enclose_random(circles: list[dict[str, float]]) -> Circle:
+    """
+    Computes the smallest circle that encloses the specified array of circles,
+    each of which must have a :code:`circle.r` property specifying the circle's
+    radius, and :code:`circle.x` and :code:`circle.y` properties specifying the
+    circle's center. The enclosing circle is computed using the
+    `Matoušek-Sharir-Welzl
+    algorithm<https://people.inf.ethz.ch/emo/PublFiles/SubexLinProg_ALG16_96.pdf>`_.
+    (See also `Apollonius'
+    Problem<https://observablehq.com/@d3/apollonius-problem>`_.)
+
+    Parameters
+    ----------
+    circles : list[dict[str, float]]
+        List of circles defined as dictionaries such as :code:`circle = {"x":
+        ..., "y": ..., "r": ...}`
+
+    Returns
+    -------
+    Circle
+        Smallest circle that enclosed the specified array of circles
+    """
     i = 0
     circles = [Circle.from_other(circle) for circle in circles]
     shuffle(circles)

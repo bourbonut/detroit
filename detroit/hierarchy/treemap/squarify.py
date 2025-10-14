@@ -81,13 +81,63 @@ def squarify_ratio(
 
 
 class Squarify:
+    """
+    Squarify object
+
+    Parameters
+    ----------
+    ratio : float
+        Ratio value
+    """
     def __init__(self, ratio: float):
         self._ratio = ratio
 
     def __call__(self, parent: Node, x0: float, y0: float, x1: float, y1: float):
+        """
+        Implements the squarified treemap algorithm by Bruls et al., which
+        seeks to produce rectangles of a given aspect ratio.
+
+        Parameters
+        ----------
+        parent : Node
+            Parent node
+        x0 : float
+            X-coordinate rectangular edge
+        y0 : float
+            Y-coordinate rectangular edge
+        x1 : float
+            X-coordinate rectangular edge
+        y1 : float
+            Y-coordinate rectangular edge
+        """
         squarify_ratio(self._ratio, parent, x0, y0, x1, y1)
 
     def set_ratio(self, ratio: float) -> TSquarify:
+        """
+        Specifies the desired aspect ratio of the generated rectangles. The
+        ratio must be specified as a number greater than or equal to one. Note
+        that the orientation of the generated rectangles (tall or wide) is not
+        implied by the ratio; for example, a ratio of two will attempt to
+        produce a mixture of rectangles whose width:height ratio is either
+        :code:`2:1` or :code:`1:2`. (However, you can approximately achieve
+        this result by generating a square treemap at different dimensions, and
+        then stretching the treemap to the desired aspect ratio.) Furthermore,
+        the specified ratio is merely a hint to the tiling algorithm; the
+        rectangles are not guaranteed to have the specified aspect ratio. If
+        not specified, the aspect ratio defaults to the golden ratio,
+        :math:`\\phi = (1 + \\sqrt{5}) / 2`, per `Kong et
+        al<http://vis.stanford.edu/papers/perception-treemaps>_`.
+
+        Parameters
+        ----------
+        ratio : float
+            Ratio value
+
+        Returns
+        -------
+        Squarify
+            New Squarify object
+        """
         return Squarify(ratio if ratio > 1 else 1)
 
 
