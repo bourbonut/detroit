@@ -5,6 +5,13 @@ import requests
 import re
 from uuid import uuid4
 
+theme = "light"
+color1 = "#fff" if theme == "light" else "#000"
+color2 = "#ddd" if theme == "light" else "#222"
+color3 = "#bbb" if theme == "light" else "#444"
+text_color = "black" if theme == "light" else "white"
+
+# Load data
 URL = "https://static.observableusercontent.com/files/e65374209781891f37dea1e7a6e1c5e020a3009b8aedf113b4c80942018887a1176ad4945cf14444603ff91d3da371b3b0d72419fa8d2ee0f6e815732475d5de?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27flare-2.json"
 
 flare = json.loads(requests.get(URL).content)
@@ -29,6 +36,7 @@ def link(d, n):
 width = 1152
 height = 1152
 
+# Transform data into hierarchical structure
 root = d3.hierarchy(flare).sum(lambda d: max(0, d.get("value") or 0))
 
 descendants = root.descendants()
@@ -41,8 +49,10 @@ titles = [title(d.data, d) for d in descendants]
 
 root.sort(lambda d: -d.value)
 
-(d3.pack().set_size([width - 2, height - 2]).set_padding(3))(root)
+# Orginize data as pack structure
+d3.pack().set_size([width - 2, height - 2]).set_padding(3)(root)
 
+# Create SVG container
 svg = (
     d3.create("svg")
     .attr("viewBox", [-1, -1, width, height])
@@ -54,6 +64,7 @@ svg = (
     .attr("text-anchor", "middle")
 )
 
+# Make nodes as links
 node = (
     svg.select_all("a")
     .data(descendants)
@@ -63,19 +74,22 @@ node = (
     .attr("transform", lambda d: f"translate({d.x}, {d.y})")
 )
 
+# Add circles into nodes
 (
     node.append("circle")
-    .attr("fill", lambda d: "#fff" if d.children else "#ddd")
-    .attr("stroke", lambda d: "#bbb" if d.children else None)
+    .attr("fill", lambda d: color1 if d.children else color2)
+    .attr("stroke", lambda d: color3 if d.children else None)
     .attr("r", lambda d: d.r)
 )
 
 node.append("title").text(lambda d, i: titles[i])
 
 uid = f"O-{uuid4().hex[:16]}"
+# Make leaves
 leaf = node.filter(
     lambda d: not d.children and d.r > 10 and labels[d.index] is not None
 )
+# Add clip path and circles
 (
     leaf.append("clipPath")
     .attr("id", lambda d: f"{uid}-clip-{d.index}")
@@ -91,9 +105,10 @@ leaf = node.filter(
     .join("tspan")
     .attr("x", 0)
     .attr("y", lambda d, i, D: f"{(i - len(D) * 0.5) + 0.85}em")
+    .attr("fill", text_color)
     .attr("fill-opacity", lambda d, i, D: 0.7 if i == len(D) - 1 else None)
     .text(lambda d: d)
 )
 
-with open("pack.svg", "w") as file:
+with open(f"{theme}-pack.svg", "w") as file:
     file.write(str(svg))
