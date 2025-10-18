@@ -10,10 +10,12 @@ API
    chord/index
    color
    contour/index
+   delaunay/index
    ease
    force/index
    format
    geo/index
+   hierarchy/index
    interpolate
    path
    polygon

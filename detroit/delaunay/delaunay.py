@@ -68,9 +68,9 @@ class Delaunay:
         each index :math:`0 \\le i \\lt \\text{halfedges.length}`, there is a
         halfedge from triangle vertex :code:`j = halfedges[i]` to triangle
         vertex :code:`i`. Equivalently, this means that triangle
-        :math:`\\floor{i / 3}` is adjacent to triangle :math:`\\floor{j / 3}`.
-        If j is negative, then triangle :math:`\\floor{i / 3}` is an exterior
-        triangle on the convex hull.
+        :math:`\\lfloor i / 3 \\rfloor` is adjacent to triangle :math:`\\lfloor
+        j / 3 \\rfloor`. If j is negative, then triangle :math:`\\lfloor i / 3
+        \\rfloor` is an exterior triangle on the convex hull.
     hull : list[int]
         A list of point indexes that form the convex hull in counterclockwise
         order. If the points are collinear, returns them ordered.

@@ -157,7 +157,7 @@ def pack_siblings(circles: list[Circle]) -> list[Circle]:
     * :code:`circle.y` - the y coordinate of the circle's center
 
     The circles are positioned according to the front-chain packing algorithm
-    by `Wang et al<https://dl.acm.org/doi/10.1145/1124772.1124851>`_.
+    by `Wang et al <https://dl.acm.org/doi/10.1145/1124772.1124851>`_.
 
     Parameters
     ----------

@@ -31,10 +31,10 @@ class TreeMap:
         Lays out the specified root hierarchy, assigning the following
         properties on root and its descendants:
 
-        * :code:`node.x0 ` - the left edge of the rectangle
-        * :code:`node.y0 ` - the top edge of the rectangle
-        * :code:`node.x1 ` - the right edge of the rectangle
-        * :code:`node.y1 ` - the bottom edge of the rectangle
+        * :code:`node.x0` - the left edge of the rectangle
+        * :code:`node.y0` - the top edge of the rectangle
+        * :code:`node.x1` - the right edge of the rectangle
+        * :code:`node.y1` - the bottom edge of the rectangle
 
         You must call :code:`root.sum` before passing the hierarchy to the treemap
         layout. You probably also want to call root.sort to order the hierarchy
