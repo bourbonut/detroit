@@ -4,10 +4,16 @@ import json
 import requests
 from math import inf
 
+# Load data
 URL = "https://static.observableusercontent.com/files/e65374209781891f37dea1e7a6e1c5e020a3009b8aedf113b4c80942018887a1176ad4945cf14444603ff91d3da371b3b0d72419fa8d2ee0f6e815732475d5de?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27flare-2.json"
 
 flare = json.loads(requests.get(URL).content)
 
+theme = "light"
+fill_color = "#000" if theme == "light" else "#fff"
+stroke_color = "#fff" if theme == "light" else "#000"
+color1 = "#555" if theme == "light" else "#aaa"
+color2 = "#999" if theme == "light" else "#666"
 
 def label(d):
     return d.data["name"]
@@ -27,9 +33,11 @@ def link(node):
 width = 1152
 padding = 1
 
+# Transform data into hierarchical structure
 root = d3.hierarchy(flare)
 descendants = root.descendants()
 
+# Organize structure as tree
 dx = 10
 dy = width / (root.height + padding)
 d3.tree().set_node_size([dx, dy])(root)
@@ -49,6 +57,7 @@ root.each(visit)
 height = x[1] - x[0] + dx * 2
 curve = d3.curve_bump_x
 
+# Create SVG container
 svg = (
     d3.create("svg")
     .attr("viewBox", [-dy * padding * 0.5, x[0] - dx, width, height])
@@ -59,10 +68,11 @@ svg = (
     .attr("font-size", 10)
 )
 
+# Add path connections between hierarchical nodes
 (
     svg.append("g")
     .attr("fill", "none")
-    .attr("stroke", "#555")
+    .attr("stroke", color1)
     .attr("stroke-opacity", 0.4)
     .attr("stroke-width", 1.5)
     .select_all("path")
@@ -71,6 +81,7 @@ svg = (
     .attr("d", d3.link(curve).x(lambda d: d.y).y(lambda d: d.x))
 )
 
+# Make nodes as link
 node = (
     svg.append("g")
     .select_all("a")
@@ -81,23 +92,27 @@ node = (
     .attr("transform", lambda d: f"translate({d.y}, {d.x})")
 )
 
+# Add circle on nodes
 (
     node.append("circle")
-    .attr("fill", lambda d: "#555" if d.children else "#999")
+    .attr("fill", lambda d: color1 if d.children else color2)
     .attr("r", 3)
 )
-(node.append("title").text(title))
 
+node.append("title").text(title)
+
+# Add text on nodes
 (
     node.append("text")
     .attr("dy", "0.32em")
     .attr("x", lambda d: -6 if d.children else 6)
     .attr("text-anchor", lambda d: "end" if d.children else "start")
     .attr("paint-order", "stroke")
-    .attr("stroke", "#fff")
+    .attr("fill", fill_color)
+    .attr("stroke", stroke_color)
     .attr("stroke-width", 3)
     .text(label)
 )
 
-with open("tree.svg", "w") as file:
+with open(f"{theme}-tree.svg", "w") as file:
     file.write(str(svg))
