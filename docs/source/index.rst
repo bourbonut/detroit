@@ -179,6 +179,22 @@ Gallery
        <img class="only-light" src="_images/light-bubble-map.png">
        <img class="only-dark" src="_images/dark-bubble-map.png">
      </a>
+     <a href="voronoi.html">
+       <img class="only-light" src="_images/light-voronoi.svg">
+       <img class="only-dark" src="_images/dark-voronoi.svg">
+     </a>
+     <a href="tree.html">
+       <img class="only-light" src="_images/light-tree.svg">
+       <img class="only-dark" src="_images/dark-tree.svg">
+     </a>
+     <a href="treemap.html">
+       <img class="only-light" src="_images/light-treemap.svg">
+       <img class="only-dark" src="_images/dark-treemap.svg">
+     </a>
+     <a href="pack.html">
+       <img class="only-light" src="_images/light-pack.svg">
+       <img class="only-dark" src="_images/dark-pack.svg">
+     </a>
      <a href="complex_charts/impulse.html">
        <img class="only-light" src="_images/light-impulse.png">
        <img class="only-dark" src="_images/dark-impulse.png">
@@ -226,5 +242,9 @@ Table of Content
    pie
    density
    bubble
+   voronoi
+   tree
+   treemap
+   pack
    complex_charts/index
    api/index
