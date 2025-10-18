@@ -8,11 +8,14 @@ URL = "https://static.observableusercontent.com/files/e65374209781891f37dea1e7a6
 
 data = json.loads(requests.get(URL).content)
 
+theme = "light"
+main_color = "black" if theme == "light" else "white"
 width = 1154
 height = 1154
 
 color = d3.scale_ordinal([d["name"] for d in data["children"]], d3.SCHEME_TABLEAU_10)
 
+# Transform data into hierarchical structure and organize it as treemap
 root = (
     d3.treemap()
     .set_tile(d3.treemap_binary)
@@ -21,14 +24,16 @@ root = (
     .set_round(True)
 )(d3.hierarchy(data).sum(lambda d: d.get("value")).sort(lambda d: -d.value))
 
+# Create a SVG container
 svg = (
     d3.create("svg")
     .attr("viewBox", [0, 0, width, height])
     .attr("width", width)
     .attr("height", height)
-    .attr("style", "max-width: 100%, height: auto; font: 10px sans-serif;")
+    .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;")
 )
 
+# Create leaf groups
 leaf = (
     svg.select_all("g")
     .data(root.leaves())
@@ -62,6 +67,7 @@ def fill(d):
     return color(d.data["name"])
 
 
+# Add leaves as rectangle
 (
     leaf.append("rect")
     .attr("id", leaf_uid)
@@ -81,6 +87,7 @@ def clip_uid(node):
     return id_value
 
 
+# Add clip path to avoid overlaps
 (
     leaf.append("clipPath")
     .attr("id", clip_uid)
@@ -88,6 +95,7 @@ def clip_uid(node):
     .attr("xlink:href", lambda d: f"#{d.leaf_uid}")
 )
 
+# Add text for each leaf
 (
     leaf.append("text")
     .attr("clip-path", lambda d: f"url(#{d.clip_uid})")
@@ -100,8 +108,9 @@ def clip_uid(node):
     .attr("x", 3)
     .attr("y", lambda d, i, nodes: f"{(i == len(nodes) - 1) * 0.3 + 1.1 + i * 0.9}em")
     .attr("fill-opacity", lambda d, i, nodes: 0.7 if i == len(nodes) - 1 else None)
+    .attr("fill", main_color)
     .text(lambda d: d)
 )
 
-with open("treemap.svg", "w") as file:
+with open(f"{theme}-treemap.svg", "w") as file:
     file.write(str(svg))
