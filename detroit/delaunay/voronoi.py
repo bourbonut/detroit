@@ -309,7 +309,7 @@ class Voronoi:
 
     def cell_polygon(self, i: int) -> list[tuple[float, float]] | None:
         """
-        Returns the convex, closed polygon :math:`[[x_0, y_0], [x_1, y_1],
+        Returns the convex closed polygon :math:`[[x_0, y_0], [x_1, y_1],
         \\ldots, [x_0, y_0]]` representing the cell for the specified point
         :code:`i`.
 
@@ -321,7 +321,8 @@ class Voronoi:
         Returns
         -------
         list[tuple[float, float]] | None
-            Closed path
+            Convex closed polygon :math:`[[x_0, y_0], [x_1, y_1], \\ldots,
+            [x_0, y_0]]`
         """
         polygon = Polygon()
         self.render_cell(i, polygon)

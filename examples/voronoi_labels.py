@@ -3,10 +3,15 @@ import detroit as d3
 from math import atan2, pi
 from random import normalvariate
 
+theme = "light"
+
+main_color = "black" if theme == "light" else "white"
+cell_color = "#ccc" if theme == "light" else "#333"
+
 width = 928
 height = 600
 
-
+# Declare random functions to generate data coordinates
 def random_x():
     return normalvariate(width / 2, 80)
 
@@ -19,6 +24,7 @@ data = [[random_x(), random_y()] for _ in range(200)]
 data = [d for d in data if 0 <= d[0] <= width and 0 <= d[1] <= height]
 
 
+# Group of static methods for orientating text (used later)
 class Orient:
     @staticmethod
     def top(text):
@@ -37,20 +43,23 @@ class Orient:
         return text.attr("text-anchor", "end").attr("dy", "0.35em").attr("x", -6)
 
 
+# Create delaunay triangulation and voronoi diagram
 delaunay = d3.Delaunay.from_points(data)
 voronoi = delaunay.voronoi([-1, -1, width + 1, height + 1])
 
+# Create a SVG container
 svg = (
     d3.create("svg")
     .attr("viewBox", [0, 0, width, height])
     .attr("width", width)
     .attr("height", height)
-    .attr("style", "max-width: 100% height: auto;")
+    .attr("style", "max-width: 100%; height: auto;")
 )
 
+# Convex closed polygons for voronoi diagram
 cells = [[d, voronoi.cell_polygon(i)] for i, d in enumerate(data)]
 
-
+# Lines for each cell from centroid to point
 def path(d):
     p, cell = d
     if cell is None:
@@ -61,24 +70,31 @@ def path(d):
 
 (
     svg.append("g")
-    .attr("stroke", "orange")
+    .attr("stroke", "#3d94ff")
     .select_all("path")
     .data(cells)
     .join("path")
     .attr("d", path)
 )
 
+# Cells (all convex closed polygons) 
 (
     svg.append("path")
     .attr("fill", "none")
-    .attr("stroke", "#ccc")
+    .attr("stroke", cell_color)
     .attr("d", voronoi.render())
 )
 
-svg.append("path").attr("d", delaunay.render_points(None, 2))
+# Add points as a unique path (same as `data`)
+(
+    svg.append("path")
+    .attr("fill", main_color)
+    .attr("d", delaunay.render_points(None, 2))
+)
 
 
-def each(node, d):
+# Function which adds text around points
+def each(node, d, i):
     p, cell = d
     x, y = p
     if cell is None:
@@ -98,19 +114,22 @@ def each(node, d):
     d3.select(node).call(call)
 
 
+# Turn on or off text given the polygon area
 def display(d):
     cell = d[1]
     if cell is None:
-        return ""
+        return "none"
     if -d3.polygon_area(cell) > 2000:
         return ""
     else:
         return "none"
 
 
+# Add text into SVG container
 (
     svg.append("g")
     .style("font", "10px sans-serif")
+    .style("fill", main_color)
     .select_all("text")
     .data(cells)
     .join("text")
@@ -120,5 +139,5 @@ def display(d):
     .text(lambda _, i: i)
 )
 
-with open("voronoi.svg", "w") as file:
+with open(f"{theme}-voronoi.svg", "w") as file:
     file.write(str(svg))
