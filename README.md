@@ -33,7 +33,7 @@ pip install detroit
 | chord           | Yes      | Yes      |                                                                  |
 | color           | Yes      | Yes      |                                                                  |
 | contour         | Yes      | Yes      |                                                                  |
-| delaunay        | No       | -        |                                                                  |
+| delaunay        | Yes      | Yes      |                                                                  |
 | dispatch        | -        | -        | See  [`detroit-live`](https://github.com/bourbonut/detroit-live) |
 | drag            | -        | -        | See  [`detroit-live`](https://github.com/bourbonut/detroit-live) |
 | dsv             | -        | -        | use `import pandas / polars`                                     |
@@ -42,7 +42,7 @@ pip install detroit
 | force           | Yes      | Yes      |                                                                  |
 | format          | Yes      | Yes      |                                                                  |
 | geo             | Yes      | Yes      |                                                                  |
-| hierarchy       | No       | -        |                                                                  |
+| hierarchy       | Yes      | Yes      |                                                                  |
 | interpolate     | Yes      | Yes      | interpolate CSS not supported                                    |
 | path            | Yes      | Yes      |                                                                  |
 | polygon         | Yes      | Yes      |                                                                  |
