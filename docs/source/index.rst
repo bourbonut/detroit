@@ -33,7 +33,7 @@ Instead of using the same method to *set* or *get* a value, most of classes has 
    print(scale.get_domain()) # [0, 10]
 
 
-To create a :code:`svg` content, you cant start by using :code:`d3.create`:
+To create a :code:`svg` content, you can start by using :code:`d3.create`:
 
 .. code:: python
 
