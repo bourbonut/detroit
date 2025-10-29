@@ -1,4 +1,5 @@
 import math
+from io import StringIO
 
 from .string_round import string_round
 
@@ -26,7 +27,7 @@ class Path:
         self.digit = digits or 3
         self._x0 = self._y0 = 0  # start of current subpath
         self._x1 = self._y1 = None  # end of current subpath
-        self._string = ""
+        self._string = StringIO()
 
     def _round(self, *values):
         return (string_round(value, self.digit) for value in values)
@@ -45,7 +46,7 @@ class Path:
         self._x0 = self._x1 = x
         self._y0 = self._y1 = y
         x, y = self._round(x, y)
-        self._string += f"M{x},{y}"
+        self._string.write(f"M{x},{y}")
 
     def close_path(self):
         """
@@ -55,7 +56,7 @@ class Path:
         """
         if self._x1 is not None:
             self._x1, self._y1 = self._x0, self._y0
-            self._string += "Z"
+            self._string.write("Z")
 
     def line_to(self, x: int | float, y: int | float):
         """
@@ -72,7 +73,7 @@ class Path:
         self._x1 = x
         self._y1 = y
         x, y = self._round(x, y)
-        self._string += f"L{x},{y}"
+        self._string.write(f"L{x},{y}")
 
     def quadratic_curve_to(
         self, cpx: int | float, cpy: int | float, x: int | float, y: int | float
@@ -95,7 +96,7 @@ class Path:
         self._x1 = x
         self._y1 = y
         x, y, cpx, cpy = self._round(x, y, cpx, cpy)
-        self._string += f"Q{cpx},{cpy},{x},{y}"
+        self._string.write(f"Q{cpx},{cpy},{x},{y}")
 
     def bezier_curve_to(
         self,
@@ -129,7 +130,7 @@ class Path:
         self._x1 = x
         self._y1 = y
         x, y, cpx1, cpy1, cpx2, cpy2 = self._round(x, y, cpx1, cpy1, cpx2, cpy2)
-        self._string += f"C{cpx1},{cpy1},{cpx2},{cpy2},{x},{y}"
+        self._string.write(f"C{cpx1},{cpy1},{cpx2},{cpy2},{x},{y}")
 
     def arc_to(
         self,
@@ -173,7 +174,7 @@ class Path:
         if self._x1 is None:
             self._x1 = x1
             self._y1 = y1
-            self._string += f"M{x1},{y1}"
+            self._string.write(f"M{x1},{y1}")
 
         # Or, is (x1,y1) coincident with (x0,y0)? Do nothing.
         elif not (l01_2 > EPSILON):
@@ -185,7 +186,7 @@ class Path:
         elif not (abs(y01 * x21 - y21 * x01) > EPSILON) or not r:
             self._x1 = int(x1)
             self._y1 = int(y1)
-            self._string += f"L{x1},{y1}"
+            self._string.write(f"L{x1},{y1}")
 
         # Otherwise, draw an arc!
         else:
@@ -203,13 +204,13 @@ class Path:
             # If the start tangent is not coincident with (x0,y0), line to.
             if abs(t01 - 1) > EPSILON:
                 a1, a2 = self._round(x1 + t01 * x01, y1 + t01 * y01)
-                self._string += f"L{a1},{a2}"
+                self._string.write(f"L{a1},{a2}")
 
             m1 = int(y01 * x20 > x01 * y20)
             self._x1 = x1 + t21 * x21
             self._y1 = y1 + t21 * y21
             m2, m3 = self._round(self._x1, self._y1)
-            self._string += f"A{r},{r},0,0,{m1},{m2},{m3}"
+            self._string.write(f"A{r},{r},0,0,{m1},{m2},{m3}")
 
     def arc(
         self,
@@ -259,12 +260,12 @@ class Path:
         # Is this path empty? Move to (x0, y0).
         if self._x1 is None:
             t1, t2 = self._round(x0, y0)
-            self._string += f"M{t1},{t2}"
+            self._string.write(f"M{t1},{t2}")
 
         # Or, is (x0,y0) not coincident with the previous point? Line to (x0,y0).
         elif abs(self._x1 - x0) > EPSILON or abs(self._y1 - y0) > EPSILON:
             t1, t2 = self._round(x0, y0)
-            self._string += f"L{t1},{t2}"
+            self._string.write(f"L{t1},{t2}")
 
         # Is this arc empty? We're done.
         if not r:
@@ -280,14 +281,14 @@ class Path:
             self._x1 = x0
             self._y1 = y0
             r, x0, y0, ddx, ddy = self._round(r, x0, y0, x - dx, y - dy)
-            self._string += f"A{r},{r},0,1,{cw},{ddx},{ddy}A{r},{r},0,1,{cw},{x0},{y0}"
+            self._string.write(f"A{r},{r},0,1,{cw},{ddx},{ddy}A{r},{r},0,1,{cw},{x0},{y0}")
 
         # Is this arc non-empty? Draw an arc!
         elif da > EPSILON:
             self._x1 = x + r * math.cos(a1)
             self._y1 = y + r * math.sin(a1)
             r, x1, y1 = self._round(r, self._x1, self._y1)
-            self._string += f"A{r},{r},0,{int(da >= math.pi)},{cw},{x1},{y1}"
+            self._string.write(f"A{r},{r},0,{int(da >= math.pi)},{cw},{x1},{y1}")
 
     def rect(self, x: int | float, y: int | float, w: int | float, h: int | float):
         """
@@ -309,7 +310,7 @@ class Path:
         self._x0 = self._x1 = x
         self._y0 = self._y1 = y
         x, y, w, h = self._round(x, y, w, h)
-        self._string += f"M{x},{y}h{w}v{h}h-{w}Z"
+        self._string.write(f"M{x},{y}h{w}v{h}h-{w}Z")
 
     def __str__(self) -> str:
-        return self._string
+        return self._string.getvalue()
