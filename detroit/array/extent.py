@@ -7,6 +7,27 @@ from ..types import Accessor, T
 from .argpass import argpass
 
 
+def is_valid(value: T) -> bool:
+    """
+    Check if the value is valid
+
+    Parameters
+    ----------
+    value : T
+        Input value to check
+
+    Returns
+    -------
+    bool
+        :code:`True` if the :code:`value` is defined (different to :code:`None`
+        or :code:`nan`)
+    """
+    return value is not None and (
+        isinstance(value, (str, datetime))
+        or (isinstance(value, (float, int)) and not math.isnan(value))
+    )
+
+
 def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple[T, T]:
     """
     Returns the minimum and maximum value in
@@ -37,28 +58,22 @@ def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple
     Notes
     -----
 
-    The accessor function can take one, two or three arguments where :
+    The accessor function can take one, two or three arguments where:
 
-    * the first one is the value over iteration
-    * the second one is its index
-    * the last one is the input :code:`values` without any modification
+    * the first argument (type :code:`T`) is the value over iteration
+    * the second argument (type :code:`int`) is its index
+    * the last argument (type :code:`list[T]`) is the input :code:`values` \
+    without any modification
     """
-
-    def is_valid(value):
-        """Check if the value is valid"""
-        return value is not None and (
-            isinstance(value, (str, datetime)) or not math.isnan(value)
-        )
-
-    if accessor is not None:
+    if accessor is None:
+        values = list(filter(is_valid, values))
+    else:
         accessor = argpass(accessor)
 
-        def access(index, value):
+        def access(index: int, value: T) -> T:
             """Access value given the accessor function"""
             return accessor(value, index, values)
 
         values = list(filter(is_valid, starmap(access, enumerate(values))))
-    else:
-        values = list(filter(is_valid, values))
 
     return [min(values) if values else None, max(values) if values else None]
