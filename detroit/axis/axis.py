@@ -84,14 +84,12 @@ class Axis:
         Examples
         --------
 
+        >>> import detroit as d3
         >>> svg = d3.create("svg")
         >>> svg.call(d3.axis_bottom(d3.scale_linear()))
         Selection(
             groups=[[svg]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={},
         )
         >>> print(svg.to_string())
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
@@ -357,9 +355,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7fab48999000>: None, <Element g at 0x7fab47d70900>: 0.0, <Element g at 0x7fab47d70240>: 0.5, <Element g at 0x7fab47d70a00>: 1.0, <Element path at 0x7fab47d70f00>: 0.0, <Element line at 0x7fab47d70e40>: 0.0, <Element line at 0x7fab47d70f80>: 0.5, <Element line at 0x7fab47d71000>: 1.0, <Element text at 0x7fab47d71100>: 0.0, <Element text at 0x7fab47d71180>: 0.5, <Element text at 0x7fab47d71200>: 1.0},
         )
 
         **Result**
@@ -396,9 +391,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f32b40>: None, <Element g at 0x7f8394f33140>: datetime.datetime(2000, 1, 1, 12, 0), <Element g at 0x7f8394f33080>: datetime.datetime(2000, 1, 1, 12, 15), <Element g at 0x7f8394f33100>: datetime.datetime(2000, 1, 1, 12, 30), <Element g at 0x7f8394f33180>: datetime.datetime(2000, 1, 1, 12, 45), <Element g at 0x7f8394f33000>: datetime.datetime(2000, 1, 1, 13, 0), <Element path at 0x7f8394f33600>: datetime.datetime(2000, 1, 1, 12, 0), <Element line at 0x7f8394f33540>: datetime.datetime(2000, 1, 1, 12, 0), <Element line at 0x7f8394f336c0>: datetime.datetime(2000, 1, 1, 12, 15), <Element line at 0x7f8394f33740>: datetime.datetime(2000, 1, 1, 12, 30), <Element line at 0x7f8394f337c0>: datetime.datetime(2000, 1, 1, 12, 45), <Element line at 0x7f8394f33840>: datetime.datetime(2000, 1, 1, 13, 0), <Element text at 0x7f8394f33980>: datetime.datetime(2000, 1, 1, 12, 0), <Element text at 0x7f8394f33a00>: datetime.datetime(2000, 1, 1, 12, 15), <Element text at 0x7f8394f33a80>: datetime.datetime(2000, 1, 1, 12, 30), <Element text at 0x7f8394f33b00>: datetime.datetime(2000, 1, 1, 12, 45), <Element text at 0x7f8394f33b80>: datetime.datetime(2000, 1, 1, 13, 0)},
         )
 
         **Result**
@@ -494,9 +486,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f332c0>: None, <Element g at 0x7f8394f33f80>: 0, <Element g at 0x7f8394f4c080>: 120, <Element g at 0x7f8394f4c100>: 240, <Element g at 0x7f8394f4c040>: 360, <Element path at 0x7f8394f4c4c0>: 0, <Element line at 0x7f8394f4c400>: 0, <Element line at 0x7f8394f4c540>: 120, <Element line at 0x7f8394f4c5c0>: 240, <Element line at 0x7f8394f4c640>: 360, <Element text at 0x7f8394f4c180>: 0, <Element text at 0x7f8394f4c740>: 120, <Element text at 0x7f8394f4c7c0>: 240, <Element text at 0x7f8394f4c840>: 360},
         )
 
         **Result**
@@ -552,9 +541,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f32c40>: None, <Element g at 0x7f8394f4c580>: 0, <Element g at 0x7f8394f4c6c0>: 1000, <Element g at 0x7f8394f4c600>: 2000, <Element g at 0x7f8394f4c1c0>: 3000, <Element g at 0x7f8394f4c140>: 4000, <Element g at 0x7f8394f4c2c0>: 5000, <Element g at 0x7f8394f4c9c0>: 6000, <Element g at 0x7f8394f4c980>: 7000, <Element g at 0x7f8394f4c940>: 8000, <Element g at 0x7f8394f4c0c0>: 9000, <Element g at 0x7f8394f4c900>: 10000, <Element path at 0x7f8394f4ce80>: 0, <Element line at 0x7f8394f4cdc0>: 0, <Element line at 0x7f8394f4cf00>: 1000, <Element line at 0x7f8394f4cf80>: 2000, <Element line at 0x7f8394f4d000>: 3000, <Element line at 0x7f8394f4d080>: 4000, <Element line at 0x7f8394f4d100>: 5000, <Element line at 0x7f8394f4d180>: 6000, <Element line at 0x7f8394f4d200>: 7000, <Element line at 0x7f8394f4d280>: 8000, <Element line at 0x7f8394f4d300>: 9000, <Element line at 0x7f8394f4d380>: 10000, <Element text at 0x7f8394f4ca40>: 0, <Element text at 0x7f8394f4d480>: 1000, <Element text at 0x7f8394f4d500>: 2000, <Element text at 0x7f8394f4d580>: 3000, <Element text at 0x7f8394f4d600>: 4000, <Element text at 0x7f8394f4d680>: 5000, <Element text at 0x7f8394f4d700>: 6000, <Element text at 0x7f8394f4d780>: 7000, <Element text at 0x7f8394f4d800>: 8000, <Element text at 0x7f8394f4d880>: 9000, <Element text at 0x7f8394f4d900>: 10000},
         )
 
         **Result**
@@ -606,9 +592,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f33700>: None, <Element g at 0x7f8394f33780>: 0.0, <Element g at 0x7f8394f4d0c0>: 0.1, <Element g at 0x7f8394f4cf40>: 0.2, <Element g at 0x7f8394f4d040>: 0.3, <Element g at 0x7f8394f4cb00>: 0.4, <Element g at 0x7f8394f4d1c0>: 0.5, <Element g at 0x7f8394f4d240>: 0.6, <Element g at 0x7f8394f4d2c0>: 0.7, <Element g at 0x7f8394f4d340>: 0.8, <Element g at 0x7f8394f4d140>: 0.9, <Element g at 0x7f8394f4d3c0>: 1.0, <Element path at 0x7f8394f4da40>: 0.0, <Element line at 0x7f8394f4cc00>: 0.0, <Element line at 0x7f8394f4da80>: 0.1, <Element line at 0x7f8394f4d9c0>: 0.2, <Element line at 0x7f8394f4db40>: 0.3, <Element line at 0x7f8394f4dbc0>: 0.4, <Element line at 0x7f8394f4dc40>: 0.5, <Element line at 0x7f8394f4dcc0>: 0.6, <Element line at 0x7f8394f4dd40>: 0.7, <Element line at 0x7f8394f4ddc0>: 0.8, <Element line at 0x7f8394f4de40>: 0.9, <Element line at 0x7f8394f4dec0>: 1.0, <Element text at 0x7f8394f4c340>: 0.0, <Element text at 0x7f8394f4dfc0>: 0.1, <Element text at 0x7f8394f4e040>: 0.2, <Element text at 0x7f8394f4e0c0>: 0.3, <Element text at 0x7f8394f4e140>: 0.4, <Element text at 0x7f8394f4e1c0>: 0.5, <Element text at 0x7f8394f4e240>: 0.6, <Element text at 0x7f8394f4e2c0>: 0.7, <Element text at 0x7f8394f4e340>: 0.8, <Element text at 0x7f8394f4e3c0>: 0.9, <Element text at 0x7f8394f4e440>: 1.0},
         )
 
         **Result**
@@ -660,9 +643,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f33240>: None, <Element g at 0x7f8394f4de80>: 0.0, <Element g at 0x7f8394f4dd00>: 0.1, <Element g at 0x7f8394f4de00>: 0.2, <Element g at 0x7f8394f4df00>: 0.3, <Element g at 0x7f8394f4dc00>: 0.4, <Element g at 0x7f8394f4d7c0>: 0.5, <Element g at 0x7f8394f4cec0>: 0.6, <Element g at 0x7f8394f4d940>: 0.7, <Element g at 0x7f8394f4d840>: 0.8, <Element g at 0x7f8394f4d6c0>: 0.9, <Element g at 0x7f8394f4d740>: 1.0, <Element path at 0x7f8394f4e580>: 0.0, <Element line at 0x7f8394f4c680>: 0.0, <Element line at 0x7f8394f4e540>: 0.1, <Element line at 0x7f8394f4e500>: 0.2, <Element line at 0x7f8394f4e680>: 0.3, <Element line at 0x7f8394f4e700>: 0.4, <Element line at 0x7f8394f4e780>: 0.5, <Element line at 0x7f8394f4e800>: 0.6, <Element line at 0x7f8394f4e880>: 0.7, <Element line at 0x7f8394f4e900>: 0.8, <Element line at 0x7f8394f4e980>: 0.9, <Element line at 0x7f8394f4ea00>: 1.0, <Element text at 0x7f8394f4c500>: 0.0, <Element text at 0x7f8394f4eb00>: 0.1, <Element text at 0x7f8394f4eb80>: 0.2, <Element text at 0x7f8394f4ec00>: 0.3, <Element text at 0x7f8394f4ec80>: 0.4, <Element text at 0x7f8394f4ed00>: 0.5, <Element text at 0x7f8394f4ed80>: 0.6, <Element text at 0x7f8394f4ee00>: 0.7, <Element text at 0x7f8394f4ee80>: 0.8, <Element text at 0x7f8394f4ef00>: 0.9, <Element text at 0x7f8394f4ef80>: 1.0},
         )
 
         **Result**
@@ -719,9 +699,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f33f00>: None, <Element g at 0x7f8394f4e380>: 0.0, <Element g at 0x7f8394f4e300>: 0.1, <Element g at 0x7f8394f4e480>: 0.2, <Element g at 0x7f8394f4e280>: 0.3, <Element g at 0x7f8394f4c200>: 0.4, <Element g at 0x7f8394f4db00>: 0.5, <Element g at 0x7f8394f4d640>: 0.6, <Element g at 0x7f8394f4cfc0>: 0.7, <Element g at 0x7f8394f4df40>: 0.8, <Element g at 0x7f8394f4d5c0>: 0.9, <Element g at 0x7f8394f4c880>: 1.0, <Element path at 0x7f8394f4f140>: 0.0, <Element line at 0x7f8394f4e080>: 0.0, <Element line at 0x7f8394f4f100>: 0.1, <Element line at 0x7f8394f4f180>: 0.2, <Element line at 0x7f8394f4f200>: 0.3, <Element line at 0x7f8394f4f280>: 0.4, <Element line at 0x7f8394f4f300>: 0.5, <Element line at 0x7f8394f4f380>: 0.6, <Element line at 0x7f8394f4f400>: 0.7, <Element line at 0x7f8394f4f480>: 0.8, <Element line at 0x7f8394f4f500>: 0.9, <Element line at 0x7f8394f4f580>: 1.0, <Element text at 0x7f8394f4db80>: 0.0, <Element text at 0x7f8394f4f680>: 0.1, <Element text at 0x7f8394f4f700>: 0.2, <Element text at 0x7f8394f4f780>: 0.3, <Element text at 0x7f8394f4f800>: 0.4, <Element text at 0x7f8394f4f880>: 0.5, <Element text at 0x7f8394f4f900>: 0.6, <Element text at 0x7f8394f4f980>: 0.7, <Element text at 0x7f8394f4fa00>: 0.8, <Element text at 0x7f8394f4fa80>: 0.9, <Element text at 0x7f8394f4fb00>: 1.0},
         )
 
         **Result**
@@ -777,9 +754,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f4e4c0>: None, <Element g at 0x7f8394f4ef40>: 0.0, <Element g at 0x7f8394f4efc0>: 0.1, <Element g at 0x7f8394f4edc0>: 0.2, <Element g at 0x7f8394f4c780>: 0.3, <Element g at 0x7f8394f4ee40>: 0.4, <Element g at 0x7f8394f4c8c0>: 0.5, <Element g at 0x7f8394f4e940>: 0.6, <Element g at 0x7f8394f4cd80>: 0.7, <Element g at 0x7f8394f4d8c0>: 0.8, <Element g at 0x7f8394f4e180>: 0.9, <Element g at 0x7f8394f4e400>: 1.0, <Element path at 0x7f8394f4fcc0>: 0.0, <Element line at 0x7f8394f4ebc0>: 0.0, <Element line at 0x7f8394f4fc80>: 0.1, <Element line at 0x7f8394f4fd00>: 0.2, <Element line at 0x7f8394f4fd80>: 0.3, <Element line at 0x7f8394f4fe00>: 0.4, <Element line at 0x7f8394f4fe80>: 0.5, <Element line at 0x7f8394f4ff00>: 0.6, <Element line at 0x7f8394f4ff80>: 0.7, <Element line at 0x7f8394f54040>: 0.8, <Element line at 0x7f8394f540c0>: 0.9, <Element line at 0x7f8394f54140>: 1.0, <Element text at 0x7f8394f4dc80>: 0.0, <Element text at 0x7f8394f54240>: 0.1, <Element text at 0x7f8394f542c0>: 0.2, <Element text at 0x7f8394f54340>: 0.3, <Element text at 0x7f8394f543c0>: 0.4, <Element text at 0x7f8394f54440>: 0.5, <Element text at 0x7f8394f544c0>: 0.6, <Element text at 0x7f8394f54540>: 0.7, <Element text at 0x7f8394f545c0>: 0.8, <Element text at 0x7f8394f54640>: 0.9, <Element text at 0x7f8394f546c0>: 1.0},
         )
 
         **Result**
@@ -836,9 +810,6 @@ class Axis:
         Selection(
             groups=[[g]],
             parents=[svg],
-            enter=None,
-            exit=None,
-            data={<Element g at 0x7f8394f4f000>: None, <Element g at 0x7f8394f4ca00>: 0.0, <Element g at 0x7f8394f4d4c0>: 0.1, <Element g at 0x7f8394f4ecc0>: 0.2, <Element g at 0x7f8394f4f5c0>: 0.3, <Element g at 0x7f8394f4f940>: 0.4, <Element g at 0x7f8394f4ea40>: 0.5, <Element g at 0x7f8394f4ed40>: 0.6, <Element g at 0x7f8394f4f2c0>: 0.7, <Element g at 0x7f8394f4e200>: 0.8, <Element g at 0x7f8394f4da00>: 0.9, <Element g at 0x7f8394f4eac0>: 1.0, <Element path at 0x7f8394f33940>: 0.0, <Element line at 0x7f8394f33e80>: 0.0, <Element line at 0x7f8394f322c0>: 0.1, <Element line at 0x7f8394f33cc0>: 0.2, <Element line at 0x7f8394f4f540>: 0.3, <Element line at 0x7f8394f4e8c0>: 0.4, <Element line at 0x7f8394f541c0>: 0.5, <Element line at 0x7f8394f54100>: 0.6, <Element line at 0x7f8394f54840>: 0.7, <Element line at 0x7f8394f547c0>: 0.8, <Element line at 0x7f8394f54880>: 0.9, <Element line at 0x7f8394f54900>: 1.0, <Element text at 0x7f8394f4e6c0>: 0.0, <Element text at 0x7f8394f54a00>: 0.1, <Element text at 0x7f8394f54a80>: 0.2, <Element text at 0x7f8394f54b00>: 0.3, <Element text at 0x7f8394f54b80>: 0.4, <Element text at 0x7f8394f54c00>: 0.5, <Element text at 0x7f8394f54c80>: 0.6, <Element text at 0x7f8394f54d00>: 0.7, <Element text at 0x7f8394f54d80>: 0.8, <Element text at 0x7f8394f54e00>: 0.9, <Element text at 0x7f8394f54e80>: 1.0},
         )
 
         **Result**
