@@ -49,12 +49,25 @@ body {
 }
 
 .custom-grid {
-  display: grid;
-  grid-template-columns: auto auto;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .custom-grid > a > img {
   max-height: 250px;
-  max-width: 380px;
+}
+
+@media (min-width: 960px) {
+  .custom-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    place-items: center;
+  }
+
+  .custom-grid > a > img {
+    max-height: 250px;
+    max-width: 380px;
+  }
 }
