@@ -1,10 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic
 
 from ..types import T
-
-TSerie = TypeVar("Serie", bound="Serie")
-TSeries = TypeVar("Series", bound="Series")
 
 
 class Serie(Generic[T]):
@@ -63,7 +62,7 @@ class Serie(Generic[T]):
         """
         return len(self._values)
 
-    def __eq__(self, serie: TSerie | Any) -> bool:
+    def __eq__(self, serie: Serie | Any) -> bool:
         """
         Checks if another series value is the same as the current values.
 
@@ -151,7 +150,7 @@ class Series(Generic[T]):
         """
         return len(self._series)
 
-    def __eq__(self, series: TSeries | Any) -> bool:
+    def __eq__(self, series: Series | Any) -> bool:
         """
         Checks if another series value is the same as the current values.
 

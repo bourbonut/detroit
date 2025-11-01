@@ -1,11 +1,10 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import cos, inf, isnan, nan, pi, sin, sqrt
-from typing import TypeVar
 
 from ..types import Force, SimulationNode
 from .lcg import lcg
-
-TForceSimulation = TypeVar("ForceSimulation", bound="ForceSimulation")
 
 
 def x(d: SimulationNode) -> float:
@@ -16,8 +15,8 @@ def y(d: SimulationNode) -> float:
     return d["y"]
 
 
-INITIAL_RADIUS = 10
-INITIAL_ANGLE = pi * (3 - sqrt(5))
+INIIAL_RADIUS = 10
+INIIAL_ANGLE = pi * (3 - sqrt(5))
 
 
 class ForceSimulation:
@@ -32,7 +31,7 @@ class ForceSimulation:
         self._random = lcg()
         self._initialize_nodes()
 
-    def tick(self, iterations: float | None = None) -> TForceSimulation:
+    def tick(self, iterations: float | None = None) -> ForceSimulation:
         """
         Manually steps the simulation by the specified number of iterations,
         and returns the simulation. If :code:`iterations` is not specified, it
@@ -99,8 +98,8 @@ class ForceSimulation:
             if fy := node.get("fy"):
                 node["y"] = fy
             if isnan(node.get("x", nan)) or isnan(node.get("y", nan)):
-                radius = INITIAL_RADIUS * sqrt(0.5 + i)
-                angle = i * INITIAL_ANGLE
+                radius = INIIAL_RADIUS * sqrt(0.5 + i)
+                angle = i * INIIAL_ANGLE
                 node["x"] = radius * cos(angle)
                 node["y"] = radius * sin(angle)
             if isnan(node.get("vx", nan)) or isnan(node.get("vy", nan)):
@@ -147,7 +146,7 @@ class ForceSimulation:
 
         return closest
 
-    def set_nodes(self, nodes: list[SimulationNode]) -> TForceSimulation:
+    def set_nodes(self, nodes: list[SimulationNode]) -> ForceSimulation:
         """
         Sets the simulation's nodes to the specified array of objects,
         initializing their positions and velocities if necessary, and then
@@ -202,7 +201,7 @@ class ForceSimulation:
             self._initialize_force(force)
         return self
 
-    def set_alpha(self, alpha: float) -> TForceSimulation:
+    def set_alpha(self, alpha: float) -> ForceSimulation:
         """
         It decreases over time as the simulation "cools down".
 
@@ -219,7 +218,7 @@ class ForceSimulation:
         self._alpha = alpha
         return self
 
-    def set_alpha_min(self, alpha_min: float) -> TForceSimulation:
+    def set_alpha_min(self, alpha_min: float) -> ForceSimulation:
         """
         Sets the minimum alpha to the specified number in the range
         :math:`[0,1]` and returns this simulation.
@@ -241,7 +240,7 @@ class ForceSimulation:
         self._alpha_min = alpha_min
         return self
 
-    def set_alpha_decay(self, alpha_decay: float) -> TForceSimulation:
+    def set_alpha_decay(self, alpha_decay: float) -> ForceSimulation:
         """
         Sets the alpha decay rate to the specified number in the range
         :math:`[0,1]` and returns this simulation.
@@ -269,7 +268,7 @@ class ForceSimulation:
         self._alpha_decay = alpha_decay
         return self
 
-    def set_alpha_target(self, alpha_target: float) -> TForceSimulation:
+    def set_alpha_target(self, alpha_target: float) -> ForceSimulation:
         """
         Sets the current target alpha to the specified number in the range
         :math:`[0,1]` and returns this simulation.
@@ -287,7 +286,7 @@ class ForceSimulation:
         self._alpha_target = alpha_target
         return self
 
-    def set_velocity_decay(self, velocity_decay: float) -> TForceSimulation:
+    def set_velocity_decay(self, velocity_decay: float) -> ForceSimulation:
         """
         Sets the velocity decay factor to the specified number in the range
         :math:`[0,1]` and returns this simulation.
@@ -313,7 +312,7 @@ class ForceSimulation:
 
     def set_random_source(
         self, random_source: Callable[[None], float]
-    ) -> TForceSimulation:
+    ) -> ForceSimulation:
         """
         Sets the function used to generate random numbers; this should be a
         function that returns a number between 0 (inclusive) and 1 (exclusive).
@@ -336,7 +335,7 @@ class ForceSimulation:
             self._initialize_force(force)
         return self
 
-    def set_force(self, name: str, force: Force | None = None) -> TForceSimulation:
+    def set_force(self, name: str, force: Force | None = None) -> ForceSimulation:
         """
         If :code:`force` is not :code:`None`, assigns the :code:`force` for the
         specified :code:`name` and returns this simulation. To remove the

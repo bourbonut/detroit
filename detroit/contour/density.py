@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import floor, isnan, log, sqrt, ulp
 from operator import itemgetter
-from typing import Generic, TypeVar
+from typing import Generic
 
 from ..array import argpass, blur2, ticks
 from ..types import Accessor, MultiPolygonGeoJSON, Point2D, T
 from .constant import constant
 from .contours import Contours
-
-TDensity = TypeVar("Density", bound="Density")
 
 default_x = itemgetter(0)
 default_y = itemgetter(1)
@@ -261,7 +261,7 @@ class Density(Generic[T]):
         coordinates[0] = coordinates[0] * pow(2, self._k) - self._o
         coordinates[1] = coordinates[1] * pow(2, self._k) - self._o
 
-    def _resize(self) -> TDensity:
+    def _resize(self) -> Density:
         """
         Recomputes density values from updated attributes and returns itself.
 
@@ -275,7 +275,7 @@ class Density(Generic[T]):
         self._m = int(self._dy + self._o * 2) >> self._k
         return self
 
-    def x(self, x: Accessor[T, float] | float) -> TDensity:
+    def x(self, x: Accessor[T, float] | float) -> Density:
         """
         Sets the x coordinate accessor and returns itself.
 
@@ -295,7 +295,7 @@ class Density(Generic[T]):
             self._x = argpass(constant(x))
         return self
 
-    def y(self, y: Accessor[T, float] | float) -> TDensity:
+    def y(self, y: Accessor[T, float] | float) -> Density:
         """
         Sets the y coordinate accessor and returns itself.
 
@@ -315,7 +315,7 @@ class Density(Generic[T]):
             self._y = argpass(constant(y))
         return self
 
-    def set_weight(self, weight: Accessor[T, float] | float) -> TDensity:
+    def set_weight(self, weight: Accessor[T, float] | float) -> Density:
         """
         Sets the weight accessor and returns itself.
 
@@ -335,7 +335,7 @@ class Density(Generic[T]):
             self._weight = argpass(constant(weight))
         return self
 
-    def set_size(self, size: tuple[float, float]) -> TDensity:
+    def set_size(self, size: tuple[float, float]) -> Density:
         """
         Sets the size of the density estimator to the specified bounds and
         returns itself. The size is specified as an array :code:`[width,
@@ -360,7 +360,7 @@ class Density(Generic[T]):
         self._dy = dy
         return self._resize()
 
-    def set_cell_size(self, cell_size: float) -> TDensity:
+    def set_cell_size(self, cell_size: float) -> Density:
         """
         Sets the size of individual cells in the underlying bin grid of the
         positive integer and returns itself.
@@ -383,7 +383,7 @@ class Density(Generic[T]):
         thresholds: Callable[[list[float], ...], float | list[float]]
         | list[float]
         | float,
-    ) -> TDensity:
+    ) -> Density:
         """
         Sets the threshold function to the contour generator and returns
         itself.
@@ -414,7 +414,7 @@ class Density(Generic[T]):
             self._threshold = constant(thresholds)
         return self
 
-    def set_bandwidth(self, bandwidth: float) -> TDensity:
+    def set_bandwidth(self, bandwidth: float) -> Density:
         """
         Sets the bandwidth (the standard deviation) of the Gaussian kernel and
         returns itself.

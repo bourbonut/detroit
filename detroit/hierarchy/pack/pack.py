@@ -1,13 +1,12 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import sqrt
-from typing import TypeVar
 
 from ..accessors import optional
 from ..constant import constant, constant_zero
 from ..hierarchy import Node
 from .siblings import pack_siblings_random
-
-TPack = TypeVar("Pack", bound="Pack")
 
 
 def default_radius(d: Node) -> float:
@@ -18,6 +17,7 @@ class Pack:
     """
     Pack layout
     """
+
     def __init__(self):
         self._radius = None
         self._dx = 1
@@ -69,7 +69,7 @@ class Pack:
             )
         return root
 
-    def set_radius(self, radius: Callable[[Node], float] | None) -> TPack:
+    def set_radius(self, radius: Callable[[Node], float] | None) -> Pack:
         """
         Sets the pack layout's radius accessor to the specified function and
         returns this pack layout. If :code:`radius` is not specified, returns
@@ -93,7 +93,7 @@ class Pack:
         self._radius = optional(radius)
         return self
 
-    def set_size(self, size: tuple[float, float]) -> TPack:
+    def set_size(self, size: tuple[float, float]) -> Pack:
         """
         Sets this pack layout's size to the specified two-element array of
         numbers :code:`[width, height]` and returns this pack layout.
@@ -112,7 +112,7 @@ class Pack:
         self._dy = size[1]
         return self
 
-    def set_padding(self, padding: Callable[[Node], float] | float) -> TPack:
+    def set_padding(self, padding: Callable[[Node], float] | float) -> Pack:
         """
         If :code:`padding` is specified, sets this pack layout's padding
         accessor to the specified number or function and returns this pack

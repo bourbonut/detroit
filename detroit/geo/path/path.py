@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import floor, isnan
-from typing import Any, TypeVar
+from typing import Any
 
 from ...types import GeoJSON, Point2D
 from ..common import Context, Projection
@@ -11,8 +13,6 @@ from .centroid import CentroidStream
 from .context import PathContext
 from .measure import LengthStream
 from .string import PathString
-
-TGeoPath = TypeVar("GeoPath", bound="GeoPath")
 
 
 def identity(x):
@@ -163,7 +163,7 @@ class GeoPath:
         geo_stream(obj, self._projection_stream(path_centroid))
         return path_centroid.result()
 
-    def set_projection(self, projection: Projection | None = None) -> TGeoPath:
+    def set_projection(self, projection: Projection | None = None) -> GeoPath:
         """
         If a projection is specified, sets the current projection to the
         specified projection.
@@ -195,7 +195,7 @@ class GeoPath:
             self._projection_stream = projection.stream
         return self
 
-    def set_context(self, context: Context | None = None) -> TGeoPath:
+    def set_context(self, context: Context | None = None) -> GeoPath:
         """
         If context is specified, sets the current render context and returns
         the path generator. If the context is :code:`None`, then the path
@@ -221,7 +221,7 @@ class GeoPath:
             self._context_stream = PathContext(context)
         return self
 
-    def set_point_radius(self, radius: Callable[..., float] | float) -> TGeoPath:
+    def set_point_radius(self, radius: Callable[..., float] | float) -> GeoPath:
         """
         If radius is specified, sets the radius used to display Point and
         MultiPoint geometries to the specified number.
@@ -243,7 +243,7 @@ class GeoPath:
             self._point_radius = radius
         return self
 
-    def set_digits(self, digits: str | float | None = None) -> TGeoPath:
+    def set_digits(self, digits: str | float | None = None) -> GeoPath:
         """
         If digits is specified (as a non-negative number), sets the number of
         fractional digits for coordinates generated in SVG path strings.

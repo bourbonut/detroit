@@ -1,9 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable, Iterator
-from typing import Any, TypeVar
+from typing import Any
 
 from ..array import argpass
-
-TNode = TypeVar("Node", bound="Node")
 
 
 class Node:
@@ -30,6 +30,7 @@ class Node:
     children : list[Node] | None
         An array of child nodes, if any, or undefined for leaves
     """
+
     def __init__(self, data: Any):
         self.data = data
         self.depth = 0
@@ -38,7 +39,7 @@ class Node:
         self.value = None
         self.children = None
 
-    def __iter__(self) -> Iterator[TNode]:
+    def __iter__(self) -> Iterator[Node]:
         """
         Returns an iterator over the node's descendants in breadth-first order.
 
@@ -62,7 +63,7 @@ class Node:
             if len(next) == 0:
                 break
 
-    def ancestors(self) -> list[TNode]:
+    def ancestors(self) -> list[Node]:
         """
         Returns the array of ancestors nodes, starting with this node, then
         followed by each parent up to the root.
@@ -87,11 +88,11 @@ class Node:
         Returns
         -------
         int
-           Number of leaves 
+           Number of leaves
         """
         return self.each_after(count)
 
-    def copy(self) -> TNode:
+    def copy(self) -> Node:
         """
         Return a deep copy of the subtree starting at this node. (The returned
         deep copy shares the same data, however.). The returned node is the
@@ -105,7 +106,7 @@ class Node:
         """
         return hierarchy(self, node_children).each_before(copy_data)
 
-    def descendants(self) -> list[TNode]:
+    def descendants(self) -> list[Node]:
         """
         Returns the array of descendant nodes, starting with this node, then
         followed by each child in topological order.
@@ -117,7 +118,7 @@ class Node:
         """
         return list(self)
 
-    def each(self, callback: Callable[[TNode, int, TNode], None]) -> TNode:
+    def each(self, callback: Callable[[Node, int, Node], None]) -> Node:
         """
         Invokes the specified function for node and each descendant in
         breadth-first order, such that a given node is only visited if all
@@ -145,7 +146,7 @@ class Node:
             callback(node, i, self)
         return self
 
-    def each_after(self, callback: Callable[[TNode, int, TNode], None]) -> TNode:
+    def each_after(self, callback: Callable[[Node, int, Node], None]) -> Node:
         """
         Invokes the specified function for node and each descendant in
         post-order traversal, such that a given node is only visited after all
@@ -184,7 +185,7 @@ class Node:
             callback(node, index, self)
         return self
 
-    def each_before(self, callback: Callable[[TNode, int, TNode], None]) -> TNode:
+    def each_before(self, callback: Callable[[Node, int, Node], None]) -> Node:
         """
         Invokes the specified function for node and each descendant in
         pre-order traversal, such that a given node is only visited after all
@@ -220,7 +221,7 @@ class Node:
                 nodes.extend(reversed(children))
         return self
 
-    def find(self, callback: Callable[[TNode, int, TNode], None]) -> TNode:
+    def find(self, callback: Callable[[Node, int, Node], None]) -> Node:
         """
         Returns the first node in the hierarchy from this node for which the
         specified filter returns a truthy value. Returns undefined if no such
@@ -245,7 +246,7 @@ class Node:
             if callback(node, i, self):
                 return node
 
-    def leaves(self) -> list[TNode]:
+    def leaves(self) -> list[Node]:
         """
         Returns the array of leaf nodes in traversal order. A leaf is a node
         with no children.
@@ -264,7 +265,7 @@ class Node:
         self.each_before(leave)
         return leaves
 
-    def links(self) -> list[dict[str, TNode]]:
+    def links(self) -> list[dict[str, Node]]:
         """
         Returns an array of links for this node and its descendants, where each
         link is an object that defines source and target properties. The source
@@ -286,7 +287,7 @@ class Node:
         root.each(link)
         return links
 
-    def path(self, end: TNode) -> list[TNode]:
+    def path(self, end: Node) -> list[Node]:
         """
         Returns the shortest path through the hierarchy from this node to the
         specified target node. The path starts at this node, ascends to the
@@ -318,7 +319,7 @@ class Node:
             end = end.parent
         return nodes
 
-    def sort(self, compare: Callable[[TNode], float]) -> TNode:
+    def sort(self, compare: Callable[[Node], float]) -> Node:
         """
         Sorts the children of this node, if any, and each of this node's
         descendants' children, in pre-order traversal using the specified
@@ -339,7 +340,7 @@ class Node:
         :code:`functools.cmp_to_key` should be used to compare two nodes.
 
         .. code:: python
-            
+
             from functools import cmp_to_key
 
             def compare(a: Node, b: Node) -> float:
@@ -349,13 +350,14 @@ class Node:
 
             root = root.sort(compare=cmp_to_key(compare))
         """
+
         def sort(node):
             if node.children is not None:
                 node.children.sort(key=compare)
 
         return self.each_before(sort)
 
-    def sum(self, value: Callable[[dict[str, Any]], float]) -> TNode:
+    def sum(self, value: Callable[[dict[str, Any]], float]) -> Node:
         """
         Evaluates the specified value function for this node and each
         descendant in post-order traversal, and returns this node. The
@@ -377,6 +379,7 @@ class Node:
         Node
             Itself
         """
+
         def sum_node(node):
             v = value(node.data)
             sum_value = 0 if v is None else v

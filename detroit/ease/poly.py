@@ -1,8 +1,5 @@
-from typing import TypeVar
+from __future__ import annotations
 
-TPolyIn = TypeVar("PolyIn", bound="PolyIn")
-TPolyOut = TypeVar("PolyOut", bound="PolyOut")
-TPolyInOut = TypeVar("PolyInOut", bound="PolyInOut")
 
 EXPONENT = 3
 
@@ -59,7 +56,7 @@ class PolyIn:
         """
         return pow(t, self._exponent)
 
-    def exponent(self, exponent: float) -> TPolyIn:
+    def exponent(self, exponent: float) -> PolyIn:
         """
         Returns a new easing function with :code:`exponent` value as parameter.
 
@@ -132,7 +129,7 @@ class PolyOut:
         """
         return 1 - pow(1 - t, self._exponent)
 
-    def exponent(self, exponent: float) -> TPolyOut:
+    def exponent(self, exponent: float) -> PolyOut:
         """
         Returns a new easing function with :code:`exponent` value as parameter.
 
@@ -212,7 +209,7 @@ class PolyInOut:
         else:
             return (2 - pow(2 - t, self._exponent)) * 0.5
 
-    def exponent(self, exponent: float) -> TPolyInOut:
+    def exponent(self, exponent: float) -> PolyInOut:
         """
         Returns a new easing function with :code:`exponent` value as parameter.
 

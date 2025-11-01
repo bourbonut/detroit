@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from itertools import chain
 from math import ceil
-from typing import Iterable, TypeVar
+from typing import Iterable
 
 from ..types import GeoJSON, Point2D
 
@@ -28,9 +30,6 @@ def graticule_y(x0: float, x1: float, dx: float) -> Callable[[float], list[Point
         return [[x, y] for x in lx]
 
     return local_graticule_y
-
-
-TGraticule = TypeVar("Graticule", bound="Graticule")
 
 
 class Graticule:
@@ -140,7 +139,7 @@ class Graticule:
             ],
         }
 
-    def set_extent(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
+    def set_extent(self, extent: tuple[Point2D, Point2D]) -> Graticule:
         """
         Sets the major and minor extents of this graticule.
 
@@ -156,7 +155,7 @@ class Graticule:
         """
         return self.set_extent_major(extent).set_extent_minor(extent)
 
-    def set_extent_major(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
+    def set_extent_major(self, extent: tuple[Point2D, Point2D]) -> Graticule:
         """
         Sets the major extent of this graticule.
 
@@ -184,7 +183,7 @@ class Graticule:
             self._Y1 = extent
         return self.set_precision(self.get_precision())
 
-    def set_extent_minor(self, extent: tuple[Point2D, Point2D]) -> TGraticule:
+    def set_extent_minor(self, extent: tuple[Point2D, Point2D]) -> Graticule:
         """
         Sets the minor extent of this graticule.
 
@@ -212,7 +211,7 @@ class Graticule:
             self._y1 = extent
         return self.set_precision(self.get_precision())
 
-    def set_step(self, step: Point2D) -> TGraticule:
+    def set_step(self, step: Point2D) -> Graticule:
         """
         Sets the major and minor step for this graticule.
 
@@ -228,7 +227,7 @@ class Graticule:
         """
         return self.set_step_major(step).set_step_minor(step)
 
-    def set_step_major(self, step: Point2D) -> TGraticule:
+    def set_step_major(self, step: Point2D) -> Graticule:
         """
         Sets the major step for this graticule.
 
@@ -246,7 +245,7 @@ class Graticule:
         self._DY = step[1]
         return self
 
-    def set_step_minor(self, step: Point2D) -> TGraticule:
+    def set_step_minor(self, step: Point2D) -> Graticule:
         """
         Sets the minor step for this graticule.
 
@@ -264,7 +263,7 @@ class Graticule:
         self._dy = step[1]
         return self
 
-    def set_precision(self, precision: float) -> TGraticule:
+    def set_precision(self, precision: float) -> Graticule:
         """
         Sets the precision for this graticule.
 

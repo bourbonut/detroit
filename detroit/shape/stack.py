@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic
 
 from ..array import argpass
 from ..types import T, U, V
@@ -7,8 +9,6 @@ from .constant import constant
 from .offset import offset_none
 from .order import order_none
 from .series import Serie, Series
-
-TStack = TypeVar("Stack", bound="Stack")
 
 
 def stack_value(d: U, key: V) -> T:
@@ -95,7 +95,7 @@ class Stack(Generic[T]):
         self._offset(sz, oz)
         return sz
 
-    def set_keys(self, keys: Callable[[...], list[str]] | list[str]) -> TStack:
+    def set_keys(self, keys: Callable[[...], list[str]] | list[str]) -> Stack:
         """
         Sets the :code:`keys` method and returns itself.
 
@@ -106,7 +106,7 @@ class Stack(Generic[T]):
 
         Returns
         -------
-        TStack
+        Stack
             Itself
 
         Notes
@@ -123,7 +123,7 @@ class Stack(Generic[T]):
 
     def set_value(
         self, value: Callable[[T, str, int, list[T]], float] | float
-    ) -> TStack:
+    ) -> Stack:
         """
         Sets the :code:`value` method and returns itself.
 
@@ -135,7 +135,7 @@ class Stack(Generic[T]):
 
         Returns
         -------
-        TStack
+        Stack
             Itself
 
         Notes
@@ -151,7 +151,7 @@ class Stack(Generic[T]):
 
     def set_order(
         self, order: Callable[[list[Series]], list[int]] | list[int] | None = None
-    ) -> TStack:
+    ) -> Stack:
         """
         Sets the :code:`order` method and returns itself.
 
@@ -163,7 +163,7 @@ class Stack(Generic[T]):
 
         Returns
         -------
-        TStack
+        Stack
             Itself
         """
         if order is None:
@@ -176,7 +176,7 @@ class Stack(Generic[T]):
 
     def set_offset(
         self, offset: Callable[[list[Series], list[int]], None] | None = None
-    ) -> TStack:
+    ) -> Stack:
         """
         Sets the :code:`offset` and returns itself.
 
@@ -189,7 +189,7 @@ class Stack(Generic[T]):
 
         Returns
         -------
-        TStack
+        Stack
             Itself
         """
         if offset is None:

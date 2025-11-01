@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
-from typing import Generic, TypeVar
+from typing import Generic
 
 from ..array import argpass
 from ..selection.selection import Selection
@@ -9,8 +11,6 @@ from .curves import Curve, curve_linear
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
-
-TLine = TypeVar("Line", bound="Line")
 
 
 class Line(Generic[T], WithPath):
@@ -103,7 +103,7 @@ class Line(Generic[T], WithPath):
             self._output = None
             return str(buffer) or None
 
-    def x(self, x: Accessor[T, float] | Number) -> TLine:
+    def x(self, x: Accessor[T, float] | Number) -> Line:
         """
         Sets x accessor function
 
@@ -124,7 +124,7 @@ class Line(Generic[T], WithPath):
         self._x = argpass(self._x)
         return self
 
-    def y(self, y: Accessor[T, float] | Number) -> TLine:
+    def y(self, y: Accessor[T, float] | Number) -> Line:
         """
         Sets y accessor function
 
@@ -145,7 +145,7 @@ class Line(Generic[T], WithPath):
         self._y = argpass(self._y)
         return self
 
-    def set_defined(self, defined: Accessor[T, bool] | Number) -> TLine:
+    def set_defined(self, defined: Accessor[T, bool] | Number) -> Line:
         """
         Sets defined accessor
 
@@ -177,7 +177,7 @@ class Line(Generic[T], WithPath):
             self._defined = constant(bool(defined))
         return self
 
-    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> TLine:
+    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> Line:
         """
         Sets curve factory.
 
@@ -196,7 +196,7 @@ class Line(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    def set_context(self, context: Selection | None = None) -> TLine:
+    def set_context(self, context: Selection | None = None) -> Line:
         """
         Sets the context.
 

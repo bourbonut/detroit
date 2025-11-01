@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Iterator
 from functools import cmp_to_key
 from math import hypot, isnan, pi, sin
-from typing import TypeVar
 
 from ..array import argpass
 from ..types import T
@@ -10,8 +11,6 @@ from .delaunator import Delaunator
 from .path import Path
 from .polygon import Polygon
 from .voronoi import Voronoi
-
-TDelaunay = TypeVar("Delaunay", bound="Delaunay")
 
 TAU = 2 * pi
 
@@ -102,7 +101,7 @@ class Delaunay:
         points: list[T],
         fx: Callable[[T, int, list[T]], float] = point_x,
         fy: Callable[[T, int, list[T]], float] = point_y,
-    ) -> TDelaunay:
+    ) -> Delaunay:
         """
         Returns the Delaunay triangulation for the given array or iterable of
         points. If :code:`fx` and :code:`fy` are not specified, then points is
@@ -133,7 +132,7 @@ class Delaunay:
             array[i * 2 + 1] = fy(p, i, points)
         return cls(array)
 
-    def update(self) -> TDelaunay:
+    def update(self) -> Delaunay:
         """
         Recomputes the triangulation after the points have been modified
         in-place.

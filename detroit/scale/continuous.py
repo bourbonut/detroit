@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from bisect import bisect
 from collections.abc import Callable
 from datetime import datetime
 from math import isnan, nan
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic
 
 from ..interpolate import (
     interpolate as interpolate_value,
@@ -13,8 +15,6 @@ from ..interpolate import (
 )
 from ..types import GenValue, Number, T
 from .utils import as_float, constant, identity
-
-TTransformer = TypeVar("Itself", bound="Transformer")
 
 
 def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
@@ -109,7 +109,7 @@ class PolyMap:
     ):
         self.domain = domain
         self.j = j = min(len(self.domain), len(range_vals)) - 1
-        self.d = [None] * j  # TODO: use list by comprehension
+        self.d = [None] * j  # ODO: use list by comprehension
         self.r = [None] * j
 
         if self.domain[j] < self.domain[0]:
@@ -163,7 +163,7 @@ class Transformer(Generic[T]):
         self._output = None
         self._rescale()
 
-    def _rescale(self) -> TTransformer:
+    def _rescale(self) -> Transformer:
         """
         Private method which updates:
 
@@ -229,7 +229,7 @@ class Transformer(Generic[T]):
             self._input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self._untransform(self._input(y)))
 
-    def set_domain(self, domain: list[Number]) -> TTransformer:
+    def set_domain(self, domain: list[Number]) -> Transformer:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -243,7 +243,7 @@ class Transformer(Generic[T]):
         Transformer
             Itself
         """
-        # TODO: update lambda function to as_float function
+        # ODO: update lambda function to as_float function
         self._domain = list(
             map(lambda x: float(x) if isinstance(x, str) else x, domain)
         )
@@ -252,7 +252,7 @@ class Transformer(Generic[T]):
     def get_domain(self) -> list[Number]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[T]) -> TTransformer:
+    def set_range(self, range_vals: list[T]) -> Transformer:
         """
         Sets the scale's range to the specified array of values
 
@@ -272,7 +272,7 @@ class Transformer(Generic[T]):
     def get_range(self) -> list[T]:
         return self._range.copy()
 
-    def set_range_round(self, range_vals: list[T]) -> TTransformer:
+    def set_range_round(self, range_vals: list[T]) -> Transformer:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -291,7 +291,7 @@ class Transformer(Generic[T]):
         self._interpolate = interpolate_round
         return self._rescale()
 
-    def set_clamp(self, clamp: bool) -> TTransformer:
+    def set_clamp(self, clamp: bool) -> Transformer:
         """
         Enables or disables clamping accordingly
 
@@ -311,7 +311,7 @@ class Transformer(Generic[T]):
     def get_clamp(self) -> bool:
         return self._clamp != identity
 
-    def set_interpolate(self, interpolate: Callable[[T, T], T]) -> TTransformer:
+    def set_interpolate(self, interpolate: Callable[[T, T], T]) -> Transformer:
         """
         Sets the scale's range interpolator factory.
 
@@ -331,7 +331,7 @@ class Transformer(Generic[T]):
     def get_interpolate(self) -> Callable[[T, T], T]:
         return self._interpolate
 
-    def set_unknown(self, unknown: Any) -> TTransformer:
+    def set_unknown(self, unknown: Any) -> Transformer:
         """
         Sets the output value of the scale for undefined
         or NaN input values.

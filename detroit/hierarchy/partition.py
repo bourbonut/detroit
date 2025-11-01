@@ -1,17 +1,17 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from .hierarchy import Node
 from .treemap.dice import dice
 from .treemap.round import round_node
-
-TPartition = TypeVar("Partition", bound="Partition")
 
 
 class Partition:
     """
     Partition layout
     """
+
     def __init__(self):
         self._dx = 1
         self._dy = 1
@@ -77,7 +77,7 @@ class Partition:
 
         return local_function
 
-    def set_round(self, round: bool) -> TPartition:
+    def set_round(self, round: bool) -> Partition:
         """
         Enables or disables rounding according to the given boolean and returns
         this partition layout.
@@ -95,7 +95,7 @@ class Partition:
         self._round = round
         return self
 
-    def set_size(self, size: tuple[float, float]) -> TPartition:
+    def set_size(self, size: tuple[float, float]) -> Partition:
         """
         Sets this partition layout’s size to the specified two-element array of
         numbers :code:`[width, height]` and returns this partition layout.
@@ -114,7 +114,7 @@ class Partition:
         self._dy = size[1]
         return self
 
-    def set_padding(self, padding: float) -> TPartition:
+    def set_padding(self, padding: float) -> Partition:
         """
         Sets the padding to the specified number and returns this partition
         layout.

@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 import math
 from bisect import bisect
-from typing import Any, Generic, TypeVar, overload
+from typing import Any, Generic, overload
 
 from ..types import Number, T
 from .init import init_range
 from .linear import LinearBase
-
-TScaleQuantize = TypeVar("Itself", bound="ScaleQuantize")
 
 
 class ScaleQuantize(LinearBase, Generic[T]):
@@ -44,7 +44,7 @@ class ScaleQuantize(LinearBase, Generic[T]):
         self._domain = [((i + 1) * x1 - (i - n) * x0) / (n + 1) for i in range(n)]
         return self
 
-    def set_domain(self, domain: list[Number]) -> TScaleQuantize:
+    def set_domain(self, domain: list[Number]) -> ScaleQuantize:
         """
         Sets the scale’s domain to the specified two-element array of numbers.
 
@@ -64,7 +64,7 @@ class ScaleQuantize(LinearBase, Generic[T]):
     def get_domain(self) -> list[Number]:
         return [self._x0, self._x1]
 
-    def set_range(self, range_vals: list[T]) -> TScaleQuantize:
+    def set_range(self, range_vals: list[T]) -> ScaleQuantize:
         """
         Sets the scale’s range to the specified array of values
 
@@ -112,7 +112,7 @@ class ScaleQuantize(LinearBase, Generic[T]):
         else:
             return [self._domain[i - 1], self._domain[i]]
 
-    def set_unknown(self, unknown: Any) -> TScaleQuantize:
+    def set_unknown(self, unknown: Any) -> ScaleQuantize:
         """
         Sets the scale's unknown value
 

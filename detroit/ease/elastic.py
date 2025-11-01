@@ -1,11 +1,8 @@
+from __future__ import annotations
+
 from math import asin, pi, sin
-from typing import TypeVar
 
 from .tqmt import tqmt
-
-TElasticIn = TypeVar("ElasticIn", bound="ElasticIn")
-TElasticOut = TypeVar("ElasticOut", bound="ElasticOut")
-TElasticInOut = TypeVar("ElasticInOut", bound="ElasticInOut")
 
 TAU = 2 * pi
 AMPLITUDE = 1
@@ -71,7 +68,7 @@ class ElasticIn:
         t -= 1
         return self._amplitude * tqmt(-t) * sin((self._s - t) / self._period)
 
-    def amplitude(self, amplitude: float) -> TElasticIn:
+    def amplitude(self, amplitude: float) -> ElasticIn:
         """
         Returns a new easing function with :code:`amplitude` value as
         parameter.
@@ -88,7 +85,7 @@ class ElasticIn:
         """
         return ElasticIn(amplitude, self._period * TAU)
 
-    def period(self, period: float) -> TElasticIn:
+    def period(self, period: float) -> ElasticIn:
         """
         Returns a new easing function with :code:`period` value as parameter.
 
@@ -166,7 +163,7 @@ class ElasticOut:
         """
         return 1 - self._amplitude * tqmt(t) * sin((t + self._s) / self._period)
 
-    def amplitude(self, amplitude: float) -> TElasticOut:
+    def amplitude(self, amplitude: float) -> ElasticOut:
         """
         Returns a new easing function with :code:`amplitude` value as
         parameter.
@@ -183,7 +180,7 @@ class ElasticOut:
         """
         return ElasticOut(amplitude, self._period * TAU)
 
-    def period(self, period: float) -> TElasticOut:
+    def period(self, period: float) -> ElasticOut:
         """
         Returns a new easing function with :code:`period` value as parameter.
 
@@ -273,7 +270,7 @@ class ElasticInOut:
                 2 - self._amplitude * tqmt(t) * sin((self._s + t) / self._period)
             ) * 0.5
 
-    def amplitude(self, amplitude: float) -> TElasticInOut:
+    def amplitude(self, amplitude: float) -> ElasticInOut:
         """
         Returns a new easing function with :code:`amplitude` value as
         parameter.
@@ -290,7 +287,7 @@ class ElasticInOut:
         """
         return ElasticInOut(amplitude, self._period * TAU)
 
-    def period(self, period: float) -> TElasticInOut:
+    def period(self, period: float) -> ElasticInOut:
         """
         Returns a new easing function with :code:`period` value as parameter.
 

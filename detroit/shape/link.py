@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from operator import itemgetter
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic
 
 from ..array import argpass
 from ..selection import Selection
@@ -10,8 +12,6 @@ from .curves import Curve, curve_bump_radial, curve_bump_x, curve_bump_y
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
-
-TLink = TypeVar("Link", bound="Link")
 
 link_source = itemgetter("source")
 link_target = itemgetter("target")
@@ -79,7 +79,7 @@ class Link(Generic[T], WithPath):
             self._output = None
             return str(buffer) or None
 
-    def set_source(self, source: Accessor[T, float]) -> TLink:
+    def set_source(self, source: Accessor[T, float]) -> Link:
         """
         Sets the source function
 
@@ -90,13 +90,13 @@ class Link(Generic[T], WithPath):
 
         Returns
         -------
-        TLink
+        Link
             Itself
         """
         self._source = argpass(source)
         return self
 
-    def set_target(self, target: Accessor[T, float]) -> TLink:
+    def set_target(self, target: Accessor[T, float]) -> Link:
         """
         Sets the target function
 
@@ -107,13 +107,13 @@ class Link(Generic[T], WithPath):
 
         Returns
         -------
-        TLink
+        Link
             Itself
         """
         self._target = argpass(target)
         return self
 
-    def x(self, x: Accessor[T, float] | Number) -> TLink:
+    def x(self, x: Accessor[T, float] | Number) -> Link:
         """
         Sets x accessor function
 
@@ -134,7 +134,7 @@ class Link(Generic[T], WithPath):
         self._x = argpass(self._x)
         return self
 
-    def y(self, y: Accessor[T, float] | Number) -> TLink:
+    def y(self, y: Accessor[T, float] | Number) -> Link:
         """
         Sets y accessor function
 
@@ -155,7 +155,7 @@ class Link(Generic[T], WithPath):
         self._y = argpass(self._y)
         return self
 
-    def set_context(self, context: Selection | None = None) -> TLink:
+    def set_context(self, context: Selection | None = None) -> Link:
         """
         Sets the context.
 

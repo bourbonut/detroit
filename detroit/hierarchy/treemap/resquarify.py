@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
-from typing import TypeVar
 
 from ..hierarchy import Node
 from .dice import dice
 from .slice import slice
 from .squarify import PHI, squarify_ratio
-
-TResquarify = TypeVar("Resquarify", bound="Resquarify")
 
 
 class SquarifyList:
@@ -36,6 +35,7 @@ class Resquarify:
     ratio : float
         Ratio value
     """
+
     def __init__(self, ratio: float):
         self._ratio = ratio
 
@@ -96,7 +96,7 @@ class Resquarify:
             )
             rows.ratio = self._ratio
 
-    def set_ratio(self, ratio: float) -> TResquarify:
+    def set_ratio(self, ratio: float) -> Resquarify:
         """
         Specifies the desired aspect ratio of the generated rectangles. The
         ratio must be specified as a number greater than or equal to one. Note

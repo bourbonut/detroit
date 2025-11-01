@@ -1,18 +1,17 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from functools import cmp_to_key
-from typing import TypeVar
 
 from ..common import LineStream, Point2D
 from ..point_equal import EPSILON, point_equal
-
-TIntersection = TypeVar("Intersection", bound="Intersection")
 
 
 class Intersection:
     __slots__ = ("x", "z", "o", "e", "v", "n", "p")
 
     def __init__(
-        self, point: Point2D, points: list[Point2D], other: TIntersection, entry: bool
+        self, point: Point2D, points: list[Point2D], other: Intersection, entry: bool
     ):
         self.x = point
         self.z = points

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
 from math import floor, inf, isnan
 from typing import TypeVar
@@ -7,7 +9,6 @@ from .path import Path
 from .polygon import Polygon
 
 Delaunay = TypeVar("Delaunay", bound="Delaunay")
-TVoronoi = TypeVar("Voronoi", bound="Voronoi")
 
 
 def sign(x: float) -> float:
@@ -82,7 +83,7 @@ class Voronoi:
 
         self._initialize()
 
-    def update(self) -> TVoronoi:
+    def update(self) -> Voronoi:
         """
         Updates the Voronoi diagram and underlying triangulation after the
         points have been modified in-place — useful for Lloyd's relaxation.

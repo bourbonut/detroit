@@ -1,11 +1,10 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import cosh, dist, exp, log, sinh, sqrt, tanh
-from typing import TypeVar
 
 EPSILON = 1e-12
 SQRT2 = sqrt(2)
-
-TZoomRho = TypeVar("ZoomRho", bound="ZoomRho")
 
 
 class Base:
@@ -133,7 +132,7 @@ class ZoomRho:
         )
         return interpolator(self.rho, self.rho2, self.rho4, a, b)
 
-    def set_rho(self, rho: float) -> TZoomRho:
+    def set_rho(self, rho: float) -> ZoomRho:
         """
         Sets rho value and returns itself. When :code:`rho` is closed to 0, the
         interpolator is almost linear.

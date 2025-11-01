@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import math
 from collections.abc import Callable
 from datetime import datetime
-from typing import TypeVar, overload
+from typing import overload
 
 from ..array import ticks
 from ..format import format_specifier, locale_format
@@ -9,9 +11,6 @@ from ..types import Number
 from .continuous import Transformer, copy
 from .init import init_range
 from .nice import nice
-
-TLogBase = TypeVar("Itself", bound="LogBase")
-TScaleLog = TypeVar("Itself", bound="ScaleLog")
 
 
 def transform_log(x: datetime | float) -> float:
@@ -85,7 +84,7 @@ class LogBase:
         self._logs = None
         self._pows = None
 
-    def set_base(self, base: Number) -> TLogBase:
+    def set_base(self, base: Number) -> LogBase:
         """
         Sets the scale's base value
 
@@ -105,7 +104,7 @@ class LogBase:
     def get_base(self) -> Number:
         return self._base
 
-    def ticks(self, count: int | None = None) -> TLogBase:
+    def ticks(self, count: int | None = None) -> LogBase:
         """
         Like :code:`ScaleLinear.ticks`, but customized for a log scale.
 
@@ -164,7 +163,7 @@ class LogBase:
 
     def tick_format(
         self, count: int | None = None, specifier: str | None = None
-    ) -> TLogBase:
+    ) -> LogBase:
         """
         Like :code:`ScaleLinear.tick_format`, but customized for a log scale.
         The specified count typically has the same value as the count
@@ -209,7 +208,7 @@ class LogBase:
 
         return f
 
-    def nice(self) -> TLogBase:
+    def nice(self) -> LogBase:
         """
         Like :code:`ScaleLinear.nice`, except extends the domain
         to integer powers of base.
@@ -266,7 +265,7 @@ class ScaleLog(Transformer[float], LogBase):
             self._rescale()
         return self
 
-    def set_domain(self, domain: list[float]) -> TScaleLog:
+    def set_domain(self, domain: list[float]) -> ScaleLog:
         """
         Sets the scale's domain to the specified array of values.
 
@@ -277,7 +276,7 @@ class ScaleLog(Transformer[float], LogBase):
 
         Returns
         -------
-        TScaleLog
+        ScaleLog
             Itself
         """
         super().set_domain(domain)

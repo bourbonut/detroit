@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from ..selection import Selection
 from ..types import Accessor, Number, T
 from .curves import Curve, curve_radial, curve_radial_linear
 from .line import Line
-
-TLineRadial = TypeVar("LineRadial", bound="LineRadial")
 
 
 class LineRadial(Line[T]):
@@ -14,7 +13,7 @@ class LineRadial(Line[T]):
         Line.__init__(self)
         super().set_curve(curve_radial_linear)
 
-    def set_curve(self, curve: Callable[[Selection], Curve]) -> TLineRadial:
+    def set_curve(self, curve: Callable[[Selection], Curve]) -> LineRadial:
         """
         Sets curve.
 
@@ -30,7 +29,7 @@ class LineRadial(Line[T]):
         """
         return super().set_curve(curve_radial(curve))
 
-    def angle(self, angle: Accessor[T, float] | Number) -> TLineRadial:
+    def angle(self, angle: Accessor[T, float] | Number) -> LineRadial:
         """
         Sets angle accessor function
 
@@ -46,7 +45,7 @@ class LineRadial(Line[T]):
         """
         return super().x(angle)
 
-    def radius(self, radius: Accessor[T, float] | Number) -> TLineRadial:
+    def radius(self, radius: Accessor[T, float] | Number) -> LineRadial:
         """
         Sets radius accessor function
 

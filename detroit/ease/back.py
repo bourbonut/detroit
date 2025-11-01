@@ -1,8 +1,5 @@
-from typing import TypeVar
+from __future__ import annotations
 
-TBackIn = TypeVar("BackIn", bound="BackIn")
-TBackOut = TypeVar("BackOut", bound="BackOut")
-TBackInOut = TypeVar("BackInOut", bound="BackInOut")
 
 OVERSHOOT = 1.70158
 
@@ -57,7 +54,7 @@ class BackIn:
         """
         return t * t * (self._overshoot * (t - 1) + t)
 
-    def overshoot(self, overshoot: float) -> TBackIn:
+    def overshoot(self, overshoot: float) -> BackIn:
         """
         Returns a new easing function with :code:`overshoot` value as
         parameter.
@@ -129,7 +126,7 @@ class BackOut:
         t -= 1
         return t * t * ((t + 1) * self._overshoot + t) + 1
 
-    def overshoot(self, overshoot: float) -> TBackOut:
+    def overshoot(self, overshoot: float) -> BackOut:
         """
         Returns a new easing function with :code:`overshoot` value as
         parameter.
@@ -209,7 +206,7 @@ class BackInOut:
             t -= 2
             return (t * t * ((self._overshoot + 1) * t + self._overshoot) + 2) * 0.5
 
-    def overshoot(self, overshoot: float) -> TBackInOut:
+    def overshoot(self, overshoot: float) -> BackInOut:
         """
         Returns a new easing function with :code:`overshoot` value as
         parameter.

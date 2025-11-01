@@ -1,11 +1,10 @@
 # Comments from original code source
 # https://github.com/d3/d3-hierarchy/blob/main/src/tree.js
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from .hierarchy import Node
-
-TTree = TypeVar("Tree", bound="Tree")
 
 
 class TreeNode(Node):
@@ -107,6 +106,7 @@ class Tree:
     """
     Tree layout
     """
+
     def __init__(self):
         self._separation = default_separation
         self._dx = 1
@@ -180,7 +180,7 @@ class Tree:
         """
         Computes a preliminary x-coordinate for v. Before that, FIRST WALK is
         applied recursively to the children of v, as well as the function
-        APPORTION. After spacing out the children by calling EXECUTE SHIFTS,
+        APPORION. After spacing out the children by calling EXECUTE SHIFTS,
         the node v is placed to the midpoint of its outermost children.
         """
         children = v.children
@@ -218,7 +218,7 @@ class Tree:
         modifiers along the contour, we use respective variables si+, si-, so-,
         and so+. Whenever two nodes of the inside contours conflict, we compute
         the left one of the greatest uncommon ancestors using the function
-        ANCESTOR and call MOVE SUBTREE to shift the subtree and prepare the
+        ANCESOR and call MOVE SUBREE to shift the subtree and prepare the
         shifts of smaller subtrees. Finally, we add a new thread (if
         necessary).
         """
@@ -262,7 +262,7 @@ class Tree:
         node.x *= self._dx
         node.y = node.depth * self._dy
 
-    def set_separation(self, separation: Callable[[Node, Node], int]) -> TTree:
+    def set_separation(self, separation: Callable[[Node, Node], int]) -> Tree:
         """
         Sets the :code:`separation` accessor to the specified function and
         returns this tree layout.
@@ -280,7 +280,7 @@ class Tree:
         self._separation = separation
         return self
 
-    def set_size(self, size: tuple[float, float]) -> TTree:
+    def set_size(self, size: tuple[float, float]) -> Tree:
         """
         Sets this tree layout's size to the specified two-element array of
         numbers :code:`[width, height]` and returns this tree layout. A layout
@@ -304,7 +304,7 @@ class Tree:
         self._dx = size[0]
         self._dy = size[1]
 
-    def set_node_size(self, node_size: tuple[float, float]) -> TTree:
+    def set_node_size(self, node_size: tuple[float, float]) -> Tree:
         """
         Sets this tree layout's node size to the specified two-element array of
         numbers :code:`[width, height]` and returns this tree layout. A node

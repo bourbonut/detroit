@@ -1,9 +1,8 @@
+from __future__ import annotations
+
 import math
 from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import TypeVar
-
-TTimeInterval = TypeVar("TimeInterval", bound="TimeInterval")
 
 
 class TimeInterval:
@@ -55,7 +54,7 @@ class TimeInterval:
         """
         return self(date)
 
-    def every(self, step: int) -> TTimeInterval:
+    def every(self, step: int) -> TimeInterval:
         """
         Returns a filtered view of this interval representing
         every stepth date. The meaning of step is dependent on this
@@ -200,7 +199,7 @@ class TimeInterval:
         return range_list
 
     @classmethod
-    def filter(cls, test: Callable[[datetime], bool]) -> TTimeInterval:
+    def filter(cls, test: Callable[[datetime], bool]) -> TimeInterval:
         """
         Returns a new interval that is a filtered subset of this interval using
         the specified test function.

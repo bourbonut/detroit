@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import ceil, floor, inf, isinf, nan, sqrt
-from typing import Any, TypeVar
+from typing import Any
 
 from ..types import T
 from .orient2d import orient2d
-
-TDelaunator = TypeVar("Delaunator", bound="Delaunator")
 
 EPSILON = pow(2, -52)
 EDGE_STACK = [0] * 512
@@ -345,7 +345,7 @@ class Delaunator:
         points: list[T],
         get_x: Callable[[T], float] = default_get_x,
         get_y: Callable[[T], float] = default_get_y,
-    ) -> TDelaunator:
+    ) -> Delaunator:
         """
         Creates a :code:`Delaunator` object given a list of points.
 

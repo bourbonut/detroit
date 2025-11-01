@@ -1,11 +1,10 @@
+from __future__ import annotations
+
 from math import sqrt
-from typing import TypeVar
 
 from ..hierarchy import Node
 from .dice import dice
 from .slice import slice
-
-TSquarify = TypeVar("Squarify", bound="Squarify")
 
 PHI = (1 + sqrt(5)) * 0.5
 
@@ -89,6 +88,7 @@ class Squarify:
     ratio : float
         Ratio value
     """
+
     def __init__(self, ratio: float):
         self._ratio = ratio
 
@@ -112,7 +112,7 @@ class Squarify:
         """
         squarify_ratio(self._ratio, parent, x0, y0, x1, y1)
 
-    def set_ratio(self, ratio: float) -> TSquarify:
+    def set_ratio(self, ratio: float) -> Squarify:
         """
         Specifies the desired aspect ratio of the generated rectangles. The
         ratio must be specified as a number greater than or equal to one. Note

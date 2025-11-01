@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import floor, inf, isfinite, isnan, nan
-from typing import TypeVar
 
 from ..array import argpass, extent, nice, ticks
 from ..array.threshold import threshold_sturges
@@ -8,8 +9,6 @@ from ..types import MultiPolygonGeoJSON, Point2D
 from .area import area
 from .constant import constant
 from .contains import contains
-
-TContours = TypeVar("Contours", bound="Contours")
 
 CASES = [
     [],
@@ -412,7 +411,7 @@ class Contours:
         """
         return int(point[0] * 2 + point[1] * (self._dx + 1) * 4)
 
-    def set_size(self, size: tuple[float, float]) -> TContours:
+    def set_size(self, size: tuple[float, float]) -> Contours:
         """
         Sets the size of the input values to the contour generator and returns
         itself.
@@ -440,7 +439,7 @@ class Contours:
         thresholds: Callable[[list[float], ...], float | list[float]]
         | list[float]
         | float,
-    ) -> TContours:
+    ) -> Contours:
         """
         Sets the threshold function to the contour generator and returns
         itself.
@@ -462,7 +461,7 @@ class Contours:
             self._threshold = constant(thresholds)
         return self
 
-    def set_smooth(self, smooth: bool) -> TContours:
+    def set_smooth(self, smooth: bool) -> Contours:
         """
         Sets if contour polygons are smoothed using interpolatation and returns
         itself.

@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import acos, cos, degrees, pi, radians, sin
-from typing import Any, TypeVar
+from typing import Any
 
 from ..types import GeoJSON, Point2D, Point3D
 from .cartesian import cartesian, cartesian_normalize_in_place, spherical
 from .common import LineStream
 from .constant import constant
 from .rotation import RotateRadians
-
-TGeoCircle = TypeVar("GeoCircle", bound="GeoCircle")
 
 EPISLON = 1e-6
 TAU = 2 * pi
@@ -105,7 +105,7 @@ class GeoCircle:
         x[0] = degrees(x[0])
         x[1] = degrees(x[1])
 
-    def set_center(self, center: Callable[..., Point2D] | Point2D) -> TGeoCircle:
+    def set_center(self, center: Callable[..., Point2D] | Point2D) -> GeoCircle:
         """
         If center is specified, sets the circle center to the specified point
         :code:`[longitude, latitude]` in degrees, and returns this circle
@@ -127,7 +127,7 @@ class GeoCircle:
             self._center = constant(center)
         return self
 
-    def set_radius(self, radius: Callable[..., float] | float) -> TGeoCircle:
+    def set_radius(self, radius: Callable[..., float] | float) -> GeoCircle:
         """
         If radius is specified, sets the circle radius to the specified angle
         in degrees, and returns this circle generator. The radius may also be
@@ -149,7 +149,7 @@ class GeoCircle:
             self._radius = constant(radius)
         return self
 
-    def set_precision(self, precision: Callable[..., float] | float) -> TGeoCircle:
+    def set_precision(self, precision: Callable[..., float] | float) -> GeoCircle:
         """
         If precision is specified, sets the circle precision to the specified
         angle in degrees, and returns this circle generator. The precision may

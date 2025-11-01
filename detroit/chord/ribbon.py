@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import cos, pi, sin
-from typing import Any, TypeVar
+from typing import Any
 
 from ..array import argpass
 from ..path import Path
@@ -8,8 +10,6 @@ from .chord import ChordItem, ChordValue
 
 HALF_PI = pi * 0.5
 EPSILON = 1e-6
-
-TRibbon = TypeVar("Ribbon", bound="Ribbon")
 
 
 def constant(x: Any) -> Callable[..., Any]:
@@ -143,7 +143,7 @@ class Ribbon:
 
     def set_head_radius(
         self, head_radius: Callable[..., float] | float | None = None
-    ) -> TRibbon:
+    ) -> Ribbon:
         """
         Sets the arrowhead radius accessor to the specified function and
         returns this ribbon generator.
@@ -155,7 +155,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if head_radius is None:
@@ -168,7 +168,7 @@ class Ribbon:
         self._head_radius = argpass(self._head_radius)
         return self
 
-    def set_radius(self, radius: Callable[..., float] | float) -> TRibbon:
+    def set_radius(self, radius: Callable[..., float] | float) -> Ribbon:
         """
         Sets the source and target radius accessor to the specified function
         and returns this ribbon generator.
@@ -180,7 +180,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if callable(radius):
@@ -194,7 +194,7 @@ class Ribbon:
         self._target_radius = argpass(self._target_radius)
         return self
 
-    def set_source_radius(self, source_radius: Callable[..., float] | float) -> TRibbon:
+    def set_source_radius(self, source_radius: Callable[..., float] | float) -> Ribbon:
         """
         Sets the source radius accessor to the specified function and returns
         this ribbon generator.
@@ -206,7 +206,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if callable(source_radius):
@@ -216,7 +216,7 @@ class Ribbon:
         self._source_radius = argpass(self._source_radius)
         return self
 
-    def set_target_radius(self, target_radius: Callable[..., float] | float) -> TRibbon:
+    def set_target_radius(self, target_radius: Callable[..., float] | float) -> Ribbon:
         """
         Sets the target radius accessor to the specified function and returns
         this ribbon generator.
@@ -228,7 +228,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if callable(target_radius):
@@ -238,7 +238,7 @@ class Ribbon:
         self._target_radius = argpass(self._target_radius)
         return self
 
-    def set_start_angle(self, start_angle: Callable[..., float] | float) -> TRibbon:
+    def set_start_angle(self, start_angle: Callable[..., float] | float) -> Ribbon:
         """
         Sets the start angle accessor to the specified function and returns
         this ribbon generator.
@@ -250,7 +250,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if callable(start_angle):
@@ -260,7 +260,7 @@ class Ribbon:
         self._start_angle = argpass(self._start_angle)
         return self
 
-    def set_end_angle(self, end_angle: Callable[..., float] | float) -> TRibbon:
+    def set_end_angle(self, end_angle: Callable[..., float] | float) -> Ribbon:
         """
         Sets the end angle accessor to the specified function and returns
         this ribbon generator.
@@ -272,7 +272,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if callable(end_angle):
@@ -282,7 +282,7 @@ class Ribbon:
         self._end_angle = argpass(self._end_angle)
         return self
 
-    def set_pad_angle(self, pad_angle: Callable[..., float] | float) -> TRibbon:
+    def set_pad_angle(self, pad_angle: Callable[..., float] | float) -> Ribbon:
         """
         Sets the pad angle accessor to the specified function and returns this
         ribbon generator
@@ -294,7 +294,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         if callable(pad_angle):
@@ -304,7 +304,7 @@ class Ribbon:
         self._pad_angle = argpass(self._pad_angle)
         return self
 
-    def set_source(self, source: Callable[..., float] | float) -> TRibbon:
+    def set_source(self, source: Callable[..., float] | float) -> Ribbon:
         """
         Sets the source accessor to the specified function and returns this
         ribbon generator.
@@ -316,13 +316,13 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         self._source = argpass(source)
         return self
 
-    def set_target(self, target: Callable[..., float] | float) -> TRibbon:
+    def set_target(self, target: Callable[..., float] | float) -> Ribbon:
         """
         Sets the target accessor to the specified function and returns this
         ribbon generator.
@@ -334,13 +334,13 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         self._target = argpass(target)
         return self
 
-    def set_context(self, context: Any | None = None) -> TRibbon:
+    def set_context(self, context: Any | None = None) -> Ribbon:
         """
         If context is specified, sets the context and returns this ribbon
         generator. If the context is not :code:`None`, then the generated
@@ -355,7 +355,7 @@ class Ribbon:
 
         Returns
         -------
-        TRibbon
+        Ribbon
             Itself
         """
         self._context = context

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import math
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, TypeVar, overload
+from typing import Any, overload
 
 from ..interpolate import interpolate, interpolate_round, piecewise
 from ..types import Number, T
@@ -12,12 +14,6 @@ from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .sequential import copy
 from .symlog import transform_symlog
-
-TDiverging = TypeVar("Itself", bound="Diverging")
-TDivergingLinear = TypeVar("Itself", bound="DivergingLinear")
-TDivergingPow = TypeVar("Itself", bound="DivergingPow")
-TDivergingLog = TypeVar("Itself", bound="DivergingLog")
-TDivergingSymlog = TypeVar("Itself", bound="DivergingSymlog")
 
 
 class Diverging:
@@ -74,7 +70,7 @@ class Diverging:
             x = 0.5 + (x - self._t1) * k
             return self._interpolator(max(0, min(1, x)) if self._clamp else x)
 
-    def set_domain(self, domain: list[Number]) -> TDiverging:
+    def set_domain(self, domain: list[Number]) -> Diverging:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -100,7 +96,7 @@ class Diverging:
     def get_domain(self) -> list[Number]:
         return [self._x0, self._x1, self._x2]
 
-    def set_clamp(self, clamp: bool) -> TDiverging:
+    def set_clamp(self, clamp: bool) -> Diverging:
         """
         Enables or disables clamping accordingly.
 
@@ -120,7 +116,7 @@ class Diverging:
     def get_clamp(self) -> bool:
         return self._clamp
 
-    def set_interpolator(self, interpolator: Callable) -> TDiverging:
+    def set_interpolator(self, interpolator: Callable) -> Diverging:
         """
         Sets the scale’s interpolator to the specified function.
 
@@ -140,7 +136,7 @@ class Diverging:
     def get_interpolator(self) -> Callable:
         return self._interpolator
 
-    def set_range(self, range_vals: list[T]) -> TDiverging:
+    def set_range(self, range_vals: list[T]) -> Diverging:
         """
         The given two-element array is converted
         to an interpolator function using interpolate
@@ -161,7 +157,7 @@ class Diverging:
         self._interpolator = piecewise(interpolate, [self._r0, self._r1, self._r2])
         return self
 
-    def set_range_round(self, range_vals: list[T]) -> TDiverging:
+    def set_range_round(self, range_vals: list[T]) -> Diverging:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -187,7 +183,7 @@ class Diverging:
     def get_range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(0.5), self._interpolator(1)]
 
-    def set_unknown(self, unknown: Any) -> TDiverging:
+    def set_unknown(self, unknown: Any) -> Diverging:
         """
         Sets the output value of the scale for undefined
         or NaN input values.
@@ -250,7 +246,7 @@ class DivergingLog(Diverging, LogBase):
             self._transform = transform_log
         return self
 
-    def set_domain(self, domain: list[Number]) -> TDivergingLog:
+    def set_domain(self, domain: list[Number]) -> DivergingLog:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -278,7 +274,7 @@ class DivergingSymlog(Diverging):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
-    def set_constant(self, c: Number) -> TDivergingSymlog:
+    def set_constant(self, c: Number) -> DivergingSymlog:
         """
         Sets the symlog constant to the specified number and returns this scale.
 
@@ -316,7 +312,7 @@ class DivergingPow(Diverging, LinearBase):
             self._transform = transform_pow(self._exponent)
             return self
 
-    def set_exponent(self, exponent: Number) -> TDivergingPow:
+    def set_exponent(self, exponent: Number) -> DivergingPow:
         """
         Sets the scale's exponent value.
 

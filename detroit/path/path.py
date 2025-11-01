@@ -281,7 +281,9 @@ class Path:
             self._x1 = x0
             self._y1 = y0
             r, x0, y0, ddx, ddy = self._round(r, x0, y0, x - dx, y - dy)
-            self._string.write(f"A{r},{r},0,1,{cw},{ddx},{ddy}A{r},{r},0,1,{cw},{x0},{y0}")
+            self._string.write(
+                f"A{r},{r},0,1,{cw},{ddx},{ddy}A{r},{r},0,1,{cw},{x0},{y0}"
+            )
 
         # Is this arc non-empty? Draw an arc!
         elif da > EPSILON:

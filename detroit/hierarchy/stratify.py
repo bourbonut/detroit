@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import Any, TypeVar
+from typing import Any
 
 from ..array import argpass
 from .accessors import optional
 from .hierarchy import Node, compute_height
-
-TStratify = TypeVar("Stratify", bound="Stratify")
 
 
 class SparseNode:
@@ -34,6 +34,7 @@ class Stratify:
     """
     Stratify operator
     """
+
     def __init__(self):
         self._id = default_id
         self._parent_id = default_parent_id
@@ -143,7 +144,7 @@ class Stratify:
 
     def set_id(
         self, id_func: Callable[[Node, int, list[dict[str, Any]]], str]
-    ) -> TStratify:
+    ) -> Stratify:
         """
         Sets the id accessor to the given function and returns this stratify
         operator.
@@ -170,7 +171,7 @@ class Stratify:
 
     def set_parent_id(
         self, parent_id: Callable[[Node, int, list[dict[str, Any]]], str]
-    ) -> TStratify:
+    ) -> Stratify:
         """
         Sets the parent id accessor to the given function and returns this
         stratify operator.
@@ -197,7 +198,7 @@ class Stratify:
 
     def set_path(
         self, path: Callable[[Node, int, list[dict[str, Any]]], str]
-    ) -> TStratify:
+    ) -> Stratify:
         """
         Sets the :code:`path` accessor to the given function and returns this
         stratify operator.

@@ -1,9 +1,8 @@
+from __future__ import annotations
+
 import math
 import re
-from typing import TypeVar, overload
-
-TRGB = TypeVar("RGB", bound="RGB")
-THSL = TypeVar("HSL", bound="HSL")
+from typing import overload
 
 DARKER = 0.7
 BRIGHTER = 1 / DARKER
@@ -256,7 +255,7 @@ class Color:
         return self.format_rgb()
 
 
-def color(format: str) -> TRGB | THSL | None:
+def color(format: str) -> RGB | HSL | None:
     """
     Parses the specified CSS Color specifier string,
     returning an RGB or HSL color.
@@ -465,7 +464,7 @@ class RGB(Color):
         self.b = float(b)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> TRGB:
+    def brighter(self, k: float | None = None) -> RGB:
         """
         Returns a brighter copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(100, 186, 255).
@@ -486,7 +485,7 @@ class RGB(Color):
         k = BRIGHTER if k is None else BRIGHTER**k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
-    def darker(self, k: float | None = None) -> TRGB:
+    def darker(self, k: float | None = None) -> RGB:
         """
         Returns a darker copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(49, 91, 126).
@@ -507,7 +506,7 @@ class RGB(Color):
         k = DARKER if k is None else DARKER**k
         return RGB(self.r * k, self.g * k, self.b * k, self.opacity)
 
-    def rgb(self) -> TRGB:
+    def rgb(self) -> RGB:
         """
         Returns the RGB equivalent of this color
 
@@ -518,7 +517,7 @@ class RGB(Color):
         """
         return self
 
-    def clamp(self) -> TRGB:
+    def clamp(self) -> RGB:
         """
         Returns a new RGB color where the r, g, and b channels are clamped
         to the range [0, 255] and rounded to the nearest integer value, and
@@ -617,7 +616,7 @@ class HSL(Color):
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> THSL:
+    def brighter(self, k: float | None = None) -> HSL:
         """
         Returns a brighter copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(100, 186, 255).
@@ -638,7 +637,7 @@ class HSL(Color):
         k = BRIGHTER if k is None else BRIGHTER**k
         return HSL(self.h, self.s, self.l * k, self.opacity)
 
-    def darker(self, k: float | None = None) -> THSL:
+    def darker(self, k: float | None = None) -> HSL:
         """
         Returns a darker copy of this color.
         For example, if k is 1, steelblue in RGB color space becomes rgb(49, 91, 126).
@@ -680,7 +679,7 @@ class HSL(Color):
             self.opacity,
         )
 
-    def clamp(self) -> THSL:
+    def clamp(self) -> HSL:
         """
         Returns a new HSL color where the h channel is clamped to the range [0, 360),
         and the s, l, and opacity channels are clamped to the range [0, 1].

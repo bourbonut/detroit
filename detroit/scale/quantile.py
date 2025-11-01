@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 import math
 from bisect import bisect
 from statistics import quantiles
-from typing import Any, Generic, TypeVar, overload
+from typing import Any, Generic, overload
 
 from ..types import Number, T
 from .init import init_range
-
-TScaleQuantile = TypeVar("Itself", bound="ScaleQuantile")
 
 
 class ScaleQuantile(Generic[T]):
@@ -77,7 +77,7 @@ class ScaleQuantile(Generic[T]):
             ]
         )
 
-    def set_domain(self, domain: list[Number]) -> TScaleQuantile:
+    def set_domain(self, domain: list[Number]) -> ScaleQuantile:
         """
         Sets the domain of the quantile scale to the specified
         set of discrete numeric values .
@@ -104,7 +104,7 @@ class ScaleQuantile(Generic[T]):
     def get_domain(self) -> list[Number]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[T]) -> TScaleQuantile:
+    def set_range(self, range_vals: list[T]) -> ScaleQuantile:
         """
         Sets the discrete values in the range.
 
@@ -124,7 +124,7 @@ class ScaleQuantile(Generic[T]):
     def get_range(self) -> list[T]:
         return self._range_vals.copy()
 
-    def set_unknown(self, unknown: Any) -> TScaleQuantile:
+    def set_unknown(self, unknown: Any) -> ScaleQuantile:
         """
         Sets the scale's unknown value.
 

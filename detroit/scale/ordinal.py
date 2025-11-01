@@ -1,9 +1,9 @@
-from typing import Any, Generic, TypeVar, overload
+from __future__ import annotations
+
+from typing import Any, Generic, overload
 
 from ..types import U, V
 from .init import init_range
-
-TScaleOrdinal = TypeVar("Itself", bound="ScaleOrdinal")
 
 
 class ScaleOrdinal(Generic[U, V]):
@@ -48,7 +48,7 @@ class ScaleOrdinal(Generic[U, V]):
             return None
         return self._range_vals[index]
 
-    def set_domain(self, domain: list[U]) -> TScaleOrdinal:
+    def set_domain(self, domain: list[U]) -> ScaleOrdinal:
         """
         Sets the scale’s domain to the specified array of values.
 
@@ -74,7 +74,7 @@ class ScaleOrdinal(Generic[U, V]):
     def get_domain(self) -> list[U]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[V]) -> TScaleOrdinal:
+    def set_range(self, range_vals: list[V]) -> ScaleOrdinal:
         """
         Sets the scale’s range to the specified array of values
 
@@ -94,7 +94,7 @@ class ScaleOrdinal(Generic[U, V]):
     def get_range(self) -> list[V]:
         return self._range_vals.copy()
 
-    def set_unknown(self, unknown: Any) -> TScaleOrdinal:
+    def set_unknown(self, unknown: Any) -> ScaleOrdinal:
         """
         Sets the output value of the scale for undefined
         or NaN input values.

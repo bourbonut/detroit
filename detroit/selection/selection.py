@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from copy import copy, deepcopy
 from itertools import zip_longest
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic
 
 from lxml import etree
 
@@ -17,8 +19,6 @@ from .matcher import matcher
 from .namespace import namespace
 from .style import style_constant, style_function, style_value
 from .text import text_constant, text_function
-
-TSelection = TypeVar("Selection", bound="Selection")
 
 
 def xpath(selection: str) -> str:
@@ -218,7 +218,7 @@ class Selection(Generic[T]):
         self._exit = exit
         self._data = {} if data is None else data
 
-    def select(self, selection: str | None = None) -> TSelection:
+    def select(self, selection: str | None = None) -> Selection:
         """
         Selects the first element that matches the specified :code:`selection` string.
 
@@ -306,7 +306,7 @@ class Selection(Generic[T]):
 
         return Selection(subgroups, parents, data=self._data)
 
-    def select_all(self, selection: str | None = None) -> TSelection:
+    def select_all(self, selection: str | None = None) -> Selection:
         """
         Selects all elements that match the specified :code:`selection` string.
 
@@ -401,7 +401,7 @@ class Selection(Generic[T]):
 
         return Selection(subgroups, parents, data=self._data)
 
-    def enter(self) -> TSelection:
+    def enter(self) -> Selection:
         """
         Returns the enter selection: placeholder nodes for each datum that had
         no corresponding DOM element in the selection.
@@ -429,7 +429,7 @@ class Selection(Generic[T]):
             data=self._data,
         )
 
-    def exit(self) -> TSelection:
+    def exit(self) -> Selection:
         """
         Returns the exit selection: existing DOM elements in the selection for
         which no new datum was found. (The exit selection is empty for
@@ -458,7 +458,7 @@ class Selection(Generic[T]):
             data=self._data,
         )
 
-    def merge(self, context: TSelection) -> TSelection:
+    def merge(self, context: Selection) -> Selection:
         """
         Returns a new selection merging this selection with the specified other
         selection or transition. The returned selection has the same number of
@@ -528,7 +528,7 @@ class Selection(Generic[T]):
 
         return Selection(merges, self._parents, data=self._data | selection._data)
 
-    def filter(self, match: Accessor[T, bool] | int | float | str) -> TSelection:
+    def filter(self, match: Accessor[T, bool] | int | float | str) -> Selection:
         """
         Filters the selection, returning a new selection that contains only the
         elements for which the specified filter is true.
@@ -587,7 +587,7 @@ class Selection(Generic[T]):
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
 
-    def append(self, name: str) -> TSelection:
+    def append(self, name: str) -> Selection:
         """
         If the specified name is a string, appends a new element of this type
         (tag name) as the last child of each selected element, or before the
@@ -667,7 +667,7 @@ class Selection(Generic[T]):
         parents = list(groups)
         return Selection(subgroups, parents, data=self._data)
 
-    def each(self, callback: EtreeFunction[T, None]) -> TSelection:
+    def each(self, callback: EtreeFunction[T, None]) -> Selection:
         """
         Invokes the specified function for each selected element, in order,
         being passed the current DOM element (nodes[i]), the current datum (d),
@@ -730,7 +730,7 @@ class Selection(Generic[T]):
 
     def attr(
         self, name: str, value: Accessor[T, Any] | list[Any] | Any | None = None
-    ) -> TSelection:
+    ) -> Selection:
         """
         If a value is specified, sets the attribute with the specified name to
         the specified value on the selected elements and returns this
@@ -784,7 +784,7 @@ class Selection(Generic[T]):
 
     def property(
         self, name: str, value: Accessor[T, Any] | list[Any] | Any | None = None
-    ) -> TSelection:
+    ) -> Selection:
         """
         This method has no difference with :code:`Selection.attr`.
 
@@ -820,7 +820,7 @@ class Selection(Generic[T]):
 
     def style(
         self, name: str, value: Accessor[T, str] | str | None = None
-    ) -> TSelection:
+    ) -> Selection:
         """
         If a value is specified, sets the style with the specified name to the
         specified value on the selected elements and returns this selection.
@@ -864,7 +864,7 @@ class Selection(Generic[T]):
             self.each(style_constant(name, value))
         return self
 
-    def text(self, value: Accessor[T, Any] | Any | None = None) -> TSelection:
+    def text(self, value: Accessor[T, Any] | Any | None = None) -> Selection:
         """
         If the value is a constant, then all elements are given the same text
         content; otherwise, if the value is a function, it is evaluated for
@@ -919,14 +919,14 @@ class Selection(Generic[T]):
             self.each(text_constant(value))
         return self
 
-    def html(self, value: Accessor[T, Any] | Any | None = None) -> TSelection:
+    def html(self, value: Accessor[T, Any] | Any | None = None) -> Selection:
         """
         This method has no difference with :code:`Selection.text`.
 
         Parameters
         ----------
         value : Accessor[T, Any] | Any | None
-            Inner HTML function or constant inner HTML. The final value is
+            Inner HML function or constant inner HML. The final value is
             converted to a string.
 
         Returns
@@ -967,7 +967,7 @@ class Selection(Generic[T]):
 
     def classed(
         self, names: str, value: Accessor[T, bool] | bool | None = None
-    ) -> TSelection:
+    ) -> Selection:
         """
         Assigns or unassigns the specified CSS class names on the selected
         elements by setting the class attribute or modifying the class list
@@ -1020,7 +1020,7 @@ class Selection(Generic[T]):
             self.each(classed_constant(names, value))
         return self
 
-    def datum(self, value: T) -> TSelection:
+    def datum(self, value: T) -> Selection:
         """
         Sets the bound data for the first selected node.
 
@@ -1073,7 +1073,7 @@ class Selection(Generic[T]):
         self,
         values: list[T] | EtreeFunction[T, list[T]],
         key: Accessor[T, float | str] | None = None,
-    ) -> TSelection:
+    ) -> Selection:
         """
         Binds the specified list of data with the selected elements, returning
         a new selection that represents the update selection: the elements
@@ -1176,7 +1176,7 @@ class Selection(Generic[T]):
 
         return Selection(update, parents, enter, exit, self._data)
 
-    def order(self) -> TSelection:
+    def order(self) -> Selection:
         """
         Re-inserts elements into the document such that the document order of
         each group matches the selection order.
@@ -1200,10 +1200,10 @@ class Selection(Generic[T]):
 
     def join(
         self,
-        onenter: Callable[[TSelection], TSelection] | str,
-        onupdate: Callable[[TSelection], TSelection] | None = None,
-        onexit: Callable[[TSelection], None] | None = None,
-    ) -> TSelection:
+        onenter: Callable[[Selection], Selection] | str,
+        onupdate: Callable[[Selection], Selection] | None = None,
+        onexit: Callable[[Selection], None] | None = None,
+    ) -> Selection:
         """
         Appends, removes and reorders elements as necessary to match the data
         that was previously bound by selection.data, returning the merged enter
@@ -1339,7 +1339,7 @@ class Selection(Generic[T]):
         else:
             return update
 
-    def insert(self, name: str, before: str) -> TSelection:
+    def insert(self, name: str, before: str) -> Selection:
         """
         If the specified name is a string, inserts a new element of this type
         (tag name) before the first element matching the specified
@@ -1455,7 +1455,7 @@ class Selection(Generic[T]):
 
         return Selection(subgroups, selection._parents, data=self._data)
 
-    def remove(self) -> TSelection:
+    def remove(self) -> Selection:
         """
         Removes the selected elements from the document. Returns this selection
         (the removed elements) which are now detached from the DOM.
@@ -1521,7 +1521,7 @@ class Selection(Generic[T]):
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
 
-    def call(self, func: Callable[[TSelection, ...], Any], *args: Any) -> TSelection:
+    def call(self, func: Callable[[Selection, ...], Any], *args: Any) -> Selection:
         """
         Invokes the specified function exactly once, passing in this selection
         along with any optional arguments. Returns this selection.
@@ -1559,7 +1559,7 @@ class Selection(Generic[T]):
         func(self, *args)
         return self
 
-    def clone(self, deep: bool = False) -> TSelection:
+    def clone(self, deep: bool = False) -> Selection:
         """
         Returns a clone of the selection.
 
@@ -1709,7 +1709,7 @@ class Selection(Generic[T]):
                 if node is not None:
                     yield node
 
-    def selection(self) -> TSelection:
+    def selection(self) -> Selection:
         """
         Returns the selection without any modification.
 

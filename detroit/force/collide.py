@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Since Javascript accepts weird stuff, I had to make the same programming
 # "errors" / "mistakes" in order to keep as simple as possible the code. These
 # "mistakes" are adding attributes to array object. For instance, in
@@ -12,15 +14,12 @@
 # the same behavior.
 from collections.abc import Callable
 from math import nan, sqrt
-from typing import TypeVar
 
 from ..array import argpass
 from ..quadtree import quadtree
 from ..types import SimulationNode, SimulationNodeFunction
 from .constant import constant
 from .jiggle import jiggle
-
-TForceCollide = TypeVar("ForceCollide", bound="ForceCollide")
 
 
 def x(d: dict[str, float]) -> float:
@@ -137,7 +136,7 @@ class ForceCollide:
         self._random = random
         self._initialize()
 
-    def set_iterations(self, iterations: int) -> TForceCollide:
+    def set_iterations(self, iterations: int) -> ForceCollide:
         """
         Sets the number of iterations per application to the specified number
         and returns this force.
@@ -159,7 +158,7 @@ class ForceCollide:
         self._iterations = iterations
         return self
 
-    def set_stength(self, strength: float) -> TForceCollide:
+    def set_stength(self, strength: float) -> ForceCollide:
         """
         Sets the force strength to the specified number in the range
         :math:`[0,1]` and returns this force.
@@ -185,9 +184,7 @@ class ForceCollide:
         self._strength = strength
         return self
 
-    def set_radius(
-        self, radius: SimulationNodeFunction[float] | float
-    ) -> TForceCollide:
+    def set_radius(self, radius: SimulationNodeFunction[float] | float) -> ForceCollide:
         """
         Sets the radius accessor to the specified number or function,
         re-evaluates the radius accessor for each node, and returns this force.

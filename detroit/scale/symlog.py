@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 import math
-from typing import TypeVar, overload
+from typing import overload
 
 from ..types import Number, T
 from .continuous import Transformer, copy
 from .init import init_range
 from .linear import LinearBase
-
-TScaleSymlog = TypeVar("Itself", bound="ScaleSymlog")
 
 
 def sign(x):
@@ -36,7 +36,7 @@ class ScaleSymlog(Transformer[float], LinearBase):
         self._c = c
         super().__init__(transform_symlog(self._c), transform_symexp(self._c))
 
-    def set_constant(self, c: Number) -> TScaleSymlog:
+    def set_constant(self, c: Number) -> ScaleSymlog:
         """
         Sets the symlog constant to the specified number and returns this scale.
 

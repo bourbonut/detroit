@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from ..selection import Selection
 from ..types import Accessor, Number, T
@@ -7,15 +8,13 @@ from .area import Area
 from .curves import Curve, curve_radial, curve_radial_linear
 from .line_radial import LineRadial
 
-TAreaRadial = TypeVar("AreaRadial", bound="AreaRadial")
-
 
 class AreaRadial(Area[T]):
     def __init__(self):
         Area.__init__(self)
         super().set_curve(curve_radial_linear)
 
-    def set_curve(self, curve: Callable[[Selection], Curve]) -> TAreaRadial:
+    def set_curve(self, curve: Callable[[Selection], Curve]) -> AreaRadial:
         """
         Sets curve.
 
@@ -31,7 +30,7 @@ class AreaRadial(Area[T]):
         """
         return super().set_curve(curve_radial(curve))
 
-    def angle(self, angle: Accessor[T, float] | Number) -> TAreaRadial:
+    def angle(self, angle: Accessor[T, float] | Number) -> AreaRadial:
         """
         Sets angle accessor function
 
@@ -47,7 +46,7 @@ class AreaRadial(Area[T]):
         """
         return super().x(angle)
 
-    def start_angle(self, start_angle: Accessor[T, float] | Number) -> TAreaRadial:
+    def start_angle(self, start_angle: Accessor[T, float] | Number) -> AreaRadial:
         """
         Sets start angle accessor function
 
@@ -63,7 +62,7 @@ class AreaRadial(Area[T]):
         """
         return super().x0(start_angle)
 
-    def end_angle(self, end_angle: Accessor[T, float] | Number) -> TAreaRadial:
+    def end_angle(self, end_angle: Accessor[T, float] | Number) -> AreaRadial:
         """
         Sets start angle accessor function
 
@@ -79,7 +78,7 @@ class AreaRadial(Area[T]):
         """
         return super().x1(end_angle)
 
-    def radius(self, radius: Accessor[T, float] | Number) -> TAreaRadial:
+    def radius(self, radius: Accessor[T, float] | Number) -> AreaRadial:
         """
         Sets radius accessor function
 
@@ -95,7 +94,7 @@ class AreaRadial(Area[T]):
         """
         return super().y(radius)
 
-    def inner_radius(self, inner_radius: Accessor[T, float] | Number) -> TAreaRadial:
+    def inner_radius(self, inner_radius: Accessor[T, float] | Number) -> AreaRadial:
         """
         Sets inner radius accessor function
 
@@ -111,7 +110,7 @@ class AreaRadial(Area[T]):
         """
         return super().y0(inner_radius)
 
-    def outer_radius(self, outer_radius: Accessor[T, float] | Number) -> TAreaRadial:
+    def outer_radius(self, outer_radius: Accessor[T, float] | Number) -> AreaRadial:
         """
         Sets outer radius accessor function
 

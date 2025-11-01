@@ -1,9 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from ..types import SimulationNode
-
-TForceCenter = TypeVar("ForceCenter", bound="ForceCenter")
 
 
 class ForceCenter:
@@ -32,7 +31,7 @@ class ForceCenter:
     def initialize(self, nodes: list[SimulationNode], random: Callable[[None], float]):
         self._nodes = nodes
 
-    def x(self, x: float) -> TForceCenter:
+    def x(self, x: float) -> ForceCenter:
         """
         Sets the x-coordinate of the centering position to the specified number
         and returns this force.
@@ -50,7 +49,7 @@ class ForceCenter:
         self._x = x
         return self
 
-    def y(self, y: float) -> TForceCenter:
+    def y(self, y: float) -> ForceCenter:
         """
         Sets the y-coordinate of the centering position to the specified number
         and returns this force.
@@ -68,7 +67,7 @@ class ForceCenter:
         self._y = y
         return self
 
-    def set_strength(self, strength: float) -> TForceCenter:
+    def set_strength(self, strength: float) -> ForceCenter:
         """
         Sets the center force's strength. A reduced strength of e.g. 0.05
         softens the movements on interactive graphs in which new nodes enter or

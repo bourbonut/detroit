@@ -1,10 +1,10 @@
-from typing import Generic, TypeVar, overload
+from __future__ import annotations
+
+from typing import Generic, overload
 
 from ..types import Number, T
 from .init import init_range
 from .ordinal import ScaleOrdinal
-
-TScaleBand = TypeVar("Itself", bound="ScaleBand")
 
 
 class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
@@ -74,7 +74,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
         values = [start + self._step * i for i in range(n)]
         return super().set_range(values[::-1] if reverse else values)
 
-    def set_domain(self, domain: list[T]) -> TScaleBand:
+    def set_domain(self, domain: list[T]) -> ScaleBand:
         """
         Sets the scale's domain to the specified array of values
 
@@ -94,7 +94,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     def get_domain(self):
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[Number]) -> TScaleBand:
+    def set_range(self, range_vals: list[Number]) -> ScaleBand:
         """
         Sets the scale's range to the specified array of numbers
 
@@ -114,7 +114,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     def get_range(self) -> list[Number]:
         return [self._r0, self._r1]
 
-    def set_range_round(self, range_vals: list[int | range]) -> TScaleBand:
+    def set_range_round(self, range_vals: list[int | range]) -> ScaleBand:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -139,7 +139,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     def get_step(self):
         return self._step
 
-    def set_round(self, round_val: bool) -> TScaleBand:
+    def set_round(self, round_val: bool) -> ScaleBand:
         """
         Enable or disable rounding accordingly
 
@@ -159,7 +159,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     def get_round(self):
         return self._round
 
-    def set_padding(self, padding: Number) -> TScaleBand:
+    def set_padding(self, padding: Number) -> ScaleBand:
         """
         A convenience method for setting the inner and outer padding
         to the same padding value.
@@ -181,7 +181,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     def get_padding(self):
         return self._padding_inner
 
-    def set_padding_inner(self, padding_inner: Number) -> TScaleBand:
+    def set_padding_inner(self, padding_inner: Number) -> ScaleBand:
         """
         Sets the inner padding to the specified number which must
         be less than or equal to 1
@@ -199,7 +199,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
         self._padding_inner = min(1, float(padding_inner))
         return self._rescale()
 
-    def set_padding_outer(self, padding_outer: Number) -> TScaleBand:
+    def set_padding_outer(self, padding_outer: Number) -> ScaleBand:
         """
         Sets the outer padding to the specified number
         which is typically in the range [0, 1]
@@ -223,7 +223,7 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
     def get_padding_outer(self):
         return self._padding_outer
 
-    def set_align(self, align: Number) -> TScaleBand:
+    def set_align(self, align: Number) -> ScaleBand:
         """
         Sets the alignment to the specified value which must
         be in the range [0, 1]
@@ -269,15 +269,15 @@ class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
 
 
 @overload
-def scale_band() -> TScaleBand: ...
+def scale_band() -> ScaleBand: ...
 
 
 @overload
-def scale_band(range_vals: list[Number]) -> TScaleBand: ...
+def scale_band(range_vals: list[Number]) -> ScaleBand: ...
 
 
 @overload
-def scale_band(domain: list[T], range_vals: list[Number]) -> TScaleBand: ...
+def scale_band(domain: list[T], range_vals: list[Number]) -> ScaleBand: ...
 
 
 def scale_band(*args):

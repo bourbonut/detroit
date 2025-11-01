@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import Protocol, TypeAlias, TypeVar
+from typing import Protocol, TypeAlias
 
 from ..types import GeoJSON, Point2D, Vec2D
 
@@ -220,9 +222,6 @@ class RawProjection(Protocol):
         ...
 
 
-TProjection = TypeVar("Projection", bound="Projection")
-
-
 class Projection(ABC):
     @abstractmethod
     def __call__(self, point: Point2D) -> Point2D:
@@ -294,7 +293,7 @@ class Projection(ABC):
 
     def set_preclip(
         self, preclip: Callable[[PolygonStream], PolygonStream]
-    ) -> TProjection:
+    ) -> Projection:
         """
         If preclip is specified, sets the projection's spherical clipping to
         the specified function and returns the projection; preclip is a
@@ -314,7 +313,7 @@ class Projection(ABC):
 
     def set_postclip(
         self, postclip: Callable[[PolygonStream], PolygonStream]
-    ) -> TProjection:
+    ) -> Projection:
         """
         If postclip is specified, sets the projection's Cartesian clipping to
         the specified function and returns the projection; postclip is a
@@ -332,7 +331,7 @@ class Projection(ABC):
         """
         ...
 
-    def set_clip_angle(self, clip_angle: float | None = None) -> TProjection:
+    def set_clip_angle(self, clip_angle: float | None = None) -> Projection:
         """
         If angle is specified, sets the projection's clipping circle radius to
         the specified angle in degrees and returns the projection. If angle is
@@ -355,7 +354,7 @@ class Projection(ABC):
 
     def set_clip_extent(
         self, clip_extent: tuple[Point2D, Point2D] | None = None
-    ) -> TProjection:
+    ) -> Projection:
         """
         If extent is specified, sets the projection's viewport clip extent to
         the specified bounds in pixels and returns the projection. The extent
@@ -380,7 +379,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def scale(self, k: float) -> TProjection:
+    def scale(self, k: float) -> Projection:
         """
         If scale is specified, sets the projection's scale factor to the
         specified value and returns the projection. The scale factor
@@ -400,7 +399,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def translate(self, translation: Vec2D) -> TProjection:
+    def translate(self, translation: Vec2D) -> Projection:
         """
         If translate is specified, sets the projection's translation offset to
         the specified two-element array :code:`[tx, ty]` and returns the
@@ -420,7 +419,7 @@ class Projection(ABC):
         """
         ...
 
-    def set_center(self, center: Point2D) -> TProjection:
+    def set_center(self, center: Point2D) -> Projection:
         """
         If center is specified, sets the projection's center to the specified
         center, a two-element array of :code:`[longitude, latitude]` in degrees
@@ -440,7 +439,7 @@ class Projection(ABC):
 
     def rotate(
         self, angles: tuple[float, float] | tuple[float, float, float]
-    ) -> TProjection:
+    ) -> Projection:
         """
         If angles is specified, sets the projection's three-axis spherical
         rotation to the specified value, which must be a two- or three-element
@@ -460,7 +459,7 @@ class Projection(ABC):
         """
         ...
 
-    def set_angle(self, angle: float) -> TProjection:
+    def set_angle(self, angle: float) -> Projection:
         """
         If angle is specified, sets the projection's post-projection planar
         rotation angle to the specified angle in degrees and returns the
@@ -478,7 +477,7 @@ class Projection(ABC):
         """
         ...
 
-    def set_reflect_x(self, reflect_x: bool) -> TProjection:
+    def set_reflect_x(self, reflect_x: bool) -> Projection:
         """
         If reflect is specified, sets whether or not the x-dimension is
         reflected (negated) in the output. This can be useful to display sky
@@ -497,7 +496,7 @@ class Projection(ABC):
         """
         ...
 
-    def set_reflect_y(self, reflect_y: bool) -> TProjection:
+    def set_reflect_y(self, reflect_y: bool) -> Projection:
         """
         If reflect is specified, sets whether or not the y-dimension is
         reflected (negated) in the output. This is especially useful for
@@ -518,7 +517,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def set_precision(self, precision: float) -> TProjection:
+    def set_precision(self, precision: float) -> Projection:
         """
         If precision is specified, sets the threshold for the projection's
         adaptive resampling to the specified value in pixels and returns the
@@ -537,7 +536,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def fit_extent(self, extent: tuple[Point2D, Point2D], obj: GeoJSON) -> TProjection:
+    def fit_extent(self, extent: tuple[Point2D, Point2D], obj: GeoJSON) -> Projection:
         """
         Sets the projection's scale and translate to fit the specified GeoJSON
         object in the center of the given extent. The extent is specified as an
@@ -564,7 +563,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def fit_size(self, size: Point2D, obj: GeoJSON) -> TProjection:
+    def fit_size(self, size: Point2D, obj: GeoJSON) -> Projection:
         """
         A convenience method for projection.fit_extent where the top-left
         corner of the extent is [0, 0].
@@ -584,7 +583,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def fit_width(self, width: float, obj: GeoJSON) -> TProjection:
+    def fit_width(self, width: float, obj: GeoJSON) -> Projection:
         """
         A convenience method for projection.fit_size where the height is
         automatically chosen from the aspect ratio of object and the given
@@ -605,7 +604,7 @@ class Projection(ABC):
         ...
 
     @abstractmethod
-    def fit_height(self, height: float, obj: GeoJSON) -> TProjection:
+    def fit_height(self, height: float, obj: GeoJSON) -> Projection:
         """
         A convenience method for projection.fit_size where the width is
         automatically chosen from the aspect ratio of object and the given

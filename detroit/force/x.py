@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import isnan
-from typing import TypeVar
 
 from ..array import argpass
 from ..types import SimulationNode, SimulationNodeFunction
 from .constant import constant
-
-TForceX = TypeVar("ForceX", bound="ForceX")
 
 
 class ForceX:
@@ -35,7 +34,7 @@ class ForceX:
         self._nodes = nodes
         self._initialize()
 
-    def set_strength(self, strength: SimulationNodeFunction[float] | float) -> TForceX:
+    def set_strength(self, strength: SimulationNodeFunction[float] | float) -> ForceX:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each node, and returns this
@@ -73,7 +72,7 @@ class ForceX:
         self._initialize()
         return self
 
-    def x(self, x: SimulationNodeFunction[float] | float) -> TForceX:
+    def x(self, x: SimulationNodeFunction[float] | float) -> ForceX:
         """
         Sets the x-coordinate accessor to the specified number or function,
         re-evaluates the x-accessor for each node, and returns this force.

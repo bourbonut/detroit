@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from datetime import datetime
-from typing import TypeVar, overload
+from typing import overload
 
 from ..time import (
     time_day,
@@ -18,8 +20,6 @@ from ..types import Formatter, T
 from .continuous import Transformer, copy, identity
 from .init import init_range
 from .nice import nice
-
-TScaleTime = TypeVar("Itself", bound="ScaleTime")
 
 
 class ScaleTime(Transformer[datetime]):
@@ -181,7 +181,7 @@ class ScaleTime(Transformer[datetime]):
         """
         return self._tick_format if specifier is None else self._format(specifier)
 
-    def nice(self, interval: Callable | list[datetime] | None = None) -> TScaleTime:
+    def nice(self, interval: Callable | list[datetime] | None = None) -> ScaleTime:
         """
         This method typically modifies the scale’s domain, and may only extend the
         bounds to the nearest round value.

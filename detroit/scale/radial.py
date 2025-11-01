@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 import math
 from collections.abc import Callable
-from typing import TypeVar, overload
+from typing import overload
 
 from ..types import Number
 from .continuous import Transformer, identity
 from .init import init_range
 from .linear import LinearBase
 from .utils import as_float
-
-TScaleRadial = TypeVar("Itself", bound="ScaleRadial")
 
 
 def sign(x: float) -> float:
@@ -90,7 +90,7 @@ class ScaleRadial(Transformer[float], LinearBase):
         """
         return super().invert(square(y))
 
-    def set_range(self, range_vals: list[Number]) -> TScaleRadial:
+    def set_range(self, range_vals: list[Number]) -> ScaleRadial:
         """
         Sets the scale's range to the specified array of values
 
@@ -111,7 +111,7 @@ class ScaleRadial(Transformer[float], LinearBase):
     def get_range(self):
         return self._range_vals.copy()
 
-    def set_range_round(self, range_vals: list[Number]) -> TScaleRadial:
+    def set_range_round(self, range_vals: list[Number]) -> ScaleRadial:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -128,7 +128,7 @@ class ScaleRadial(Transformer[float], LinearBase):
         """
         return super().set_range(range_vals).set_round(True)
 
-    def set_round(self, round_val: bool) -> TScaleRadial:
+    def set_round(self, round_val: bool) -> ScaleRadial:
         """
         Enables or disables rounding accordingly
 

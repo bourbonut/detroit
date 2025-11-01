@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
 from math import pi
-from typing import Generic, TypeVar
+from typing import Generic
 
 from ..array import argpass
 from ..types import Accessor, Number, T
@@ -10,9 +12,6 @@ from .constant import constant
 
 def identity(x):
     return x
-
-
-TPie = TypeVar("Pie", bound="Pie")
 
 
 @dataclass
@@ -110,7 +109,7 @@ class Pie(Generic[T]):
 
         return arcs
 
-    def set_value(self, value: Accessor[T, float] | Number) -> TPie:
+    def set_value(self, value: Accessor[T, float] | Number) -> Pie:
         """
         If value is specified, sets the value accessor to the
         specified function or number and returns this pie generator.
@@ -132,7 +131,7 @@ class Pie(Generic[T]):
         self._value = argpass(self._value)
         return self
 
-    def set_sort_values(self, sort_values: Callable[[float], float]) -> TPie:
+    def set_sort_values(self, sort_values: Callable[[float], float]) -> Pie:
         """
         If sort_values is specified, sets the value comparator to
         the specified function and returns this pie generator.
@@ -151,7 +150,7 @@ class Pie(Generic[T]):
         self._sort = None
         return self
 
-    def set_sort(self, sort: Callable[[float], float]) -> TPie:
+    def set_sort(self, sort: Callable[[float], float]) -> Pie:
         """
         If sort is specified, sets the data comparator to
         the specified function and returns this pie generator.
@@ -170,7 +169,7 @@ class Pie(Generic[T]):
         self._sort_values = None
         return self
 
-    def set_start_angle(self, start_angle: Callable[..., float] | Number) -> TPie:
+    def set_start_angle(self, start_angle: Callable[..., float] | Number) -> Pie:
         """
         If start_angle is specified, sets the overall start angle of the
         pie to the specified function or number and returns this pie generator.
@@ -192,7 +191,7 @@ class Pie(Generic[T]):
         self._start_angle = argpass(self._start_angle)
         return self
 
-    def set_end_angle(self, end_angle: Callable[..., float] | Number) -> TPie:
+    def set_end_angle(self, end_angle: Callable[..., float] | Number) -> Pie:
         """
         If end_angle is specified, sets the overall end angle
         of the pie to the specified function or number and
@@ -215,7 +214,7 @@ class Pie(Generic[T]):
         self._end_angle = argpass(self._end_angle)
         return self
 
-    def set_pad_angle(self, pad_angle: Callable[..., float] | Number) -> TPie:
+    def set_pad_angle(self, pad_angle: Callable[..., float] | Number) -> Pie:
         """
         If pad_angle is specified, sets the pad angle to
         the specified function or number and returns this

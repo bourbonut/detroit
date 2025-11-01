@@ -1,10 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from statistics import mean
-from typing import TypeVar
 
 from .hierarchy import Node
-
-TCluster = TypeVar("Cluster", bound="Cluster")
 
 
 def default_separation(a: Node, b: Node) -> int:
@@ -35,6 +34,7 @@ class Cluster:
     """
     Cluster layout
     """
+
     def __init__(self):
         self._separation = default_separation
         self._dx = 1
@@ -102,7 +102,7 @@ class Cluster:
 
         return root.each_after(update)
 
-    def set_separation(self, separation: Callable[[Node, Node], int]) -> TCluster:
+    def set_separation(self, separation: Callable[[Node, Node], int]) -> Cluster:
         """
         Sets the :code:`separation` accessor to the specified function and
         returns this cluster layout.
@@ -120,7 +120,7 @@ class Cluster:
         self._separation = separation
         return self
 
-    def set_size(self, size: tuple[float, float]) -> TCluster:
+    def set_size(self, size: tuple[float, float]) -> Cluster:
         """
         Sets this cluster layout's size to the specified two-element array of
         numbers :code:`[width, height]` and returns this cluster layout. A
@@ -145,7 +145,7 @@ class Cluster:
         self._dy = size[1]
         return self
 
-    def set_node_size(self, size: tuple[float, float]) -> TCluster:
+    def set_node_size(self, size: tuple[float, float]) -> Cluster:
         """
         Sets this cluster layout's node size to the specified two-element array
         of numbers :code:`[width, height]` and returns this cluster layout. A

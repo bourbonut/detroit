@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import inf, sqrt
-from typing import TypeVar
 
 from ..array import argpass
 from ..quadtree import quadtree
@@ -8,8 +9,6 @@ from ..types import SimulationNode, SimulationNodeFunction
 from .constant import constant
 from .jiggle import jiggle
 from .simulation import x, y
-
-TForceManyBody = TypeVar("ForceManyBody", bound="ForceManyBody")
 
 
 class Apply:
@@ -163,7 +162,7 @@ class ForceManyBody:
 
     def set_strength(
         self, strength: SimulationNodeFunction[float] | float
-    ) -> TForceManyBody:
+    ) -> ForceManyBody:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each node, and returns this
@@ -195,7 +194,7 @@ class ForceManyBody:
         self._initialize()
         return self
 
-    def set_distance_min(self, distance_min: float) -> TForceManyBody:
+    def set_distance_min(self, distance_min: float) -> ForceManyBody:
         """
         Sets the minimum distance between nodes over which this force is
         considered.
@@ -218,7 +217,7 @@ class ForceManyBody:
         self._distance_min_2 = distance_min * distance_min
         return self
 
-    def set_distance_max(self, distance_max: float) -> TForceManyBody:
+    def set_distance_max(self, distance_max: float) -> ForceManyBody:
         """
         sets the maximum distance between nodes over which this force is
         considered.
@@ -239,7 +238,7 @@ class ForceManyBody:
         self._distance_max_2 = distance_max * distance_max
         return self
 
-    def set_theta(self, theta: float) -> TForceManyBody:
+    def set_theta(self, theta: float) -> ForceManyBody:
         """
         Sets the Barnes-Hut approximation criterion to the specified number and
         returns this force.

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from ..path import Path
 from .constant import constant
@@ -41,8 +42,6 @@ SYMBOLS_STROKE = [
     symbol_times,
     symbol_triangle2,
 ]
-
-TSymbol = TypeVar("Symbol", bound="Symbol")
 
 
 class Symbol(WithPath):
@@ -90,7 +89,7 @@ class Symbol(WithPath):
 
     def set_symbol_type(
         self, symbol_type: Callable[[Path, int | float], None]
-    ) -> TSymbol:
+    ) -> Symbol:
         """
         Sets the symbol type and returns this symbol generator.
 
@@ -111,7 +110,7 @@ class Symbol(WithPath):
     def symbol_type(self):
         return self._symbol_type
 
-    def set_size(self, size: Callable[[], int | float] | int | float) -> TSymbol:
+    def set_size(self, size: Callable[[], int | float] | int | float) -> Symbol:
         """
         Sets the size of the symbol and returns this symbol generator.
 
@@ -132,7 +131,7 @@ class Symbol(WithPath):
     def size(self):
         return self._size
 
-    def set_context(self, context: Path) -> TSymbol:
+    def set_context(self, context: Path) -> Symbol:
         """
         Sets the context and returns this symbol generator.
 

@@ -1,10 +1,10 @@
+from __future__ import annotations
+
 import math
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic
 
 from ..types import T
 from .linear import LinearBase
-
-TIdentity = TypeVar("Itself", bound="Identity")
 
 
 class Identity(LinearBase, Generic[T]):
@@ -49,7 +49,7 @@ class Identity(LinearBase, Generic[T]):
         """
         return self(x)
 
-    def set_domain(self, domain: list[T]) -> TIdentity:
+    def set_domain(self, domain: list[T]) -> Identity:
         """
         Sets the scale’s domain
 
@@ -69,7 +69,7 @@ class Identity(LinearBase, Generic[T]):
     def get_domain(self):
         return self._domain
 
-    def set_range(self, range_vals: list[T]) -> TIdentity:
+    def set_range(self, range_vals: list[T]) -> Identity:
         """
         Sets the scale’s range
 
@@ -88,7 +88,7 @@ class Identity(LinearBase, Generic[T]):
     def get_range(self):
         return self._domain
 
-    def set_unknown(self, unknown: Any) -> TIdentity:
+    def set_unknown(self, unknown: Any) -> Identity:
         """
         Sets the output value of the scale for undefined
         or NaN input values.

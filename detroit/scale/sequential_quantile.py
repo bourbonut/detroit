@@ -1,13 +1,13 @@
+from __future__ import annotations
+
 import math
 from bisect import bisect
 from collections.abc import Callable
 from statistics import quantiles
-from typing import TypeVar, overload
+from typing import overload
 
 from .continuous import identity
 from .init import init_interpolator
-
-TSequentialQuantile = TypeVar("Itself", bound="SequentialQuantile")
 
 
 class SequentialQuantile:
@@ -34,7 +34,7 @@ class SequentialQuantile:
                 (bisect(self.get_domain(), x, 1) - 1) / (len(self.get_domain()) - 1)
             )
 
-    def set_domain(self, domain: list[int | float]) -> TSequentialQuantile:
+    def set_domain(self, domain: list[int | float]) -> SequentialQuantile:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -58,7 +58,7 @@ class SequentialQuantile:
     def get_domain(self) -> list[int | float]:
         return self._domain.copy()
 
-    def set_interpolator(self, interpolator: Callable) -> TSequentialQuantile:
+    def set_interpolator(self, interpolator: Callable) -> SequentialQuantile:
         """
         Sets the scale's interpolator function
 

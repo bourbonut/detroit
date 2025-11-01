@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Generic, TypeVar, overload
+from typing import Any, Generic, overload
 
 from ..interpolate import interpolate, interpolate_round
 from ..types import Number, T
@@ -13,11 +13,6 @@ from .linear import LinearBase
 from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .symlog import transform_symlog
-
-TSequential = TypeVar("Itself", bound="Sequential")
-TSequentialPow = TypeVar("Itself", bound="SequentialPow")
-TSequentialLog = TypeVar("Itself", bound="SequentialLog")
-TSequentialSymlog = TypeVar("Itself", bound="SequentialSymlog")
 
 
 class Sequential(Generic[T]):
@@ -65,7 +60,7 @@ class Sequential(Generic[T]):
                 x = max(0, min(1, x))
         return self._interpolator(x)
 
-    def set_domain(self, domain: list[Number]) -> TSequential:
+    def set_domain(self, domain: list[Number]) -> Sequential:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -88,7 +83,7 @@ class Sequential(Generic[T]):
     def get_domain(self) -> list[Number]:
         return [self._x0, self._x1]
 
-    def set_clamp(self, clamp: bool) -> TSequential:
+    def set_clamp(self, clamp: bool) -> Sequential:
         """
         Enables or disables clamping accordingly.
 
@@ -108,7 +103,7 @@ class Sequential(Generic[T]):
     def get_clamp(self) -> bool:
         return self._clamp
 
-    def set_interpolator(self, interpolator: Callable[[float], float]) -> TSequential:
+    def set_interpolator(self, interpolator: Callable[[float], float]) -> Sequential:
         """
         Sets the scale’s interpolator to the specified function.
 
@@ -128,7 +123,7 @@ class Sequential(Generic[T]):
     def get_interpolator(self) -> Callable[[float], float]:
         return self._interpolator
 
-    def set_range(self, range_vals: list[T]) -> TSequential:
+    def set_range(self, range_vals: list[T]) -> Sequential:
         """
         The given two-element array is converted
         to an interpolator function using interpolate
@@ -150,7 +145,7 @@ class Sequential(Generic[T]):
     def get_range(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
-    def set_range_round(self, range_vals: list[T]) -> TSequential:
+    def set_range_round(self, range_vals: list[T]) -> Sequential:
         """
         Sets the scale's range to the specified array of values
         and sets scale's interpolator to :code:`interpolate_round`.
@@ -172,7 +167,7 @@ class Sequential(Generic[T]):
     def get_range_round(self) -> list[T]:
         return [self._interpolator(0), self._interpolator(1)]
 
-    def set_unknown(self, unknown: Any) -> TSequential:
+    def set_unknown(self, unknown: Any) -> Sequential:
         """
         Sets the output value of the scale for undefined
         or NaN input values.
@@ -252,7 +247,7 @@ class SequentialLog(Sequential[float], LogBase):
             self._transform = transform_log
         return self
 
-    def set_domain(self, domain: list[Number]) -> TSequentialLog:
+    def set_domain(self, domain: list[Number]) -> SequentialLog:
         """
         Sets the scale's domain to the specified array of numbers
 
@@ -289,7 +284,7 @@ class SequentialSymlog(Sequential[float]):
         self._c = c
         super().__init__(transform_symlog(self._c))
 
-    def set_constant(self, c: Number) -> TSequentialSymlog:
+    def set_constant(self, c: Number) -> SequentialSymlog:
         """
         Sets the symlog constant to the specified number and returns this scale.
 
@@ -325,7 +320,7 @@ class SequentialPow(Sequential[float], LinearBase):
         super().__init__(t)
         self._exponent = 1
 
-    def _rescale(self) -> TSequentialPow:
+    def _rescale(self) -> SequentialPow:
         if self._exponent == 1:
             self._transform = identity
             return self
@@ -336,7 +331,7 @@ class SequentialPow(Sequential[float], LinearBase):
             self._transform = transform_pow(self._exponent)
             return self
 
-    def set_exponent(self, exponent: Number) -> TSequentialPow:
+    def set_exponent(self, exponent: Number) -> SequentialPow:
         """
         Sets the scale's exponent value.
 

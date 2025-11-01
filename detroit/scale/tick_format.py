@@ -1,6 +1,5 @@
 import math
 from collections.abc import Callable
-from typing import TypeVar
 
 from ..array import tick_step
 from ..format import (
@@ -11,8 +10,7 @@ from ..format import (
     precision_prefix,
     precision_round,
 )
-
-T = TypeVar("T")
+from ..types import T
 
 
 def tick_format(

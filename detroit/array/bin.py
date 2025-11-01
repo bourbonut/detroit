@@ -1,15 +1,15 @@
+from __future__ import annotations
+
 import math
 from bisect import bisect
 from collections.abc import Callable, Iterable
-from typing import Any, TypeVar
+from typing import Any
 
 from .argpass import argpass
 from .extent import extent
 from .nice import nice
 from .threshold import threshold_sturges
 from .ticks import tick_increment, ticks
-
-Tbin = TypeVar("Itself", bound="bin")
 
 
 def identity(x, *args):
@@ -165,7 +165,7 @@ class bin:
 
     def set_value(
         self, value: Callable[[int | float, int, Iterable[int | float]], float] | Any
-    ) -> Tbin:
+    ) -> bin:
         """
         Sets value
 
@@ -182,9 +182,7 @@ class bin:
         self._value = argpass(value if callable(value) else constant(value))
         return self
 
-    def set_domain(
-        self, domain: Callable[[float], float] | tuple[float, float]
-    ) -> Tbin:
+    def set_domain(self, domain: Callable[[float], float] | tuple[float, float]) -> bin:
         """
         Sets domain
 
@@ -203,7 +201,7 @@ class bin:
 
     def set_thresholds(
         self, thresholds: Callable[[list[float | None]], float] | Any
-    ) -> Tbin:
+    ) -> bin:
         """
         Sets thresholds
 

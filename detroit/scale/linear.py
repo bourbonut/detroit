@@ -1,13 +1,13 @@
+from __future__ import annotations
+
 import math
-from typing import Callable, Generic, TypeVar, overload
+from typing import Callable, Generic, overload
 
 from ..array import tick_increment, ticks
 from ..types import Number, T
 from .continuous import Transformer, copy
 from .init import init_range
 from .tick_format import tick_format
-
-TLinearBase = TypeVar("Itself", bound="LinearBase")
 
 
 class LinearBase:
@@ -59,7 +59,7 @@ class LinearBase:
         d = self.get_domain()
         return tick_format(d[0], d[-1], count if count is not None else 10, specifier)
 
-    def nice(self, count: int | None = None) -> TLinearBase:
+    def nice(self, count: int | None = None) -> LinearBase:
         """
         Extends the domain so that it starts and ends on nice round values.
 

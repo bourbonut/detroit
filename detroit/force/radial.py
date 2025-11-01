@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import isnan, sqrt
-from typing import TypeVar
 
 from ..array import argpass
 from ..types import SimulationNode, SimulationNodeFunction
 from .constant import constant
-
-TForceRadial = TypeVar("ForceRadial", bound="ForceRadial")
 
 
 class ForceRadial:
@@ -45,7 +44,7 @@ class ForceRadial:
 
     def set_strength(
         self, strength: SimulationNodeFunction[float] | float
-    ) -> TForceRadial:
+    ) -> ForceRadial:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each node, and returns this
@@ -83,7 +82,7 @@ class ForceRadial:
         self._initialize()
         return self
 
-    def set_radius(self, radius: SimulationNodeFunction[float] | float) -> TForceRadial:
+    def set_radius(self, radius: SimulationNodeFunction[float] | float) -> ForceRadial:
         """
         Sets the circle radius to the specified number or function,
         re-evaluates the radius accessor for each node, and returns this force.
@@ -112,7 +111,7 @@ class ForceRadial:
         self._initialize()
         return self
 
-    def x(self, x: float) -> TForceRadial:
+    def x(self, x: float) -> ForceRadial:
         """
         Sets the x-coordinate of the circle center to the specified number and
         returns this force.
@@ -130,7 +129,7 @@ class ForceRadial:
         self._x = x
         return self
 
-    def y(self, y: float) -> TForceRadial:
+    def y(self, y: float) -> ForceRadial:
         """
         Sets the y-coordinate of the circle center to the specified number and
         returns this force.

@@ -2,12 +2,10 @@ from __future__ import annotations
 
 import math
 from bisect import bisect
-from typing import Any, Generic, TypeVar, overload
+from typing import Any, Generic, overload
 
 from ..types import T
 from .init import init_range
-
-TScaleThreshold = TypeVar("Itself", bound="ScaleThreshold")
 
 
 class ScaleThreshold(Generic[T]):
@@ -45,7 +43,7 @@ class ScaleThreshold(Generic[T]):
         else:
             return self._unknown
 
-    def set_domain(self, domain: list[int | float]) -> TScaleThreshold:
+    def set_domain(self, domain: list[int | float]) -> ScaleThreshold:
         """
         Sets the scale’s domain to the specified array of values.
 
@@ -66,7 +64,7 @@ class ScaleThreshold(Generic[T]):
     def get_domain(self) -> list[int | float]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[T]) -> TScaleThreshold:
+    def set_range(self, range_vals: list[T]) -> ScaleThreshold:
         """
         Sets the scale’s range to the specified array of values.
 
@@ -112,7 +110,7 @@ class ScaleThreshold(Generic[T]):
             return [self._domain[i - 1], None]
         return [self._domain[i - 1], self._domain[i]]
 
-    def set_unknown(self, unknown: Any) -> TScaleThreshold:
+    def set_unknown(self, unknown: Any) -> ScaleThreshold:
         """
         Sets the scale's unknown value.
 

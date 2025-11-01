@@ -1,13 +1,13 @@
+from __future__ import annotations
+
 import math
 from collections.abc import Callable
-from typing import TypeVar, overload
+from typing import overload
 
 from ..types import Number
 from .continuous import Transformer, copy, identity
 from .init import init_range
 from .linear import LinearBase
-
-TScalePow = TypeVar("Itself", bound="ScalePow")
 
 
 def transform_pow(exponent: Number) -> Callable[[float], float]:
@@ -68,7 +68,7 @@ class ScalePow(Transformer[float], LinearBase):
             self._rescale()
             return self
 
-    def set_exponent(self, exponent: Number) -> TScalePow:
+    def set_exponent(self, exponent: Number) -> ScalePow:
         """
         Sets the current exponent to the given numeric value.
 

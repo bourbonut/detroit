@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from math import cos, degrees, radians, sin, sqrt
-from typing import Any, TypeVar
+from typing import Any
 
 from ...array import argpass
 from ...types import GeoJSON, Point2D, Vec2D
@@ -11,8 +13,6 @@ from ..rotation import RotateRadians
 from ..transform import GeoTransformer
 from .fit import fit_extent, fit_height, fit_size, fit_width
 from .resample import resample
-
-TProjectionMutator = TypeVar("ProjectionMutator", bound="ProjectionMutator")
 
 
 def point(self, x: float, y: float):
@@ -229,7 +229,7 @@ class ProjectionMutator(Projection):
         self._cache = transform_radians(transform_rotate(self._rotate)(clipped_stream))
         return self._cache
 
-    def set_project(self, project: RawProjection) -> TProjectionMutator:
+    def set_project(self, project: RawProjection) -> ProjectionMutator:
         """
         Updates the raw projection object and returns itself
 
@@ -251,7 +251,7 @@ class ProjectionMutator(Projection):
 
     def set_preclip(
         self, preclip: Callable[[PolygonStream], PolygonStream]
-    ) -> TProjectionMutator:
+    ) -> ProjectionMutator:
         """
         If preclip is specified, sets the projection's spherical clipping to
         the specified function and returns the projection; preclip is a
@@ -273,7 +273,7 @@ class ProjectionMutator(Projection):
 
     def set_postclip(
         self, postclip: Callable[[PolygonStream], PolygonStream]
-    ) -> TProjectionMutator:
+    ) -> ProjectionMutator:
         """
         If postclip is specified, sets the projection's Cartesian clipping to
         the specified function and returns the projection; postclip is a
@@ -296,7 +296,7 @@ class ProjectionMutator(Projection):
         self._y1 = None
         return self.reset()
 
-    def set_clip_angle(self, clip_angle: float | None = None) -> TProjectionMutator:
+    def set_clip_angle(self, clip_angle: float | None = None) -> ProjectionMutator:
         """
         If angle is specified, sets the projection's clipping circle radius to
         the specified angle in degrees and returns the projection. If angle is
@@ -325,7 +325,7 @@ class ProjectionMutator(Projection):
 
     def set_clip_extent(
         self, clip_extent: tuple[Point2D, Point2D] | None = None
-    ) -> TProjectionMutator:
+    ) -> ProjectionMutator:
         """
         If extent is specified, sets the projection's viewport clip extent to
         the specified bounds in pixels and returns the projection. The extent
@@ -361,7 +361,7 @@ class ProjectionMutator(Projection):
             self._postclip = geo_clip_rectangle(self._x0, self._y0, self._x1, self._y1)
         return self.reset()
 
-    def scale(self, k: float) -> TProjectionMutator:
+    def scale(self, k: float) -> ProjectionMutator:
         """
         If scale is specified, sets the projection's scale factor to the
         specified value and returns the projection. The scale factor
@@ -381,7 +381,7 @@ class ProjectionMutator(Projection):
         self._k = k
         return self.recenter()
 
-    def translate(self, translation: Vec2D) -> TProjectionMutator:
+    def translate(self, translation: Vec2D) -> ProjectionMutator:
         """
         If translate is specified, sets the projection's translation offset to
         the specified two-element array :code:`[tx, ty]` and returns the
@@ -403,7 +403,7 @@ class ProjectionMutator(Projection):
         self._y = translation[1]
         return self.recenter()
 
-    def set_center(self, center: Point2D) -> TProjectionMutator:
+    def set_center(self, center: Point2D) -> ProjectionMutator:
         """
         If center is specified, sets the projection's center to the specified
         center, a two-element array of :code:`[longitude, latitude]` in degrees
@@ -425,7 +425,7 @@ class ProjectionMutator(Projection):
 
     def rotate(
         self, angles: tuple[float, float] | tuple[float, float, float]
-    ) -> TProjectionMutator:
+    ) -> ProjectionMutator:
         """
         If angles is specified, sets the projection's three-axis spherical
         rotation to the specified value, which must be a two- or three-element
@@ -448,7 +448,7 @@ class ProjectionMutator(Projection):
         self._delta_gamma = radians(angles[2]) if len(angles) > 2 else 0
         return self.recenter()
 
-    def set_angle(self, angle: float) -> TProjectionMutator:
+    def set_angle(self, angle: float) -> ProjectionMutator:
         """
         If angle is specified, sets the projection's post-projection planar
         rotation angle to the specified angle in degrees and returns the
@@ -467,7 +467,7 @@ class ProjectionMutator(Projection):
         self._alpha = radians(angle)
         return self.recenter()
 
-    def set_reflect_x(self, reflect_x: bool) -> TProjectionMutator:
+    def set_reflect_x(self, reflect_x: bool) -> ProjectionMutator:
         """
         If reflect is specified, sets whether or not the x-dimension is
         reflected (negated) in the output. This can be useful to display sky
@@ -487,7 +487,7 @@ class ProjectionMutator(Projection):
         self._sx = -1 if reflect_x else 1
         return self.recenter()
 
-    def set_reflect_y(self, reflect_y: bool) -> TProjectionMutator:
+    def set_reflect_y(self, reflect_y: bool) -> ProjectionMutator:
         """
         If reflect is specified, sets whether or not the y-dimension is
         reflected (negated) in the output. This is especially useful for
@@ -508,7 +508,7 @@ class ProjectionMutator(Projection):
         self._sy = -1 if reflect_y else 1
         return self.recenter()
 
-    def set_precision(self, precision: float) -> TProjectionMutator:
+    def set_precision(self, precision: float) -> ProjectionMutator:
         """
         If precision is specified, sets the threshold for the projection's
         adaptive resampling to the specified value in pixels and returns the
@@ -530,7 +530,7 @@ class ProjectionMutator(Projection):
 
     def fit_extent(
         self, extent: tuple[Point2D, Point2D], obj: GeoJSON
-    ) -> TProjectionMutator:
+    ) -> ProjectionMutator:
         """
         Sets the projection's scale and translate to fit the specified GeoJSON
         object in the center of the given extent. The extent is specified as an
@@ -556,7 +556,7 @@ class ProjectionMutator(Projection):
         """
         return fit_extent(self, extent, obj)
 
-    def fit_size(self, size: Point2D, obj: GeoJSON) -> TProjectionMutator:
+    def fit_size(self, size: Point2D, obj: GeoJSON) -> ProjectionMutator:
         """
         A convenience method for projection.fit_extent where the top-left
         corner of the extent is [0, 0].
@@ -575,7 +575,7 @@ class ProjectionMutator(Projection):
         """
         return fit_size(self, size, obj)
 
-    def fit_width(self, width: float, obj: GeoJSON) -> TProjectionMutator:
+    def fit_width(self, width: float, obj: GeoJSON) -> ProjectionMutator:
         """
         A convenience method for projection.fit_size where the height is
         automatically chosen from the aspect ratio of object and the given
@@ -595,7 +595,7 @@ class ProjectionMutator(Projection):
         """
         return fit_width(self, width, obj)
 
-    def fit_height(self, height: float, obj: GeoJSON) -> TProjectionMutator:
+    def fit_height(self, height: float, obj: GeoJSON) -> ProjectionMutator:
         """
         A convenience method for projection.fit_size where the width is
         automatically chosen from the aspect ratio of object and the given
@@ -615,7 +615,7 @@ class ProjectionMutator(Projection):
         """
         return fit_height(self, height, obj)
 
-    def recenter(self) -> TProjectionMutator:
+    def recenter(self) -> ProjectionMutator:
         center = scale_translate_rotate(self._k, 0, 0, self._sx, self._sy, self._alpha)(
             *self._project(self._lambda, self._phi)
         )
@@ -635,7 +635,7 @@ class ProjectionMutator(Projection):
         self._project_resample = resample(self._project_transform, self._delta2)
         return self.reset()
 
-    def reset(self) -> TProjectionMutator:
+    def reset(self) -> ProjectionMutator:
         self._cache = None
         self._cache_stream = None
         return self

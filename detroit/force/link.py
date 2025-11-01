@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Since Javascript accepts weird stuff, I had to make the same programming
 # "errors" / "mistakes" in order to keep as simple as possible the code. These
 # "mistakes" are adding attributes to array object. For instance, in
@@ -12,7 +14,6 @@
 # the same behavior.
 from collections.abc import Callable
 from math import sqrt
-from typing import TypeVar
 
 from ..array import argpass
 from ..types import (
@@ -24,8 +25,6 @@ from ..types import (
 )
 from .constant import constant
 from .jiggle import jiggle
-
-TForceLink = TypeVar("ForceLink", bound="ForceLink")
 
 
 def index(d: SimulationNode) -> int:
@@ -101,9 +100,9 @@ class ForceLink:
         self._count = [None] * len(self._nodes)
         for i, link in enumerate(self._links):
             link["index"] = i
-            if not isinstance(link["source"], dict):  # TODO: check real type
+            if not isinstance(link["source"], dict):  # ODO: check real type
                 link["source"] = find(node_by_id, link["source"])
-            if not isinstance(link["target"], dict):  # TODO: check real type
+            if not isinstance(link["target"], dict):  # ODO: check real type
                 link["target"] = find(node_by_id, link["target"])
             self._count[link["source"]["index"]] = (
                 self._count[link["source"]["index"]] or 0
@@ -143,7 +142,7 @@ class ForceLink:
         self._random = random
         self._initialize()
 
-    def set_links(self, links: list[SimulationLink]) -> TForceLink:
+    def set_links(self, links: list[SimulationLink]) -> ForceLink:
         """
         Sets the array of links associated with this force, recomputes the
         distance and strength parameters for each link, and returns this force.
@@ -172,7 +171,7 @@ class ForceLink:
         self._initialize()
         return self
 
-    def set_id(self, id_func: SimulationNodeFunction[int]) -> TForceLink:
+    def set_id(self, id_func: SimulationNodeFunction[int]) -> ForceLink:
         """
         Sets the node ID accessor to the specified function and returns this
         force.
@@ -196,7 +195,7 @@ class ForceLink:
         self._id = argpass(id_func)
         return self
 
-    def set_iterations(self, iterations: int) -> TForceLink:
+    def set_iterations(self, iterations: int) -> ForceLink:
         """
         Sets the number of iterations per application to the specified number
         and returns this force.
@@ -216,7 +215,7 @@ class ForceLink:
 
     def set_strength(
         self, strength: SimulationLinkFunction[float] | float
-    ) -> TForceLink:
+    ) -> ForceLink:
         """
         Sets the strength accessor to the specified number or function,
         re-evaluates the strength accessor for each link, and returns this
@@ -248,7 +247,7 @@ class ForceLink:
 
     def set_distance(
         self, distance: SimulationNodeFunction[float] | float
-    ) -> TForceLink:
+    ) -> ForceLink:
         """
         Sets the distance accessor to the specified number or function,
         re-evaluates the distance accessor for each link, and returns this

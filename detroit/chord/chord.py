@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Iterator
 from functools import cmp_to_key
 from math import pi
-from typing import Any, TypeVar
+from typing import Any
 
 TAU = 2 * pi
-
-TChord = TypeVar("Chord", bound="Chord")
 
 
 class ChordValue:
@@ -321,7 +321,7 @@ class Chord:
             chords.sort(key=cmp_to_key(self._sort_chords))
         return chords
 
-    def set_pad_angle(self, pad_angle: float) -> TChord:
+    def set_pad_angle(self, pad_angle: float) -> Chord:
         """
         Sets the pad angle between adjacent groups to the specified number in
         radians and returns this chord layout.
@@ -333,7 +333,7 @@ class Chord:
 
         Returns
         -------
-        TChord
+        Chord
             Itself
         """
         self._pad_angle = max(0, pad_angle)
@@ -341,7 +341,7 @@ class Chord:
 
     def set_sort_groups(
         self, sort_groups: Callable[[float, float], float] | None = None
-    ) -> TChord:
+    ) -> Chord:
         """
         Sets the group comparator to the specified function or :code:`None` and
         returns this chord layout.
@@ -353,7 +353,7 @@ class Chord:
 
         Returns
         -------
-        TChord
+        Chord
             Itself
         """
         self._sort_groups = sort_groups
@@ -361,7 +361,7 @@ class Chord:
 
     def set_sort_subgroups(
         self, sort_subgroups: Callable[[float, float], float] | None = None
-    ) -> TChord:
+    ) -> Chord:
         """
         Sets the subgroup comparator to the specified function or :code:`None`
         and returns this chord layout.
@@ -373,7 +373,7 @@ class Chord:
 
         Returns
         -------
-        TChord
+        Chord
             Itself
         """
         self._sort_subgroups = sort_subgroups
@@ -381,7 +381,7 @@ class Chord:
 
     def set_sort_chords(
         self, compare: Callable[[float, float], float] | None = None
-    ) -> TChord:
+    ) -> Chord:
         """
         Sets the chord comparator to the specified function or :code:`None` and
         returns this chord layout.
@@ -393,7 +393,7 @@ class Chord:
 
         Returns
         -------
-        TChord
+        Chord
             Itself
         """
         if compare is None:

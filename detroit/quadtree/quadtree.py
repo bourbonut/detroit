@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 from collections.abc import Callable
 from copy import deepcopy
 from math import floor, inf, isnan, nan, sqrt
-from typing import Generic, TypeVar
+from typing import Generic
 
 from ..array import argpass
 from ..types import Accessor, Point2D, T
 from .add import add
 from .quad import Quad
-
-TQuadtree = TypeVar("Quadtree", bound="Quadtree")
 
 
 def default_x(d: Point2D) -> float:
@@ -63,7 +63,7 @@ class Quadtree(Generic[T]):
         self._y1 = y1
         self._root = None
 
-    def x(self, x: Accessor[T, float]) -> TQuadtree:
+    def x(self, x: Accessor[T, float]) -> Quadtree:
         """
         Sets the x-coordinate accessor and returns the quadtree.
         The x accessor is used to derive the x coordinate of data when adding
@@ -79,13 +79,13 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         self._x = argpass(x)
         return self
 
-    def y(self, y: Accessor[T, float]) -> TQuadtree:
+    def y(self, y: Accessor[T, float]) -> Quadtree:
         """
         Sets the y-coordinate accessor and returns the quadtree.
         The y accessor is used to derive the y coordinate of data when adding
@@ -101,13 +101,13 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         self._y = argpass(y)
         return self
 
-    def add(self, d: T) -> TQuadtree:
+    def add(self, d: T) -> Quadtree:
         """
         Adds the specified datum to the quadtree, deriving its coordinates
         :math:`(x, y)` using the current x and y accessors, and returns the
@@ -123,14 +123,14 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         x = self._x(d)
         y = self._y(d)
         return add(self.cover(x, y), x, y, d)
 
-    def add_all(self, data: list[T]) -> TQuadtree:
+    def add_all(self, data: list[T]) -> Quadtree:
         """
         Adds the specified iterable of data to the quadtree, deriving each
         element’s coordinates :math:`(x, y)` using the current x and y
@@ -144,7 +144,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         data = list(data)
@@ -183,7 +183,7 @@ class Quadtree(Generic[T]):
 
         return self
 
-    def cover(self, x: float, y: float) -> TQuadtree:
+    def cover(self, x: float, y: float) -> Quadtree:
         """
         Expands the quadtree to cover the specified point :math:`(x, y)`, and
         returns the quadtree.
@@ -197,7 +197,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         if isnan(x) or isnan(y):
@@ -248,7 +248,7 @@ class Quadtree(Generic[T]):
 
     def set_extent(
         self, extent: list[tuple[float, float], tuple[float, float]]
-    ) -> TQuadtree:
+    ) -> Quadtree:
         """
         Expands the quadtree to cover the specified points :code:`[[x0, y0],
         [x1, y1]]` and returns the quadtree.
@@ -260,7 +260,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         return self.cover(extent[0][0], extent[0][1]).cover(extent[1][0], extent[1][1])
@@ -288,7 +288,7 @@ class Quadtree(Generic[T]):
         self.visit(visit)
         return data
 
-    def find(self, x: float, y: float, radius: float | None = None) -> TQuadtree:
+    def find(self, x: float, y: float, radius: float | None = None) -> Quadtree:
         """
         Returns the datum closest to the position :math:`(x, y)` with the given
         search radius. If radius is not specified, it defaults to infinity.
@@ -304,7 +304,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         x0 = self._x0
@@ -369,7 +369,7 @@ class Quadtree(Generic[T]):
 
         return data
 
-    def remove(self, d: T) -> TQuadtree:
+    def remove(self, d: T) -> Quadtree:
         """
         Removes the specified datum from the quadtree, deriving its coordinates
         :math:`(x,y)` using the current x and y accessors, and returns the quadtree.
@@ -381,7 +381,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         x = self._x(d)
@@ -459,7 +459,7 @@ class Quadtree(Generic[T]):
 
         return self
 
-    def remove_all(self, data: list[T]) -> TQuadtree:
+    def remove_all(self, data: list[T]) -> Quadtree:
         """
         Removes the specified data from the quadtree, deriving their
         coordinates :math:`(x,y)` using the current x and y accessors, and
@@ -472,7 +472,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
         """
         for d in data:
@@ -481,7 +481,7 @@ class Quadtree(Generic[T]):
 
     def visit(
         self, callback: Callable[[list | dict | None, float, float, float, float], bool]
-    ) -> TQuadtree:
+    ) -> Quadtree:
         """
         Visits each node in the quadtree in pre-order traversal, invoking the
         specified callback with arguments :code:`node`, :code:`x0`, :code:`y0`,
@@ -510,7 +510,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
 
         Notes
@@ -551,7 +551,7 @@ class Quadtree(Generic[T]):
 
     def visit_after(
         self, callback: Callable[[dict, float, float, float, float], bool]
-    ) -> TQuadtree:
+    ) -> Quadtree:
         """
         Visits each node in the quadtree in post-order traversal, invoking the
         specified callback with arguments :code:`node`, :code:`x0`, :code:`y0`,
@@ -571,7 +571,7 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Itself
 
         Notes
@@ -614,13 +614,13 @@ class Quadtree(Generic[T]):
             callback(q.node, q.x0, q.y0, q.x1, q.y1)
         return self
 
-    def copy(self) -> TQuadtree:
+    def copy(self) -> Quadtree:
         """
         Returns a deep copy of itself.
 
         Returns
         -------
-        TQuadtree
+        Quadtree
             Deep copy of itself
         """
         return deepcopy(self)

@@ -1,10 +1,9 @@
+from __future__ import annotations
+
 import math
-from typing import TypeVar, overload
+from typing import overload
 
 from .color import RGB, Color, rgb_convert
-
-TLAB = TypeVar("LAB", bound="LAB")
-THCL = TypeVar("HCL", bound="HCL")
 
 K = 18
 XN = 0.96422
@@ -96,7 +95,7 @@ class LAB(Color):
         self.b = float(b)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> TLAB:
+    def brighter(self, k: float | None = None) -> LAB:
         """
         Returns a brighter copy of this color.
 
@@ -112,7 +111,7 @@ class LAB(Color):
         """
         return LAB(self.l + K * (1 if k is None else k), self.a, self.b, self.opacity)
 
-    def darker(self, k: float | None = None) -> TLAB:
+    def darker(self, k: float | None = None) -> LAB:
         """
         Returns a darker copy of this color.
 
@@ -176,7 +175,7 @@ class HCL(Color):
         self.l = float(l)
         self.opacity = float(opacity)
 
-    def brighter(self, k: float | None = None) -> THCL:
+    def brighter(self, k: float | None = None) -> HCL:
         """
         Returns a brighter copy of this color.
 
@@ -192,7 +191,7 @@ class HCL(Color):
         """
         return HCL(self.h, self.c, self.l + K * (1 if k is None else k), self.opacity)
 
-    def darker(self, k: float | None = None) -> THCL:
+    def darker(self, k: float | None = None) -> HCL:
         """
         Returns a darker copy of this color.
 

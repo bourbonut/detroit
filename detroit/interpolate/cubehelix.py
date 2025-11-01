@@ -1,10 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeVar
 
 from ..color import cubehelix as color_cubehelix
 from .color import color, hue
-
-TCubeHelixInterpolator = TypeVar("CubeHelixInterpolator", bound="CubeHelixInterpolator")
 
 
 class CubeHelixInterpolator:
@@ -29,7 +28,7 @@ class CubeHelixInterpolator:
 
         return interpolate
 
-    def set_gamma(self, gamma: float) -> TCubeHelixInterpolator:
+    def set_gamma(self, gamma: float) -> CubeHelixInterpolator:
         """
         Sets gamma and returns itself. See `gamma error in picture scaling
         <http://www.ericbrasseur.org/gamma.html?i=1>`_ for more information.

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
-from typing import Generic, TypeVar
+from typing import Generic
 
 from ..array import argpass
 from ..selection.selection import Selection
@@ -10,8 +12,6 @@ from .line import Line
 from .path import WithPath
 from .point import x as point_x
 from .point import y as point_y
-
-TArea = TypeVar("Area", bound="Area")
 
 
 class Area(Generic[T], WithPath):
@@ -212,7 +212,7 @@ class Area(Generic[T], WithPath):
         """
         return self.area_line().x(self._x0).y(self._y1)
 
-    def x(self, x: Accessor[T, float] | Number) -> TArea:
+    def x(self, x: Accessor[T, float] | Number) -> Area:
         """
         Sets x0 accessor function and sets x1
         accessor function to :code:`None`
@@ -235,7 +235,7 @@ class Area(Generic[T], WithPath):
         self._x1 = None
         return self
 
-    def x0(self, x0: Accessor[T, float] | Number) -> TArea:
+    def x0(self, x0: Accessor[T, float] | Number) -> Area:
         """
         Sets x0 accessor function
 
@@ -256,7 +256,7 @@ class Area(Generic[T], WithPath):
         self._x0 = argpass(self._x0)
         return self
 
-    def x1(self, x1: Accessor[T, float] | Number) -> TArea:
+    def x1(self, x1: Accessor[T, float] | Number) -> Area:
         """
         Sets x1 accessor function
 
@@ -277,7 +277,7 @@ class Area(Generic[T], WithPath):
         self._x1 = argpass(self._x1)
         return self
 
-    def y(self, y: Accessor[T, float] | Number) -> TArea:
+    def y(self, y: Accessor[T, float] | Number) -> Area:
         """
         Sets y0 accessor function and sets y1
         accessor function to :code:`None`
@@ -300,7 +300,7 @@ class Area(Generic[T], WithPath):
         self._y1 = None
         return self
 
-    def y0(self, y0: Accessor[T, float] | Number) -> TArea:
+    def y0(self, y0: Accessor[T, float] | Number) -> Area:
         """
         Sets y accessor function
 
@@ -321,7 +321,7 @@ class Area(Generic[T], WithPath):
         self._y0 = argpass(self._y0)
         return self
 
-    def y1(self, y1: Accessor[T, float] | Number) -> TArea:
+    def y1(self, y1: Accessor[T, float] | Number) -> Area:
         """
         Sets y accessor function
 
@@ -342,7 +342,7 @@ class Area(Generic[T], WithPath):
         self._y1 = argpass(self._y1)
         return self
 
-    def set_defined(self, defined: Accessor[T, bool] | Number) -> TArea:
+    def set_defined(self, defined: Accessor[T, bool] | Number) -> Area:
         """
         Sets defined accessor
 
@@ -375,7 +375,7 @@ class Area(Generic[T], WithPath):
             self._defined = constant(bool(defined))
         return self
 
-    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> TArea:
+    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> Area:
         """
         Sets curve factory.
 
@@ -394,7 +394,7 @@ class Area(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    def set_context(self, context: Selection | None = None) -> TArea:
+    def set_context(self, context: Selection | None = None) -> Area:
         """
         Sets the context.
 
