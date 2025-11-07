@@ -19,9 +19,9 @@ from .utils import as_float, constant, identity
 
 def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
     """
-    Makes a function which takes a generic value and returns the normalized value
-    based on :code:`a` and :code:`b` values. Normalization is done by applying the
-    following formula: :code:`(x - a) / (b - a)`.
+    Makes a function which takes a generic value and returns the normalized
+    value based on :code:`a` and :code:`b` values. Normalization is done by
+    applying the following formula: :code:`(x - a) / (b - a)`.
 
     Parameters
     ----------
@@ -53,8 +53,8 @@ def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
 
 def clamper(a: GenValue, b: GenValue) -> Callable[[GenValue], float]:
     """
-    Makes a function which clamps its input value borned by :code:`a` and :code:`b`
-    values.
+    Makes a function which clamps its input value borned by :code:`a` and
+    :code:`b` values.
 
     Parameters
     ----------
@@ -109,7 +109,7 @@ class PolyMap:
     ):
         self.domain = domain
         self.j = j = min(len(self.domain), len(range_vals)) - 1
-        self.d = [None] * j  # ODO: use list by comprehension
+        self.d = [None] * j
         self.r = [None] * j
 
         if self.domain[j] < self.domain[0]:
@@ -181,7 +181,8 @@ class Transformer(Generic[T]):
 
     def __call__(self, x: Number) -> T:
         """
-        Given a value from the domain, returns the corresponding value from the range.
+        Given a value from the domain, returns the corresponding value from the
+        range.
 
         Parameters
         ----------
@@ -207,9 +208,9 @@ class Transformer(Generic[T]):
 
     def invert(self, y: T) -> Number:
         """
-        Given a value from the range, returns the corresponding value
-        from the domain. Inversion is useful for interaction, say to
-        determine the data value corresponding to the position of the mouse.
+        Given a value from the range, returns the corresponding value from the
+        domain. Inversion is useful for interaction, say to determine the data
+        value corresponding to the position of the mouse.
 
         Parameters
         ----------
@@ -231,7 +232,7 @@ class Transformer(Generic[T]):
 
     def set_domain(self, domain: list[Number]) -> Transformer:
         """
-        Sets the scale's domain to the specified array of numbers
+        Sets the scale's domain to the specified array of numbers.
 
         Parameters
         ----------
@@ -274,8 +275,8 @@ class Transformer(Generic[T]):
 
     def set_range_round(self, range_vals: list[T]) -> Transformer:
         """
-        Sets the scale's range to the specified array of values
-        and sets scale's interpolator to :code:`interpolate_round`.
+        Sets the scale's range to the specified array of values and sets
+        scale's interpolator to :code:`interpolate_round`.
 
         Parameters
         ----------
@@ -293,7 +294,7 @@ class Transformer(Generic[T]):
 
     def set_clamp(self, clamp: bool) -> Transformer:
         """
-        Enables or disables clamping accordingly
+        Enables or disables clamping.
 
         Parameters
         ----------
@@ -333,8 +334,7 @@ class Transformer(Generic[T]):
 
     def set_unknown(self, unknown: Any) -> Transformer:
         """
-        Sets the output value of the scale for undefined
-        or NaN input values.
+        Sets the output value of the scale for undefined or NaN input values.
 
         Parameters
         ----------
