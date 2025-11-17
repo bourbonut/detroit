@@ -1100,37 +1100,37 @@ class Selection(Generic[T]):
 
         >>> import detroit as d3
         >>> svg = d3.create("svg")
-        >>> svg.append("g")
+        >>> print(svg.append("g").to_repr())
         Selection(
             groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={<Element g at 0x7f3eda09b540>: None},
+            data={<Element g at 0x75cf61141b80>: None},
         )
-        >>> svg.append("g")
+        >>> print(svg.append("g").to_repr())
         Selection(
             groups=[[g]],
             parents=[svg],
             enter=None,
             exit=None,
-            data={<Element g at 0x7f3eda09b540>: None, <Element g at 0x7f3edac50240>: None},
+            data={<Element g at 0x75cf61141b80>: None, <Element g at 0x75cf611b0500>: None},
         )
-        >>> svg.select_all("text").data(["Hello", "world"])
+        >>> print(svg.select_all("text").data(["Hello", "world"]).to_repr())
         Selection(
             groups=[[None, None]],
             parents=[svg],
             enter=[[EnterNode(svg, Hello), EnterNode(svg, world)]],
             exit=[[]],
-            data={<Element g at 0x7f3eda09b540>: None, <Element g at 0x7f3edac50240>: None},
+            data={<Element g at 0x75cf61141b80>: None, <Element g at 0x75cf611b0500>: None},
         )
-        >>> svg.select_all("g").data(["Hello", "world"])
+        >>> print(svg.select_all("g").data(["Hello", "world"]).to_repr())
         Selection(
             groups=[[g, g]],
             parents=[svg],
             enter=[[None, None]],
             exit=[[None, None]],
-            data={<Element g at 0x7f3eda09b540>: 'Hello', <Element g at 0x7f3edac50240>: 'world'},
+            data={<Element g at 0x75cf61141b80>: 'Hello', <Element g at 0x75cf611b0500>: 'world'},
         )
         """
         bind = bind_key if key else bind_index
