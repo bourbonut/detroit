@@ -11,6 +11,15 @@ Geographical Map
 
 1. Load data
 
+This example has the dependency `pytopojson <https://github.com/fferrin/pytopojson>`_ which has some bugs that I fixed on a fork.
+The author of :code:`pytopojson` is busy and does not have the time to update :code:`pytopojson` unfortunately.
+
+You must install `a fork of pytopojson <https://github.com/bourbonut/pytopojson>`_ by running this command:
+
+.. code:: bash
+
+   pip install git+https://github.com/bourbonut/pytopojson.git
+
 .. code:: python
 
    # https://observablehq.com/@d3/bubble-map/2
@@ -18,6 +27,7 @@ Geographical Map
    import requests
    import json
    from pytopojson.feature import Feature
+   from pytopojson.mesh import Mesh
    from math import isnan
 
    URL = (
@@ -38,8 +48,16 @@ Geographical Map
    countymap = dict(
        (d["id"], d) for d in Feature()(us, us["objects"]["counties"])["features"]
    )
-   statemesh = json.load(open("data/statemesh.json"))
-   countymesh = json.load(open("data/countymesh.json"))
+   statemesh = Mesh()(
+       us,
+       obj=us["objects"]["states"],
+       filt=lambda a, b: a != b,
+   )
+   countymesh = Mesh()(
+       us,
+       obj=us["objects"]["counties"],
+       filt=lambda a, b: a != b and int(int(a["id"]) / 1000) == int(int(b["id"]) / 1000),
+   )
 
    # Declare the chart dimensions.
    width = 975
