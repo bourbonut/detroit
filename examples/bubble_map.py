@@ -1,4 +1,4 @@
-# pytopojson has some bugged that I fixed on a fork. The author of "pytopojson"
+# pytopojson has some bugs that I fixed on a fork. The author of "pytopojson"
 # is busy and does not have the time to update "pytopojson" unfortunately
 # You must install `pytopojson` by running this command:
 # pip install git+https://github.com/bourbonut/pytopojson.git
