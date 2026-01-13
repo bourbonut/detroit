@@ -20,7 +20,12 @@ Geographical Map
    from pytopojson.feature import Feature
    from math import isnan
 
-   URL = "https://static.observableusercontent.com/files/beb56a2d9534662123fa352ffff2db8472e481776fcc1608ee4adbd532ea9ccf2f1decc004d57adc76735478ee68c0fd18931ba01fc859ee4901deb1bee2ed1b?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27population.json"
+   URL = (
+       "https://static.observableusercontent.com/files/beb56a2d9534662123fa352ffff2db8472e"
+       "481776fcc1608ee4adbd532ea9ccf2f1decc004d57adc76735478ee68c0fd18931ba01fc859ee4901d"
+       "eb1bee2ed1b?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27popul"
+       "ation.json"
+   )
    US_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"
 
    # Load data
@@ -156,5 +161,5 @@ Geographical Map
 
 .. code:: python
 
-   with open(f"bubble-map.svg", "w") as file:
+   with open("bubble-map.svg", "w") as file:
        file.write(str(svg))

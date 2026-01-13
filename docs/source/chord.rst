@@ -142,5 +142,5 @@ Chord chart
 
 .. code:: python
 
-   with open(f"chord.svg", "w") as file:
+   with open("chord.svg", "w") as file:
        file.write(str(svg))

@@ -18,7 +18,12 @@ Fan Chart
    import polars as pl
    from collections import namedtuple
 
-   URL = "https://static.observableusercontent.com/files/56bfb0d9ffc42b5c82ab7c52e91694ff266585ff9835cd292b910054e857577e5ff5b49231a0b91d8370608cb5bd213590b7468e794c8760349cf234d35a1c8a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27covid-ihme-projected-deaths-2020-04-01.csv"
+   URL = (
+       "https://static.observableusercontent.com/files/56bfb0d9ffc42b5c82ab7c52e91694ff266"
+       "585ff9835cd292b910054e857577e5ff5b49231a0b91d8370608cb5bd213590b7468e794c8760349cf"
+       "234d35a1c8a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27covid"
+       "-ihme-projected-deaths-2020-04-01.csv"
+   )
    Margin = namedtuple("Margin", ("top", "right", "bottom", "left"))
 
    covid_data = pl.read_csv(URL).select(
@@ -233,5 +238,5 @@ Fan Chart
 
 .. code:: python
 
-   with open(f"fan-chart.svg", "w") as file:
+   with open("fan-chart.svg", "w") as file:
        file.write(str(svg))

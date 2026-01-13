@@ -18,7 +18,12 @@ Stack chart
 
    import detroit as d3
 
-   URL = "https://static.observableusercontent.com/files/76f13741128340cc88798c0a0b7fa5a2df8370f57554000774ab8ee9ae785ffa2903010cad670d4939af3e9c17e5e18e7e05ed2b38b848ac2fc1a0066aa0005f?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27unemployment.csv"
+   URL = (
+       "https://static.observableusercontent.com/files/76f13741128340cc88798c0a0b7fa5a2df8"
+       "370f57554000774ab8ee9ae785ffa2903010cad670d4939af3e9c17e5e18e7e05ed2b38b848ac2fc1a"
+       "0066aa0005f?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27unemp"
+       "loyment.csv"
+   )
 
    unemployment = pl.read_csv(URL).select(
        pl.col("date").str.to_datetime("%Y-%m-%d"),

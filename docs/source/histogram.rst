@@ -18,7 +18,12 @@ Histogram chart
    import polars as pl # for data manipulation
    from collections import namedtuple
 
-   URL = "https://static.observableusercontent.com/files/8a6057f29caa4e010854bfc31984511e074ff9042ec2a99f30924984821414fbaeb75e59654e9303db359dfa0c1052534691dac86017c4c2f992d23b874f9b6e?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27unemployment-x.csv"
+   URL = (
+       "https://static.observableusercontent.com/files/8a6057f29caa4e010854bfc31984511e074"
+       "ff9042ec2a99f30924984821414fbaeb75e59654e9303db359dfa0c1052534691dac86017c4c2f992d"
+       "23b874f9b6e?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27unemp"
+       "loyment-x.csv"
+   )
    Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
 
    unemployment = pl.read_csv(URL)

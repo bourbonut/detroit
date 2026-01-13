@@ -17,7 +17,12 @@ Density chart
    import detroit as d3
    import polars as pl
 
-   URL = "https://static.observableusercontent.com/files/98d78d7f290f9776833e989617d49b592039ea65fee3b451764067cccd582eac122b3a07619cf223e8526910284fc105dfcb24b9af785535ee1dc6914687f9ac?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27faithful.tsv"
+   URL = (
+       "https://static.observableusercontent.com/files/98d78d7f290f9776833e989617d49b59203"
+       "9ea65fee3b451764067cccd582eac122b3a07619cf223e8526910284fc105dfcb24b9af785535ee1dc"
+       "6914687f9ac?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27faith"
+       "ful.tsv"
+   )
 
    faithful = pl.read_csv(URL, separator="\t")
 

@@ -18,7 +18,12 @@ Scatter chart
    import polars as pl # for data manipulation
    from collections import namedtuple
 
-   URL = "https://static.observableusercontent.com/files/53c407ee531bab128477148c9e28c49dd06bf83a93ae317e58dbb9fc819db0d4f6c4fb9646fa2fe20faad76addee20cfc360eab2362eeaec3340a5e4655b9996?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27cars-2.csv"
+   URL = (
+       "https://static.observableusercontent.com/files/53c407ee531bab128477148c9e28c49dd06"
+       "bf83a93ae317e58dbb9fc819db0d4f6c4fb9646fa2fe20faad76addee20cfc360eab2362eeaec3340a"
+       "5e4655b9996?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27cars-"
+       "2.csv"
+   )
    Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
 
    schema = pl.Schema(

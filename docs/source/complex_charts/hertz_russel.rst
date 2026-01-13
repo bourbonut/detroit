@@ -14,7 +14,12 @@ Hertzsprung Russell Diagram
    import polars as pl
    from math import hypot
 
-   URL = "https://static.observableusercontent.com/files/a01b08636a1314e9dc329d141684564156cb49190d762542f3b8d09a20f7c3275fe0be93d2ed6f9056af7b27708ed91037b729cf12263e63c0eb98abd43702fc?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27catalog.csv"
+   URL = (
+       "https://static.observableusercontent.com/files/a01b08636a1314e9dc329d141684564156c"
+       "b49190d762542f3b8d09a20f7c3275fe0be93d2ed6f9056af7b27708ed91037b729cf12263e63c0eb9"
+       "8abd43702fc?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27catal"
+       "og.csv"
+   )
    Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
    catalog = pl.read_csv(URL)
 

@@ -13,33 +13,36 @@ Heatmap
 
 .. code:: python
 
-    from collections import namedtuple
-    import detroit as d3
-    import polars as pl
+   from collections import namedtuple
+   import detroit as d3
+   import polars as pl
 
-    URL = "https://static.observableusercontent.com/files/609a91fa3908394198a9b2592b8432a798332e9a140a8d5f9c864615e3f18b2e822badadc579c06b394bb1396a20f064d72123b718354b829978b2d4782bd5c9?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27traffic.csv"
+   URL = (
+       "https://static.observableusercontent.com/files/609a91fa3908394198a9b2592b8432a7983"
+       "32e9a140a8d5f9c864615e3f18b2e822badadc579c06b394bb1396a20f064d72123b718354b829978b"
+       "2d4782bd5c9?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27traff"
+       "ic.csv"
+   )
 
-    Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
+   Margin = namedtuple("Margin", ["top", "right", "bottom", "left"])
 
-    theme = "light"
-
-    # Extract hours and get the median of vehicles for each pair (location, hour)
-    traffic = (
-        (
-            pl.read_csv(URL)
-            .select(
-                pl.col("location"),
-                pl.col("date")
-                .str.to_datetime("%Y-%m-%dT%H:%MZ", strict=False)
-                .dt.hour()
-                .alias("hour"),
-                pl.col("vehicles"),
-            )
-            .fill_null(0)
-        )
-        .group_by("location", "hour")
-        .agg(pl.col("vehicles").median())
-    )
+   # Extract hours and get the median of vehicles for each pair (location, hour)
+   traffic = (
+       (
+           pl.read_csv(URL)
+           .select(
+               pl.col("location"),
+               pl.col("date")
+               .str.to_datetime("%Y-%m-%dT%H:%MZ", strict=False)
+               .dt.hour()
+               .alias("hour"),
+               pl.col("vehicles"),
+           )
+           .fill_null(0)
+       )
+       .group_by("location", "hour")
+       .agg(pl.col("vehicles").median())
+   )
 
 .. code::
 
@@ -129,5 +132,5 @@ Heatmap
 
 .. code:: python
 
-   with open(f"heatmap.svg", "w") as file:
+   with open("heatmap.svg", "w") as file:
        file.write(str(svg))
