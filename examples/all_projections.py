@@ -1,10 +1,14 @@
-import json
+# pytopojson has some bugged that I fixed on a fork. The author of "pytopojson"
+# is busy and does not have the time to update "pytopojson" unfortunately
+# You must install `pytopojson` by running this command:
+# pip install git+https://github.com/bourbonut/pytopojson.git
 
-# from pytopojson.mesh import Mesh
+import json
 from concurrent.futures import ProcessPoolExecutor
 
 import requests
 from pytopojson.feature import Feature
+from pytopojson.mesh import Mesh
 
 import detroit as d3
 
@@ -19,21 +23,16 @@ feature = Feature()(world, world["objects"]["land"])
 us = json.loads(requests.get(US_URL).content)
 nation = Feature()(us, us["objects"]["nation"])
 
-# pytopojson bug: it does not work
-# statemesh = Mesh()(
-#     us,
-#     obj=us["objects"]["states"],
-#     filt=lambda a, b: a != b,
-# )
-# countymesh = Mesh()(
-#     us,
-#     obj=us["objects"]["counties"],
-#     filt=lambda a, b: a != b and int(a["id"] / 1000) == int(b["id"] / 1000),
-# )
-
-# alternative solution: preprocessed files
-statemesh = json.load(open("data/statemesh.json"))
-countymesh = json.load(open("data/countymesh.json"))
+statemesh = Mesh()(
+    us,
+    obj=us["objects"]["states"],
+    filt=lambda a, b: a != b,
+)
+countymesh = Mesh()(
+    us,
+    obj=us["objects"]["counties"],
+    filt=lambda a, b: a != b and int(int(a["id"]) / 1000) == int(int(b["id"]) / 1000),
+)
 
 graticule = d3.geo_graticule_10()
 outline = {"type": "Sphere"}

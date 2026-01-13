@@ -1,26 +1,20 @@
+# pytopojson has some bugged that I fixed on a fork. The author of "pytopojson"
+# is busy and does not have the time to update "pytopojson" unfortunately
+# You must install `pytopojson` by running this command:
+# pip install git+https://github.com/bourbonut/pytopojson.git
+
 # https://observablehq.com/@d3/bubble-map/2
 import json
 from math import isnan
 
 import requests
 from pytopojson.feature import Feature
+from pytopojson.mesh import Mesh
 
 import detroit as d3
 
 URL = "https://static.observableusercontent.com/files/beb56a2d9534662123fa352ffff2db8472e481776fcc1608ee4adbd532ea9ccf2f1decc004d57adc76735478ee68c0fd18931ba01fc859ee4901deb1bee2ed1b?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27population.json"
 US_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"
-
-# pytopojson bug: it does not work
-# statemesh = Mesh()(
-#     us,
-#     obj=us["objects"]["states"],
-#     filt=lambda a, b: a != b,
-# )
-# countymesh = Mesh()(
-#     us,
-#     obj=us["objects"]["counties"],
-#     filt=lambda a, b: a != b and int(a["id"] / 1000) == int(b["id"] / 1000),
-# )
 
 theme = "light"
 line_color = "white" if theme == "light" else "black"
@@ -38,9 +32,16 @@ countymap = dict(
     (d["id"], d) for d in Feature()(us, us["objects"]["counties"])["features"]
 )
 
-# alternative solution: preprocessed files
-statemesh = json.load(open("data/statemesh.json"))
-countymesh = json.load(open("data/countymesh.json"))
+statemesh = Mesh()(
+    us,
+    obj=us["objects"]["states"],
+    filt=lambda a, b: a != b,
+)
+countymesh = Mesh()(
+    us,
+    obj=us["objects"]["counties"],
+    filt=lambda a, b: a != b and int(int(a["id"]) / 1000) == int(int(b["id"]) / 1000),
+)
 
 # Declare the chart dimensions.
 width = 975

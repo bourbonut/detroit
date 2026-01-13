@@ -1,5 +1,5 @@
 polars
 requests
-pytopojson
+pytopojson @ git+https://github.com/bourbonut/pytopojson.git
 scikit-learn
 cairosvg
