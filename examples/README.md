@@ -328,26 +328,13 @@
 </p>
 
 
-### Partition example
+### Scatter example
 
 <p align="center">
     <picture >
         <source media="(prefers-color-scheme: dark)" srcset="../docs/source/figures/dark-scatter.svg">
         <source media="(prefers-color-scheme: light)" srcset="../docs/source/figures/light-scatter.svg">
-        <img alt="partition.py visualization" src="../docs/source/figures/light-scatter.svg">
-    </picture>
-    <br />
-    <a href="./partition.py">Source code</a>
-</p>
-
-
-### Scatter example
-
-<p align="center">
-    <picture >
-        <source media="(prefers-color-scheme: dark)" srcset="../docs/source/figures/dark-bubble-map.png">
-        <source media="(prefers-color-scheme: light)" srcset="../docs/source/figures/light-bubble-map.png">
-        <img alt="scatter.py visualization" src="../docs/source/figures/light-bubble-map.png">
+        <img alt="scatter.py visualization" src="../docs/source/figures/light-scatter.svg">
     </picture>
     <br />
     <a href="./scatter.py">Source code</a>
@@ -358,9 +345,9 @@
 
 <p align="center">
     <picture >
-        <source media="(prefers-color-scheme: dark)" srcset="../docs/source/figures/dark-force.svg">
-        <source media="(prefers-color-scheme: light)" srcset="../docs/source/figures/light-force.svg">
-        <img alt="bubble_map.py visualization" src="../docs/source/figures/light-force.svg">
+        <source media="(prefers-color-scheme: dark)" srcset="../docs/source/figures/dark-bubble-map.png">
+        <source media="(prefers-color-scheme: light)" srcset="../docs/source/figures/light-bubble-map.png">
+        <img alt="bubble_map.py visualization" src="../docs/source/figures/light-bubble-map.png">
     </picture>
     <br />
     <a href="./bubble_map.py">Source code</a>
