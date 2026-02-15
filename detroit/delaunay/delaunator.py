@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from math import ceil, floor, inf, isinf, nan, sqrt
+from math import ceil, floor, inf, isinf, sqrt
 from typing import Any
 
 from ..types import T
@@ -206,7 +206,7 @@ def circumcenter(
     bl = dx * dx + dy * dy
     cl = ex * ex + ey * ey
     denom = dx * ey - dy * ex
-    d = 0.5 / denom if denom != 0 else inf
+    d = 0.5 / denom if denom != 0 else (inf if denom >= 0 else -inf)
 
     x = ax + (ey * bl - dy * cl) * d
     y = ay + (dx * cl - ex * bl) * d
@@ -492,7 +492,7 @@ class Delaunator:
         self._cy = center[1]
 
         for i in range(n):
-            self._dists[i] = dist((coords[2 * 1], coords[2 * i + 1]), center)
+            self._dists[i] = dist((coords[2 * i], coords[2 * i + 1]), center)
 
         quicksort(self._ids, self._dists, 0, n - 1)
         self._hull_start = i0
@@ -514,8 +514,8 @@ class Delaunator:
         self._triangles_len = 0
         self._add_triangle(i0, i1, i2, -1, -1, -1)
 
-        xp = nan
-        yp = nan
+        xp = 0
+        yp = 0
         for k in range(len(self._ids)):
             i = self._ids[k]
             x = coords[2 * i]

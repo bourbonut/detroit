@@ -131,7 +131,7 @@ def test_delaunator_4(points):
 def test_delaunator_5(points):
     d = Delaunator.from_points(points)
     validate(points, d)
-    assert len(d) == 3573  # it should be 5133
+    assert len(d) == 5133
 
     p = [80, 220]
     d.coords[0] = p[0]
@@ -140,7 +140,7 @@ def test_delaunator_5(points):
 
     d.update()
     validate(new_points, d)
-    assert len(d) == 3888  # it should be 5139
+    assert len(d) == 5139
 
 
 def test_delaunator_6():
@@ -203,7 +203,6 @@ def test_delaunator_12(robustness2):
     validate(robustness2[0:100])
 
 
-@pytest.mark.skip
 def test_delaunator_13(robustness2):
     validate(robustness2)
 

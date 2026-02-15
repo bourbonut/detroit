@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from math import floor, inf, isnan
+from math import floor, inf, isnan, nan
 from typing import TypeVar
 
 from .context import Context
@@ -667,8 +667,10 @@ class Voronoi:
 
     def _project(
         self, x0: float, y0: float, vx: float, vy: float
-    ) -> tuple[float, float]:
+    ) -> tuple[float, float] | None:
         t = inf
+        x = nan
+        y = nan
         if vy < 0:
             if y0 <= self.ymin:
                 return None

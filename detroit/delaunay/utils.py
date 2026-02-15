@@ -16,11 +16,11 @@ def sum_zerolim(
     findex = 0
     if (fnow > enow) == (fnow > -enow):
         Q = enow
-        e += eindex
+        eindex += eindex
         enow = e[eindex]
     else:
         Q = fnow
-        f += findex
+        findex += findex
         fnow = f[eindex]
 
     hindex = 0
@@ -138,7 +138,7 @@ def scale(elen: int, e: list[float], b: float, h: list[float]) -> int:
     return hindex
 
 
-def negate(elen: int, e: list[float]) -> list[float]:
+def negate(elen: int, e: list[float]) -> int:
     for i in range(elen):
         e[i] = -e[i]
     return elen
