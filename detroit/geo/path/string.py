@@ -15,7 +15,7 @@ def round_zero(x: float) -> int:
 
 def round_digits(digits: int) -> Callable[[float], float]:
     def local_round(x: float) -> float:
-        return asint(round(x, digits))
+        return asint(float(round(x, digits)))
 
     return local_round
 
