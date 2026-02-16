@@ -33,8 +33,8 @@ jobs:
         run: uv build
       # Check that basic features work and we didn't miss to include crucial files
       - name: Smoke test (wheel)
-        run: uv run --isolated --no-project --with dist/*whl --with pytest --with polars --with pytopojson pytest tests/
+        run: uv run --isolated --no-project --with dist/*whl --with pytest --with polars --with git+https://github.com/bourbonut/pytopojson.git pytest tests/
       - name: Smoke test (source distribution)
-        run: uv run --isolated --no-project --with dist/*.tar.gz --with pytest --with polars --with pytopojson pytest tests/
+        run: uv run --isolated --no-project --with dist/*.tar.gz --with pytest --with polars --with git+https://github.com/bourbonut/pytopojson.git pytest tests/
       - name: Publish to PyPI
         run: uv publish
