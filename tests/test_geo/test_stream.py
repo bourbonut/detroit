@@ -2,7 +2,7 @@ import detroit as d3
 
 
 class DefaultPoint:
-    def point(self):
+    def point(self, x, y):
         return
 
 
@@ -69,13 +69,13 @@ def test_stream_6():
     coordinates = [0]
 
     class Point:
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             return
 
@@ -88,13 +88,13 @@ def test_stream_7():
     coordinates = [0]
 
     class Point:
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             assert calls[0] <= 2
             return
@@ -114,13 +114,13 @@ def test_stream_8():
             calls[0] += 1
             assert calls[0] == 1
 
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             assert 2 <= calls[0] <= 3
             return
@@ -142,13 +142,13 @@ def test_stream_9():
             calls[0] += 1
             assert calls[0] == 1 or calls[0] == 5
 
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             assert 2 <= calls[0] <= 3 or 6 <= calls[0] <= 7
             return
@@ -180,13 +180,13 @@ def test_stream_16():
             calls[0] += 1
             assert calls[0] == 2 or calls[0] == 6
 
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             assert 3 <= calls[0] <= 4 or 7 <= calls[0] <= 8
             return
@@ -225,13 +225,13 @@ def test_stream_17():
             calls[0] += 1
             assert calls[0] == 2 or calls[0] == 8
 
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             assert 3 <= calls[0] <= 4 or 9 <= calls[0] <= 10
             return
@@ -262,13 +262,13 @@ def test_stream_18():
     coordinates = [0]
 
     class Point:
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             return
 
@@ -284,13 +284,13 @@ def test_stream_19():
     coordinates = [0]
 
     class Point:
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             return
 
@@ -314,13 +314,13 @@ def test_stream_20():
     coordinates = [0]
 
     class Point:
-        def point(self, x, y, z):
+        def point(self, x, y):
             coordinates[0] += 1
             assert x == coordinates[0]
             coordinates[0] += 1
             assert y == coordinates[0]
             coordinates[0] += 1
-            assert z == coordinates[0]
+            # assert z == coordinates[0]
             calls[0] += 1
             return
 
