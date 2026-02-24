@@ -1,10 +1,5 @@
-from ..array import argpass
 from ..types import GeoJSON, T
 from .common import PolygonStream
-
-
-def get(values: list[T], index: int) -> T | None:
-    return values[index] if index < len(values) else None
 
 
 def stream_geometry(geometry: GeoJSON, stream: PolygonStream):
@@ -32,13 +27,13 @@ class StreamGeometryType:
     @staticmethod
     def Point(obj: GeoJSON, stream: PolygonStream):
         obj = obj["coordinates"]
-        argpass(stream.point)(get(obj, 0), get(obj, 1), get(obj, 2))
+        stream.point(obj[0], obj[1])
 
     @staticmethod
     def MultiPoint(obj: GeoJSON, stream: PolygonStream):
         coordinates = obj["coordinates"]
         for obj in coordinates:
-            argpass(stream.point)(get(obj, 0), get(obj, 1), get(obj, 2))
+            stream.point(obj[0], obj[1])
 
     @staticmethod
     def LineString(obj: GeoJSON, stream: PolygonStream):
@@ -71,9 +66,7 @@ def stream_line(coordinates: list[T], stream: PolygonStream, closed: bool):
     stream.line_start()
     coordinates = coordinates[:-1] if closed else coordinates
     for coordinate in coordinates:
-        argpass(stream.point)(
-            get(coordinate, 0), get(coordinate, 1), get(coordinate, 2)
-        )
+        stream.point(coordinate[0], coordinate[1])
     stream.line_end()
 
 
