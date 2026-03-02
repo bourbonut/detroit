@@ -1,27 +1,28 @@
 import math
+from collections.abc import Callable
 
 from .constant import constant
 
 
-def linear(a, d):
-    def f(t):
+def linear(a: float, d: float) -> Callable[[float], float]:
+    def f(t: float) -> float:
         return a + t * d
 
     return f
 
 
-def exponential(a, b, y):
+def exponential(a: float, b: float, y: float) -> Callable[[float], float]:
     a = a**y
     b = b**y - a
     y = 1 / y
 
-    def f(t):
+    def f(t: float) -> float:
         return (a + t * b) ** y
 
     return f
 
 
-def hue(a, b):
+def hue(a: float, b: float) -> Callable[[float], float]:
     d = b - a
     if not math.isnan(d) and d:
         if d < -180 or 180 < d:
@@ -32,11 +33,11 @@ def hue(a, b):
         return constant(b if math.isnan(a) else a)
 
 
-def gamma(y):
+def gamma(y: float) -> Callable[[float, float], Callable[[float], float]]:
     if round(y) == 1.0:
         return color
 
-    def f(a, b):
+    def f(a: float, b: float) -> Callable[[float], float]:
         d = b - a
         return (
             exponential(a, b, y)
@@ -47,7 +48,7 @@ def gamma(y):
     return f
 
 
-def color(a, b):
+def color(a: float, b: float) -> Callable[[float], float]:
     d = b - a
     return (
         linear(a, d) if not math.isnan(d) and d else constant(b if math.isnan(a) else a)

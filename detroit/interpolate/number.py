@@ -30,5 +30,10 @@ def interpolate_number(a: Number, b: Number) -> Callable[[float], float]:
     >>> interpolator(0.5)
     15.0
     """
-    a, b = float(a), float(b)
-    return lambda t: a * (1 - t) + b * t
+    a = float(a)
+    b = float(b)
+
+    def f(t: float) -> float:
+        return a * (1 - t) + b * t
+
+    return f

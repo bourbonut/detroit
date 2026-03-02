@@ -4,7 +4,7 @@ from bisect import bisect
 from collections.abc import Callable
 from datetime import datetime
 from math import isnan, nan
-from typing import Any, Generic
+from typing import Any
 
 from ..interpolate import (
     interpolate as interpolate_value,
@@ -14,6 +14,7 @@ from ..interpolate import (
     interpolate_round,
 )
 from ..types import GenValue, Number, T
+from .abc import ContinuousScaler
 from .utils import as_float, constant, identity
 
 
@@ -83,9 +84,9 @@ def clamper(a: GenValue, b: GenValue) -> Callable[[GenValue], float]:
 class BiMap:
     def __init__(
         self,
-        domain: tuple[T, T],
-        range_vals: tuple[T, T],
-        interpolate: Callable[[T, T], Callable[[T], float]],
+        domain: list[GenValue],
+        range_vals: list[GenValue],
+        interpolate: Callable[[GenValue, GenValue], Callable[[GenValue], float]],
     ):
         d0, d1 = domain[0], domain[1]
         r0, r1 = range_vals[0], range_vals[1]
@@ -96,16 +97,16 @@ class BiMap:
             self.d0 = normalize(d0, d1)
             self.r0 = interpolate(r0, r1)
 
-    def __call__(self, x: T) -> float:
+    def __call__(self, x: GenValue) -> float:
         return self.r0(self.d0(x))
 
 
 class PolyMap:
     def __init__(
         self,
-        domain: list[T],
-        range_vals: list[T],
-        interpolate: Callable[[T, T], Callable[[T], float]],
+        domain: list[GenValue],
+        range_vals: list[GenValue],
+        interpolate: Callable[[GenValue, GenValue], Callable[[GenValue], float]],
     ):
         self.domain = domain
         self.j = j = min(len(self.domain), len(range_vals)) - 1
@@ -120,7 +121,7 @@ class PolyMap:
             self.d[i] = normalize(self.domain[i], self.domain[i + 1])
             self.r[i] = interpolate(range_vals[i], range_vals[i + 1])
 
-    def __call__(self, x: T) -> float:
+    def __call__(self, x: GenValue) -> float:
         i = bisect(self.domain, x, 1, self.j) - 1
         return self.r[i](self.d[i](x))
 
@@ -135,7 +136,7 @@ def copy(source, target):
     )
 
 
-class Transformer(Generic[T]):
+class Transformer(ContinuousScaler[Number, T]):
     """
     Continous transformation
 
@@ -154,8 +155,8 @@ class Transformer(Generic[T]):
     ):
         self._transform = t
         self._untransform = u
-        self._domain = [0, 1]
-        self._range = [0, 1]
+        self._domain: list[Number] = [0, 1]
+        self._range: list[GenValue] = [0, 1]
         self._clamp = identity
         self._interpolate = interpolate_value
         self._unknown = None
@@ -179,7 +180,7 @@ class Transformer(Generic[T]):
         self._output = self._input = None
         return self
 
-    def __call__(self, x: Number) -> T:
+    def __call__(self, x: Number) -> T | None:
         """
         Given a value from the domain, returns the corresponding value from the
         range.
@@ -191,7 +192,7 @@ class Transformer(Generic[T]):
 
         Returns
         -------
-        T
+        T | None
             Corresponding value from the range
         """
         if x is None or (isinstance(x, float) and isnan(x)):
@@ -230,13 +231,13 @@ class Transformer(Generic[T]):
             self._input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self._untransform(self._input(y)))
 
-    def set_domain(self, domain: list[Number]) -> Transformer:
+    def set_domain(self, domain: list[Number | str]) -> Transformer:
         """
         Sets the scale's domain to the specified array of numbers.
 
         Parameters
         ----------
-        domain : list[Number]
+        domain : list[int | float | str]
             Domain
 
         Returns
@@ -244,16 +245,13 @@ class Transformer(Generic[T]):
         Transformer
             Itself
         """
-        # ODO: update lambda function to as_float function
-        self._domain = list(
-            map(lambda x: float(x) if isinstance(x, str) else x, domain)
-        )
+        self._domain = [float(x) if isinstance(x, str) else x for x in domain]
         return self._rescale()
 
     def get_domain(self) -> list[Number]:
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[T]) -> Transformer:
+    def set_range(self, range_vals: list[GenValue]) -> Transformer:
         """
         Sets the scale's range to the specified array of values
 

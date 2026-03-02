@@ -28,7 +28,9 @@ def is_valid(value: T) -> bool:
     )
 
 
-def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple[T, T]:
+def extent(
+    values: Iterable[T], accessor: Accessor[T, T] | None = None
+) -> list[T | None]:
     """
     Returns the minimum and maximum value in
     the given iterable using natural order.
@@ -42,7 +44,7 @@ def extent(values: Iterable[T], accessor: Accessor[T, T] | None = None) -> tuple
 
     Returns
     -------
-    tuple[T, T]
+    list[T | None]
         Minimum, maximum
 
     Examples

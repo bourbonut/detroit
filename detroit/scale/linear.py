@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import math
-from typing import Callable, Generic, overload
+from typing import Callable, overload
 
 from ..array import tick_increment, ticks
 from ..types import Number, T
+from .abc import Scaler
 from .continuous import Transformer, copy
 from .init import init_range
 from .tick_format import tick_format
 
 
-class LinearBase:
+class LinearBase(Scaler[Number, T]):
     def ticks(self, count: int | None = None) -> list[Number]:
         """
         Returns approximately count representative values
@@ -127,7 +128,7 @@ class LinearBase:
         return f"<{name} at {hex(addr)}>"
 
 
-class ScaleLinear(Transformer[T], LinearBase, Generic[T]):
+class ScaleLinear(Transformer[T], LinearBase[T]):
     """
     Linear scales map a continuous, quantitative input domain to a continuous
     output range using a linear transformation (translate and scale). If the

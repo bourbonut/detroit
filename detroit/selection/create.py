@@ -1,10 +1,11 @@
 from lxml import etree
 
+from ..types import T
 from .namespace import namespace
 from .selection import Selection
 
 
-def create(name: str) -> Selection:
+def create(name: str) -> Selection[T]:
     """
     Given the specified element name, returns a single-element selection
     containing a detached element of the given name in the current document.
@@ -18,7 +19,7 @@ def create(name: str) -> Selection:
 
     Returns
     -------
-    Selection
+    Selection[T]
         XML tree
     """
     fullname = namespace(name)

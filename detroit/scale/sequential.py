@@ -3,10 +3,11 @@ from __future__ import annotations
 import math
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Generic, overload
+from typing import Any, TypeVar, overload
 
 from ..interpolate import interpolate, interpolate_round
-from ..types import Number, T
+from ..types import Number
+from .abc import SequentialScaler
 from .continuous import identity
 from .init import init_interpolator
 from .linear import LinearBase
@@ -14,8 +15,10 @@ from .log import LogBase, logp, powp, reflect, transform_log, transform_logn
 from .pow import transform_pow, transform_sqrt
 from .symlog import transform_symlog
 
+T = TypeVar("T", bound=int | float | str | datetime)
 
-class Sequential(Generic[T]):
+
+class Sequential(SequentialScaler[Number, T]):
     """
     Sequential transformation
 
@@ -103,13 +106,13 @@ class Sequential(Generic[T]):
     def get_clamp(self) -> bool:
         return self._clamp
 
-    def set_interpolator(self, interpolator: Callable[[float], float]) -> Sequential:
+    def set_interpolator(self, interpolator: Callable[[float], T]) -> Sequential:
         """
         Sets the scale’s interpolator to the specified function.
 
         Parameters
         ----------
-        interpolator: Callable[[float], float]
+        interpolator: Callable[[float], T]
             Interpolator function
 
         Returns
@@ -120,7 +123,7 @@ class Sequential(Generic[T]):
         self._interpolator = interpolator
         return self
 
-    def get_interpolator(self) -> Callable[[float], float]:
+    def get_interpolator(self) -> Callable[[float], T]:
         return self._interpolator
 
     def set_range(self, range_vals: list[T]) -> Sequential:
@@ -267,7 +270,7 @@ class SequentialLog(Sequential[float], LogBase):
         return self
 
     def copy(self):
-        return copy(self, SequentialLog()).base(self.base)
+        return copy(self, SequentialLog()).base(self._base)
 
 
 class SequentialSymlog(Sequential[float]):
@@ -303,7 +306,7 @@ class SequentialSymlog(Sequential[float]):
         return self
 
     def copy(self):
-        return copy(self, SequentialSymlog()).set_constant(self.constant)
+        return copy(self, SequentialSymlog()).set_constant(self._c)
 
 
 class SequentialPow(Sequential[float], LinearBase):
@@ -352,7 +355,7 @@ class SequentialPow(Sequential[float], LinearBase):
         return self._exponent
 
     def copy(self):
-        return copy(self, SequentialPow()).set_exponent(self.exponent)
+        return copy(self, SequentialPow()).set_exponent(self._exponent)
 
 
 @overload
@@ -360,12 +363,12 @@ def scale_sequential() -> SequentialLinear: ...
 
 
 @overload
-def scale_sequential(interpolator: Callable[[float], float]) -> SequentialLinear: ...
+def scale_sequential(interpolator: Callable[[float], T]) -> SequentialLinear: ...
 
 
 @overload
 def scale_sequential(
-    domain: list[Number], interpolator: Callable[[float], float]
+    domain: list[Number], interpolator: Callable[[float], T]
 ) -> SequentialLinear: ...
 
 
@@ -378,7 +381,7 @@ def scale_sequential(*args):
     ----------
     domain : list[Number]
         Domain
-    interpolator: Callable[[float], float]
+    interpolator: Callable[[float], T]
         Interpolator
 
     Returns

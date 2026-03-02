@@ -10,7 +10,7 @@ from .color import gamma
 
 
 class RGBGammaInterpolator:
-    def __init__(self, y):
+    def __init__(self, y: int | float):
         self.color = gamma(y)
 
     def __call__(self, start: str, end: str) -> Callable[[float], str]:
@@ -32,19 +32,19 @@ class RGBGammaInterpolator:
         Callable[[float], str]
             Interpolator
         """
-        start = color_rgb(start)
-        end = color_rgb(end)
-        r = self.color(start.r, end.r)
-        g = self.color(start.g, end.g)
-        b = self.color(start.b, end.b)
-        opacity = nogamma(start.opacity, end.opacity)
+        start_color = color_rgb(start)
+        end_color = color_rgb(end)
+        r = self.color(start_color.r, end_color.r)
+        g = self.color(start_color.g, end_color.g)
+        b = self.color(start_color.b, end_color.b)
+        opacity = nogamma(start_color.opacity, end_color.opacity)
 
         def interpolate(t):
-            start.r = r(t)
-            start.g = g(t)
-            start.b = b(t)
-            start.opacity = opacity(t)
-            return str(start)
+            start_color.r = r(t)
+            start_color.g = g(t)
+            start_color.b = b(t)
+            start_color.opacity = opacity(t)
+            return str(start_color)
 
         return interpolate
 

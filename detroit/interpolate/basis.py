@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 
-def basis(t1, v0, v1, v2, v3):
+def basis(t1: float, v0: float, v1: float, v2: float, v3: float) -> float:
     t2 = t1 * t1
     t3 = t2 * t1
     return (

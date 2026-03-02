@@ -9,7 +9,7 @@ from typing import Any, Generic
 from lxml import etree
 
 from ..array import argpass
-from ..types import Accessor, EtreeFunction, T
+from ..types import Accessor, EtreeFunction, Number, T
 from .attr import attr_constant, attr_function
 from .bind import bind_index, bind_key
 from .classed import class_array, classed_constant, classed_function
@@ -218,7 +218,7 @@ class Selection(Generic[T]):
         self._exit = exit
         self._data = {} if data is None else data
 
-    def select(self, selection: str | None = None) -> Selection:
+    def select(self, selection: str | None = None) -> Selection[T]:
         """
         Selects the first element that matches the specified :code:`selection` string.
 
@@ -260,7 +260,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Selection of first element
 
         Examples
@@ -306,7 +306,7 @@ class Selection(Generic[T]):
 
         return Selection(subgroups, parents, data=self._data)
 
-    def select_all(self, selection: str | None = None) -> Selection:
+    def select_all(self, selection: str | None = None) -> Selection[T]:
         """
         Selects all elements that match the specified :code:`selection` string.
 
@@ -348,7 +348,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Selection of all matched elements
 
         Examples
@@ -401,14 +401,14 @@ class Selection(Generic[T]):
 
         return Selection(subgroups, parents, data=self._data)
 
-    def enter(self) -> Selection:
+    def enter(self) -> Selection[T]:
         """
         Returns the enter selection: placeholder nodes for each datum that had
         no corresponding DOM element in the selection.
 
         Returns
         -------
-        Selection
+        Selection[T]
             Enter selection
 
         Examples
@@ -429,7 +429,7 @@ class Selection(Generic[T]):
             data=self._data,
         )
 
-    def exit(self) -> Selection:
+    def exit(self) -> Selection[T]:
         """
         Returns the exit selection: existing DOM elements in the selection for
         which no new datum was found. (The exit selection is empty for
@@ -437,7 +437,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Exit selection
 
         Examples
@@ -458,7 +458,7 @@ class Selection(Generic[T]):
             data=self._data,
         )
 
-    def merge(self, context: Selection) -> Selection:
+    def merge(self, context: Selection) -> Selection[T]:
         """
         Returns a new selection merging this selection with the specified other
         selection or transition. The returned selection has the same number of
@@ -474,7 +474,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Merged selection
 
         Examples
@@ -528,7 +528,7 @@ class Selection(Generic[T]):
 
         return Selection(merges, self._parents, data=self._data | selection._data)
 
-    def filter(self, match: Accessor[T, bool] | int | float | str) -> Selection:
+    def filter(self, match: Accessor[T, bool] | int | float | str) -> Selection[T]:
         """
         Filters the selection, returning a new selection that contains only the
         elements for which the specified filter is true.
@@ -540,7 +540,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Filtered selection
 
         Examples
@@ -587,7 +587,7 @@ class Selection(Generic[T]):
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
 
-    def append(self, name: str) -> Selection:
+    def append(self, name: str) -> Selection[T]:
         """
         If the specified name is a string, appends a new element of this type
         (tag name) as the last child of each selected element, or before the
@@ -605,7 +605,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Selection
 
         Examples
@@ -667,7 +667,7 @@ class Selection(Generic[T]):
         parents = list(groups)
         return Selection(subgroups, parents, data=self._data)
 
-    def each(self, callback: EtreeFunction[T, None]) -> Selection:
+    def each(self, callback: EtreeFunction[T, None]) -> Selection[T]:
         """
         Invokes the specified function for each selected element, in order,
         being passed the current DOM element (nodes[i]), the current datum (d),
@@ -685,7 +685,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -730,7 +730,7 @@ class Selection(Generic[T]):
 
     def attr(
         self, name: str, value: Accessor[T, Any] | list[Any] | Any | None = None
-    ) -> Selection:
+    ) -> Selection[T]:
         """
         If a value is specified, sets the attribute with the specified name to
         the specified value on the selected elements and returns this
@@ -750,7 +750,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -784,7 +784,7 @@ class Selection(Generic[T]):
 
     def property(
         self, name: str, value: Accessor[T, Any] | list[Any] | Any | None = None
-    ) -> Selection:
+    ) -> Selection[T]:
         """
         This method has no difference with :code:`Selection.attr`.
 
@@ -798,7 +798,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -819,8 +819,8 @@ class Selection(Generic[T]):
         return self.attr(name, value)
 
     def style(
-        self, name: str, value: Accessor[T, str] | str | None = None
-    ) -> Selection:
+        self, name: str, value: Accessor[T, str] | Number | str | None = None
+    ) -> Selection[T]:
         """
         If a value is specified, sets the style with the specified name to the
         specified value on the selected elements and returns this selection.
@@ -833,12 +833,12 @@ class Selection(Generic[T]):
         ----------
         name : str
             Name of the style
-        value : Accessor[T, str] | str | None
+        value : Accessor[T, str] | Number | str | None
             Value function or constant value.
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -864,7 +864,7 @@ class Selection(Generic[T]):
             self.each(style_constant(name, value))
         return self
 
-    def text(self, value: Accessor[T, Any] | Any | None = None) -> Selection:
+    def text(self, value: Accessor[T, Any] | Any | None = None) -> Selection[T]:
         """
         If the value is a constant, then all elements are given the same text
         content; otherwise, if the value is a function, it is evaluated for
@@ -879,7 +879,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -919,7 +919,7 @@ class Selection(Generic[T]):
             self.each(text_constant(value))
         return self
 
-    def html(self, value: Accessor[T, Any] | Any | None = None) -> Selection:
+    def html(self, value: Accessor[T, Any] | Any | None = None) -> Selection[T]:
         """
         This method has no difference with :code:`Selection.text`.
 
@@ -931,7 +931,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -967,7 +967,7 @@ class Selection(Generic[T]):
 
     def classed(
         self, names: str, value: Accessor[T, bool] | bool | None = None
-    ) -> Selection:
+    ) -> Selection[T]:
         """
         Assigns or unassigns the specified CSS class names on the selected
         elements by setting the class attribute or modifying the class list
@@ -984,7 +984,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -1020,7 +1020,7 @@ class Selection(Generic[T]):
             self.each(classed_constant(names, value))
         return self
 
-    def datum(self, value: T) -> Selection:
+    def datum(self, value: T) -> Selection[T]:
         """
         Sets the bound data for the first selected node.
 
@@ -1031,7 +1031,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -1073,7 +1073,7 @@ class Selection(Generic[T]):
         self,
         values: list[T] | EtreeFunction[T, list[T]],
         key: Accessor[T, float | str] | None = None,
-    ) -> Selection:
+    ) -> Selection[T]:
         """
         Binds the specified list of data with the selected elements, returning
         a new selection that represents the update selection: the elements
@@ -1092,7 +1092,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -1176,14 +1176,14 @@ class Selection(Generic[T]):
 
         return Selection(update, parents, enter, exit, self._data)
 
-    def order(self) -> Selection:
+    def order(self) -> Selection[T]:
         """
         Re-inserts elements into the document such that the document order of
         each group matches the selection order.
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
         """
         for group in self._groups:
@@ -1203,7 +1203,7 @@ class Selection(Generic[T]):
         onenter: Callable[[Selection], Selection] | str,
         onupdate: Callable[[Selection], Selection] | None = None,
         onexit: Callable[[Selection], None] | None = None,
-    ) -> Selection:
+    ) -> Selection[T]:
         """
         Appends, removes and reorders elements as necessary to match the data
         that was previously bound by selection.data, returning the merged enter
@@ -1223,7 +1223,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Selection with joined elements
 
         Examples
@@ -1339,7 +1339,7 @@ class Selection(Generic[T]):
         else:
             return update
 
-    def insert(self, name: str, before: str) -> Selection:
+    def insert(self, name: str, before: str) -> Selection[T]:
         """
         If the specified name is a string, inserts a new element of this type
         (tag name) before the first element matching the specified
@@ -1354,7 +1354,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Selection with inserted element(s)
 
         Examples
@@ -1455,14 +1455,14 @@ class Selection(Generic[T]):
 
         return Selection(subgroups, selection._parents, data=self._data)
 
-    def remove(self) -> Selection:
+    def remove(self) -> Selection[T]:
         """
         Removes the selected elements from the document. Returns this selection
         (the removed elements) which are now detached from the DOM.
 
         Returns
         -------
-        Selection
+        Selection[T]
             Selection with removed elements
 
         Examples
@@ -1521,21 +1521,21 @@ class Selection(Generic[T]):
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, data=self._data)
 
-    def call(self, func: Callable[[Selection, ...], Any], *args: Any) -> Selection:
+    def call(self, func: Callable[[Selection], Any], *args: Any) -> Selection[T]:
         """
         Invokes the specified function exactly once, passing in this selection
         along with any optional arguments. Returns this selection.
 
         Parameters
         ----------
-        func : Callable[[Selection, ...], Any]
+        func : Callable[[Selection], Any]
             Function to call
         args : Any
             Arguments for the function to call
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
 
         Examples
@@ -1559,7 +1559,7 @@ class Selection(Generic[T]):
         func(self, *args)
         return self
 
-    def clone(self, deep: bool = False) -> Selection:
+    def clone(self, deep: bool = False) -> Selection[T]:
         """
         Returns a clone of the selection.
 
@@ -1570,7 +1570,7 @@ class Selection(Generic[T]):
 
         Returns
         -------
-        Selection
+        Selection[T]
             Clone of itself
 
         Notes
@@ -1709,13 +1709,13 @@ class Selection(Generic[T]):
                 if node is not None:
                     yield node
 
-    def selection(self) -> Selection:
+    def selection(self) -> Selection[T]:
         """
         Returns the selection without any modification.
 
         Returns
         -------
-        Selection
+        Selection[T]
             Itself
         """
         return self

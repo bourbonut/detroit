@@ -1,3 +1,4 @@
+from .abc import ContinuousScaler, Scaler, SequentialScaler
 from .band import scale_band, scale_point
 from .diverging import (
     scale_diverging,
@@ -28,6 +29,9 @@ from .tick_format import tick_format
 from .time import scale_time
 
 __all__ = [
+    "ContinuousScaler",
+    "Scaler",
+    "SequentialScaler",
     "scale_band",
     "scale_diverging",
     "scale_diverging",

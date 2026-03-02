@@ -1,10 +1,11 @@
 from collections.abc import Callable
 
-from ..types import ContinuousScaler, SequentialScaler, U, V
+from ..types import U, V
+from .abc import ContinuousScaler, SequentialScaler
 
 
 def init_range(
-    obj: ContinuousScaler,
+    obj: ContinuousScaler[U, V],
     domain: list[U] | None = None,
     range_vals: list[V] | None = None,
 ):
@@ -12,12 +13,11 @@ def init_range(
         return obj
     elif domain is None:
         return obj.set_range(range_vals)
-    else:
-        return obj.set_range(range_vals).set_domain(domain)
+    return obj.set_range(range_vals).set_domain(domain)
 
 
 def init_interpolator(
-    obj: SequentialScaler,
+    obj: SequentialScaler[U, V],
     domain: list[U] | None = None,
     interpolator: Callable[[V], V] | None = None,
 ):

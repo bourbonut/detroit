@@ -7,24 +7,24 @@ from .color import color, hue
 
 
 class CubeHelixInterpolator:
-    def __init__(self, func):
+    def __init__(self, func: Callable[[float, float], Callable[[float], float]]):
         self.func = func
         self.gamma = 1
 
     def __call__(self, start: str, end: str) -> Callable[[float], str]:
-        start = color_cubehelix(start)
-        end = color_cubehelix(end)
-        h = self.func(start.h, end.h)
-        s = color(start.s, end.s)
-        l = color(start.l, end.l)
-        opacity = color(start.opacity, end.opacity)
+        start_color = color_cubehelix(start)
+        end_color = color_cubehelix(end)
+        h = self.func(start_color.h, end_color.h)
+        s = color(start_color.s, end_color.s)
+        l = color(start_color.l, end_color.l)
+        opacity = color(start_color.opacity, end_color.opacity)
 
-        def interpolate(t):
-            start.h = h(t)
-            start.s = s(t)
-            start.l = l(t**self.gamma)
-            start.opacity = opacity(t)
-            return str(start)
+        def interpolate(t: float) -> str:
+            start_color.h = h(t)
+            start_color.s = s(t)
+            start_color.l = l(t**self.gamma)
+            start_color.opacity = opacity(t)
+            return str(start_color)
 
         return interpolate
 

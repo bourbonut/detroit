@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import Generic, overload
+from typing import overload
 
 from ..types import Number, T
 from .init import init_range
 from .ordinal import ScaleOrdinal
 
 
-class ScaleBand(ScaleOrdinal[T, Number], Generic[T]):
+class ScaleBand(ScaleOrdinal[T, Number]):
     """
     Band scales are like band scales except the output range is continuous
     and numeric. The scale divides the continuous range into uniform bands.

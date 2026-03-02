@@ -35,15 +35,15 @@ def interpolate_lab(a: str, b: str) -> Callable[[float], str]:
     """
     start = color_lab(a)
     end = color_lab(b)
-    l = color(start.l, end.l)
-    a = color(start.a, end.a)
-    b = color(start.b, end.b)
+    lc = color(start.l, end.l)
+    ac = color(start.a, end.a)
+    bc = color(start.b, end.b)
     opacity = color(start.opacity, end.opacity)
 
     def interpolate(t):
-        start.l = l(t)
-        start.a = a(t)
-        start.b = b(t)
+        start.l = lc(t)
+        start.a = ac(t)
+        start.b = bc(t)
         start.opacity = opacity(t)
         return str(start)
 

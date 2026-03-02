@@ -1,8 +1,9 @@
 from collections.abc import Callable
 from datetime import datetime
+from typing import Any
 
 from ..color.color import Color, color
-from ..types import T, U, V
+from ..types import Number, T, U, V
 from .constant import constant
 from .date import interpolate_date
 from .number import interpolate_number
@@ -60,20 +61,22 @@ def interpolate_object(a: dict[U, V], b: dict[U, V]) -> Callable[[float], dict[U
     return local_interpolate
 
 
-def interpolate_array(a: list[T], b: list[T]) -> Callable[[float], list[T]]:
+def interpolate_array(
+    a: list[Number], b: list[Number]
+) -> Callable[[float], list[Number]]:
     """
     Returns an interpolator between the two arrays a and b.
 
     Parameters
     ----------
-    a : list[T]
+    a : list[int | float]
         Array a
-    b : list[T]
+    b : list[int | float]
         Array b
 
     Returns
     -------
-    Callable[[float], list[T]]
+    Callable[[float], list[int | float]]
         Interpolator function
 
     Examples
@@ -90,21 +93,21 @@ def interpolate_array(a: list[T], b: list[T]) -> Callable[[float], list[T]]:
     return interpolate_number_array(a, b) if is_number_array(b) else generic_array(a, b)
 
 
-def generic_array(a: list[T], b: list[T]) -> Callable[[float], T]:
+def generic_array(a: list[Number], b: list[Number]) -> Callable[[float], list[Number]]:
     """
     Returns an interpolator between two sequences a and b where stored values
     are interpolated recursively.
 
     Parameters
     ----------
-    a : list[T]
+    a : list[int | float]
         a sequence
-    b : list[T]
+    b : list[int | float]
         b sequence
 
     Returns
     -------
-    Callable[[float], T]
+    Callable[[float], list[int | float]]
         Interpolator function
 
     Notes
@@ -116,7 +119,7 @@ def generic_array(a: list[T], b: list[T]) -> Callable[[float], T]:
     x = [interpolate(a[i], b[i]) for i in range(na)]
     c = list(b)
 
-    def local_interpolate(t):
+    def local_interpolate(t: float) -> list[Number]:
         for i in range(na):
             c[i] = x[i](t)
         return c
@@ -124,7 +127,7 @@ def generic_array(a: list[T], b: list[T]) -> Callable[[float], T]:
     return local_interpolate
 
 
-def interpolate(a: T, b: T) -> Callable[[float], T]:
+def interpolate(a: Any, b: Any) -> Callable[[float], Any]:
     """
     Returns an interpolator between the two arbitrary values a and b.
 
@@ -145,26 +148,26 @@ def interpolate(a: T, b: T) -> Callable[[float], T]:
             - See :func:`d3.interpolate_rgb <interpolate_rgb>`
         *   - :code:`datetime`
             - See :func:`d3.interpolate_date <interpolate_date>`
-        *   - :code:`list[int | float]`
+        *   - :code:`list[Number]`
             - See :func:`d3.interpolate_number_array <interpolate_number_array>`
-        *   - :code:`list[T] | tuple[T]`
+        *   - :code:`list | tuple`
             - Returns an interpolator which recursively interpolates based on \
-              :code:`T` values
-        *   - :code:`dict[U, V]`
+              :code:`Any` values
+        *   - :code:`dict`
             - See :func:`d3.interpolate_object <interpolate_object>`
         *   - :code:`Any`
             - See :func:`d3.interpolate_number <interpolate_number>`
 
     Parameters
     ----------
-    a : T
+    a : Any
         Left bound of the interpolator
-    b : T
+    b : Any
         Right bound of the interpolator
 
     Returns
     -------
-    Callable[[float], T]
+    Callable[[float], Any]
         Interpolator function where input should be 0 and 1 and outputs a value
         between a and b:
 

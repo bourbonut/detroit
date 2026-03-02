@@ -1,11 +1,10 @@
 from collections.abc import Callable
-
-from ..types import T
+from typing import Any
 
 
 def interpolate_number_array(
-    a: list[T], b: list[T] | None
-) -> Callable[[float], list[T]]:
+    a: list[int | float], b: list[int | float] | None
+) -> Callable[[float], list[int | float]]:
     """
     Returns an interpolator between the two arbitrary values a and b.
 
@@ -18,7 +17,7 @@ def interpolate_number_array(
 
     Returns
     -------
-    Callable[[float], list[T]]
+    Callable[[float], list[int | float]]
         Interpolator function
 
     Examples
@@ -37,7 +36,7 @@ def interpolate_number_array(
     n = min(len(b), len(a)) if a else 0
     c = list(b)
 
-    def interpolate(t):
+    def interpolate(t: float) -> list[int | float]:
         for i in range(n):
             c[i] = a[i] * (1 - t) + b[i] * t
         return c
@@ -45,5 +44,5 @@ def interpolate_number_array(
     return interpolate
 
 
-def is_number_array(x):
+def is_number_array(x: Any) -> bool:
     return isinstance(x, list) and all(isinstance(i, (int, float)) for i in x)

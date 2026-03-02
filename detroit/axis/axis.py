@@ -4,8 +4,8 @@ from collections.abc import Callable
 from typing import Literal
 
 from ..array import argpass
+from ..scale import Scaler
 from ..selection.selection import Selection
-from ..types import ContinuousScaler, SequentialScaler
 
 TOP = 1
 RIGHT = 2
@@ -49,14 +49,14 @@ class Axis:
     ----------
     orient : Literal[1, 2, 3, 4]
         Orientation
-    scale : ContinuousScaler | SequentialScaler
+    scale : Scaler
         Scaler
     """
 
     def __init__(
         self,
         orient: Literal[1, 2, 3, 4],
-        scale: ContinuousScaler | SequentialScaler,
+        scale: Scaler,
     ):
         self._scale = scale
         self._orient = orient
@@ -273,13 +273,13 @@ class Axis:
             )
         )
 
-    def set_scale(self, scale: ContinuousScaler | SequentialScaler) -> Axis:
+    def set_scale(self, scale: Scaler) -> Axis:
         """
         Sets scale value
 
         Parameters
         ----------
-        scale : ContinuousScaler | SequentialScaler
+        scale : Scaler
             New scale
 
         Returns
@@ -318,14 +318,14 @@ class Axis:
         self._scale = scale
         return self
 
-    def set_ticks(self, *ticks: int | str) -> Axis:
+    def set_ticks(self, *ticks: int | float | str) -> Axis:
         """
         Tick values will be passed to :code:`scale.ticks` and
         :code:`scale.tick_format` when :code:`Axis.__call__` is called
 
         Parameters
         ----------
-        *ticks : int | str
+        *ticks : int | float | str
             It depends on :code:`scale` type. Most of the time, it is the
             *count* for the number of ticks and optional format specifier
 
@@ -825,7 +825,7 @@ class Axis:
         self._offset = offset
         return self
 
-    def get_scale(self) -> ContinuousScaler | SequentialScaler:
+    def get_scale(self) -> Scaler:
         return self._scale
 
     def get_tick_arguments(self) -> list[int | str]:
@@ -873,7 +873,7 @@ class Axis:
         return f"<{name} at {hex(addr)}>"
 
 
-def axis_top(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_top(scale: Scaler) -> Axis:
     """
     Builds a new top-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -881,7 +881,7 @@ def axis_top(scale: ContinuousScaler | SequentialScaler) -> Axis:
 
     Parameters
     ----------
-    scale : ContinuousScaler | SequentialScaler
+    scale : Scaler
         Scaler
 
     Returns
@@ -892,7 +892,7 @@ def axis_top(scale: ContinuousScaler | SequentialScaler) -> Axis:
     return Axis(TOP, scale)
 
 
-def axis_right(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_right(scale: Scaler) -> Axis:
     """
     Builds a new right-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -900,7 +900,7 @@ def axis_right(scale: ContinuousScaler | SequentialScaler) -> Axis:
 
     Parameters
     ----------
-    scale : ContinuousScaler | SequentialScaler
+    scale : Scaler
         Scaler
 
     Returns
@@ -911,7 +911,7 @@ def axis_right(scale: ContinuousScaler | SequentialScaler) -> Axis:
     return Axis(RIGHT, scale)
 
 
-def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_bottom(scale: Scaler) -> Axis:
     """
     Builds a new bottom-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -919,7 +919,7 @@ def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> Axis:
 
     Parameters
     ----------
-    scale : ContinuousScaler | SequentialScaler
+    scale : Scaler
         Scaler
 
     Returns
@@ -930,7 +930,7 @@ def axis_bottom(scale: ContinuousScaler | SequentialScaler) -> Axis:
     return Axis(BOTTOM, scale)
 
 
-def axis_left(scale: ContinuousScaler | SequentialScaler) -> Axis:
+def axis_left(scale: Scaler) -> Axis:
     """
     Builds a new left-oriented axis generator for the given scale,
     with empty tick arguments, a tick size of 6 and padding of 3.
@@ -938,7 +938,7 @@ def axis_left(scale: ContinuousScaler | SequentialScaler) -> Axis:
 
     Parameters
     ----------
-    scale : ContinuousScaler | SequentialScaler
+    scale : Scaler
         Scaler
 
     Returns

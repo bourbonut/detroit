@@ -30,10 +30,11 @@ def interpolate_date(a: datetime, b: datetime) -> Callable[[float], datetime]:
     >>> interpolator(0.5)
     datetime.datetime(2000, 1, 1, 12, 0)
     """
-    a, b = a.timestamp(), b.timestamp()
+    at = a.timestamp()
+    bt = b.timestamp()
 
-    def interpolate(t):
-        d = datetime.fromtimestamp(a * (1 - t) + b * t)
+    def interpolate(t: float) -> datetime:
+        d = datetime.fromtimestamp(at * (1 - t) + bt * t)
         return d
 
     return interpolate

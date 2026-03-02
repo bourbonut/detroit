@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Generic, overload
+from typing import Any, overload
 
 from ..types import U, V
+from .abc import Scaler
 from .init import init_range
 
 
-class ScaleOrdinal(Generic[U, V]):
+class ScaleOrdinal(Scaler[U, V]):
     """
     Unlike continuous scales, ordinal scales have a discrete domain and range.
     For example, an ordinal scale might map a set of named categories to a set
