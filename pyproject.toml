@@ -25,3 +25,6 @@ license-files = ["LICENSE"]
 Homepage="https://github.com/bourbonut/detroit"
 Repository="https://github.com/bourbonut/detroit"
 Documentation="https://detroit.readthedocs.io/en/latest/"
+
+[tool.ruff]
+ignore = ["E741"]
