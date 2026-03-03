@@ -155,7 +155,7 @@ class Transformer(ContinuousScaler[Number, T]):
     ):
         self._transform = t
         self._untransform = u
-        self._domain: list[Number] = [0, 1]
+        self._domain: list[Number | datetime] = [0, 1]
         self._range: list[GenValue] = [0, 1]
         self._clamp = identity
         self._interpolate = interpolate_value
@@ -231,13 +231,13 @@ class Transformer(ContinuousScaler[Number, T]):
             self._input = self.piecewise(self._range, domain, interpolate_number)
         return self._clamp(self._untransform(self._input(y)))
 
-    def set_domain(self, domain: list[Number | str]) -> Transformer:
+    def set_domain(self, domain: list[GenValue]) -> Transformer:
         """
         Sets the scale's domain to the specified array of numbers.
 
         Parameters
         ----------
-        domain : list[int | float | str]
+        domain : list[GenValue]
             Domain
 
         Returns

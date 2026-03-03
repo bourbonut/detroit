@@ -11,11 +11,11 @@ class argpass:
 
     Parameters
     ----------
-    func : Callable[[list[Any]], Any]
+    func : Callable[..., Any]
         Function to decorate
     """
 
-    def __init__(self, func: Callable[[list[Any]], Any]):
+    def __init__(self, func: Callable[..., Any]):
         self._func = func
         self._nargs = (
             1 if isinstance(func, itemgetter) else len(signature(func).parameters)

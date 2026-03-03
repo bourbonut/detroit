@@ -11,20 +11,20 @@ from .order import order_none
 from .series import Serie, Series
 
 
-def stack_value(d: U, key: V) -> T:
+def stack_value(d: dict, key: U) -> V:
     """
     Default stack value function for `Stack` class
 
     Parameters
     ----------
-    d : U
+    d : dict
         Data
-    key : V
+    key : U
         Series key to access specific element of the data
 
     Returns
     -------
-    T
+    V
         Element accessed in the data
     """
     return d[key]
