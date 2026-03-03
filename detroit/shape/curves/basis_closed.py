@@ -1,6 +1,6 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .basis import BezierTrait
 from .common import Curve
 
@@ -82,7 +82,7 @@ class BasisClosedCurve(Curve, BezierTrait):
         self._y1 = y
 
 
-def curve_basis_closed(context: Selection) -> Curve:
+def curve_basis_closed(context: Path) -> Curve:
     """
     Produces a closed cubic basis spline using the specified control points.
     When a line segment ends, the first three control points are repeated,
@@ -90,7 +90,7 @@ def curve_basis_closed(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

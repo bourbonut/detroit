@@ -1,6 +1,6 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve, isvaluable
 
 
@@ -60,7 +60,7 @@ class StepCurve(Curve):
         self._y = y
 
 
-def curve_step(context: Selection) -> Curve:
+def curve_step(context: Path) -> Curve:
     """
     Produces a piecewise constant function (a step function) consisting of
     alternating horizontal and vertical lines. The y-value changes at the
@@ -68,7 +68,7 @@ def curve_step(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns
@@ -109,7 +109,7 @@ def curve_step(context: Selection) -> Curve:
     return StepCurve(context, 0.5)
 
 
-def curve_step_before(context: Selection) -> Curve:
+def curve_step_before(context: Path) -> Curve:
     """
     Produces a piecewise constant function (a step function) consisting of
     alternating horizontal and vertical lines. The y-value changes before the
@@ -117,7 +117,7 @@ def curve_step_before(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns
@@ -158,7 +158,7 @@ def curve_step_before(context: Selection) -> Curve:
     return StepCurve(context, 0.0)
 
 
-def curve_step_after(context: Selection) -> Curve:
+def curve_step_after(context: Path) -> Curve:
     """
     Produces a piecewise constant function (a step function) consisting of
     alternating horizontal and vertical lines. The y-value changes after the
@@ -166,7 +166,7 @@ def curve_step_after(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

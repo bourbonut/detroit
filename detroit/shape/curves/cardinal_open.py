@@ -1,14 +1,14 @@
 import math
 from collections.abc import Callable
 
-from ...selection import Selection
+from ...path import Path
 from ...types import Number
 from .cardinal import BezierTrait
 from .common import Curve, isvaluable
 
 
 class CardinalOpenCurve(Curve, BezierTrait):
-    def __init__(self, context, tension):
+    def __init__(self, context: Path, tension: float):
         self._context = context
         self._k = (1 - tension) / 6
         self._line = math.nan
@@ -33,7 +33,7 @@ class CardinalOpenCurve(Curve, BezierTrait):
             self._context.close_path()
         self._line = 1 - self._line
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         if self._point == 0:
             self._point = 1
         elif self._point == 1:
@@ -58,8 +58,8 @@ class CardinalOpenCurve(Curve, BezierTrait):
 
 
 def curve_cardinal_open(
-    context_or_tension: Selection | Number,
-) -> Callable[[Selection], Curve] | Curve:
+    context_or_tension: Path | Number,
+) -> Callable[[Path], Curve] | Curve:
     """
     Produces a cubic cardinal spline using the specified control points. Unlike
     curveCardinal, one-sided differences are not used for the first and last
@@ -69,14 +69,14 @@ def curve_cardinal_open(
 
     Parameters
     ----------
-    context_or_tension : Selection | Number
+    context_or_tension : Path | Number
         Context or tension value in range :math:`[0, 1]` determining the length
         of the tangents. A tension of one yields all zero tangents, equivalent
         to :func:`d3.curve_linear <curve_linear>`
 
     Returns
     -------
-    Callable[[Selection], Curve] | Curve
+    Callable[[Path], Curve] | Curve
         Curve object or function which makes a curve object with tension value
         set
 
@@ -115,7 +115,7 @@ def curve_cardinal_open(
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
 
-        def local_curve(context):
+        def local_curve(context: Path) -> Curve:
             return CardinalOpenCurve(context, tension)
 
         return local_curve

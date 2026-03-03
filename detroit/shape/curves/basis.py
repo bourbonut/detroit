@@ -1,11 +1,11 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve, isvaluable
 
 
 class BezierTrait:
-    def _bezier_curve_to(self, x, y):
+    def _bezier_curve_to(self, x: float, y: float):
         self._context.bezier_curve_to(
             (2 * self._x0 + self._x1) / 3,
             (2 * self._y0 + self._y1) / 3,
@@ -72,7 +72,7 @@ class BasisCurve(Curve, BezierTrait):
         self._y1 = y
 
 
-def curve_basis(context: Selection) -> Curve:
+def curve_basis(context: Path) -> Curve:
     """
     Produces a cubic basis spline using the specified control points. The first
     and last points are triplicated such that the spline starts at the first
@@ -82,7 +82,7 @@ def curve_basis(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

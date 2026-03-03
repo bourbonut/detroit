@@ -1,6 +1,6 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve, isvaluable, point_radial
 
 
@@ -85,14 +85,14 @@ class BumpRadialCurve(Curve):
         self._y0 = y
 
 
-def curve_bump_x(context: Selection) -> Curve:
+def curve_bump_x(context: Path) -> Curve:
     """
     Produces a Bézier curve between each pair of points, with horizontal
     tangents at each point.
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns
@@ -133,14 +133,14 @@ def curve_bump_x(context: Selection) -> Curve:
     return BumpCurve(context, True)
 
 
-def curve_bump_y(context: Selection) -> Curve:
+def curve_bump_y(context: Path) -> Curve:
     """
     Produces a Bézier curve between each pair of points, with vertical tangents
     at each point.
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns
@@ -181,5 +181,5 @@ def curve_bump_y(context: Selection) -> Curve:
     return BumpCurve(context, False)
 
 
-def curve_bump_radial(context: Selection) -> Curve:
+def curve_bump_radial(context: Path) -> Curve:
     return BumpRadialCurve(context)

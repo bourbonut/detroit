@@ -1,11 +1,11 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve, fdiv, isvaluable, sign
 
 
 class HermiteInterpolation:
-    def _slope3(self, x2, y2):
+    def _slope3(self, x2: float, y2: float):
         h0 = self._x1 - self._x0
         h1 = x2 - self._x1
         s0 = fdiv(self._y1 - self._y0, h0)
@@ -16,11 +16,11 @@ class HermiteInterpolation:
         r = (sign(s0) + sign(s1)) * min(abs(s0), abs(s1), 0.5 * abs(p))
         return 0.0 if math.isnan(r) or math.isinf(r) else r
 
-    def _slope2(self, t):
+    def _slope2(self, t: float):
         h = self._x1 - self._x0
         return (3 * (self._y1 - self._y0) / h - t) * 0.5 if h else t
 
-    def _hermite_point(self, t0, t1):
+    def _hermite_point(self, t0: float, t1: float):
         x0 = self._x0
         y0 = self._y0
         x1 = self._x1
@@ -124,7 +124,7 @@ class MonotoneY(Monotone):
         super().point(y, x)
 
 
-def curve_monotone_x(context: Selection) -> Curve:
+def curve_monotone_x(context: Path) -> Curve:
     """
     Produces a cubic spline that preserves monotonicity in y, assuming
     monotonicity in x, as proposed by Steffen in A simple method for monotonic
@@ -135,7 +135,7 @@ def curve_monotone_x(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns
@@ -176,7 +176,7 @@ def curve_monotone_x(context: Selection) -> Curve:
     return MonotoneX(context)
 
 
-def curve_monotone_y(context: Selection) -> Curve:
+def curve_monotone_y(context: Path) -> Curve:
     """
     Produces a cubic spline that preserves monotonicity in x, assuming
     monotonicity in y, as proposed by Steffen in A simple method for monotonic
@@ -187,7 +187,7 @@ def curve_monotone_y(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

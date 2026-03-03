@@ -1,17 +1,17 @@
 from collections.abc import Callable
 
-from ...selection import Selection
+from ...path import Path
 from ...types import Number
 from .basis import BasisCurve, curve_basis
 from .common import Curve
 
 
 class BundleCurve(Curve):
-    def __init__(self, context, beta):
+    def __init__(self, context: Path, beta: float):
         self._basis = BasisCurve(context)
         self._beta = beta
-        self._x = None
-        self._y = None
+        self._x = []
+        self._y = []
 
     def area_start(self):
         return
@@ -44,18 +44,18 @@ class BundleCurve(Curve):
                 )
                 i += 1
 
-        self._x = None
-        self._y = None
+        self._x = []
+        self._y = []
         self._basis.line_end()
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         self._x.append(x)
         self._y.append(y)
 
 
 def curve_bundle(
-    context_or_beta: Selection | Number,
-) -> Callable[[Selection], Curve] | Curve:
+    context_or_beta: Path | Number,
+) -> Callable[[Path], Curve] | Curve:
     """
     Produces a straightened cubic basis spline using the specified control
     points, with the spline straightened according to the curve's beta. This
@@ -66,13 +66,13 @@ def curve_bundle(
 
     Parameters
     ----------
-    context_or_beta : Selection | Number
+    context_or_beta : Path | Number
         Context or beta value in range :math:`[0, 1]` representing the bundle
         strength
 
     Returns
     -------
-    Callable[[Selection], Curve] | Curve
+    Callable[[Path], Curve] | Curve
         Curve object or function which makes a curve object with beta value set
 
     Examples
@@ -113,7 +113,7 @@ def curve_bundle(
         if beta == 1:
             return curve_basis
 
-        def local_curve(context):
+        def local_curve(context: Path) -> Curve:
             return BundleCurve(context, beta)
 
         return local_curve

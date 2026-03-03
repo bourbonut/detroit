@@ -1,4 +1,4 @@
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 from math import cos, inf, isnan, pi, sin
 
 from ...types import Number
@@ -13,7 +13,7 @@ def point_radial(x: Number, y: Number) -> tuple[Number, Number]:
     return y * cos(x), y * sin(x)
 
 
-def sign(x: Number) -> bool:
+def sign(x: Number) -> int | float:
     return -1 if x < 0 else 1
 
 
@@ -34,7 +34,7 @@ class Curve(ABC):
     alternative to the line and area generators.
     """
 
-    @abstractclassmethod
+    @abstractmethod
     def area_start(self):
         """
         Indicates the start of a new area segment. Each area segment consists
@@ -44,14 +44,14 @@ class Curve(ABC):
         """
         ...
 
-    @abstractclassmethod
+    @abstractmethod
     def area_end(self):
         """
         Indicates the end of the current area segment.
         """
         ...
 
-    @abstractclassmethod
+    @abstractmethod
     def line_start(self):
         """
         Indicates the start of a new line segment. Zero or more points will
@@ -59,14 +59,14 @@ class Curve(ABC):
         """
         ...
 
-    @abstractclassmethod
+    @abstractmethod
     def line_end(self):
         """
         Indicates the end of the current line segment.
         """
         ...
 
-    @abstractclassmethod
+    @abstractmethod
     def point(self, x: float, y: float):
         """
         Indicates a new point in the current line segment with the given x- and y-values.

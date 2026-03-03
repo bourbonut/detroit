@@ -1,7 +1,7 @@
 import math
 from collections.abc import Callable
 
-from ...selection import Selection
+from ...path import Path
 from ...types import Number
 from .cardinal_closed import curve_cardinal_closed
 from .catmull_rom import BezierTrait
@@ -9,7 +9,7 @@ from .common import Curve
 
 
 class CatmullRomClosedCurve(Curve, BezierTrait):
-    def __init__(self, context, alpha):
+    def __init__(self, context: Path, alpha: float):
         self._context = context
         self._alpha = alpha
         self._line = math.nan
@@ -89,8 +89,8 @@ class CatmullRomClosedCurve(Curve, BezierTrait):
 
 
 def curve_catmull_rom_closed(
-    context_or_alpha: Selection | Number,
-) -> Callable[[Selection], Curve] | Curve:
+    context_or_alpha: Path | Number,
+) -> Callable[[Path], Curve] | Curve:
     """
     Produces a closed cubic Catmull–Rom spline using the specified control
     points and the parameter alpha, as proposed by Yuksel et al. When a line
@@ -101,7 +101,7 @@ def curve_catmull_rom_closed(
 
     Parameters
     ----------
-    context_or_alpha : Selection | Number
+    context_or_alpha : Path | Number
         Context or alpha value in range :math:`[0, 1]`. If alpha is zero,
         produces a uniform spline, equivalent to curveCardinal with a tension
         of zero; if alpha is one, produces a chordal spline; if alpha is 0.5,
@@ -110,7 +110,7 @@ def curve_catmull_rom_closed(
 
     Returns
     -------
-    Callable[[Selection], Curve] | Curve
+    Callable[[Path], Curve] | Curve
         Curve object or function which makes a curve object with alpha value
         set
 
@@ -152,7 +152,7 @@ def curve_catmull_rom_closed(
         if alpha == 0.0:
             return curve_cardinal_closed(0.0)
 
-        def local_curve(context):
+        def local_curve(context: Path) -> Curve:
             return CatmullRomClosedCurve(context, alpha)
 
         return local_curve

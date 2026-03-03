@@ -1,9 +1,9 @@
-from ...selection import Selection
+from ...path import Path
 from .common import Curve
 
 
 class LinearClosedCurve(Curve):
-    def __init__(self, context):
+    def __init__(self, context: Path):
         self._context = context
 
     def area_start(self):
@@ -27,14 +27,14 @@ class LinearClosedCurve(Curve):
             self._context.move_to(x, y)
 
 
-def curve_linear_closed(context: Selection) -> Curve:
+def curve_linear_closed(context: Path) -> Curve:
     """
     Produces a closed polyline through the specified points by repeating the
     first point when the line segment ends.
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

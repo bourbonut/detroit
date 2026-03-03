@@ -1,14 +1,14 @@
 import math
 from collections.abc import Callable
 
-from ...selection import Selection
+from ...path import Path
 from ...types import Number
 from .cardinal import BezierTrait
 from .common import Curve
 
 
 class CardinalClosedCurve(Curve, BezierTrait):
-    def __init__(self, context, tension):
+    def __init__(self, context: Path, tension: float):
         self._context = context
         self._k = (1 - tension) / 6
         self._x0 = math.nan
@@ -82,8 +82,8 @@ class CardinalClosedCurve(Curve, BezierTrait):
 
 
 def curve_cardinal_closed(
-    context_or_tension: Selection | Number,
-) -> Callable[[Selection], Curve] | Curve:
+    context_or_tension: Path | Number,
+) -> Callable[[Path], Curve] | Curve:
     """
     Produces a closed cubic cardinal spline using the specified control points.
     When a line segment ends, the first three control points are repeated,
@@ -92,14 +92,14 @@ def curve_cardinal_closed(
 
     Parameters
     ----------
-    context_or_tension : Selection | Number
+    context_or_tension : Path | Number
         Context or tension value in range :math:`[0, 1]` determining the length
         of the tangents. A tension of one yields all zero tangents, equivalent
         to :func:`d3.curve_linear <curve_linear>`
 
     Returns
     -------
-    Callable[[Selection], Curve] | Curve
+    Callable[[Path], Curve] | Curve
         Curve object or function which makes a curve object with tension value
         set
 
@@ -139,7 +139,7 @@ def curve_cardinal_closed(
     if isinstance(context_or_tension, (int, float)):
         tension = context_or_tension
 
-        def local_curve(context):
+        def local_curve(context: Path) -> Curve:
             return CardinalClosedCurve(context, tension)
 
         return local_curve

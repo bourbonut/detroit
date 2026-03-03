@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from math import cos, sin
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve
 from .linear import curve_linear
 
@@ -27,37 +27,37 @@ class RadialCurve(Curve):
 
 
 def curve_radial(
-    curve: Callable[[Selection], Curve],
-) -> Callable[[Selection], Curve]:
+    curve: Callable[[Path], Curve],
+) -> Callable[[Path], Curve]:
     """
     Converts a curve function into a radial curve function.
 
     Parameters
     ----------
-    curve : Callable[[Selection], Curve]
+    curve : Callable[[Path], Curve]
         Curve function
 
     Returns
     -------
-    Callable[[Selection], Curve]
+    Callable[[Path], Curve]
         Radial curve function
     """
 
-    def radial(context: Selection) -> Curve:
-        if isinstance(curve(None), RadialCurve):
+    def radial(context: Path) -> Curve:
+        if isinstance(curve(Path()), RadialCurve):
             return curve(context)
         return RadialCurve(curve(context))
 
     return radial
 
 
-def curve_radial_linear(context: Selection) -> Curve:
+def curve_radial_linear(context: Path) -> Curve:
     """
     Produces a polyline through the specified polar points.
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

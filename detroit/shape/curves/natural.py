@@ -1,11 +1,11 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve, isvaluable
 
 
 class NaturalCurve(Curve):
-    def __init__(self, context):
+    def __init__(self, context: Path):
         self._context = context
         self._line = math.nan
         self._x = []
@@ -49,12 +49,12 @@ class NaturalCurve(Curve):
         self._x = math.nan
         self._y = math.nan
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         self._x.append(x)
         self._y.append(y)
 
 
-def control_points(x):
+def control_points(x: list[float]) -> list[list[float]]:
     n = len(x) - 1
     if n == 0:
         return [[0], [2]]
@@ -85,14 +85,14 @@ def control_points(x):
     return [a, b]
 
 
-def curve_natural(context: Selection) -> Curve:
+def curve_natural(context: Path) -> Curve:
     """
     Produces a natural cubic spline with the second derivative of the spline
     set to zero at the endpoints.
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from ..selection import Selection
+from ..path import Path
 from ..types import Accessor, Number, T
 from .curves import Curve, curve_radial, curve_radial_linear
 from .line import Line
@@ -13,13 +13,13 @@ class LineRadial(Line[T]):
         Line.__init__(self)
         super().set_curve(curve_radial_linear)
 
-    def set_curve(self, curve: Callable[[Selection], Curve]) -> LineRadial:
+    def set_curve(self, curve: Callable[[Path], Curve]) -> LineRadial:
         """
         Sets curve.
 
         Parameters
         ----------
-        curve : Callable[[Selection], Curve]
+        curve : Callable[[Path], Curve]
             Curve factory function
 
         Returns

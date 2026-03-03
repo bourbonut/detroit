@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable
 from typing import Generic
 
 from ..array import argpass
-from ..selection.selection import Selection
+from ..path import Path
 from ..types import Accessor, Number, T
 from .constant import constant
 from .curves import Curve, curve_linear
@@ -177,13 +177,13 @@ class Line(Generic[T], WithPath):
             self._defined = constant(bool(defined))
         return self
 
-    def set_curve(self, curve: Callable[[Selection], Curve] | None = None) -> Line:
+    def set_curve(self, curve: Callable[[Path], Curve] | None = None) -> Line:
         """
         Sets curve factory.
 
         Parameters
         ----------
-        curve : Callable[[Selection], Curve] | None
+        curve : Callable[[Path], Curve] | None
             Curve factory function
 
         Returns
@@ -196,14 +196,14 @@ class Line(Generic[T], WithPath):
             self._output = self._curve(self._context)
         return self
 
-    def set_context(self, context: Selection | None = None) -> Line:
+    def set_context(self, context: Path | None = None) -> Line:
         """
         Sets the context.
 
         Parameters
         ----------
-        context : Selection | None
-            Selection
+        context : Path | None
+            Path
 
         Returns
         -------
@@ -227,8 +227,8 @@ class Line(Generic[T], WithPath):
     def get_defined(self) -> Accessor[T, bool]:
         return self._defined
 
-    def get_curve(self) -> Callable[[Selection], Curve]:
+    def get_curve(self) -> Callable[[Path], Curve]:
         return self._curve
 
-    def get_context(self) -> Selection:
+    def get_context(self) -> Path:
         return self._context

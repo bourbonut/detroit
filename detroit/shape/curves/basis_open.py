@@ -1,6 +1,6 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .basis import BezierTrait
 from .common import Curve, isvaluable
 
@@ -52,7 +52,7 @@ class BasisOpenCurve(Curve, BezierTrait):
         self._y1 = y
 
 
-def curve_basis_open(context: Selection) -> Curve:
+def curve_basis_open(context: Path) -> Curve:
     """
     Produces a cubic basis spline using the specified control points. Unlike
     basis, the first and last points are not repeated, and thus the curve
@@ -60,7 +60,7 @@ def curve_basis_open(context: Selection) -> Curve:
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

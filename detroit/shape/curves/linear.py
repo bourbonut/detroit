@@ -1,11 +1,11 @@
 import math
 
-from ...selection import Selection
+from ...path import Path
 from .common import Curve, isvaluable
 
 
 class LinearCurve(Curve):
-    def __init__(self, context):
+    def __init__(self, context: Path):
         self._context = context
         self._line = math.nan
 
@@ -37,13 +37,13 @@ class LinearCurve(Curve):
             self._context.line_to(x, y)
 
 
-def curve_linear(context: Selection) -> Curve:
+def curve_linear(context: Path) -> Curve:
     """
     Produces a polyline through the specified points.
 
     Parameters
     ----------
-    context : Selection
+    context : Path
         Context
 
     Returns

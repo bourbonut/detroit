@@ -1,7 +1,7 @@
 import math
 from collections.abc import Callable
 
-from ...selection import Selection
+from ...path import Path
 from ...types import Number
 from .cardinal import curve_cardinal
 from .common import Curve, isvaluable
@@ -10,7 +10,7 @@ EPSILON = 1e-12
 
 
 class BezierTrait:
-    def _bezier_curve_to(self, x, y):
+    def _bezier_curve_to(self, x: float, y: float):
         x1 = self._x1
         y1 = self._y1
         x2 = self._x2
@@ -33,7 +33,7 @@ class BezierTrait:
 
 
 class CatmullRomCurve(Curve, BezierTrait):
-    def __init__(self, context, alpha):
+    def __init__(self, context: Path, alpha: float):
         self._context = context
         self._alpha = alpha
         self._line = math.nan
@@ -68,7 +68,7 @@ class CatmullRomCurve(Curve, BezierTrait):
             self._context.close_path()
         self._line = 1 - self._line
 
-    def point(self, x, y):
+    def point(self, x: float, y: float):
         if self._point != 0:
             x23 = self._x2 - x
             y23 = self._y2 - y
@@ -102,8 +102,8 @@ class CatmullRomCurve(Curve, BezierTrait):
 
 
 def curve_catmull_rom(
-    context_or_alpha: Selection | Number,
-) -> Callable[[Selection], Curve] | Curve:
+    context_or_alpha: Path | Number,
+) -> Callable[[Path], Curve] | Curve:
     """
     Produces a cubic Catmull–Rom spline using the specified control points and
     the parameter alpha, as proposed by Yuksel et al. in On the
@@ -114,7 +114,7 @@ def curve_catmull_rom(
 
     Parameters
     ----------
-    context_or_alpha : Selection | Number
+    context_or_alpha : Path | Number
         Context or alpha value in range :math:`[0, 1]`. If alpha is zero,
         produces a uniform spline, equivalent to curveCardinal with a tension
         of zero; if alpha is one, produces a chordal spline; if alpha is 0.5,
@@ -123,7 +123,7 @@ def curve_catmull_rom(
 
     Returns
     -------
-    Callable[[Selection], Curve] | Curve
+    Callable[[Path], Curve] | Curve
         Curve object or function which makes a curve object with alpha value
         set
 
@@ -164,7 +164,7 @@ def curve_catmull_rom(
         if alpha == 0.0:
             return curve_cardinal(0.0)
 
-        def local_curve(context):
+        def local_curve(context: Path) -> Curve:
             return CatmullRomCurve(context, alpha)
 
         return local_curve
