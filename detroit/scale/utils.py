@@ -2,7 +2,7 @@ from collections.abc import Callable
 from datetime import datetime
 from math import isnan
 
-from ..types import GenValue, T
+from ..types import IntoFloat, T
 
 
 def is_null(x: float | None) -> bool:
@@ -22,13 +22,13 @@ def is_null(x: float | None) -> bool:
     return x is None or isnan(x)
 
 
-def as_float(x: GenValue) -> float:
+def as_float(x: IntoFloat) -> float:
     """
     Converts the input into :code:`float` type.
 
     Parameters
     ----------
-    x : datetime | str | int | float
+    x : IntoFloat
         Input to be converted
 
     Returns

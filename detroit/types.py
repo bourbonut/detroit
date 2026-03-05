@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Generic, Protocol, TypeAlias, TypedDict, TypeVar, overload
+from typing import Any, Protocol, SupportsFloat, TypeAlias, TypedDict, TypeVar
 
-from lxml import etree
+from lxml import etree  # type: ignore
 
 T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
 Number: TypeAlias = int | float
 GenValue: TypeAlias = datetime | str | int | float
+IntoFloat: TypeAlias = datetime | SupportsFloat
 Point2D: TypeAlias = tuple[float, float]
 Point3D: TypeAlias = tuple[float, float, float]
 Vec2D: TypeAlias = tuple[float, float]

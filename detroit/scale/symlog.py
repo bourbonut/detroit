@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from typing import overload
 
 from ..types import Number, T
@@ -13,11 +14,11 @@ def sign(x):
     return -1 if x < 0 else 1
 
 
-def transform_symlog(c):
+def transform_symlog(c: float) -> Callable[[float], float]:
     return lambda x: sign(x) * math.log1p(abs(x / c))
 
 
-def transform_symexp(c):
+def transform_symexp(c: float) -> Callable[[float], float]:
     return lambda x: sign(x) * math.expm1(abs(x)) * c
 
 

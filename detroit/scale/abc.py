@@ -54,7 +54,7 @@ class Scaler(Generic[U, V], ABC):
         ...
 
     @abstractmethod
-    def set_domain(self, domain: list[U]) -> Scaler:
+    def set_domain(self, domain: list[U]) -> Scaler[U, V]:
         """
         Sets the domain and returns the scaler updated.
 
@@ -65,13 +65,13 @@ class Scaler(Generic[U, V], ABC):
 
         Returns
         -------
-        Scaler
+        Scaler[U, V]
             Itself
         """
         ...
 
     @abstractmethod
-    def set_range(self, range_vals: list[V]) -> Scaler:
+    def set_range(self, range_vals: list[V]) -> Scaler[U, V]:
         """
         Sets the range and returns the scaler updated.
 
@@ -82,7 +82,7 @@ class Scaler(Generic[U, V], ABC):
 
         Returns
         -------
-        Scaler
+        Scaler[U, V]
             Itself
         """
         ...
@@ -111,13 +111,13 @@ class ContinuousScaler(Scaler[U, V]):
         ...
 
     @abstractmethod
-    def get_interpolate(self) -> Callable[[V], V]:
+    def get_interpolate(self) -> Callable[[V, V], Callable[[float], V]]:
         """
         Gets the interpolator function.
 
         Returns
         -------
-        Callable[[V], V]
+        Callable[[V, V], Callable[[float], V]]
             Interpolate function
         """
         ...
@@ -148,24 +148,26 @@ class ContinuousScaler(Scaler[U, V]):
         ...
 
     @abstractmethod
-    def set_interpolate(self, interpolate: Callable[[V], V]) -> ContinuousScaler:
+    def set_interpolate(
+        self, interpolate: Callable[[V, V], Callable[[float], V]]
+    ) -> ContinuousScaler[U, V]:
         """
         Sets the interpolator function and returns the scaler updated.
 
         Parameters
         ----------
-        interpolate : Callable[[V], V]
+        interpolate : Callable[[V, V], Callable[[float], V]]
             Interpolate function
 
         Returns
         -------
-        ContinuousScaler
+        ContinuousScaler[U, V]
             Itself
         """
         ...
 
     @abstractmethod
-    def set_clamp(self, clamp: bool) -> ContinuousScaler:
+    def set_clamp(self, clamp: bool) -> ContinuousScaler[U, V]:
         """
         Sets the clamp status and returns the scaler updated.
 
@@ -176,13 +178,13 @@ class ContinuousScaler(Scaler[U, V]):
 
         Returns
         -------
-        ContinuousScaler
+        ContinuousScaler[U, V]
             Itself
         """
         ...
 
     @abstractmethod
-    def set_unknown(self, unknown: Any) -> ContinuousScaler:
+    def set_unknown(self, unknown: Any) -> ContinuousScaler[U, V]:
         """
         Sets the unknown value when a :code:`math.nan` is encountered
         and returns the scaler updated.
@@ -194,7 +196,7 @@ class ContinuousScaler(Scaler[U, V]):
 
         Returns
         -------
-        ContinuousScaler
+        ContinuousScaler[U, V]
             Itself
         """
         ...
@@ -206,7 +208,9 @@ class SequentialScaler(Scaler[U, V]):
     """
 
     @abstractmethod
-    def set_interpolator(self, interpolator: Callable[[U], V]) -> SequentialScaler:
+    def set_interpolator(
+        self, interpolator: Callable[[U], V]
+    ) -> SequentialScaler[U, V]:
         """
         Sets the interpolator function and returns the scaler updated.
 
@@ -217,7 +221,7 @@ class SequentialScaler(Scaler[U, V]):
 
         Returns
         -------
-        SequentialScaler
+        SequentialScaler[U, V]
             Itself
         """
         ...

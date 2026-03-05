@@ -4,7 +4,7 @@ from bisect import bisect
 from collections.abc import Callable
 from datetime import datetime
 from math import isnan, nan
-from typing import Any
+from typing import Any, overload
 
 from ..interpolate import (
     interpolate as interpolate_value,
@@ -13,12 +13,12 @@ from ..interpolate import (
     interpolate_number,
     interpolate_round,
 )
-from ..types import GenValue, Number, T
+from ..types import IntoFloat, Number, T
 from .abc import ContinuousScaler
 from .utils import as_float, constant, identity
 
 
-def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
+def normalize(a: IntoFloat, b: IntoFloat) -> Callable[[IntoFloat], float]:
     """
     Makes a function which takes a generic value and returns the normalized
     value based on :code:`a` and :code:`b` values. Normalization is done by
@@ -26,14 +26,14 @@ def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
 
     Parameters
     ----------
-    a : GenValue
+    a : IntoFloat
         Generic value
-    b : GenValue
+    b : IntoFloat
         Generic value
 
     Returns
     -------
-    Callable[[T], float]
+    Callable[[IntoFloat], float]
         Normalization function based on :code:`a` and :code:`b` values
     """
     a = as_float(a)
@@ -52,21 +52,21 @@ def normalize(a: GenValue, b: GenValue) -> Callable[[T], float]:
     return normalizer
 
 
-def clamper(a: GenValue, b: GenValue) -> Callable[[GenValue], float]:
+def clamper(a: IntoFloat, b: IntoFloat) -> Callable[[IntoFloat], float]:
     """
     Makes a function which clamps its input value borned by :code:`a` and
     :code:`b` values.
 
     Parameters
     ----------
-    a : GenValue
+    a : IntoFloat
         Generic value
-    b : GenValue
+    b : IntoFloat
         Generic value
 
     Returns
     -------
-    Callable[[GenValue], float]
+    Callable[[IntoFloat], float]
         Clamp function based on :code:`a` and :code:`b` values
     """
     a = as_float(a)
@@ -84,45 +84,45 @@ def clamper(a: GenValue, b: GenValue) -> Callable[[GenValue], float]:
 class BiMap:
     def __init__(
         self,
-        domain: list[GenValue],
-        range_vals: list[GenValue],
-        interpolate: Callable[[GenValue, GenValue], Callable[[GenValue], float]],
+        domain: list[IntoFloat],
+        range_vals: list[IntoFloat],
+        interpolate: Callable[[IntoFloat, IntoFloat], Callable[[float], IntoFloat]],
     ):
         d0, d1 = domain[0], domain[1]
         r0, r1 = range_vals[0], range_vals[1]
-        if d1 < d0:
+        if d1 < d0:  # type: ignore
             self.d0 = normalize(d1, d0)
             self.r0 = interpolate(r1, r0)
         else:
             self.d0 = normalize(d0, d1)
             self.r0 = interpolate(r0, r1)
 
-    def __call__(self, x: GenValue) -> float:
-        return self.r0(self.d0(x))
+    def __call__(self, x: IntoFloat) -> float:
+        return self.r0(self.d0(x))  # type: ignore
 
 
 class PolyMap:
     def __init__(
         self,
-        domain: list[GenValue],
-        range_vals: list[GenValue],
-        interpolate: Callable[[GenValue, GenValue], Callable[[GenValue], float]],
+        domain: list[IntoFloat],
+        range_vals: list[IntoFloat],
+        interpolate: Callable[[IntoFloat, IntoFloat], Callable[[float], IntoFloat]],
     ):
         self.domain = domain
         self.j = j = min(len(self.domain), len(range_vals)) - 1
-        self.d = [None] * j
-        self.r = [None] * j
+        self.d = []
+        self.r = []
 
-        if self.domain[j] < self.domain[0]:
+        if self.domain[j] < self.domain[0]:  # type: ignore
             self.domain = self.domain[::-1]
             range_vals = range_vals[::-1]
 
         for i in range(j):
-            self.d[i] = normalize(self.domain[i], self.domain[i + 1])
-            self.r[i] = interpolate(range_vals[i], range_vals[i + 1])
+            self.d.append(normalize(self.domain[i], self.domain[i + 1]))
+            self.r.append(interpolate(range_vals[i], range_vals[i + 1]))
 
-    def __call__(self, x: GenValue) -> float:
-        i = bisect(self.domain, x, 1, self.j) - 1
+    def __call__(self, x: IntoFloat) -> float:
+        i = bisect(self.domain, x, 1, self.j) - 1  # type: ignore
         return self.r[i](self.d[i](x))
 
 
@@ -136,27 +136,27 @@ def copy(source, target):
     )
 
 
-class Transformer(ContinuousScaler[Number, T]):
+class Transformer(ContinuousScaler[Number | datetime, T]):
     """
     Continous transformation
 
     Parameters
     ----------
-    t : Callable[[Number], T]
+    t : Callable[[Number], Number]
         Transform function
-    u : Callable[[T], Number]
+    u : Callable[[Number], Number]
         Untransform function
     """
 
     def __init__(
         self,
-        t: Callable[[Number], T] = identity,
-        u: Callable[[T], Number] = identity,
+        t: Callable[[Number], Number] = identity,
+        u: Callable[[Number], Number] = identity,
     ):
         self._transform = t
         self._untransform = u
-        self._domain: list[Number | datetime] = [0, 1]
-        self._range: list[GenValue] = [0, 1]
+        self._domain = [0, 1]
+        self._range = [0, 1]
         self._clamp = identity
         self._interpolate = interpolate_value
         self._unknown = None
@@ -180,23 +180,23 @@ class Transformer(ContinuousScaler[Number, T]):
         self._output = self._input = None
         return self
 
-    def __call__(self, x: Number) -> T | None:
+    def __call__(self, x: Number | datetime) -> T:
         """
         Given a value from the domain, returns the corresponding value from the
         range.
 
         Parameters
         ----------
-        x : Number
+        x : int | float
             Input value
 
         Returns
         -------
-        T | None
+        T
             Corresponding value from the range
         """
         if x is None or (isinstance(x, float) and isnan(x)):
-            return self._unknown
+            return self._unknown  # type: ignore
         else:
             if not self._output:
                 domain = [
@@ -204,8 +204,8 @@ class Transformer(ContinuousScaler[Number, T]):
                     for x in self._domain
                 ]
                 domain = [self._transform(x) for x in domain]
-                self._output = self.piecewise(domain, self._range, self._interpolate)
-            return self._output(self._transform(self._clamp(x)))
+                self._output = self.piecewise(domain, self._range, self._interpolate)  # type: ignore
+            return self._output(self._transform(self._clamp(x)))  # type: ignore
 
     def invert(self, y: T) -> Number:
         """
@@ -228,30 +228,45 @@ class Transformer(ContinuousScaler[Number, T]):
                 x.timestamp() if isinstance(x, datetime) else x for x in self._domain
             ]
             domain = [self._transform(x) for x in domain]
-            self._input = self.piecewise(self._range, domain, interpolate_number)
-        return self._clamp(self._untransform(self._input(y)))
+            self._input = self.piecewise(self._range, domain, interpolate_number)  # type: ignore
+        return self._clamp(self._untransform(self._input(y)))  # type: ignore
 
-    def set_domain(self, domain: list[GenValue]) -> Transformer:
+    @overload
+    def set_domain(self, domain: list[int | float]) -> Transformer[T]: ...
+
+    @overload
+    def set_domain(self, domain: list[datetime]) -> Transformer[T]: ...
+
+    def set_domain(self, domain):  # type: ignore
         """
         Sets the scale's domain to the specified array of numbers.
 
         Parameters
         ----------
-        domain : list[GenValue]
+        domain : list[Number] | list[datetime]
             Domain
 
         Returns
         -------
-        Transformer
+        Transformer[T]
             Itself
         """
         self._domain = [float(x) if isinstance(x, str) else x for x in domain]
         return self._rescale()
 
-    def get_domain(self) -> list[Number]:
+    def get_domain(self) -> list[Number] | list[datetime]:  # type: ignore
         return self._domain.copy()
 
-    def set_range(self, range_vals: list[GenValue]) -> Transformer:
+    @overload
+    def set_range(self, range_vals: list[int | float]) -> Transformer[int | float]: ...
+
+    @overload
+    def set_range(self, range_vals: list[str]) -> Transformer[str]: ...
+
+    @overload
+    def set_range(self, range_vals: list[datetime]) -> Transformer[datetime]: ...
+
+    def set_range(self, range_vals):  # type: ignore
         """
         Sets the scale's range to the specified array of values
 
@@ -262,14 +277,14 @@ class Transformer(ContinuousScaler[Number, T]):
 
         Returns
         -------
-        Transformer
+        Transformer[T]
             Itself
         """
         self._range = list(range_vals)
         return self._rescale()
 
     def get_range(self) -> list[T]:
-        return self._range.copy()
+        return self._range.copy()  # type: ignore
 
     def set_range_round(self, range_vals: list[T]) -> Transformer:
         """
@@ -286,7 +301,7 @@ class Transformer(ContinuousScaler[Number, T]):
         Transformer
             Itself
         """
-        self._range = list(map(float, range_vals))
+        self._range = list(map(float, range_vals))  # type: ignore
         self._interpolate = interpolate_round
         return self._rescale()
 
@@ -310,25 +325,27 @@ class Transformer(ContinuousScaler[Number, T]):
     def get_clamp(self) -> bool:
         return self._clamp != identity
 
-    def set_interpolate(self, interpolate: Callable[[T, T], T]) -> Transformer:
+    def set_interpolate(
+        self, interpolate: Callable[[T, T], Callable[[float], T]]
+    ) -> Transformer[T]:
         """
         Sets the scale's range interpolator factory.
 
         Parameters
         ----------
-        interpolate : Callable[[T, T], T]
+        interpolate : Callable[[T, T], Callable[[float], T]]
             Interpolate function
 
         Returns
         -------
-        Transformer
+        Transformer[T]
             Itself
         """
         self._interpolate = interpolate
         return self._rescale()
 
-    def get_interpolate(self) -> Callable[[T, T], T]:
-        return self._interpolate
+    def get_interpolate(self) -> Callable[[T, T], Callable[[float], T]]:
+        return self._interpolate  # type: ignore
 
     def set_unknown(self, unknown: Any) -> Transformer:
         """
