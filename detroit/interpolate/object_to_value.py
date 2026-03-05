@@ -1,9 +1,9 @@
 from collections.abc import Callable
 from datetime import datetime
-from typing import Any
+from typing import overload
 
 from ..color.color import Color, color
-from ..types import Number, T, U, V
+from ..types import Number, U, V
 from .constant import constant
 from .date import interpolate_date
 from .number import interpolate_number
@@ -53,7 +53,7 @@ def interpolate_object(a: dict[U, V], b: dict[U, V]) -> Callable[[float], dict[U
         else:
             c[k] = b.get(k)
 
-    def local_interpolate(t):
+    def local_interpolate(t: float) -> dict[U, V]:
         for k in i:
             c[k] = i[k](t)
         return c
@@ -127,15 +127,60 @@ def generic_array(a: list[Number], b: list[Number]) -> Callable[[float], list[Nu
     return local_interpolate
 
 
-def interpolate(a: Any, b: Any) -> Callable[[float], Any]:
+@overload
+def interpolate(a: None, b: None) -> Callable[[float], None]: ...
+
+
+@overload
+def interpolate(a: bool, b: bool) -> Callable[[float], bool]: ...
+
+
+@overload
+def interpolate(a: float | int, b: float | int) -> Callable[[float], float]: ...
+
+
+@overload
+def interpolate(a: str, b: str) -> Callable[[float], str]: ...
+
+
+@overload
+def interpolate(a: Color, b: Color) -> Callable[[float], str]: ...
+
+
+@overload
+def interpolate(a: datetime, b: datetime) -> Callable[[float], datetime]: ...
+
+
+@overload
+def interpolate(
+    a: list[int | float], b: list[int | float]
+) -> Callable[[float], list[int | float]]: ...
+
+
+@overload
+def interpolate(a: list | tuple, b: list | tuple) -> Callable[[float], list]: ...
+
+
+@overload
+def interpolate(a: list | tuple, b: list | tuple) -> Callable[[float], list]: ...
+
+
+@overload
+def interpolate(a: dict, b: dict) -> Callable[[float], dict]: ...
+
+
+def interpolate(a, b):
     """
     Returns an interpolator between the two arbitrary values a and b.
 
     .. list-table::
         :widths: 25 75
 
+        *   - :code:`None`
+            - Returns a constant function based on :code:`b` value \
+              (= :code:`None`)
         *   - :code:`bool`
-            - Returns a constant function based on b value
+            - Returns a constant function based on :code:`b` value
         *   - :code:`int` 
             - See :func:`d3.interpolate_number <interpolate_number>`
         *   - :code:`float`
@@ -148,15 +193,13 @@ def interpolate(a: Any, b: Any) -> Callable[[float], Any]:
             - See :func:`d3.interpolate_rgb <interpolate_rgb>`
         *   - :code:`datetime`
             - See :func:`d3.interpolate_date <interpolate_date>`
-        *   - :code:`list[Number]`
+        *   - :code:`list[int | float]`
             - See :func:`d3.interpolate_number_array <interpolate_number_array>`
         *   - :code:`list | tuple`
             - Returns an interpolator which recursively interpolates based on \
-              :code:`Any` values
-        *   - :code:`dict`
+              input values
+        *   - :code:`dict[U, V]`
             - See :func:`d3.interpolate_object <interpolate_object>`
-        *   - :code:`Any`
-            - See :func:`d3.interpolate_number <interpolate_number>`
 
     Parameters
     ----------
@@ -192,12 +235,10 @@ def interpolate(a: Any, b: Any) -> Callable[[float], Any]:
     if isinstance(b, (int, float)):
         return interpolate_number(a, b)
     if isinstance(b, str):
-        c = color(b)
-        if c:
-            b = c
-            return interpolate_rgb(a, b)
-        else:
+        if color(b) is None:
             return interpolate_string(a, b)
+        else:
+            return interpolate_rgb(a, b)
     if isinstance(b, Color):
         return interpolate_rgb(a, b)
     if isinstance(b, datetime):
