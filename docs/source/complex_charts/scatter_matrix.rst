@@ -21,10 +21,10 @@ Scatter Matrix chart
    from itertools import product, accumulate
 
    URL = (
-       "https://static.observableusercontent.com/files/a01b08636a1314e9dc329d141684564156c"
-       "b49190d762542f3b8d09a20f7c3275fe0be93d2ed6f9056af7b27708ed91037b729cf12263e63c0eb9"
-       "8abd43702fc?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27catal"
-       "og.csv"
+       "https://static.observableusercontent.com/files/715db1223e067f00500780077febc6cebbd"
+       "d90c151d3d78317c802732252052ab0e367039872ab9c77d6ef99e5f55a0724b35ddc898a1c99cb14c"
+       "31a379af80a?response-content-disposition=attachment%3Bfilename*%3DUTF-8%27%27pengu"
+       "ins.csv"
    )
 
    # Load data
