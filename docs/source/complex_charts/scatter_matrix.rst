@@ -71,9 +71,12 @@ Scatter Matrix chart
    # Create the SVG container.
    scatter = (
        d3.create("svg")
-       .attr("width", width)
-       .attr("height", height)
-       .attr("viewBox", f"{-padding} 0 {width} {height}")
+       .attr("width", width + padding)
+       .attr("height", height + padding)
+       .attr(
+           "viewBox",
+           f"{-padding - padding / 2} {-padding / 4} {width + padding} {height + padding}",
+       )
    )
    scatter.append("style").text(".circle.hidden{fill:#000;fill-opacity:1;r:1px;}")
 
