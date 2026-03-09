@@ -65,7 +65,7 @@ class Interval(Protocol):
         ...
 
 
-Accessor = (
+Accessor: TypeAlias = (
     Callable[[U], V]
     | Callable[[U, int], V]
     | Callable[[U, int, list[etree.Element]], V]

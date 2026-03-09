@@ -1,15 +1,26 @@
 from collections.abc import Callable
+from typing import TypeAlias, TypeVar
 
-from ..types import T, U, V
 from .argpass import argpass
+
+T = TypeVar("T")
+V = TypeVar("V")
+K = TypeVar("K")
+R = TypeVar("R")
+
+Index: TypeAlias = int
+
+NestedAccessor: TypeAlias = (
+    Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K]
+)
 
 
 def nest(
-    values: list[U],
-    map_function: Callable[[dict], list],
-    reduce_function: Callable[[list[U]], dict],
-    keys: list[Callable[[U, int, list[U]], V]],
-) -> list:
+    values: list[T],
+    map_function: Callable[[dict[K, V]], R],
+    reduce_function: Callable[[list[T]], V],
+    keys: tuple[NestedAccessor, ...],
+) -> R:
     if len(keys) == 0:
         raise ValueError("At least one key must be declared.")
 
@@ -44,29 +55,29 @@ def unique(values: list[T]) -> T:
     return values[0]
 
 
-def array_from(groups: dict) -> list:
+def array_from(groups: dict[K, V]) -> list[tuple[K, V]]:
     return list(groups.items())
 
 
 def index(
-    values: list[U],
-    *keys: Callable[[U, int, list[U]], V],
-) -> dict[V, U]:
+    values: list[T],
+    *keys: NestedAccessor,
+) -> dict[K, T]:
     """
     Groups and reduces the specified list of values into a nested dictionary.
     The reducer extracts the first element from each group.
 
     Parameters
     ----------
-    values : list[U]
+    values : list[T]
         List of values
-    keys : Callable[[U, int, list[U]], V]
+    keys : Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K]
         List of functions which take in arguments data, index and list of data
         and returns the key value of the data.
 
     Returns
     -------
-    dict[V, U]
+    dict[K, T]
         Nested dictionary.
 
     Examples
@@ -84,9 +95,9 @@ def index(
 
 
 def indexes(
-    values: list[U],
-    *keys: Callable[[U, int, list[U]], V],
-) -> list[tuple[V, U]]:
+    values: list[T],
+    *keys: NestedAccessor,
+) -> list[tuple[K, T]]:
     """
     Equivalent to :func:`d3.index <index>`, returns a list of collections [key, array of
     values]. The reducer extracts the first element from each group.
@@ -95,13 +106,13 @@ def indexes(
     ----------
     values : list[U]
         List of values
-    *keys : Callable[[U, int, list[U]], V]
+    *keys : Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K]
         List of functions which take in arguments data, index and list of data
         and returns the key value of the data.
 
     Returns
     -------
-    list[tuple[V, U]]
+    list[tuple[K, T]]
         Nested list of collections [key; array of values].
 
     Examples
@@ -119,9 +130,9 @@ def indexes(
 
 
 def group(
-    values: list[U],
-    *keys: Callable[[U, int, list[U]], V],
-) -> dict[V, list[U]]:
+    values: list[T],
+    *keys: NestedAccessor,
+) -> dict[K, list[T]]:
     """
     Groups the specified list of values into a nested dictionary given keys.
 
@@ -129,13 +140,13 @@ def group(
     ----------
     values : list[U]
         List of values
-    *keys : Callable[[U, int, list[U]], V]
+    *keys : Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K]
         List of functions which take in arguments data, index and list of data
         and returns the key value of the data.
 
     Returns
     -------
-    dict[V, list[U]]
+    dict[K, list[T]]
         Nested dictionary
 
     Examples
@@ -153,9 +164,9 @@ def group(
 
 
 def groups(
-    values: list[U],
-    *keys: Callable[[U, int, list[U]], V],
-) -> list[tuple[V, list[U]]]:
+    values: list[T],
+    *keys: NestedAccessor,
+) -> list[tuple[K, list[T]]]:
     """
     Equivalent to :func:`d3.group <group>`, returns a list of collections [key; array of
     values].
@@ -164,13 +175,13 @@ def groups(
     ----------
     values : list[U]
         List of values
-    *keys : Callable[[U, int, list[U]], V]
+    *keys : Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K]
         List of functions which take in arguments data, index and list of data
         and returns the key value of the data.
 
     Returns
     -------
-    list[tuple[V, list[U]]]
+    list[tuple[K, list[T]]]
         Nested list of collections [key; array of values].
 
     Examples
@@ -189,9 +200,9 @@ def groups(
 
 def rollup(
     values: list[T],
-    reduce_function: Callable[[list[T]], V],
-    *keys: Callable[[T, int, list[T]], U],
-) -> dict[U, V]:
+    reduce_function: Callable[[list[T]], R],
+    *keys: NestedAccessor,
+) -> dict[K, R]:
     """
     Groups and reduces the specified list of values into a nested dictionary.
 
@@ -207,7 +218,7 @@ def rollup(
 
     Returns
     -------
-    dict[U, V]
+    dict[K, R]
         Nested dictionary
 
     Examples
@@ -230,9 +241,9 @@ def rollup(
 
 def rollups(
     values: list[T],
-    reduce_function: Callable[[list[T]], V],
-    *keys: Callable[[T, int, list[T]], U],
-) -> list[tuple[U, V]]:
+    reduce_function: Callable[[list[T]], R],
+    *keys: NestedAccessor,
+) -> list[tuple[K, R]]:
     """
     Equivalent to `d3.rollup`, returns a list of collections [key; array of
     values].
@@ -249,7 +260,7 @@ def rollups(
 
     Returns
     -------
-    list[tuple[U, V]]
+    list[tuple[K, R]]
         Nested list of collections [key; array of values].
 
     Examples
