@@ -308,11 +308,11 @@ def scale_band(*args):
     a 0.0
     b 320.0
     c 640.0
-    d 0.0
-    e 320.0
-    f 640.0
-    g 0.0
-    h 320.0
+    d None
+    e None
+    f None
+    g None
+    h None
     >>> scale.get_bandwidth()
     320.0
     """
@@ -365,11 +365,11 @@ def scale_point(*args):
     a 0.0
     b 480.0
     c 960.0
-    d 0.0
-    e 480.0
-    f 960.0
-    g 0.0
-    h 480.0
+    d None
+    e None
+    f None
+    g None
+    h None
     >>> scale.get_bandwidth()
     0.0
     """
