@@ -10,16 +10,15 @@ R = TypeVar("R")
 
 Index: TypeAlias = int
 
-NestedAccessor: TypeAlias = (
-    Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K]
-)
-
 
 def nest(
     values: list[T],
     map_function: Callable[[dict[K, V]], R],
     reduce_function: Callable[[list[T]], V],
-    keys: tuple[NestedAccessor, ...],
+    keys: tuple[
+        Callable[[T], K] | Callable[[T, Index], K] | Callable[[T, Index, list[T]], K],
+        ...,
+    ],
 ) -> R:
     if len(keys) == 0:
         raise ValueError("At least one key must be declared.")
@@ -61,7 +60,9 @@ def array_from(groups: dict[K, V]) -> list[tuple[K, V]]:
 
 def index(
     values: list[T],
-    *keys: NestedAccessor,
+    *keys: Callable[[T], K]
+    | Callable[[T, Index], K]
+    | Callable[[T, Index, list[T]], K],
 ) -> dict[K, T]:
     """
     Groups and reduces the specified list of values into a nested dictionary.
@@ -96,7 +97,9 @@ def index(
 
 def indexes(
     values: list[T],
-    *keys: NestedAccessor,
+    *keys: Callable[[T], K]
+    | Callable[[T, Index], K]
+    | Callable[[T, Index, list[T]], K],
 ) -> list[tuple[K, T]]:
     """
     Equivalent to :func:`d3.index <index>`, returns a list of collections [key, array of
@@ -131,7 +134,9 @@ def indexes(
 
 def group(
     values: list[T],
-    *keys: NestedAccessor,
+    *keys: Callable[[T], K]
+    | Callable[[T, Index], K]
+    | Callable[[T, Index, list[T]], K],
 ) -> dict[K, list[T]]:
     """
     Groups the specified list of values into a nested dictionary given keys.
@@ -165,7 +170,9 @@ def group(
 
 def groups(
     values: list[T],
-    *keys: NestedAccessor,
+    *keys: Callable[[T], K]
+    | Callable[[T, Index], K]
+    | Callable[[T, Index, list[T]], K],
 ) -> list[tuple[K, list[T]]]:
     """
     Equivalent to :func:`d3.group <group>`, returns a list of collections [key; array of
@@ -201,7 +208,9 @@ def groups(
 def rollup(
     values: list[T],
     reduce_function: Callable[[list[T]], R],
-    *keys: NestedAccessor,
+    *keys: Callable[[T], K]
+    | Callable[[T, Index], K]
+    | Callable[[T, Index, list[T]], K],
 ) -> dict[K, R]:
     """
     Groups and reduces the specified list of values into a nested dictionary.
@@ -242,7 +251,9 @@ def rollup(
 def rollups(
     values: list[T],
     reduce_function: Callable[[list[T]], R],
-    *keys: NestedAccessor,
+    *keys: Callable[[T], K]
+    | Callable[[T, Index], K]
+    | Callable[[T, Index, list[T]], K],
 ) -> list[tuple[K, R]]:
     """
     Equivalent to `d3.rollup`, returns a list of collections [key; array of
