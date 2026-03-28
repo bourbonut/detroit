@@ -211,8 +211,8 @@ def interpolate(a, b):
     Returns
     -------
     Callable[[float], Any]
-        Interpolator function where input should be 0 and 1 and outputs a value
-        between a and b:
+        Interpolator function where input value is a flaot between 0 and 1 and
+        it outputs a value between :code:`a` and :code:`b`:
 
         .. math::
 
