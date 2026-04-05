@@ -138,7 +138,7 @@ def copy(source, target):
 
 class Transformer(ContinuousScaler[Number | datetime, T]):
     """
-    Continous transformation
+    Continuous transformation
 
     Parameters
     ----------
