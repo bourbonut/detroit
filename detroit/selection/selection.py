@@ -1561,7 +1561,8 @@ class Selection(Generic[T]):
 
     def clone(self, deep: bool = False) -> Selection[T]:
         """
-        Returns a clone of the selection.
+        Copies the selected nodes and insert them after their original
+        siblings.
 
         Parameters
         ----------
@@ -1573,32 +1574,46 @@ class Selection(Generic[T]):
         Selection[T]
             Clone of itself
 
-        Notes
-        -----
-        Data, enter nodes, exit nodes are also cloned.
-
         Examples
         --------
         >>> import detroit as d3
         >>> svg = d3.create("svg")
-        >>> clone = svg.clone()
-        >>> rect = svg.append("rect")
-        >>> clone.select_all("rect")
+        >>> svg.append("g").attr("class", "tick").append("line")
         Selection(
-            groups=[[]],
-            parents=[svg],
+            groups=[[line]],
+            parents=[g.tick],
         )
-        >>> g = clone.append("g")
-        >>> svg.select_all("rect")
+        >>> svg.append("g").attr("class", "tick").append("line")
         Selection(
-            groups=[[rect]],
-            parents=[svg],
+            groups=[[line]],
+            parents=[g.tick],
         )
-        >>> svg.select_all("g")
+        >>> lines = svg.select_all(".tick line")
+        >>> lines
         Selection(
-            groups=[[]],
-            parents=[svg],
+            groups=[[line], [line]],
+            parents=[g.tick, g.tick],
         )
+        >>> lines.clone()
+        Selection(
+            groups=[[line], [line]],
+            parents=[g.tick, g.tick],
+        )
+        >>> lines = svg.select_all(".tick line")
+        >>> lines
+        Selection(
+            groups=[[line, line], [line, line]],
+            parents=[g.tick, g.tick],
+        )
+
+        You should read this as:
+
+        .. code::
+
+            Selection(
+                groups=[[line_a, line_a], [line_b, line_b]],
+                parents=[g.tick, g.tick],
+            )
         """
         copy_func = deepcopy if deep else copy
 
