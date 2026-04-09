@@ -1602,37 +1602,26 @@ class Selection(Generic[T]):
         """
         copy_func = deepcopy if deep else copy
 
-        # Clone data and groups
-        cloned_data = {}
-        cloned_groups = []
-        for group in self._groups:
-            cloned_group = []
-            for node in group:
+        for i, group in enumerate(self._groups):
+            parent = self._parents[i]
+            i = 0
+            imax = len(group)
+            while i < imax:
+                node = group[i]
+                if node is None:
+                    i += 1
+                    continue
                 if isinstance(node, EnterNode):
-                    cloned_group.append(node.clone(deep))
+                    i += 1
                     continue
                 cloned_node = copy_func(node)
+                index = parent.index(node)
+                parent.insert(index + 1, cloned_node)
+                i += 2
                 if node in self._data:
-                    cloned_data[cloned_node] = copy_func(self._data[node])
-                cloned_group.append(cloned_node)
-            cloned_groups.append(cloned_group)
+                    self._data[cloned_node] = copy_func(self._data[node])
 
-        # Clone parents
-        cloned_parents = [copy_func(parent) for parent in self._parents]
-        cloned_enter = (
-            None if self._enter is None else [node.clone(deep) for node in self._enter]
-        )
-        cloned_exit = (
-            None if self._exit is None else [copy_func(node) for node in self._exit]
-        )
-
-        return Selection(
-            cloned_groups,
-            cloned_parents,
-            enter=cloned_enter,
-            exit=cloned_exit,
-            data=cloned_data,
-        )
+        return Selection(self._groups, self._parents, data=self._data)
 
     def node(self) -> etree.Element:
         """

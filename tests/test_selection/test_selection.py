@@ -538,9 +538,10 @@ def test_selection_40():
 
 def test_selection_41():
     svg = d3.create("svg")
-    svg2 = svg.clone()
-    svg.append("g")
-    assert str(svg) != str(svg2)
+    line = svg.append("g").attr("class", "tick").append("line")
+    assert len(svg.select_all(".tick line").nodes()) == 1
+    line.clone()
+    assert len(svg.select_all(".tick line").nodes()) == 2
 
 
 def test_selection_42():
@@ -681,18 +682,6 @@ def test_selection_52():
 
 
 def test_selection_53():
-    data = ["hello", "world"]
-    svg = d3.create("svg")
-    text = svg.select_all("text").data(data)
-    text_enter1 = text.enter()
-    text_enter2 = text_enter1.clone()
-    assert len(text_enter1._data) == len(text_enter2._data)
-    assert len(text_enter1._data.keys() & text_enter2._data.keys()) == 0
-    for enter_node1, enter_node2 in zip(text_enter1.nodes(), text_enter2.nodes()):
-        assert enter_node1 != enter_node2
-
-
-def test_selection_54():
     data = ["Hello", "world"]
     svg = d3.create("svg")
     g1 = svg.append("g")
@@ -720,14 +709,14 @@ def test_selection_54():
     assert g2.node().get("class") == "bar"
 
 
-def test_selection_55():
+def test_selection_54():
     svg = d3.create("svg")
     a = svg.append("a")
     a.attr("xlink:href", "https://www.google.com/")
     assert a.attr("xlink:href") == "https://www.google.com/"
 
 
-def test_selection_56():
+def test_selection_55():
     svg = d3.create("svg")
     a = svg.append("a")
     a.attr("xlink:href", lambda _: "https://www.google.com/")

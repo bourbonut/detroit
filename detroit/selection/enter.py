@@ -42,5 +42,8 @@ class EnterNode(Generic[T]):
         node._next = copy_func(self._next)
         return node
 
+    def parent(self):
+        return self._parent
+
     def __repr__(self):
         return str(self)
