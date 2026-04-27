@@ -104,7 +104,6 @@ Pie chart
        .select_all()
        .data(pie(data.iter_rows()))
        .join("g")
-       # .attr("fill", "white") # white text
        .attr(
             "transform", lambda d: f"translate({arc.centroid(d)[0]}, {arc.centroid(d)[1]})"
        )
