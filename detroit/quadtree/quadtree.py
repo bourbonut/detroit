@@ -288,7 +288,7 @@ class Quadtree(Generic[T]):
         self.visit(visit)
         return data
 
-    def find(self, x: float, y: float, radius: float | None = None) -> Quadtree:
+    def find(self, x: float, y: float, radius: float | None = None) -> T | None:
         """
         Returns the datum closest to the position :math:`(x, y)` with the given
         search radius. If radius is not specified, it defaults to infinity.
@@ -304,8 +304,8 @@ class Quadtree(Generic[T]):
 
         Returns
         -------
-        Quadtree
-            Itself
+        T | None
+            Datum closest to the position :math:`(x, y)`
         """
         x0 = self._x0
         y0 = self._y0
@@ -637,7 +637,7 @@ class Quadtree(Generic[T]):
         size = [0]
 
         def visit(node: list | dict | None):
-            if isinstance(node, list):
+            if isinstance(node, list) or node is None:
                 return
             while True:
                 size[0] += 1
@@ -648,7 +648,7 @@ class Quadtree(Generic[T]):
         self.visit(visit)
         return size[0]
 
-    def get_extent(self) -> list[tuple[float, float], tuple[float, float]]:
+    def get_extent(self) -> tuple[tuple[float, float], tuple[float, float]] | None:
         if isnan(self._x0):
             return None
         return [[self._x0, self._y0], [self._x1, self._y1]]
@@ -665,8 +665,8 @@ class Quadtree(Generic[T]):
 
 def quadtree(
     data: list[T] | None = None,
-    x: Accessor[T, float] = None,
-    y: Accessor[T, float] = None,
+    x: Accessor[T, float] | None = None,
+    y: Accessor[T, float] | None = None,
 ) -> Quadtree[T]:
     """
     Creates a new, empty quadtree with an empty extent and the default x and y
@@ -677,9 +677,9 @@ def quadtree(
     ----------
     data : list[T] | None
         List of data values
-    x : Accessor[T, float]
+    x : Accessor[T, float] | None
         X accessor
-    y : Accessor[T, float]
+    y : Accessor[T, float] | None
         Y accessor
 
     Returns

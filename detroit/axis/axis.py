@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Literal
 
 from ..array import argpass
@@ -448,14 +448,14 @@ class Axis:
         self._tick_arguments = list(tick_arguments)
         return self
 
-    def set_tick_values(self, tick_values: list[int | float]) -> Axis:
+    def set_tick_values(self, tick_values: Iterable[int | float]) -> Axis:
         """
         Ticks values are used for ticks rather than the scale’s
         automatic tick generator.
 
         Parameters
         ----------
-        tick_values : list[int | float]
+        tick_values : Iterable[int | float]
             Tick values
 
         Returns
