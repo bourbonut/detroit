@@ -78,7 +78,7 @@ class ChordItem:
         self.source = source
         self.target = target
 
-    def get(self, key: str, default: Any | None = None) -> int | float | None:
+    def get(self, key: str, default: Any | None = None) -> ChordValue | None:
         match key:
             case "source":
                 return self.source
@@ -87,7 +87,7 @@ class ChordItem:
             case _:
                 return default
 
-    def __getitem__(self, key: str) -> int | float:
+    def __getitem__(self, key: str) -> ChordValue:
         value = self.get(key)
         if value is None:
             raise KeyError(f"'ChordItem' object has no attribute {key!r}")
@@ -116,18 +116,29 @@ class Chords:
     def __getitem__(self, index: int) -> ChordItem:
         return self._data[index]
 
-    def sort(self, *, key=None, reverse: bool = False):
-        self._data.sort(key=key, reverse=reverse)
+    def sort(
+        self,
+        *,
+        key: Callable[[ChordItem], int | float] | None = None,
+        reverse: bool = False,
+    ):
+        self._data.sort(key=key, reverse=reverse)  # type: ignore
 
 
 def compare_value(
-    compare: Callable[[float, float], float],
-) -> Callable[[ChordValue, ChordValue], float]:
-    def local_compare(a: ChordValue, b: ChordValue):
+    compare: Callable[[float, float], int],
+) -> Callable[[ChordItem, ChordItem], int]:
+    def local_compare(a: ChordItem, b: ChordItem) -> int:
+        a_source_value = 0 if a.source is None else a.source.value
+        a_target_value = 0 if a.target is None else a.target.value
+        b_source_value = 0 if b.source is None else b.source.value
+        b_target_value = 0 if b.target is None else b.target.value
         return compare(
-            a.source.value + a.source.value,
-            b.source.value + b.source.value,
+            a_source_value + a_target_value,
+            b_source_value + b_target_value,
         )
+
+    return local_compare
 
 
 class Chord:
@@ -210,13 +221,13 @@ class Chord:
             layout.
         """
         n = len(matrix)
-        group_sums = [None] * n
+        group_sums = []
         group_index = list(range(n))
         chords = [None] * (n * n)
         groups = [None] * n
         k = 0
 
-        matrix = (
+        flat_matrix = (
             [matrix[i % n][i // n] for i in range(n * n)]
             if self._transpose
             else [matrix[i // n][i % n] for i in range(n * n)]
@@ -225,8 +236,8 @@ class Chord:
         for i in range(n):
             x = 0
             for j in range(n):
-                x += matrix[i * n + j] + self._directed * matrix[j * n + i]
-            group_sums[i] = x
+                x += flat_matrix[i * n + j] + self._directed * flat_matrix[j * n + i]
+            group_sums.append(x)
             k += x
         k = max(0, TAU - self._pad_angle * n) / k
         dx = self._pad_angle if k else TAU / n
@@ -235,7 +246,7 @@ class Chord:
         if self._sort_groups:
             group_index.sort(
                 key=cmp_to_key(
-                    lambda a, b: self._sort_groups(group_sums[a], group_sums[b])
+                    lambda a, b: self._sort_groups(group_sums[a], group_sums[b])  # type: ignore
                 )
             )
         for i in group_index:
@@ -243,16 +254,26 @@ class Chord:
             if self._directed:
                 subgroup_index = list(
                     filter(
-                        lambda j: (matrix[-j * n + i] if j < 0 else matrix[i * n + j]),
+                        lambda j: (
+                            flat_matrix[-j * n + i] if j < 0 else flat_matrix[i * n + j]
+                        ),
                         range(-n + 1, n),
                     )
                 )
                 if self._sort_subgroups:
                     subgroup_index.sort(
                         key=cmp_to_key(
-                            lambda a, b: self._sort_subgroups(
-                                (-matrix[-a * n + i] if a < 0 else matrix[i * n + a]),
-                                (-matrix[-b * n + i] if b < 0 else matrix[i * n + b]),
+                            lambda a, b: self._sort_subgroups(  # type: ignore
+                                (
+                                    -flat_matrix[-a * n + i]
+                                    if a < 0
+                                    else flat_matrix[i * n + a]
+                                ),
+                                (
+                                    -flat_matrix[-b * n + i]
+                                    if b < 0
+                                    else flat_matrix[i * n + b]
+                                ),
                             )
                         )
                     )
@@ -262,25 +283,28 @@ class Chord:
                         if chord is None:
                             chord = chords[-j * n + i] = ChordItem()
                         x_ = x
-                        x += matrix[-j * n + i] * k
-                        chord.target = ChordValue(i, x_, x, matrix[-j * n + i])
+                        x += flat_matrix[-j * n + i] * k
+                        chord.target = ChordValue(i, x_, x, flat_matrix[-j * n + i])
                     else:
                         chord = chords[i * n + j]
                         if chord is None:
                             chord = chords[i * n + j] = ChordItem()
                         x_ = x
-                        x += matrix[i * n + j] * k
-                        chord.source = ChordValue(i, x_, x, matrix[i * n + j])
+                        x += flat_matrix[i * n + j] * k
+                        chord.source = ChordValue(i, x_, x, flat_matrix[i * n + j])
                 groups[i] = ChordValue(i, x0, x, group_sums[i])
             else:
                 subgroup_index = list(
-                    filter(lambda j: matrix[i * n + j] or matrix[j * n + i], range(n))
+                    filter(
+                        lambda j: flat_matrix[i * n + j] or flat_matrix[j * n + i],
+                        range(n),
+                    )
                 )
                 if self._sort_subgroups:
                     subgroup_index.sort(
                         key=cmp_to_key(
-                            lambda a, b: self._sort_subgroups(
-                                matrix[i * n + a], matrix[i * n + b]
+                            lambda a, b: self._sort_subgroups(  # type: ignore
+                                flat_matrix[i * n + a], flat_matrix[i * n + b]
                             )
                         )
                     )
@@ -290,15 +314,15 @@ class Chord:
                         if chord is None:
                             chord = chords[i * n + j] = ChordItem()
                         x_ = x
-                        x += matrix[i * n + j] * k
-                        chord.source = ChordValue(i, x_, x, matrix[i * n + j])
+                        x += flat_matrix[i * n + j] * k
+                        chord.source = ChordValue(i, x_, x, flat_matrix[i * n + j])
                     else:
                         chord = chords[j * n + i]
                         if chord is None:
                             chord = chords[j * n + i] = ChordItem()
                         x_ = x
-                        x += matrix[i * n + j] * k
-                        chord.target = ChordValue(i, x_, x, matrix[i * n + j])
+                        x += flat_matrix[i * n + j] * k
+                        chord.target = ChordValue(i, x_, x, flat_matrix[i * n + j])
                         if i == j:
                             chord.source = chord.target
                     if (
@@ -316,9 +340,9 @@ class Chord:
                 chords.pop(idx)
             else:
                 idx += 1
-        chords = Chords(chords, groups)
+        chords = Chords(chords, groups)  # type: ignore
         if self._sort_chords:
-            chords.sort(key=cmp_to_key(self._sort_chords))
+            chords.sort(key=cmp_to_key(self._sort_chords))  # type: ignore
         return chords
 
     def set_pad_angle(self, pad_angle: float) -> Chord:
@@ -380,7 +404,7 @@ class Chord:
         return self
 
     def set_sort_chords(
-        self, compare: Callable[[float, float], float] | None = None
+        self, compare: Callable[[float, float], int] | None = None
     ) -> Chord:
         """
         Sets the chord comparator to the specified function or :code:`None` and
@@ -388,7 +412,7 @@ class Chord:
 
         Parameters
         ----------
-        compare : Callable[[float, float], float] | None
+        compare : Callable[[float, float], int] | None
             Compare function
 
         Returns
@@ -405,13 +429,13 @@ class Chord:
     def get_pad_angle(self) -> float:
         return self._pad_angle
 
-    def get_sort_groups(self) -> Callable[[float, float], float]:
+    def get_sort_groups(self) -> Callable[[float, float], float] | None:
         return self._sort_groups
 
-    def get_sort_subgroups(self) -> Callable[[float, float], float]:
+    def get_sort_subgroups(self) -> Callable[[float, float], float] | None:
         return self._sort_subgroups
 
-    def get_sort_chords(self) -> Callable[[ChordItem, ChordItem], float]:
+    def get_sort_chords(self) -> Callable[[ChordItem, ChordItem], int] | None:
         return self._sort_chords
 
 
