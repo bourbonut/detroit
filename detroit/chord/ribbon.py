@@ -13,17 +13,17 @@ EPSILON = 1e-6
 
 
 def constant(x: Any) -> Callable[..., Any]:
-    def f(*args: Any) -> Any:
+    def f(*_: Any) -> Any:
         return x
 
     return f
 
 
-def default_source(d: ChordItem) -> float:
+def default_source(d: ChordItem) -> ChordValue | None:
     return d.source
 
 
-def default_target(d: ChordItem) -> float:
+def default_target(d: ChordItem) -> ChordValue | None:
     return d.target
 
 
@@ -39,11 +39,11 @@ def default_end_angle(d: ChordValue) -> float:
     return d.end_angle
 
 
-def default_pad_angle(d: ChordValue) -> float:
+def default_pad_angle(_: ChordValue) -> float:
     return 0
 
 
-def default_arrow_head_radius(d: ChordValue) -> float:
+def default_arrow_head_radius(_: ChordValue) -> float:
     return 10
 
 
@@ -87,16 +87,16 @@ class Ribbon:
         """
         s = self._source(*args)
         t = self._target(*args)
-        ap = self._pad_angle(*args) * 0.5
+        ap = self._pad_angle(*args) * 0.5  # type: ignore
         argv = list(args).copy() if len(args) > 0 else [None]
         argv[0] = s
-        sr = self._source_radius(*argv)
-        sa0 = self._start_angle(*argv) - HALF_PI
-        sa1 = self._end_angle(*argv) - HALF_PI
+        sr: float = self._source_radius(*argv)  # type: ignore
+        sa0 = self._start_angle(*argv) - HALF_PI  # type: ignore
+        sa1 = self._end_angle(*argv) - HALF_PI  # type: ignore
         argv[0] = t
-        tr = self._target_radius(*argv)
-        ta0 = self._start_angle(*argv) - HALF_PI
-        ta1 = self._end_angle(*argv) - HALF_PI
+        tr: float = self._target_radius(*argv)  # type: ignore
+        ta0 = self._start_angle(*argv) - HALF_PI  # type: ignore
+        ta1 = self._end_angle(*argv) - HALF_PI  # type: ignore
 
         if self._context is None:
             self._context = buffer = Path()
@@ -128,7 +128,7 @@ class Ribbon:
                 self._context.quadratic_curve_to(0, 0, tr * cos(ta0), tr * sin(ta0))
                 self._context.arc(0, 0, tr, ta0, ta1)
             else:
-                hr = self.head_radius(*args)
+                hr: float = self._head_radius(*args)  # type: ignore
                 tr2 = tr - hr
                 ta2 = (ta0 + ta1) / 2
                 self._context.quadratic_curve_to(0, 0, tr2 * cos(ta0), tr2 * sin(ta0))
@@ -319,7 +319,10 @@ class Ribbon:
         Ribbon
             Itself
         """
-        self._source = argpass(source)
+        if callable(source):
+            self._source = argpass(source)
+        else:
+            self._source = argpass(constant(source))
         return self
 
     def set_target(self, target: Callable[..., float] | float) -> Ribbon:
@@ -337,7 +340,10 @@ class Ribbon:
         Ribbon
             Itself
         """
-        self._target = argpass(target)
+        if callable(target):
+            self._target = argpass(target)
+        else:
+            self._target = argpass(constant(target))
         return self
 
     def set_context(self, context: Any | None = None) -> Ribbon:
@@ -362,25 +368,25 @@ class Ribbon:
         return self
 
     def get_head_radius(self) -> Callable[..., float]:
-        return self._head_radius
+        return self._head_radius  # type: ignore
 
     def get_radius(self) -> Callable[..., float]:
-        return self._source_radius
+        return self._source_radius  # type: ignore
 
     def get_source_radius(self) -> Callable[..., float]:
-        return self._source_radius
+        return self._source_radius  # type: ignore
 
     def get_target_radius(self) -> Callable[..., float]:
-        return self._target_radius
+        return self._target_radius  # type: ignore
 
     def get_start_angle(self) -> Callable[..., float]:
-        return self._start_angle
+        return self._start_angle  # type: ignore
 
     def get_end_angle(self) -> Callable[..., float]:
-        return self._end_angle
+        return self._end_angle  # type: ignore
 
     def get_pad_angle(self) -> Callable[..., float]:
-        return self._pad_angle
+        return self._pad_angle  # type: ignore
 
     def get_source(self) -> Callable[..., float]:
         return self._source
